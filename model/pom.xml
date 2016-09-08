@@ -3,11 +3,11 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
   <parent>
-    <groupId>com.mgoffan</groupId>
-    <artifactId>paw-webapp-test</artifactId>
+    <groupId>edu.tp.paw</groupId>
+    <artifactId>tp-paw-2016-q2</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <groupId>com.mgoffan</groupId>
+  <groupId>edu.tp.paw</groupId>
   <artifactId>model</artifactId>
   <version>1.0-SNAPSHOT</version>
   <name>model</name>

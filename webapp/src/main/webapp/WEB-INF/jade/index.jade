@@ -1,0 +1,16 @@
+extends layout
+
+block contents
+	div.container
+		h1 Hola #{user.username} (#{user.id})!
+		ul
+			each i, index in sampleList
+				+listItem(i)
+			
+block scripts
+	script.
+		$(document).on("ready", function () {
+		
+			
+		
+		});
