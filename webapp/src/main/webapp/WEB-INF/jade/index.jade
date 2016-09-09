@@ -1,16 +1,8 @@
 extends layout
 
-block contents
+block content
+	include mixin/mixins
 	div.container
-		h1 Hola #{user.username} (#{user.id})!
-		ul
-			each i, index in sampleList
-				+listItem(i)
-			
-block scripts
-	script.
-		$(document).on("ready", function () {
+		h1 Holaaa
+		+url("/helloWorld", "Boton")(class="btn btn-success")
 		
-			
-		
-		});

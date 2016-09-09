@@ -22,7 +22,7 @@ public class HelloWorldController {
 	@Autowired
 	private UserService userService;
 	
-	@RequestMapping("/")
+	@RequestMapping("/helloWorld")
 	public ModelAndView helloWorld() {
 		final ModelAndView modelAndView = new ModelAndView("index");
 		final List<User> sampleList = new ArrayList<>();
@@ -36,7 +36,7 @@ public class HelloWorldController {
 		return modelAndView;
 	}
 	
-	@RequestMapping("/user/{userId}")
+	@RequestMapping("/helloWorld/user/{userId}")
 	public ModelAndView helloWorld(@PathVariable("userId") final int id) { // @RequestParam(value = "userId", required = true, defaultValue = "123")
 		final ModelAndView modelAndView = new ModelAndView("index");
 		final List<User> sampleList = new ArrayList<>();
@@ -50,7 +50,7 @@ public class HelloWorldController {
 		return modelAndView;
 	}
 	
-	@RequestMapping("/create")
+	@RequestMapping("/helloWorld/create")
 	public ModelAndView helloWorld(@RequestParam(value = "name", required = true) final String username) {
 		final User user = userService.create(username);
 		

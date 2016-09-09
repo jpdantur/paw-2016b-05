@@ -1,16 +1,21 @@
 package edu.tp.paw.webapp.config;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import javax.sql.DataSource;
 
+import org.apache.commons.collections.map.HashedMap;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-import org.springframework.web.servlet.view.AbstractView;
-import org.springframework.web.servlet.view.InternalResourceViewResolver;
-import org.springframework.web.servlet.view.JstlView;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
 import de.neuland.jade4j.JadeConfiguration;
 import de.neuland.jade4j.spring.template.SpringTemplateLoader;
@@ -19,8 +24,19 @@ import de.neuland.jade4j.spring.view.JadeViewResolver;
 @EnableWebMvc
 @ComponentScan({"edu.tp.paw.webapp.controller", "edu.tp.paw.service", "edu.tp.paw.persistence"})
 @Configuration
-public class WebConfig {
+public class WebConfig extends WebMvcConfigurerAdapter {
 
+	@Autowired
+	private ApplicationContext appContext;
+	
+	@Override
+	public void addResourceHandlers(ResourceHandlerRegistry registry) {
+		
+		registry
+			.addResourceHandler("/resources/**")
+			.addResourceLocations("/resources/");
+	}
+	
 //	public ViewResolver viewResolver() {
 //		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
 //		
@@ -40,12 +56,20 @@ public class WebConfig {
       templateLoader.setSuffix(".jade");
       return templateLoader;
   }
+	
 
   @Bean
   public JadeConfiguration jadeConfiguration() {
       JadeConfiguration configuration = new JadeConfiguration();
       configuration.setCaching(false);
       configuration.setTemplateLoader(templateLoader());
+      Map<String, Object> sharedVariables = new HashMap<String, Object>();
+      sharedVariables.put("appContext", appContext);
+      System.out.println("-----------------");
+      System.out.println(appContext.getApplicationName());
+      System.out.println("-----------------");
+      
+      configuration.setSharedVariables(sharedVariables);
       return configuration;
   }
 
@@ -56,7 +80,10 @@ public class WebConfig {
       return viewResolver;
   }
   
-  
+  /**
+   * 
+   * @return Postgres DataSource
+   */
   @Bean
   public DataSource dataSource() {
   	
