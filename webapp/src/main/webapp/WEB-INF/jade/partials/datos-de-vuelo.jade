@@ -1,0 +1,94 @@
+div.container.div-flights
+	h1 Datos de Vuelo
+		select.pull-right.selectpicker.picker-currencies#picker-currencies-2
+	//- div.panel-heading Datos de Vuelo
+	//- div.panel-body
+	table.table.table-bordered.table-condensed.datos-de-vuelo#datos-de-vuelo-table
+		tbody#flight-container
+			tr#spinner
+				td.text-center(colspan=2)
+					i.fa.fa-spinner.fa-5x.fa-fw.fa-pulse
+					br
+					span Cargando su Compra
+			tr#flight-hidden(style='display:none')
+				td.text-left
+					h3
+						span Vuelo&nbsp;
+						span.flight-number
+						span &nbsp;-&nbsp;
+						b.flight-tramo
+						span.flight-date
+					div.col-sm-3
+						img.airline-image(src='img/placeholder-logo.png', alt='Logo')
+						| &nbsp;
+						span.airline-name
+						br
+						br
+						i.fa.fa-users.fa-2x
+						| &nbsp;x
+						span.passengers
+						br
+						span Clase&nbsp;
+						span.cabin-type
+					div.col-sm-9
+						div.vuelo
+							div.ida
+								div.vuelo-content
+									div.graphic
+										div
+											div.col-sm-2.text-center.horario-container
+												span.horario-salida
+											div.col-sm-2.col-sm-offset-8.text-center.horario-container
+												span.horario-llegada
+										div.clearfix
+										//- div.row
+										div.origen-container.col-sm-4(style='width:37.5%')
+											span.origen
+										div.escala-container.col-sm-3
+											span.horas
+											br
+											span.escalas
+										div.destino-container.col-sm-4(style='width:37.5%')
+											span.destino
+								div.vuelo-footer
+				td(style='width:20%')
+					div.precios.clearfix
+						div.with-divider.clearfix
+							div.col-sm-5
+								b Precio por Adulto
+							div.col-sm-7.text-right
+								span.currency-symbol
+								span.precio-por-adulto
+
+						div.adultos.clearfix
+							div.col-sm-5
+								b.n-adultos 1 Adulto
+							div.col-sm-7.text-right
+								span.currency-symbol
+								span.total-adultos
+						div.clearfix
+							div.col-sm-5
+								b Imp y Tasas
+							div.col-sm-7.text-right
+								span.currency-symbol
+								span.impuestos
+						div.with-divider.clearfix
+							div.col-sm-5
+								b Cargos
+							div.col-sm-7.text-right
+								span.currency-symbol
+								span.cargos
+						div.clearfix
+							div.col-sm-5
+								b Subtotal
+							div.col-sm-7.text-right
+								span.currency-symbol
+								span.total
+				//-td
+					p Subtotal:
+					h3.subtotal
+	div
+		a.btn.btn-default.prev-step#cancelar-compra(href="#") Cancelar Compra
+		a.btn.btn-success.next-step.pull-right#next-button-1(href="#") Continuar a Pasajeros
+			
+		

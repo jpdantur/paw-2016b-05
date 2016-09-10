@@ -1,8 +1,23 @@
 extends layout
 
 block content
-	include mixin/mixins
-	div.container
-		h1 Holaaa
-		+url("/helloWorld", "Boton")(class="btn btn-success")
+	header.navbar.navbar-fixed-top#top-navbar
+		div.container
+			div.navbar-header
+				button.navbar-toggle.collapsed(data-toggle="collapse", data-target="#main-navbar")
+					span.sr-only Toggle navigation
+					span.icon-bar
+					span.icon-bar
+					span.icon-bar
+				a.navbar-brand(href="index.html", style="font-size:5em")
+					i.fa.fa-shopping-basket
+					| &nbsp;SIGLAS
+			nav.collapse.navbar-collapse#navbar-content
+	include partials/noscript
+	section.section#busqueda-simple
+		div.container
+			include partials/busqueda-simple
+	section.section#busqueda-compleja
+		div.container
+			include partials/busqueda-avanzada
 		

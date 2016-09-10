@@ -1,0 +1,51 @@
+div#filters
+	div.filter-content
+		
+		div.filter-aerolinea
+			div.filter-title
+				i.fa.fa-plane
+				| &nbsp; Aerolínea
+			div.filter
+		div.filter-precio
+			div.filter-title
+				i.fa.fa-usd
+				| &nbsp; Precio
+			div.filter
+				b.left#min-filter
+				input#precio-filter
+				b.right#max-filter
+		div.filter-duration
+			div.filter-title
+				i.glyphicon.glyphicon-time
+				| &nbsp; Duraci&oacute;n
+			div.filter
+				b#min-duration-filter.left
+				input#duration-filter
+				b#max-duration-filter.right
+		//-div.filter-horario-salida
+			div.filter-title
+				i.fa.fa-hourglass-3
+				| &nbsp; Horarios
+			div.filter
+				h5 Salida
+				b.left 00:00
+				input#horario-salida-filter
+				b.right 23:30
+				h5 Llegada
+				b.left 00:00
+				input#horario-llegada-filter
+				b.right 23:30
+		div.filter-clase
+			div.filter-title
+				i.fa.fa-glass
+				| &nbsp; Clase
+			div.filter(style='padding:10px')
+				select.form-control#class-filter
+					option(value="ECONOMY") Turista
+					option(value="BUSINESS") Business
+					option(value="FIRST_CLASS") Primera
+	div.filter-header
+		span Filtros
+		br
+		i.fa.fa-cog
+	div.filter-footer

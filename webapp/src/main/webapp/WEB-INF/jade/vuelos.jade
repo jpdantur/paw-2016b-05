@@ -1,0 +1,289 @@
+extends layout/layout
+
+block content
+	div#processing(style='position:absolute;width:100%;height:100%;background-color:black;color:white;opacity:.7;display:none;z-index:1032')
+		h1.text-center(style='margin-top:30%') Aplicando Filtro...
+	div.container
+		header.navbar.navbar-fixed-top#top-navbar
+			div.container
+				div.navbar-header
+					button.navbar-toggle.collapsed(data-toggle="collapse", data-target="#main-navbar")
+						span.sr-only Toggle navigation
+						span.icon-bar
+						span.icon-bar
+						span.icon-bar
+					a.navbar-brand(href="index.html")
+						i.fa.fa-plane
+						| &nbsp;SIGLAS
+				nav.collapse.navbar-collapse#navbar-content
+	include mixins/vuelos
+	include partials/noscript
+	div.container
+		include partials/filters
+		div.row
+			div.col-sm-12
+				div.row.animated#resumen-de-vuelo
+					div.col-sm-6(style='padding-right:40px')
+						div.searcher
+							a#flip(href="#")
+								i.fa.fa-exchange.fa-2x.fa-rotate-90
+							select.selectpicker#search-from(data-live-search="true", data-show-subtext="true", title="Seleccione su origen", data-size="10", data-what="from")
+							select.selectpicker#search-to(data-live-search="true", data-show-subtext="true", title="Seleccione su destino", data-size="10", data-what="to")
+						a.btn#n-passengers(href="#")
+							i.fa.fa-users
+							span &nbsp;x
+							span#passengers 1
+						span &nbsp;|&nbsp;
+						select.selectpicker.cabin#cabin-type
+							option(value="ECONOMY") Turista
+							option(value="BUSINESS") Business
+							option(value="FIRST_CLASS") Primera
+					div.col-sm-6
+						form.form-horizontal
+							div.form-group
+								label.col-sm-3.control-label(for="origen") Salida
+								div.col-sm-9
+									input.form-control#origen(type="text")
+							div.form-group#regreso-date-container
+								label.col-sm-3.control-label(for="destino") Regreso
+								div.col-sm-9
+									input.form-control#destino(type="text")
+							div.form-group
+								a.btn.btn-default.col-sm-3.col-sm-offset-8#update-button(href="#", style="display:none")
+									i.fa.fa-refresh
+									| &nbsp;Actualizar
+		div.row#flight-rows
+			div.col-sm-12#flights-container
+				div.text-center#spinner
+					i.fa.fa-pulse.fa-5x.fa-spinner.fa-fw
+					br
+					span Cargando...
+				div.row.sorting(style="display:none")
+					div.col-sm-12
+						form.form-inline.pull-right
+							div.form-group
+								label.control-label Moneda
+								select.form-control.selectpicker#currencies
+							div.form-group
+								label.control-label Ordenar por
+								select.form-control.selectpicker#sorting
+									option(value="total|asc") &#xf162; Precio
+									option(value="total|desc") &#xf163; Precio
+									option(value="duration|asc") &#xf017; Duraci&oacute;n
+									option(value="airline|asc") &#xf072; Aerol&iacute;nea
+						span.result
+							span#cant-resultados
+							span#resultados-tag &nbsp; Resultados
+							br
+							a.btn.btn-info.btn-sm#comparator-label(href="#") Ver Comparador de Resultados
+				div.row.vuelo#flight-comparator(style="display:none;margin-top:20px")
+					h3 Precio por Aerol&iacute;nea
+					div(style='max-width:100%;overflow-x:scroll')
+						table.table.table-striped.table-hover.table-condensed
+							thead
+								tr#flight-comparator-airlines
+									th
+							tbody#flight-comparator-durations(style='font-size:12px')
+
+				div.row.vuelo.not-filtered.hidden#hidden-flight(style="display:none")
+					div.col-sm-5
+						div.ida
+							div.vuelo-header
+								i.fa.fa-plane
+								b &nbsp;IDA:&nbsp;
+								span.fecha
+							div.vuelo-content
+								img.airline-logo(src='img/placeholder-logo.png', alt='Logo')
+								| &nbsp; 
+								span.airline-name
+								div.graphic
+									div
+										div.col-sm-2.text-center.horario-container
+											span.horario-salida
+										div.col-sm-2.col-sm-offset-8.text-center.horario-container
+											span.horario-llegada
+									div.clearfix
+									//- div.row
+									div.origen-container.col-sm-4
+										span.origen
+									div.escala-container.col-sm-4
+										span.horas
+										br
+										span.escalas
+									div.destino-container.col-sm-4
+										span.destino
+								div.review-score-container
+									span Puntaje: &nbsp;
+									div.review-score(title='Ver Puntaje')
+										i.fa.fa-pulse.fa-2x.fa-spinner.fa-fw
+										span(style="font-size:10px") Cargando Puntaje del Vuelo
+							div.vuelo-footer
+
+
+
+					div.col-sm-5
+						div.vuelta
+							div.vuelo-header
+								i.fa.fa-plane
+								b &nbsp;VUELTA:&nbsp;
+								span.fecha
+							div.vuelo-content
+								img.airline-logo(src='img/placeholder-logo.png', alt='Logo')
+								| &nbsp; 
+								span.airline-name
+								div.graphic
+									div
+										div.col-sm-2.text-center.horario-container
+											span.horario-salida
+										div.col-sm-2.col-sm-offset-8.text-center.horario-container
+											span.horario-llegada
+									div.clearfix
+									//- div.row
+									div.origen-container.col-sm-4
+										span.origen
+									div.escala-container.col-sm-4
+										span.horas
+										br
+										span.escalas
+									div.destino-container.col-sm-4
+										span.destino
+								div.review-score-container
+									span Puntaje: &nbsp;
+									div.review-score(title='Ver Puntaje')
+										i.fa.fa-pulse.fa-2x.fa-spinner.fa-fw
+										span(style="font-size:10px") Cargando Puntaje del Vuelo
+						
+
+
+					div.col-sm-2.precios
+						div.with-divider.clearfix
+							div.col-sm-5
+								b Precio por Adulto
+							div.col-sm-7.text-right
+								span.currency-symbol
+								span.precio-por-adulto $7.199,00
+
+						div.adultos.clearfix
+							div.col-sm-5
+								b.n-adultos 1 Adulto
+							div.col-sm-7.text-right
+								span.currency-symbol
+								span.total-adultos $7.199,00
+						div.clearfix
+							div.col-sm-5
+								b Imp y Tasas
+							div.col-sm-7.text-right
+								span.currency-symbol
+								span.impuestos $173.69
+						div.with-divider.clearfix
+							div.col-sm-5
+								b Cargos
+							div.col-sm-7.text-right
+								span.currency-symbol
+								span.cargos $173.69
+						div.clearfix
+							div.col-sm-5
+								b Total
+							div.col-sm-7.text-right
+								span.currency-symbol
+								span.total $9000,00
+
+						a.btn.btn-success.btn-block.buy-flight(href="#") Comprar Vuelo
+
+					div.vuelo-footer.col-sm-12
+						div.col-sm-5
+							a.review.review-ida(href="#") Ya tomaste este vuelo? Danos tu opini&oacute;n
+						div.col-sm-5
+							a.review.review-vuelta(href="#") Ya tomaste este vuelo? Danos tu opini&oacute;n
+
+
+				div.row.vuelo.not-filtered.hidden#oneway-hidden-flight(style="display:none")
+					div.col-sm-9
+						div.ida
+							div.vuelo-header
+								i.fa.fa-plane
+								b &nbsp;IDA:&nbsp;
+								span.fecha
+							div.vuelo-content
+								img.airline-logo(src='img/placeholder-logo.png', alt='Logo')
+								| &nbsp; 
+								span.airline-name
+								div.graphic
+									div
+										div.col-sm-2.text-center.horario-container
+											span.horario-salida
+										div.col-sm-2.col-sm-offset-8.text-center.horario-container
+											span.horario-llegada
+									div.clearfix
+									//- div.row
+									div.origen-container.col-sm-4
+										span.origen
+									div.escala-container.col-sm-4
+										span.horas
+										br
+										span.escalas
+									div.destino-container.col-sm-4
+										span.destino
+								div.review-score-container
+									span Puntaje: &nbsp;
+									div.review-score(title='Ver Puntaje')
+										i.fa.fa-pulse.fa-2x.fa-spinner.fa-fw
+										span(style="font-size:10px") Cargando Puntaje del Vuelo
+							
+
+
+					div.col-sm-3.precios
+						div.with-divider.clearfix
+							div.col-sm-5
+								b Precio por Adulto
+							div.col-sm-7.text-right
+								span.currency-symbol
+								span.precio-por-adulto $7.199,00
+
+						div.adultos.clearfix
+							div.col-sm-5
+								b.n-adultos 1 Adulto
+							div.col-sm-7.text-right
+								span.currency-symbol
+								span.total-adultos $7.199,00
+						div.clearfix
+							div.col-sm-5
+								b Imp y Tasas
+							div.col-sm-7.text-right
+								span.currency-symbol
+								span.impuestos $173.69
+						div.with-divider.clearfix
+							div.col-sm-5
+								b Cargos
+							div.col-sm-7.text-right
+								span.currency-symbol
+								span.cargos $173.69
+						div.clearfix
+							div.col-sm-5
+								b Total
+							div.col-sm-7.text-right
+								span.currency-symbol
+								span.total $9000,00
+
+						a.btn.btn-success.btn-block.buy-flight(href="#") Comprar Vuelo
+
+					div.vuelo-footer.col-sm-12
+						a.review.review-ida(href="#") Ya tomaste este vuelo? Danos tu opini&oacute;n
+
+block styles
+	style.
+		/*.bootstrap-select.btn-group > .dropdown-menu {
+			width: 80%;
+			min-width: 80%;
+			left: 10%;
+			z-index: 1050;
+		}
+		.bootstrap-select.btn-group > .dropdown-menu.open {
+			width: 60%;
+			min-width: 60%;
+			left: 20%;
+		}*/
+
+block scripts
+	script(src="js/lib/rater.js", type="text/javascript")
+	script(src="js/vuelos.js", type="text/javascript")

@@ -11,7 +11,7 @@ html {
     background-color: #fafafa; }
 
 header#top-navbar {
-  background-color: #EFCB45; }
+  background-color: #59ABE3; }
 
 .with-divider {
   border-bottom: 1px solid #e9eaeb; }
@@ -26,7 +26,7 @@ header#top-navbar {
 #busqueda-simple {
   position: relative;
   padding-top: 6%;
-  background-color: #EFCB45;
+  background-color: #59ABE3;
   height: auto;
   min-height: auto; }
   #busqueda-simple .btn {
@@ -64,7 +64,7 @@ header#top-navbar {
         #busqueda-simple #promociones .thumbnail span.promotion-price {
           font-size: 32px;
           line-height: 150px;
-          color: #EFCB45; }
+          color: #59ABE3; }
           #busqueda-simple #promociones .thumbnail span.promotion-price .promotion-currency {
             font-size: 16px; }
     #busqueda-simple #promociones .carousel-control {
@@ -1202,7 +1202,7 @@ header#top-navbar {
     color: #999; }
 
 footer {
-  background-color: #EFCB45; }
+  background-color: #59ABE3; }
   footer a {
     font-size: 14px;
     color: black; }

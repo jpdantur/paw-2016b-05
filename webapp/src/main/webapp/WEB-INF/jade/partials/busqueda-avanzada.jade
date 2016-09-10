@@ -1,0 +1,175 @@
+div.row
+	div.col-sm-12
+		ul.nav.nav-tabs
+			li.active
+				a.text-center(href="#vuelo-ida", data-toggle="tab")
+					i.fa.fa-arrow-right
+					br
+					span Ida
+			li
+				a.text-center(href="#vuelo-ida-vuelta", data-toggle="tab")
+					i.fa.fa-exchange
+					br
+					span Ida y Vuelta
+			li
+				a.text-center(href="#vuelo-mapa", data-toggle="tab")
+					i.fa.fa-globe
+					br
+					span Elegir del Mapa
+		div.tab-content
+			div.tab-pane.fade.in.active#vuelo-ida
+				div.container
+					form.form-horizontal#form-ida
+						div.form-group
+							label.col-sm-4.control-label Origen
+							div.col-sm-5
+								select.form-control.selectpicker.input-lg#ida-origen(data-live-search="true", data-show-subtext="true", title="Seleccione su Origen", data-size="10")
+						div.form-group
+							label.col-sm-4.control-label Destino
+							div.col-sm-5
+								select.form-control.selectpicker.input-lg#ida-destino(data-live-search="true", data-show-subtext="true", title="Seleccione su Destino", data-size="10")
+						div.form-group
+							label.col-sm-4.control-label Fecha de Salida
+							div.col-sm-5
+								input.form-control.input-lg#ida-salida(type="text", value="")
+						div.form-group.pasajeros(data-kind="ida")
+							label.col-sm-4.control-label Pasajeros
+							div.col-sm-5
+								p Adultos (+12 a&ntilde;os)
+								div.input-group.input-group-lg
+									span.input-group-btn
+										button.btn.btn-default.dec(type="button", data-bind="adults") -
+									input.input-lg.form-control.text-center.passenger.ida.adult(type="text", value="1")
+									span.input-group-btn.plus
+										button.btn.btn-default.inc(type="button", data-bind="adults") +
+								p Menores (2 a 12 a&ntilde;os)
+								div.input-group.input-group-lg
+									span.input-group-btn
+										button.btn.btn-default.dec(type="button", data-bind="children") -
+									input.input-lg.form-control.text-center.passenger.ida.children(type="text", value="0")
+									span.input-group-btn.plus
+										button.btn.btn-default.inc(type="button", data-bind="children") +
+								p Beb&eacute;s (0 a 2 a&ntilde;os)
+								div.input-group.input-group-lg
+									span.input-group-btn
+										button.btn.btn-default.dec(type="button", data-bind="infants") -
+									input.input-lg.form-control.text-center.passenger.ida.infants(type="text", value="0")
+									span.input-group-btn.plus
+										button.btn.btn-default.inc(type="button", data-bind="infants") +
+						div.form-group.hidden
+							label.control-label.col-sm-4 Clase
+							div.col-sm-5
+								select.form-control.input-lg#cabin-type-ida
+									option(value='ECONOMY') Turista
+									option(value='BUSINESS') Business
+									option(value='FIRST_CLASS') Primera
+						div.form-group.hidden
+							label.control-label.col-sm-4 Horario de Salida
+							div.col-sm-5
+								div.row
+									div.col-sm-6
+										span M&iacute;nimo
+										input.form-control.input-lg#horario-salida-filter(type="text", value="00:00")
+									div.col-sm-6
+										span M&aacute;ximo
+										input.form-control.input-lg#horario-llegada-filter(type="text", value="23:55")
+						div.text-center.mas-opciones-container
+							a.mas-opciones(href="#")
+								i.fa.fa-cog
+								span &nbsp; M&aacute;s Opciones
+						div.form-group
+							div.col-sm-offset-7.col-sm-2
+								a.btn.btn-success.btn-block#search-ida(href="#")
+									i.fa.fa-search
+									| &nbsp; Buscar &nbsp;
+			div.tab-pane.fade#vuelo-ida-vuelta
+				div.container
+					form.form-horizontal#form-idayvuelta
+						div.form-group
+							label.col-sm-4.control-label Origen
+							div.col-sm-5
+								select.form-control.selectpicker.input-lg#vuelta-origen(data-live-search="true", data-show-subtext="true", title="Seleccione su origen", data-size="10")
+						div.form-group
+							label.col-sm-4.control-label Destino
+							div.col-sm-5
+								select.form-control.selectpicker.input-lg#vuelta-destino(data-live-search="true", data-show-subtext="true", title="Seleccione su destino", data-size="10")
+						div.form-group
+							label.col-sm-4.control-label Fecha de Salida
+							div.col-sm-5
+								input.form-control.input-lg#vuelta-salida(type="text", value="")
+						div.form-group
+							label.col-sm-4.control-label Fecha de Regreso
+							div.col-sm-5
+								input.form-control.input-lg#vuelta-regreso(type="text", value="")
+						div.form-group.pasajeros(data-kind="vuelta")
+							label.col-sm-4.control-label Pasajeros
+							div.col-sm-5
+								p Adultos (+12 a&ntilde;os)
+								div.input-group.input-group-lg
+									span.input-group-btn
+										button.btn.btn-default.dec(type="button", data-bind="adults") -
+									input.input-lg.form-control.text-center.passenger.vuelta.adult(type="text", value="1")
+									span.input-group-btn.plus
+										button.btn.btn-default.inc(type="button", data-bind="adults") +
+								p Menores (2 a 12 a&ntilde;os)
+								div.input-group.input-group-lg
+									span.input-group-btn
+										button.btn.btn-default.dec(type="button", data-bind="children") -
+									input.input-lg.form-control.text-center.passenger.vuelta.children(type="text", value="0")
+									span.input-group-btn.plus
+										button.btn.btn-default.inc(type="button", data-bind="children") +
+								p Beb&eacute;s (0 a 2 a&ntilde;os)
+								div.input-group.input-group-lg
+									span.input-group-btn
+										button.btn.btn-default.dec(type="button", data-bind="infants") -
+									input.input-lg.form-control.text-center.passenger.vuelta.infant(type="text", value="0")
+									span.input-group-btn.plus
+										button.btn.btn-default.inc(type="button", data-bind="infants") +
+						div.form-group.hidden
+							label.control-label.col-sm-4 Clase
+							div.col-sm-5
+								select.form-control.input-lg#cabin-type-vuelta
+									option(value='ECONOMY') Turista
+									option(value='BUSINESS') Business
+									option(value='FIRST_CLASS') Primera
+						div.form-group.hidden
+							label.control-label.col-sm-4 Horarios de Salida
+							div.col-sm-5
+								div.row
+									div.col-sm-6
+										span M&iacute;nimo
+										input.form-control.input-lg#horario-salida-vuelta-filter(type="text", value="00:00")
+									div.col-sm-6
+										span M&aacute;ximo
+										input.form-control.input-lg#horario-llegada-vuelta-filter(type="text", value="23:55")
+						div.text-center.mas-opciones-container
+							a.mas-opciones(href="#")
+								i.fa.fa-cog
+								span &nbsp; M&aacute;s Opciones
+						div.form-group
+							div.col-sm-offset-7.col-sm-2
+								a.btn.btn-success.btn-block#search-vuelta(href="#")
+									i.fa.fa-search
+									| &nbsp; Buscar &nbsp;
+			div.tab-pane.fade#vuelo-mapa
+				div.container
+					form#form-mundo
+						div.col-sm-9
+							div#google-map(style='height:500px;width:100%')
+							a.btn.btn-primary#reset-map(href='#') Reiniciar Mapa
+						div.col-sm-3
+							div.panel-group
+								div.panel.panel-default
+									div.panel-heading
+										h4.panel-title Origen
+									div.panel-body#origen-body
+										p.text-info Haga click en el mapa para elegir el origen.
+								div.panel.panel-default
+									div.panel-heading
+										h4.panel-title Destino
+									div.panel-body#destino-body
+							a.btn.btn-success.btn-lg#search-map(href='#')
+								i.fa.fa-search
+								| &nbsp; Buscar &nbsp;
+
+
