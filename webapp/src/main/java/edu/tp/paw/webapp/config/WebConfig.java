@@ -64,7 +64,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
       configuration.setCaching(false);
       configuration.setTemplateLoader(templateLoader());
       Map<String, Object> sharedVariables = new HashMap<String, Object>();
-      sharedVariables.put("appContext", appContext);
+      ContextHelper context = new ContextHelper(appContext.getApplicationName());
+      sharedVariables.put("context", context);
       System.out.println("-----------------");
       System.out.println(appContext.getApplicationName());
       System.out.println("-----------------");

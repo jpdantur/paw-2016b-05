@@ -1,0 +1,19 @@
+extends layout
+
+block content
+	div.container
+		div.col-sm-12
+			table.table
+				thead
+					th id
+					th Nombre
+					th Descripcion
+					th Precio
+				each storeItem in storeItems
+					tr
+						td #{storeItem.id}
+						td #{storeItem.name}
+						td #{storeItem.description}
+						td $#{storeItem.price}
+						
+						

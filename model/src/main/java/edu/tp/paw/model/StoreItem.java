@@ -15,21 +15,29 @@ public class StoreItem {
 	private Timestamp created;
 	private Timestamp lastUpdated;
 	
-	public StoreItem(long id, String description, String name, Timestamp created,
+	private Float price;
+	
+	public StoreItem() {
+		
+	}
+	
+	public StoreItem(long id, String description, String name, Float price, Timestamp created,
 			Timestamp lastUpdated) {
 		this.id = id;
 		this.description = description;
 		this.name = name;
 		this.created = created;
 		this.lastUpdated = lastUpdated;
+		this.price = price;
 	}
 	
-	public StoreItem(long id, String description, String name) {
+	public StoreItem(long id, String description, String name, Float price) {
 		this.id = id;
 		this.description = description;
 		this.name = name;
 		this.created = new Timestamp((new Date()).getTime());
 		this.lastUpdated = new Timestamp((new Date()).getTime());
+		this.price = price;
 	}
 	
 	public long getId() {
@@ -71,10 +79,23 @@ public class StoreItem {
 	public void setLastUpdated(Timestamp lastUpdated) {
 		this.lastUpdated = lastUpdated;
 	}
+	
+	
+	public Float getPrice() {
+		return price;
+	}
+
+	public void setPrice(Float price) {
+		this.price = price;
+	}
+
 	@Override
 	public String toString() {
-		return "StoreItem [id=" + id + ", description=" + description + ", name="
-				+ name + "]";
+		return "StoreItem [id=" + id + ", description=" + description
+				+ ", name=" + name + ", sold=" + sold + ", created=" + created
+				+ ", lastUpdated=" + lastUpdated + ", price=" + price + "]";
 	}
+
+	
 
 }

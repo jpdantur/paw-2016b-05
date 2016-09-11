@@ -1,0 +1,23 @@
+extends layout
+
+block content
+	div.container
+		h1 Vender un producto
+		form.form-horizontal(method="POST", action="item/create")
+			div.form-group
+				label.col-sm-2.control-label Nombre
+				div.col-sm-10
+					input.form-control(type="text", name="name", placeholder="Nombre")
+			div.form-group
+				label.col-sm-2.control-label Descripcion
+				div.col-sm-10
+					input.form-control(type="text", name="description", placeholder="Descripcion")
+			div.form-group
+				label.col-sm-2.control-label Precio
+				div.col-sm-10
+					input.form-control(type="number", name="price", placeholder="Price")
+			div.form-group
+				div.col-sm-4.col-sm-offset-8
+					button.btn.btn-primary(type="submit") Aceptar
+			
+			

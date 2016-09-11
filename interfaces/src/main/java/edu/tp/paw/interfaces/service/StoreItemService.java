@@ -21,6 +21,13 @@ public interface StoreItemService {
 	public List<StoreItem> findNMostSold(final long n);
 	
 	/**
+	 * Retrieves a list of the store items that match #{term}
+	 * @param term The term to match
+	 * @return A list of the store items that match #{term}
+	 */
+	public List<StoreItem> findByTerm(String term);
+	
+	/**
 	 * Create a new StoreItem
 	 * 
 	 * 
@@ -28,6 +35,6 @@ public interface StoreItemService {
 	 * @param description The description of the StoreItem
 	 * @return A new StoreItem
 	 */
-	public StoreItem create(final String name, final String description);
+	public StoreItem create(final String name, final String description, final Float price);
 
 }

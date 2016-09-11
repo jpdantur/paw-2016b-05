@@ -1,0 +1,22 @@
+extends layout
+
+block content
+	div.container
+		h1 Producto
+		table.table
+			tr
+				td
+					b Nombre
+				td #{storeItem.name}
+			tr
+				td
+					b Descripcion
+				td #{storeItem.description}
+			tr
+				td
+					b Precio
+				td $#{storeItem.price} 
+		a.btn.btn-primary(href="#{context.url('/sell')}") Agregar otro producto
+		a.btn.btn-success(href="#{context.url('/item/'+storeItem.id)}") Ver Producto
+			
+			

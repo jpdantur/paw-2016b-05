@@ -27,6 +27,7 @@ public class StoreItemJdbcDao implements StoreItemDao {
 				resultSet.getInt("item_id"),
 				resultSet.getString("description"),
 				resultSet.getString("name"),
+				resultSet.getFloat("price"),
 				resultSet.getTimestamp("created"),
 				resultSet.getTimestamp("last_updated"));
 	};
@@ -36,7 +37,8 @@ public class StoreItemJdbcDao implements StoreItemDao {
 		jdbcTemplate = new JdbcTemplate(dataSource);
 		jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
 			.withTableName("store_items")
-			.usingGeneratedKeyColumns("item_id");
+			.usingGeneratedKeyColumns("item_id")
+			.usingColumns("name", "description", "price");
 		
 		jdbcTemplate.execute(
 			"create table if not exists store_items ("
@@ -44,6 +46,7 @@ public class StoreItemJdbcDao implements StoreItemDao {
 				+ "name varchar(100),"
 				+ "description text,"
 				+ "sold integer default 0,"
+				+ "price real,"
 				+ "created timestamp default current_timestamp,"
 				+ "last_updated timestamp default current_timestamp"
 			+ ")"
@@ -77,16 +80,31 @@ public class StoreItemJdbcDao implements StoreItemDao {
 	}
 	
 	@Override
-	public StoreItem create(final String name, final String description) {
+	public List<StoreItem> findByTerm(String term) {
+		
+		
+		return
+				
+				jdbcTemplate
+				.query(
+						"select * from store_items where name LIKE '%?%' OR description LIKE '%?%'",
+						rowMapper,
+						term,
+						term);
+	}
+	
+	@Override
+	public StoreItem create(final String name, final String description, final Float price) {
 		
 		final Map<String, Object> args = new HashMap<>();
 		
 		args.put("name", name);
 		args.put("description", description);
+		args.put("price", price);
 		
-		final Number userId = jdbcInsert.executeAndReturnKey(args);
+		final Number storeItemId = jdbcInsert.executeAndReturnKey(args);
 		
-		return new StoreItem(userId.longValue(), description, name);
+		return new StoreItem(storeItemId.longValue(), description, name, price);
 		
 	}
 }
