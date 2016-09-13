@@ -1,93 +1,73 @@
 package edu.tp.paw.model;
 
 import java.sql.Timestamp;
-import java.util.Date;
 
 public class StoreItem {
 	
-	private long id;
+	private final long id;
 	
-	private String description;
-	private String name;
+	private final String name;
+	private final String description;
+	private final float price;
 	
-	private long sold;
+	private final long sold;
 	
-	private Timestamp created;
-	private Timestamp lastUpdated;
+	private final Timestamp created;
+	private final Timestamp lastUpdated;
 	
-	private Float price;
-	
-	public StoreItem() {
-		
+	/* package */ StoreItem(final StoreItemBuilder builder) {
+		this.id = builder.getId();
+		this.name = builder.getName();
+		this.description = builder.getDescription();
+		this.price = builder.getPrice();
+		this.sold = builder.getSold();
+		this.created = builder.getCreated();
+		this.lastUpdated = builder.getLastUpdated();
 	}
 	
-	public StoreItem(long id, String description, String name, Float price, Timestamp created,
-			Timestamp lastUpdated) {
-		this.id = id;
-		this.description = description;
-		this.name = name;
-		this.created = created;
-		this.lastUpdated = lastUpdated;
-		this.price = price;
-	}
 	
-	public StoreItem(long id, String description, String name, Float price) {
-		this.id = id;
-		this.description = description;
-		this.name = name;
-		this.created = new Timestamp((new Date()).getTime());
-		this.lastUpdated = new Timestamp((new Date()).getTime());
-		this.price = price;
-	}
-	
+
 	public long getId() {
 		return id;
 	}
-	public void setId(long id) {
-		this.id = id;
-	}
-	public String getDescription() {
-		return description;
-	}
-	public void setDescription(String description) {
-		this.description = description;
-	}
+
+
+
 	public String getName() {
 		return name;
 	}
-	public void setName(String name) {
-		this.name = name;
+
+
+
+	public String getDescription() {
+		return description;
 	}
+
+
+
+	public float getPrice() {
+		return price;
+	}
+
+
 
 	public long getSold() {
 		return sold;
 	}
 
-	public void setSold(long sold) {
-		this.sold = sold;
-	}
+
 
 	public Timestamp getCreated() {
 		return created;
 	}
-	public void setCreated(Timestamp created) {
-		this.created = created;
-	}
+
+
+
 	public Timestamp getLastUpdated() {
 		return lastUpdated;
 	}
-	public void setLastUpdated(Timestamp lastUpdated) {
-		this.lastUpdated = lastUpdated;
-	}
-	
-	
-	public Float getPrice() {
-		return price;
-	}
 
-	public void setPrice(Float price) {
-		this.price = price;
-	}
+
 
 	@Override
 	public String toString() {

@@ -13,7 +13,7 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
-import edu.tp.paw.interfaces.service.UserDao;
+import edu.tp.paw.interfaces.dao.UserDao;
 import edu.tp.paw.model.User;
 
 @Repository

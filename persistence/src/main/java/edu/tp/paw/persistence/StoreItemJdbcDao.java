@@ -13,8 +13,9 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
-import edu.tp.paw.interfaces.service.StoreItemDao;
+import edu.tp.paw.interfaces.dao.StoreItemDao;
 import edu.tp.paw.model.StoreItem;
+import edu.tp.paw.model.StoreItemBuilder;
 
 @Repository
 public class StoreItemJdbcDao implements StoreItemDao {
@@ -23,13 +24,16 @@ public class StoreItemJdbcDao implements StoreItemDao {
 	private final SimpleJdbcInsert jdbcInsert;
 	
 	private final static RowMapper<StoreItem> rowMapper = (ResultSet resultSet, int rowNum) -> {
-		return new StoreItem(
+		return new StoreItemBuilder(
 				resultSet.getInt("item_id"),
-				resultSet.getString("description"),
 				resultSet.getString("name"),
-				resultSet.getFloat("price"),
-				resultSet.getTimestamp("created"),
-				resultSet.getTimestamp("last_updated"));
+				resultSet.getString("description"),
+				resultSet.getFloat("price")
+			)
+			.created(resultSet.getTimestamp("created"))
+			.lastUpdated(resultSet.getTimestamp("last_updated"))
+			.sold(resultSet.getInt("sold"))
+			.build();
 	};
 	
 	@Autowired
@@ -104,7 +108,7 @@ public class StoreItemJdbcDao implements StoreItemDao {
 		
 		final Number storeItemId = jdbcInsert.executeAndReturnKey(args);
 		
-		return new StoreItem(storeItemId.longValue(), description, name, price);
+		return new StoreItemBuilder(storeItemId.longValue(), name, description, price).build();
 		
 	}
 }

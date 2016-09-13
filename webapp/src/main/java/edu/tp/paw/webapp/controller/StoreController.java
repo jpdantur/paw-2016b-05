@@ -27,7 +27,7 @@ public class StoreController {
 	@RequestMapping("/sell")
 	public String sell(Model model) {
 		
-		model.addAttribute("storeItem", new StoreItem());
+//		model.addAttribute("storeItem", new StoreItem());
 		
 //		final ModelAndView modelAndView = new ModelAndView("sell");
 		

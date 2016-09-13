@@ -1,4 +1,4 @@
-package edu.tp.paw.interfaces.service;
+package edu.tp.paw.interfaces.dao;
 
 import edu.tp.paw.model.User;
 

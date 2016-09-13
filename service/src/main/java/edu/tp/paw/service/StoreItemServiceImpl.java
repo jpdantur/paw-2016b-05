@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import edu.tp.paw.interfaces.service.StoreItemDao;
+import edu.tp.paw.interfaces.dao.StoreItemDao;
 import edu.tp.paw.interfaces.service.StoreItemService;
 import edu.tp.paw.model.StoreItem;
 

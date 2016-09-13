@@ -3,7 +3,7 @@ package edu.tp.paw.service;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import edu.tp.paw.interfaces.service.UserDao;
+import edu.tp.paw.interfaces.dao.UserDao;
 import edu.tp.paw.interfaces.service.UserService;
 import edu.tp.paw.model.User;
 
