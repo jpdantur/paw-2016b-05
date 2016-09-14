@@ -3,19 +3,24 @@ extends layout
 block content
 	div.container
 		h1 Vender un producto
-		form.form-horizontal(method="POST", action="item/create")
-			div.form-group
+		form.form-horizontal(method="POST", action="#{context.url('/sell')}")
+			div.form-group(class="#{bindingResult.hasFieldErrors('name')?'has-error':''}")
 				label.col-sm-2.control-label Nombre
 				div.col-sm-10
-					input.form-control(type="text", name="name", placeholder="Nombre")
+					input.form-control(type="text", name="name", placeholder="Nombre", value="#{item.name?item.name:''}")
+					+errors(bindingResult, 'name')
 			div.form-group
 				label.col-sm-2.control-label Descripcion
 				div.col-sm-10
-					input.form-control(type="text", name="description", placeholder="Descripcion")
+					input.form-control(type="text", name="description", placeholder="Descripcion", value="#{item.description?item.description:''}")
+					+errors(bindingResult, 'description')
 			div.form-group
 				label.col-sm-2.control-label Precio
 				div.col-sm-10
-					input.form-control(type="number", name="price", placeholder="Price")
+					div.input-group
+						span.input-group-addon $
+						input.form-control(type="number", name="price", placeholder="Price", min="0", step="0.01", value="!{item.price}")
+					+errors(bindingResult, 'price')
 			div.form-group
 				div.col-sm-4.col-sm-offset-8
 					button.btn.btn-primary(type="submit") Aceptar

@@ -17,23 +17,23 @@ public class StoreItemService implements IStoreItemService {
 	private IStoreItemDao storeItemDao;
 
 	@Override
-	public StoreItem findById(long id) {
-		return storeItemDao.findById(id);
-	}
-
-	@Override
-	public List<StoreItem> findNMostSold(long n) {
-		return storeItemDao.findNMostSold(n);
-	}
-	
-	@Override
 	public List<StoreItem> findByTerm(String term) {
 		return storeItemDao.findByTerm(term);
 	}
 
 	@Override
-	public StoreItem create(String name, String description, Float price) {
+	public StoreItem sell(String name, String description, float price) {
 		return storeItemDao.create(name, description, price);
+	}
+
+	@Override
+	public List<StoreItem> fetchMostSold(int n) {
+		return storeItemDao.findNMostSold(n);
+	}
+
+	@Override
+	public StoreItem fetchById(long id) {
+		return storeItemDao.findById(id);
 	}
 	
 	

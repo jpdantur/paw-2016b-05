@@ -1,35 +1,65 @@
 package edu.tp.paw.webapp.controller;
 
+import javax.validation.Valid;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.model.StoreItem;
+import edu.tp.paw.webapp.form.SellForm;
 
 
 @Controller
 public class StoreController {
 
+	private static final int MOST_SOLD_ITEMS = 6;
 	@Autowired
-	private IStoreItemService userService;
+	private IStoreItemService storeItemService;
 	
 	@RequestMapping("/")
 	public ModelAndView index() {
 		
 		final ModelAndView modelAndView = new ModelAndView("index");
 		
+		modelAndView.addObject("mostSoldItems", storeItemService.fetchMostSold(MOST_SOLD_ITEMS));
+		
 		return modelAndView;
 	}
 	
-	@RequestMapping("/sell")
-	public String sell(Model model) {
+	@RequestMapping( value = "/sell", method = RequestMethod.GET)
+	public String sellItem(
+			@ModelAttribute("sellForm") SellForm form,
+			BindingResult bindingResult,
+			Model model) {
 		
-//		model.addAttribute("storeItem", new StoreItem());
+		model.addAttribute("bindingResult", bindingResult);
+		model.addAttribute("item", form);
 		
-//		final ModelAndView modelAndView = new ModelAndView("sell");
+		return "sell";
+	}
+	
+	@RequestMapping( value = "/sell", method = RequestMethod.POST)
+	public String sell(
+			@Valid @ModelAttribute("sellForm") SellForm form,
+			BindingResult bindingResult,
+			Model model) {
+		
+		if (!bindingResult.hasErrors()) {
+			
+			final StoreItem storeItem = storeItemService.sell(form.getName(), form.getDescription(), form.getPrice());
+			
+			return "redirect:/item/"+storeItem.getId();
+		}
+		
+		model.addAttribute("bindingResult", bindingResult);
+		model.addAttribute("item", form);
 		
 		return "sell";
 		

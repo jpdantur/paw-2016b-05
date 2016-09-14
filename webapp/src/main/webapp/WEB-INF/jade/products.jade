@@ -2,7 +2,16 @@ extends layout
 
 block content
 	div.container
-		div.col-sm-12
+		if storeItems.size() == 0
+			h3.text-warning No hay productos que mostrar
+		each item in storeItems
+			div.col-sm-2
+				img(src="http://lorempixel.com/100/100/fashion", style="width:100%,height:auto")
+				br
+				b #{item.name}
+				br
+				span $#{item.price}
+		//-div.col-sm-12
 			table.table
 				thead
 					th id
