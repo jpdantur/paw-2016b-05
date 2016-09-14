@@ -13,12 +13,12 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
-import edu.tp.paw.interfaces.dao.StoreItemDao;
+import edu.tp.paw.interfaces.dao.IStoreItemDao;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
 
 @Repository
-public class StoreItemJdbcDao implements StoreItemDao {
+public class StoreItemJdbcDao implements IStoreItemDao {
 
 	private final JdbcTemplate jdbcTemplate;
 	private final SimpleJdbcInsert jdbcInsert;

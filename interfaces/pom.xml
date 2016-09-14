@@ -20,7 +20,7 @@
     <dependency>
       <groupId>edu.tp.paw</groupId>
       <artifactId>model</artifactId>
-      <version>${parent.version}</version>
+      <version>${project.parent.version}</version>
     </dependency>
     <dependency>
         <groupId>org.springframework</groupId>

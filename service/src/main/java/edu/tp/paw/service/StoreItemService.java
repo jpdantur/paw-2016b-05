@@ -5,16 +5,16 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import edu.tp.paw.interfaces.dao.StoreItemDao;
-import edu.tp.paw.interfaces.service.StoreItemService;
+import edu.tp.paw.interfaces.dao.IStoreItemDao;
+import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.model.StoreItem;
 
 
 @Service
-public class StoreItemServiceImpl implements StoreItemService {
+public class StoreItemService implements IStoreItemService {
 
 	@Autowired
-	private StoreItemDao storeItemDao;
+	private IStoreItemDao storeItemDao;
 
 	@Override
 	public StoreItem findById(long id) {

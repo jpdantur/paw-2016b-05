@@ -4,7 +4,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 
-public class StoreItemBuilder {
+public class StoreItemBuilder implements IBuilder<StoreItem> {
 	
 	// Required parameters
 	private final long id;

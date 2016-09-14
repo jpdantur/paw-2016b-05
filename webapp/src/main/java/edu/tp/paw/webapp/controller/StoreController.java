@@ -6,7 +6,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import edu.tp.paw.interfaces.service.StoreItemService;
+import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.model.StoreItem;
 
 
@@ -14,7 +14,7 @@ import edu.tp.paw.model.StoreItem;
 public class StoreController {
 
 	@Autowired
-	private StoreItemService userService;
+	private IStoreItemService userService;
 	
 	@RequestMapping("/")
 	public ModelAndView index() {

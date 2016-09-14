@@ -4,7 +4,7 @@ import com.sun.istack.internal.Nullable;
 
 import edu.tp.paw.model.Category;
 
-public interface CategoryDao {
+public interface ICategoryDao {
 
 	/**
 	 * Creates a new category

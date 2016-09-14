@@ -2,7 +2,7 @@ package edu.tp.paw.interfaces.dao;
 
 import edu.tp.paw.model.User;
 
-public interface UserDao {
+public interface IUserDao {
 
 	/**
 	 * Retrieve an user by id

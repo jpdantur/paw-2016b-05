@@ -2,7 +2,7 @@ package edu.tp.paw.interfaces.service;
 
 import edu.tp.paw.model.User;
 
-public interface UserService {
+public interface IUserService {
 
 	public User findById(long id);
 	

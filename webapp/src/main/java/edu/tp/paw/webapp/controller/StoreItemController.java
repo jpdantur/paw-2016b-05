@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
-import edu.tp.paw.interfaces.service.StoreItemService;
-import edu.tp.paw.interfaces.service.UserService;
+import edu.tp.paw.interfaces.service.IStoreItemService;
+import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.User;
 
@@ -22,7 +22,7 @@ import edu.tp.paw.model.User;
 public class StoreItemController {
 
 	@Autowired
-	private StoreItemService storeItemService;
+	private IStoreItemService storeItemService;
 	
 	@RequestMapping("/items")
 	public ModelAndView itemBrowser(

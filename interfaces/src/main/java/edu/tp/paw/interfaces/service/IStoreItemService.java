@@ -1,11 +1,11 @@
-package edu.tp.paw.interfaces.dao;
+package edu.tp.paw.interfaces.service;
 
 import java.util.List;
 
 import edu.tp.paw.model.StoreItem;
 
-public interface StoreItemDao {
-
+public interface IStoreItemService {
+	
 	/**
 	 * Retrieve a StoreItem from the database
 	 * @param id id of the StoreItem
@@ -36,5 +36,5 @@ public interface StoreItemDao {
 	 * @return A new StoreItem
 	 */
 	public StoreItem create(final String name, final String description, final Float price);
-	
+
 }

@@ -13,11 +13,11 @@ import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
-import edu.tp.paw.interfaces.dao.UserDao;
+import edu.tp.paw.interfaces.dao.IUserDao;
 import edu.tp.paw.model.User;
 
 @Repository
-public class UserJdbcDao implements UserDao {
+public class UserJdbcDao implements IUserDao {
 
 	private final JdbcTemplate jdbcTemplate;
 	private final SimpleJdbcInsert jdbcInsert;
