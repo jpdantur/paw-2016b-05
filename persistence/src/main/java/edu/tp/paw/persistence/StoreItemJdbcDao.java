@@ -1,6 +1,7 @@
 package edu.tp.paw.persistence;
 
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +46,7 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 			.usingGeneratedKeyColumns("item_id")
 			.usingColumns("name", "description", "price");
 		
+		
 //		jdbcTemplate.execute(
 //			"create table if not exists store_items ("
 //				+ "item_id serial primary key,"
@@ -72,9 +74,11 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 	}
 	
 	@Override
-	public List<StoreItem> findNMostSold(long n) {
+	public List<StoreItem> findMostSold(int n) {
 		
-		System.out.println("finding n most sold " + n);
+		if (n < 1) {
+			return new ArrayList<StoreItem>();
+		}
 		
 		return
 				

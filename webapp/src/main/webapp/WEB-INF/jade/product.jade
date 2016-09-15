@@ -1,7 +1,50 @@
 extends layout
 
+block styles
+	link(href="#{context.url('/resources/dist/css/product.css')}", rel="stylesheet")
+
 block content
+	header.navbar.navbar-fixed-top#top-navbar
+		div.container
+			div.navbar-header
+				button.navbar-toggle.collapsed(data-toggle="collapse", data-target="#main-navbar")
+					span.sr-only Toggle navigation
+					span.icon-bar
+					span.icon-bar
+					span.icon-bar
+				a.navbar-brand(href="#{context.url('/')}", style="font-size:2em")
+					i.fa.fa-shopping-basket
+					| &nbsp;SIGLAS
+			nav.collapse.navbar-collapse#navbar-content
+				ul.nav.navbar-nav.navbar-right
+					li
+						a(href="#{context.url('/sell')}") Vender
+				form.navbar-form#navbar-search(action="#{context.url('/items')}")
+					div.form-group(style="width:50%")
+						div.input-group
+							input.form-control(type="text", placeholder="Busqueda de productos", style="width:100%", name="query")
+							span.input-group-btn(style="width:1%")
+								button.btn.btn-default(type="submit")
+									i.fa.fa-search
 	div.container
-	h1 #{storeItem.name}
-	p #{storeItem.description}
-	h4 #{storeItem.price}
+		div.row
+			div.col-sm-10.col-sm-offset-1
+				span #{published}
+				if published
+					div.row
+						div.col-sm-12
+							div.alert.alert-success.alert-dismissable
+								button.close(type="button", data-dismiss="alert")
+									span &times;
+								strong Enhorabuena!
+								span &nbsp; Su producto ha sido publicado con exito
+								br
+								a.btn.btn-success(href="#{context.url('/sell')}") Publicar otro
+				div.row#product-container
+					div.col-sm-3
+						img(src="http://lorempixel.com/400/400/fashion", style="width:100%;height:auto")
+					div.col-sm-9
+						h1 #{storeItem.name}
+						p #{storeItem.description}
+						h3 $#{storeItem.price}
+						a.btn.btn-success.btn-lg(href="#") Comprar

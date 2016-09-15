@@ -13,7 +13,7 @@ div.row
 						button.btn.btn-default.btn-lg#quick-search(type="submit")
 							i.fa.fa-search
 							| &nbsp; Buscar &nbsp;
-			a#link-busqueda-compleja(href="#busqueda-compleja") B&uacute;squeda Avanzada
+			a#link-busqueda-compleja(href="#busqueda-compleja") Categorias
 				br
 				span.fa-stack.fa-lg
 					i.fa.fa-circle-thin.fa-stack-2x
@@ -30,9 +30,11 @@ div.row#promociones
 			div.item.active
 				each item in mostSoldItems
 					div.col-sm-2
-						img(src="http://lorempixel.com/100/100/fashion", style="width:100%,height:auto")
+						a(href="#{context.url('/item/'+item.id)}")
+							img(src="http://lorempixel.com/100/100/fashion", style="width:100%;height:auto")
 						br
-						b #{item.name}
+						a(href="#{context.url('/item/'+item.id)}")
+							b #{item.name}
 						br
 						span $#{item.price}
 		a.left.carousel-control(href="#promotion-carousel", data-slide="prev", style='left:-30px')

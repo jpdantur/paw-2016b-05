@@ -1,28 +1,56 @@
 extends layout
 
 block content
+	header.navbar.navbar-fixed-top#top-navbar
+		div.container
+			div.navbar-header
+				button.navbar-toggle.collapsed(data-toggle="collapse", data-target="#main-navbar")
+					span.sr-only Toggle navigation
+					span.icon-bar
+					span.icon-bar
+					span.icon-bar
+				a.navbar-brand(href="#{context.url('/')}", style="font-size:2em")
+					i.fa.fa-shopping-basket
+					| &nbsp;SIGLAS
+			nav.collapse.navbar-collapse#navbar-content
+				ul.nav.navbar-nav.navbar-right
+					li
+						a(href="#{context.url('/sell')}") Vender
+				form.navbar-form#navbar-search(action="#{context.url('/items')}")
+					div.form-group(style="width:50%")
+						div.input-group
+							input.form-control(type="text", placeholder="Busqueda de productos", style="width:100%", name="query")
+							span.input-group-btn(style="width:1%")
+								button.btn.btn-default(type="submit")
+									i.fa.fa-search
 	div.container
-		h1 Vender un producto
-		form.form-horizontal(method="POST", action="#{context.url('/sell')}")
-			div.form-group(class="#{bindingResult.hasFieldErrors('name')?'has-error':''}")
-				label.col-sm-2.control-label Nombre
-				div.col-sm-10
-					input.form-control(type="text", name="name", placeholder="Nombre", value="#{item.name?item.name:''}")
-					+errors(bindingResult, 'name')
-			div.form-group
-				label.col-sm-2.control-label Descripcion
-				div.col-sm-10
-					input.form-control(type="text", name="description", placeholder="Descripcion", value="#{item.description?item.description:''}")
-					+errors(bindingResult, 'description')
-			div.form-group
-				label.col-sm-2.control-label Precio
-				div.col-sm-10
-					div.input-group
-						span.input-group-addon $
-						input.form-control(type="number", name="price", placeholder="Price", min="0", step="0.01", value="!{item.price}")
-					+errors(bindingResult, 'price')
-			div.form-group
-				div.col-sm-4.col-sm-offset-8
-					button.btn.btn-primary(type="submit") Aceptar
-			
-			
+		div.row
+			div.col-sm-10.col-sm-offset-1
+				h1 Vender un producto
+				form.form-horizontal(method="POST", action="#{context.url('/sell')}")
+					div.form-group(class="#{bindingResult.hasFieldErrors('name')?'has-error':''}")
+						label.col-sm-2.control-label Nombre
+						div.col-sm-10
+							input.form-control(type="text", name="name", placeholder="Nombre", value="#{item.name?item.name:''}")
+							+errors(bindingResult, 'name')
+					div.form-group
+						label.col-sm-2.control-label Descripcion
+						div.col-sm-10
+							textarea.form-control(name="description", placeholder="Descripcion", value="#{item.description?item.description:''}", rows="12")
+							+errors(bindingResult, 'description')
+					div.form-group
+						label.col-sm-2.control-label Precio
+						div.col-sm-10
+							div.input-group
+								span.input-group-addon $
+								input.form-control(type="number", name="price", placeholder="Price", min="0", step="0.01", value="!{item.price}")
+							+errors(bindingResult, 'price')
+					div.form-group
+						div.col-sm-2.col-sm-offset-2
+							a.btn.btn-default.btn-block(href="#{context.url('/')}")
+								i.fa.fa-chevron-left
+								| &nbsp;Volver
+						div.col-sm-4.col-sm-offset-4
+							button.btn.btn-success.btn-block(type="submit") Aceptar
+					
+					

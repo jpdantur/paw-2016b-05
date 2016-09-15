@@ -22,13 +22,13 @@ public class StoreItemService implements IStoreItemService {
 	}
 
 	@Override
-	public StoreItem sell(String name, String description, float price) {
+	public StoreItem create(String name, String description, float price) {
 		return storeItemDao.create(name, description, price);
 	}
 
 	@Override
 	public List<StoreItem> fetchMostSold(int n) {
-		return storeItemDao.findNMostSold(n);
+		return storeItemDao.findMostSold(n);
 	}
 
 	@Override

@@ -9,6 +9,8 @@ import edu.tp.paw.model.StoreItem;
 
 public interface IStoreService {
 	
+	public StoreItem sell(final String name, final String description, final float price);
+	
 	public @NotNull List<StoreItem> fetchItemsInCategory(final Category category);
 	public @NotNull List<StoreItem> fetchItemsInCategory(final String categoryId);
 }

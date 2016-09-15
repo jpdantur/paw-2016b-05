@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import edu.tp.paw.interfaces.service.IStoreItemService;
+import edu.tp.paw.interfaces.service.IStoreService;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.webapp.form.SellForm;
 
@@ -22,6 +23,8 @@ public class StoreController {
 	private static final int MOST_SOLD_ITEMS = 6;
 	@Autowired
 	private IStoreItemService storeItemService;
+	@Autowired
+	private IStoreService storeService;
 	
 	@RequestMapping("/")
 	public ModelAndView index() {
@@ -53,9 +56,9 @@ public class StoreController {
 		
 		if (!bindingResult.hasErrors()) {
 			
-			final StoreItem storeItem = storeItemService.sell(form.getName(), form.getDescription(), form.getPrice());
+			final StoreItem storeItem = storeService.sell(form.getName(), form.getDescription(), form.getPrice());
 			
-			return "redirect:/item/"+storeItem.getId();
+			return "redirect:/item/"+storeItem.getId()+"?s=1";
 		}
 		
 		model.addAttribute("bindingResult", bindingResult);
