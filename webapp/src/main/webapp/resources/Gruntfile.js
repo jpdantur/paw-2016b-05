@@ -148,7 +148,7 @@ module.exports = function (grunt) {
 					// jquery easing
 					expand: true,
 					dot: true,
-					cwd: 'bower_components/jquery-easing-original',
+					cwd: 'bower_components/jquery.easing',
 					src: ['jquery.easing.js', 'jquery.easing.min.js'],
 					dest: 'dist/js/lib/'
 					// dest: 'dist/lib/js'
@@ -349,7 +349,6 @@ module.exports = function (grunt) {
 					// 'clean',
 					'jshint',
 					'copy:main',
-					'pug:dev', // compile
 					'sass:dist', // compile
 					'livescript',
 					'notify'
@@ -365,7 +364,6 @@ module.exports = function (grunt) {
 					'clean',
 					'jshint',
 					'copy:main',
-					'pug:min', // compile
 					'sass:dist', // compile
 					'livescript',
 					'uglify:dist',

@@ -7,11 +7,17 @@ import javax.sql.DataSource;
 
 import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.jdbc.datasource.init.DataSourceInitializer;
+import org.springframework.jdbc.datasource.init.DatabasePopulator;
+import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -28,6 +34,9 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
 	@Autowired
 	private ApplicationContext appContext;
+	
+	@Value("classpath:schema.sql")
+	private Resource schemaSql;
 	
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -98,4 +107,24 @@ public class WebConfig extends WebMvcConfigurerAdapter {
   	return dataSource;
   }
 	
+  
+  @Bean
+  public DatabasePopulator databasePopulator() {
+  	final ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
+  	
+  	databasePopulator.addScript(schemaSql);
+  	
+  	return databasePopulator;
+  }
+  
+  @Bean
+  public DataSourceInitializer dataSourceInitializer(final DataSource dataSource) {
+  	
+  	final DataSourceInitializer dataSourceInitializer = new DataSourceInitializer();
+  	
+  	dataSourceInitializer.setDataSource(dataSource);
+  	dataSourceInitializer.setDatabasePopulator(databasePopulator());
+  	
+  	return null;
+  }
 }

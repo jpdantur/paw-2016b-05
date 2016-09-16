@@ -12,6 +12,8 @@ public interface ICategoryDao {
 	 * @param parent The parent of the new category. A null parent means a child of the root node
 	 * @return The created category
 	 */
-	public Category create(String name, @Nullable Category parent);
+	public Category create(String name, long parent);
+	
+	public Category findById(long id);
 	
 }

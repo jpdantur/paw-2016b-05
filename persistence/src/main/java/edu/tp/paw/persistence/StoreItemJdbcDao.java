@@ -1,6 +1,7 @@
 package edu.tp.paw.persistence;
 
 import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -39,22 +40,24 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 	@Autowired
 	public StoreItemJdbcDao(final DataSource dataSource) {
 		jdbcTemplate = new JdbcTemplate(dataSource);
+		
 		jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
 			.withTableName("store_items")
 			.usingGeneratedKeyColumns("item_id")
 			.usingColumns("name", "description", "price");
 		
-		jdbcTemplate.execute(
-			"create table if not exists store_items ("
-				+ "item_id serial primary key,"
-				+ "name varchar(100),"
-				+ "description text,"
-				+ "sold integer default 0,"
-				+ "price real,"
-				+ "created timestamp default current_timestamp,"
-				+ "last_updated timestamp default current_timestamp"
-			+ ")"
-		);
+		
+//		jdbcTemplate.execute(
+//			"create table if not exists store_items ("
+//				+ "item_id serial primary key,"
+//				+ "name varchar(100),"
+//				+ "description text,"
+//				+ "sold integer default 0,"
+//				+ "price real,"
+//				+ "created timestamp default current_timestamp,"
+//				+ "last_updated timestamp default current_timestamp"
+//			+ ")"
+//		);
 	}
 	
 	@Override
@@ -71,14 +74,17 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 	}
 	
 	@Override
-	public List<StoreItem> findNMostSold(long n) {
+	public List<StoreItem> findMostSold(int n) {
 		
+		if (n < 1) {
+			return new ArrayList<StoreItem>();
+		}
 		
 		return
 				
 				jdbcTemplate
 				.query(
-						"select * from store_items order by sold limit ?",
+						"select * from store_items order by sold desc limit ?",
 						rowMapper,
 						n);
 	}
@@ -91,14 +97,14 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 				
 				jdbcTemplate
 				.query(
-						"select * from store_items where name LIKE '%?%' OR description LIKE '%?%'",
+						"select * from store_items where lower(name) LIKE ? OR lower(description) LIKE ?",
 						rowMapper,
-						term,
-						term);
+						"%"+term.toLowerCase()+"%",
+						"%"+term.toLowerCase()+"%");
 	}
 	
 	@Override
-	public StoreItem create(final String name, final String description, final Float price) {
+	public StoreItem create(final String name, final String description, final float price) {
 		
 		final Map<String, Object> args = new HashMap<>();
 		

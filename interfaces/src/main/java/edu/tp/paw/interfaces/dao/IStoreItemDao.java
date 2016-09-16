@@ -18,7 +18,7 @@ public interface IStoreItemDao {
 	 * @param n The number of items to find
 	 * @return A list of the most sold items
 	 */
-	public List<StoreItem> findNMostSold(final long n);
+	public List<StoreItem> findMostSold(final int n);
 	
 	/**
 	 * Retrieves a list of the store items that match #{term}
@@ -35,6 +35,6 @@ public interface IStoreItemDao {
 	 * @param description The description of the StoreItem
 	 * @return A new StoreItem
 	 */
-	public StoreItem create(final String name, final String description, final Float price);
+	public StoreItem create(final String name, final String description, final float price);
 	
 }
