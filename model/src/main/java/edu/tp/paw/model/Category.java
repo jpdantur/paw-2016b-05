@@ -11,12 +11,12 @@ public class Category {
 	private long id;
 	
 	private String name;
-	private int parent;
+	private Category parent;
 	private String path;
 	private List<Category> children;
 	
-	private final Timestamp created;
-	private final Timestamp lastUpdated;
+	//private final Timestamp created;
+	//private final Timestamp lastUpdated;
 	
 	public Category(long id, String name, Category parent) {
 		super();

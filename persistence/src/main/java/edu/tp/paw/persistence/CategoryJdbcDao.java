@@ -148,7 +148,7 @@ public class CategoryJdbcDao implements ICategoryDao {
 		return assembleCategoryTree(categoryList.get(0));
 	}
 	
-	@Override
+	//@Override
 	public StoreItem create(final String name, final String description, final float price) {
 		
 		final Map<String, Object> args = new HashMap<>();

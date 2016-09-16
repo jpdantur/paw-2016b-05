@@ -34,6 +34,10 @@
           <element id="library" level="project" name="Maven: org.ow2.asm:asm-util:5.0.3" />
           <element id="library" level="project" name="Maven: commons-io:commons-io:2.4" />
           <element id="library" level="project" name="Maven: org.slf4j:slf4j-api:1.6.0" />
+          <element id="library" level="project" name="Maven: javax.validation:validation-api:1.1.0.Final" />
+          <element id="library" level="project" name="Maven: org.hibernate:hibernate-validator:5.0.1.Final" />
+          <element id="library" level="project" name="Maven: org.jboss.logging:jboss-logging:3.1.1.GA" />
+          <element id="library" level="project" name="Maven: com.fasterxml:classmate:0.8.0" />
           <element id="archive" name="interfaces-1.0-SNAPSHOT.jar">
             <element id="module-output" name="interfaces" />
           </element>
