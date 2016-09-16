@@ -9,7 +9,10 @@ import edu.tp.paw.model.Category;
 public class CategoryService implements ICategoryService {
 
 	@Override
-	public Category create(String name, Category parent) {
+	public Category create(String name, int parent) {
+		
+		
+		
 		return null;
 	}
 
