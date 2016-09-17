@@ -19,6 +19,12 @@ public interface ICategoryDao {
 	
 	public Category findById(long id);
 	
+	public boolean categoryExists(long id);
+	
+	public Category updatePath(Category category, String path);
+	
+	public List<Category> getSiblings(long parent);
+	
 	public List<Category> getDescendants(Category category);
 	
 }

@@ -12,7 +12,7 @@ public class Category {
 	private final String name;
 	private long parent;
 	
-	private final String path;
+	private String path;
 	private final List<Category> children;
 	
 	private final Timestamp created;
@@ -30,6 +30,10 @@ public class Category {
 	
 	public void setParent(long parent) {
 		this.parent = parent;
+	}
+	
+	public void setPath(String path) {
+		this.path = path;
 	}
 	
 	// getters

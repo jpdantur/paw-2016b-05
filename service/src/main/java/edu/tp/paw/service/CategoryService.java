@@ -14,15 +14,36 @@ import edu.tp.paw.model.Category;
 @Service
 public class CategoryService implements ICategoryService {
 
+	private static final long ROOT_CATEGORY_ID = 0;
+	private static final String CATEGORY_PATH_SEPARATOR = "#";
 	@Autowired
 	private ICategoryDao categoryDao; 
 	
 	@Override
 	public Category create(String name, long parent) {
 		
-//		Category parentCategory = categoryDao.findById(parent);
+		Category parentCategory = null;
 		
-		return categoryDao.create(name, parent);
+		if (parent != ROOT_CATEGORY_ID) {
+			parentCategory = findById(parent);
+			
+			if (parentCategory == null) {
+				// throw Exception?
+				return null;
+			}
+		}
+		
+		Category category = categoryDao.create(name, parent);
+		
+		String categoryPath = Long.toString(category.getId());
+		
+		if (parentCategory != null) {
+			categoryPath = parentCategory.getPath()+CATEGORY_PATH_SEPARATOR+Long.toString(category.getId());
+		}
+		
+		category = categoryDao.updatePath(category, categoryPath);
+		
+		return category;
 	}
 
 	@Override
@@ -105,12 +126,12 @@ public class CategoryService implements ICategoryService {
 	
 	private Category assembleCategoryTree(final Category category, final List<Category> descendants) {
 	
-		System.out.println("service:: assembling category tree");
+//		System.out.println("service:: assembling category tree");
 		
 		for (Category currentCategory : descendants) {
 			
-			System.out.println("service:: assembling category for id = "
-					+ currentCategory.getId() + " name = " + currentCategory.getName());
+//			System.out.println("service:: assembling category for id = "
+//					+ currentCategory.getId() + " name = " + currentCategory.getName());
 			
 			buildDescendantsTree(category, currentCategory);
 			
@@ -155,9 +176,17 @@ public class CategoryService implements ICategoryService {
 	@Override
 	public List<Category> getCategoryTree() {
 		
+		List<Category> mainCategories = categoryDao.getSiblings(ROOT_CATEGORY_ID);
 		
+		for (Category category : mainCategories) {
+			
+			List<Category> descendants = categoryDao.getDescendants(category);
+			
+			assembleCategoryTree(category, descendants);
+			
+		}
 		
-		return new ArrayList<Category>();
+		return mainCategories;
 	}
 	
 }

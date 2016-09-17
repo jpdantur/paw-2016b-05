@@ -1,5 +1,7 @@
 package edu.tp.paw.webapp.controller;
 
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -23,7 +25,7 @@ public class CategoryController {
 		
 //		System.out.println("controller received request to create category with name = " + name + " parent = " + parent);
 		
-		Category category = categoryService.findByIdWithTree(1);
+		List<Category> category = categoryService.getCategoryTree();
 		
 		final ModelAndView modelAndView = new ModelAndView("dummy");
 		

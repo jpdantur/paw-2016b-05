@@ -95,6 +95,23 @@ public class CategoryJdbcDao implements ICategoryDao {
 		return categoryList.isEmpty() ? null : categoryList.get(0);
 	}
 	
+	@Override
+	public boolean categoryExists(long id) {
+		
+		return findById(id) == null ? false : true;
+	}
+	
+	@Override
+	public Category updatePath(Category category, String path) {
+		
+		jdbcTemplate.update("update store_categories set category_path = ? where category_id = ?", path, category.getId());
+		
+		category.setPath(path);
+		
+		return category;
+		
+	}
+	
 	private void updatePath(long id, String path) {
 		
 		System.out.println("dao:: executing path update");
@@ -108,23 +125,7 @@ public class CategoryJdbcDao implements ICategoryDao {
 	@Override
 	public Category create(String name, long parent) {
 		
-		Category parentCategory = null;
 		
-		System.out.println("dao received request to create category with name = " + name + " parent = " + parent);
-		
-		if (parent != ROOT_CATEGORY_ID) {
-			System.out.println("dao:: parent is not root");
-			System.out.println("dao:: finding category = " + parent);
-			parentCategory = findById(parent);
-			
-			
-			if (parentCategory == null) {
-				System.out.println("dao:: category not found");
-				return null;
-			} else {
-				System.out.println("dao:: category found name = " + parentCategory.getName());
-			}
-		}
 		
 		final Map<String, Object> args = new HashMap<>();
 		
@@ -135,21 +136,20 @@ public class CategoryJdbcDao implements ICategoryDao {
 		
 		final Number categoryId = jdbcInsert.executeAndReturnKey(args);
 		
-		System.out.println("dao:: category created with id = " + categoryId.longValue());
+		return new CategoryBuilder(categoryId.longValue(), name, parent).build();		
 		
-		String categoryPath = String.valueOf(categoryId);
+	}
+
+
+	@Override
+	public List<Category> getSiblings(long parent) {
 		
-		if (parentCategory != null) {
-			categoryPath = parentCategory.getPath()+CATEGORY_PATH_SEPARATOR+String.valueOf(categoryId);
-		}
-		
-		System.out.println("dao:: updating category path = " + categoryPath);
-		
-		updatePath(categoryId.longValue(), categoryPath);
-		
-		System.out.println("dao:: path updated");
-		
-		return new CategoryBuilder(categoryId.longValue(), name, parent).path(categoryPath).build();
+		return
+				jdbcTemplate
+				.query(
+						"select * from store_categories where parent = ?",
+						rowMapper,
+						parent);
 		
 	}
 
