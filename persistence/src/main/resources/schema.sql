@@ -12,7 +12,6 @@ create table if not exists store_items (
 create table if not exists store_categories (
 	category_id serial primary key,
 	name varchar(100),
-	display_name varchar(100),
 	parent integer,
 	category_path text,
 	created timestamp default current_timestamp,

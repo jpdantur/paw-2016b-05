@@ -8,51 +8,67 @@ import com.sun.istack.internal.NotNull;
 
 public class Category {
 
-	private long id;
+	private final long id;
+	private final String name;
+	private long parent;
 	
-	private String name;
-	private int parent;
-	private String path;
-	private List<Category> children;
+	private final String path;
+	private final List<Category> children;
 	
 	private final Timestamp created;
 	private final Timestamp lastUpdated;
 	
-	public Category(long id, String name, Category parent) {
-		super();
-		this.id = id;
-		this.name = name;
-		this.parent = parent;
-		this.children = new LinkedList<>();
+	/* package */ Category(CategoryBuilder builder) {
+		this.id = builder.getId();
+		this.name = builder.getName();
+		this.parent = builder.getParent();
+		this.path = builder.getPath();
+		this.children = builder.getChildren();
+		this.created = builder.getCreated();
+		this.lastUpdated = builder.getLastUpdated();
 	}
+	
+	public void setParent(long parent) {
+		this.parent = parent;
+	}
+	
+	// getters
 	public long getId() {
 		return id;
-	}
-	public void setId(long id) {
-		this.id = id;
 	}
 	public String getName() {
 		return name;
 	}
-	public void setName(String name) {
-		this.name = name;
-	}
-	public Category getParent() {
+	public long getParent() {
 		return parent;
 	}
-	public void setParent(Category parent) {
-		this.parent = parent;
-	}
 	
+	public List<Category> getChildren() {
+		return children;
+	}
+
+	public Timestamp getCreated() {
+		return created;
+	}
+
+	public Timestamp getLastUpdated() {
+		return lastUpdated;
+	}
+
 	public String getPath() {
 		return path;
-	}
-	public void setPath(String path) {
-		this.path = path;
 	}
 	public void addChild(@NotNull Category category) {
 		children.add(category);
 	}
+
+	@Override
+	public String toString() {
+		return "Category [id=" + id + ", name=" + name + ", parent=" + parent
+				+ ", path=" + path + ", children=" + children + ", created=" + created
+				+ ", lastUpdated=" + lastUpdated + "]";
+	}
+	
 	
 	
 }

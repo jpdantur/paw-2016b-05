@@ -1,5 +1,8 @@
 package edu.tp.paw.interfaces.dao;
 
+import java.util.List;
+import java.util.Map;
+
 import com.sun.istack.internal.Nullable;
 
 import edu.tp.paw.model.Category;
@@ -15,5 +18,7 @@ public interface ICategoryDao {
 	public Category create(String name, long parent);
 	
 	public Category findById(long id);
+	
+	public List<Category> getDescendants(Category category);
 	
 }
