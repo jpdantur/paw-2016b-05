@@ -23,7 +23,10 @@ public interface ICategoryDao {
 	
 	public Category updatePath(Category category, String path);
 	
-	public List<Category> getSiblings(long parent);
+	public List<Category> getSiblings(Category category);
+	
+	public List<Category> getChildren(long categoryId);
+	public List<Category> getChildren(Category category);
 	
 	public List<Category> getDescendants(Category category);
 	

@@ -2,6 +2,7 @@ package edu.tp.paw.interfaces.service;
 
 import java.util.List;
 
+import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
 
 public interface IStoreItemService {
@@ -13,11 +14,10 @@ public interface IStoreItemService {
 	 */
 	public StoreItem fetchById(final long id);	
 	
-	public StoreItem create(final String name, final String description, final float price);
+	public StoreItem create(final String name, final String description, final float price, long categoryId);
 	
 	public List<StoreItem> fetchMostSold(final int n);
 	
 	public List<StoreItem> findByTerm(final String term);
-	
 
 }

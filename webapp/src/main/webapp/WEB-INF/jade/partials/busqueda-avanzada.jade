@@ -1,8 +1,10 @@
 div.row
 	div.col-sm-12
-		mixin children(categories)
-			ul
-				each category in categories
-					li #{category.name}
-					+children(category.children)
-		+children(categories)
+		mixin children(categories, depth)
+			if categories.size() > 0
+				ul(class="#{depth>0?'col-sm-2':''}")
+					each category in categories
+						li(style="font-size:#{14-depth*2}px")
+							a(href="#{context.url('/items/category/'+category.id)}") #{category.name}
+						+children(category.children, depth+1)
+		+children(categories, 0)

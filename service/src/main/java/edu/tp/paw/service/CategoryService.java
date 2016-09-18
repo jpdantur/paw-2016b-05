@@ -75,36 +75,16 @@ public class CategoryService implements ICategoryService {
 	
 	private static boolean isChildOf(final Category assumedParent, final Category child) {
 		
-		System.out.println("service:: parent path = " + assumedParent.getPath());
-		System.out.println("service:: child path = " + child.getPath());
-		
-		String replaceResult = child.getPath().replace(assumedParent.getPath(), "");
-		
-		System.out.println("service:: replaceResult = " + replaceResult);
-		
-		int ocurrences = StringUtils.countOccurrencesOf(replaceResult, "#");
-		
-		System.out.println("service:: ocurrences = " + ocurrences);
-		
-		if ( ocurrences == 1) {
-			System.out.println("service:: is child");
+		if ( StringUtils.countOccurrencesOf(child.getPath().replace(assumedParent.getPath(), ""), "#") == 1) {
 			return true;
 		}
-		System.out.println("service:: is not child");
 		return false;
 	}
 	
 		
 	private boolean buildDescendantsTree(Category parentCategory, Category newCategory) {
-//		if (category == null) {
-//			return;
-//		}
-		
-		System.out.println("service:: checking if " + newCategory.getId() + " is child of " + parentCategory.getId());
 		
 		if (isChildOf(parentCategory, newCategory)) {
-			
-			System.out.println("service:: " + newCategory.getId() + " is child of " + parentCategory.getId());
 			
 			parentCategory.addChild(newCategory);
 			newCategory.setParent(parentCategory.getId());
@@ -125,50 +105,12 @@ public class CategoryService implements ICategoryService {
 	}
 	
 	private Category assembleCategoryTree(final Category category, final List<Category> descendants) {
-	
-//		System.out.println("service:: assembling category tree");
 		
 		for (Category currentCategory : descendants) {
-			
-//			System.out.println("service:: assembling category for id = "
-//					+ currentCategory.getId() + " name = " + currentCategory.getName());
 			
 			buildDescendantsTree(category, currentCategory);
 			
 		}
-		
-		
-//		Category currentParent = category;
-//		
-//		for (Category currentCategory : descendants) {
-//			
-//			if ( isSubcategoryOf(currentParent, currentCategory) ) {
-//				currentCategory.setParent(currentParent);
-//				currentParent.addChild(currentCategory);
-//				
-//				currentParent = currentCategory;
-//				
-//			} else {
-//				
-//				Category cat = category.getParent();
-//				
-//				while (cat != null) {
-//					
-//					if ( isSubcategoryOf(cat, currentCategory) ) {
-//						
-//						cat.addChild(currentCategory);
-//						currentCategory.setParent(cat);
-//						
-//						currentParent = cat;
-//						
-//						cat = null; // break;
-//					}
-//					
-//					cat = cat.getParent();
-//				}
-//			}
-//		}
-		
 		
 		return category;
 	}
@@ -176,7 +118,7 @@ public class CategoryService implements ICategoryService {
 	@Override
 	public List<Category> getCategoryTree() {
 		
-		List<Category> mainCategories = categoryDao.getSiblings(ROOT_CATEGORY_ID);
+		List<Category> mainCategories = categoryDao.getChildren(ROOT_CATEGORY_ID);
 		
 		for (Category category : mainCategories) {
 			
@@ -187,6 +129,12 @@ public class CategoryService implements ICategoryService {
 		}
 		
 		return mainCategories;
+	}
+
+	@Override
+	public List<Category> getCategories() {
+		
+		return categoryDao.getChildren(ROOT_CATEGORY_ID);
 	}
 	
 }

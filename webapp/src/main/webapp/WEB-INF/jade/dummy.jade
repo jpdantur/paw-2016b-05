@@ -3,13 +3,3 @@ extends layout
 block content
 	div.container
 		div.col-sm-12
-			mixin children(category)
-				ul
-					each cat in category.children
-						li #{cat.name}
-						+children(cat)
-				
-				
-			
-			span #{category.name}
-			+children(category)

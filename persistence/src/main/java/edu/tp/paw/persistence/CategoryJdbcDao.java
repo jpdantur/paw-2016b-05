@@ -28,7 +28,6 @@ import edu.tp.paw.model.StoreItemBuilder;
 @Repository
 public class CategoryJdbcDao implements ICategoryDao {
 
-	private static final int ROOT_CATEGORY_ID = 0;
 	private static final String CATEGORY_PATH_SEPARATOR = "#";
 	private final JdbcTemplate jdbcTemplate;
 	private final SimpleJdbcInsert jdbcInsert;
@@ -67,7 +66,6 @@ public class CategoryJdbcDao implements ICategoryDao {
 			.usingGeneratedKeyColumns("category_id")
 			.usingColumns("name", "parent");
 	}
-	
 	
 	@Override
 	public List<Category> getDescendants(Category category) {
@@ -112,20 +110,8 @@ public class CategoryJdbcDao implements ICategoryDao {
 		
 	}
 	
-	private void updatePath(long id, String path) {
-		
-		System.out.println("dao:: executing path update");
-		
-		int n = jdbcTemplate.update("update store_categories set category_path = ? where category_id = ?", path, id);
-		
-		System.out.println("dao:: "+n+" category path updated");
-		
-	}
-	
 	@Override
 	public Category create(String name, long parent) {
-		
-		
 		
 		final Map<String, Object> args = new HashMap<>();
 		
@@ -139,20 +125,34 @@ public class CategoryJdbcDao implements ICategoryDao {
 		return new CategoryBuilder(categoryId.longValue(), name, parent).build();		
 		
 	}
-
-
+	
 	@Override
-	public List<Category> getSiblings(long parent) {
+	public List<Category> getSiblings(Category category) {
 		
 		return
 				jdbcTemplate
 				.query(
 						"select * from store_categories where parent = ?",
 						rowMapper,
-						parent);
-		
+						category.getParent());
 	}
 
 
+	@Override
+	public List<Category> getChildren(long categoryId) {
+		
+		return
+				jdbcTemplate
+				.query(
+						"select * from store_categories where parent = ?",
+						rowMapper,
+						categoryId);
+	}
 	
+	@Override
+	public List<Category> getChildren(Category category) {
+		
+		return getChildren(category.getId());
+	}
+
 }

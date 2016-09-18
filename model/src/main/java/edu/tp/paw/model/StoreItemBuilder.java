@@ -11,17 +11,19 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 	private final String name;
 	private final String description;
 	private final float price;
+	private final Category category;
 	
 	// Optional parameters
 	private Timestamp created = new Timestamp( (new Date()).getTime() );
 	private Timestamp lastUpdated = new Timestamp( (new Date()).getTime() );
 	private int sold = 0;
 	
-	public StoreItemBuilder(long id, String name, String description, float price) {
+	public StoreItemBuilder(long id, String name, String description, float price, Category category) {
 		this.id = id;
 		this.name = name;
 		this.description = description;
 		this.price = price;
+		this.category = category;
 	}
 	
 	public StoreItemBuilder created(Timestamp created) {
@@ -75,7 +77,9 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 		return sold;
 	}
 	
-	
+	public Category getCategory() {
+		return category;
+	}
 	
 	
 	

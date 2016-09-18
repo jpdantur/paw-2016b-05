@@ -23,4 +23,6 @@ public interface ICategoryService {
 	
 	public List<Category> getCategoryTree();
 	
+	public List<Category> getCategories();
+	
 }
