@@ -10,6 +10,8 @@ public class StoreItem {
 	private final String description;
 	private final float price;
 	
+	private Category category;
+	
 	private final long sold;
 	
 	private final Timestamp created;
@@ -23,6 +25,7 @@ public class StoreItem {
 		this.sold = builder.getSold();
 		this.created = builder.getCreated();
 		this.lastUpdated = builder.getLastUpdated();
+		this.category = builder.getCategory();
 	}
 	
 	
@@ -67,7 +70,13 @@ public class StoreItem {
 		return lastUpdated;
 	}
 
-
+	public void setCategory(Category category) {
+		this.category = category;
+	}
+	
+	public Category getCategory() {
+		return category;
+	}
 
 	@Override
 	public String toString() {

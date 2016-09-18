@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.sun.istack.internal.NotNull;
 
+import edu.tp.paw.interfaces.dao.IStoreDao;
 import edu.tp.paw.interfaces.service.ICategoryService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IStoreService;
@@ -21,26 +22,31 @@ public class StoreService implements IStoreService {
 	private IStoreItemService storeItemService;
 	@Autowired
 	private ICategoryService categoryService;
+	@Autowired
+	private IStoreDao storeDao;
+	
 	
 	@Override
 	public @NotNull List<StoreItem> fetchItemsInCategory(final Category category) {
 		
-		final List<StoreItem> storeItems = new ArrayList<>();
-		
-		return storeItems;
+		return storeDao.findInCategory(category);
 	}
 
 	@Override
-	public @NotNull List<StoreItem> fetchItemsInCategory(final String categoryId) {
+	public @NotNull List<StoreItem> fetchItemsInCategory(final long categoryId) {
 		
-		final List<StoreItem> storeItems = new ArrayList<>();
+		Category category = categoryService.findById(categoryId);
 		
-		return storeItems;
+		if (category == null) {
+			return new ArrayList<>();
+		}
+		
+		return fetchItemsInCategory(category);
 	}
 
 	@Override
-	public StoreItem sell(String name, String description, float price) {
-		return storeItemService.create(name, description, price);
+	public StoreItem sell(String name, String description, float price, long categoryId) {
+		return storeItemService.create(name, description, price, categoryId);
 	}
 
 }

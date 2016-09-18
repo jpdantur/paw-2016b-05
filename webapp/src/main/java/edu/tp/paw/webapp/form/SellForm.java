@@ -13,14 +13,25 @@ public class SellForm {
 	@Min(100)
 	private float price;
 	
+	private long categoryId;
+	
+	public long getCategoryId() {
+		return categoryId;
+	}
+
+	public void setCategoryId(long categoryId) {
+		this.categoryId = categoryId;
+	}
+
 	public SellForm() {
 		
 	}
 	
-	public SellForm(String name, String description, float price) {
+	public SellForm(String name, String description, float price, long categoryId) {
 		this.name = name;
 		this.description = description;
 		this.price = price;
+		this.categoryId = categoryId;
 	}
 
 	public String getName() {

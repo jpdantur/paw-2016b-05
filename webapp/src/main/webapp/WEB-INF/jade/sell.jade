@@ -29,22 +29,32 @@ block content
 				h1 Vender un producto
 				form.form-horizontal(method="POST", action="#{context.url('/sell')}")
 					div.form-group(class="#{bindingResult.hasFieldErrors('name')?'has-error':''}")
-						label.col-sm-2.control-label Nombre
+						label.col-sm-2.control-label(for="name") Nombre
 						div.col-sm-10
-							input.form-control(type="text", name="name", placeholder="Nombre", value="#{item.name?item.name:''}")
+							input.form-control(type="text", id="name", name="name", placeholder="Nombre", value="#{item.name?item.name:''}")
 							+errors(bindingResult, 'name')
 					div.form-group
-						label.col-sm-2.control-label Descripcion
+						label.col-sm-2.control-label(for="description") Descripcion
 						div.col-sm-10
-							textarea.form-control(name="description", placeholder="Descripcion", value="#{item.description?item.description:''}", rows="12")
+							textarea.form-control(name="description", id="description", placeholder="Descripcion", value="#{item.description?item.description:''}", rows="12")
 							+errors(bindingResult, 'description')
 					div.form-group
-						label.col-sm-2.control-label Precio
+						label.col-sm-2.control-label(for="price") Precio
 						div.col-sm-10
 							div.input-group
 								span.input-group-addon $
-								input.form-control(type="number", name="price", placeholder="Price", min="0", step="0.01", value="!{item.price}")
+								input.form-control(type="number", id="price", name="price", placeholder="Price", min="0", step="0.01", value="!{item.price}")
 							+errors(bindingResult, 'price')
+					div.form-group
+						label.col-sm-2.control-label(for="category") Categoria
+						div.col-sm-10
+							mixin categories(categories, depth)
+								each category in categories
+									option(value="#{category.id}") #{category.name}
+									+categories(category.children, depth+1)
+							select.form-control(name="categoryId", id="category")
+								+categories(categories, 0)
+							+errors(bindingResult, 'category')
 					div.form-group
 						div.col-sm-2.col-sm-offset-2
 							a.btn.btn-default.btn-block(href="#{context.url('/')}")

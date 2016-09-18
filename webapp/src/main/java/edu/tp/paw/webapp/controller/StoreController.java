@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import edu.tp.paw.interfaces.service.ICategoryService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IStoreService;
 import edu.tp.paw.model.StoreItem;
@@ -24,6 +25,8 @@ public class StoreController {
 	@Autowired
 	private IStoreItemService storeItemService;
 	@Autowired
+	private ICategoryService categoryService;
+	@Autowired
 	private IStoreService storeService;
 	
 	@RequestMapping("/")
@@ -32,6 +35,8 @@ public class StoreController {
 		final ModelAndView modelAndView = new ModelAndView("index");
 		
 		modelAndView.addObject("mostSoldItems", storeItemService.fetchMostSold(MOST_SOLD_ITEMS));
+		
+		modelAndView.addObject("categories", categoryService.getCategoryTree());
 		
 		return modelAndView;
 	}
@@ -42,6 +47,7 @@ public class StoreController {
 			BindingResult bindingResult,
 			Model model) {
 		
+		model.addAttribute("categories", categoryService.getCategoryTree());
 		model.addAttribute("bindingResult", bindingResult);
 		model.addAttribute("item", form);
 		
@@ -56,7 +62,7 @@ public class StoreController {
 		
 		if (!bindingResult.hasErrors()) {
 			
-			final StoreItem storeItem = storeService.sell(form.getName(), form.getDescription(), form.getPrice());
+			final StoreItem storeItem = storeService.sell(form.getName(), form.getDescription(), form.getPrice(), form.getCategoryId());
 			
 			return "redirect:/item/"+storeItem.getId()+"?s=1";
 		}
