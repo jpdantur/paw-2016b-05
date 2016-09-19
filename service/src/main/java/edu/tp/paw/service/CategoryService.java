@@ -22,14 +22,25 @@ public class CategoryService implements ICategoryService {
 	@Override
 	public Category create(String name, long parent) {
 		
+		if (name == null) {
+			throw new IllegalArgumentException("name cant be null");
+		}
+		
+		if (name.trim().length() == 0) {
+			throw new IllegalArgumentException("name cant be empty");
+		}
+		
+		if (parent < ROOT_CATEGORY_ID) {
+			throw new IllegalArgumentException("invalid category");
+		}
+		
 		Category parentCategory = null;
 		
 		if (parent != ROOT_CATEGORY_ID) {
 			parentCategory = findById(parent);
 			
 			if (parentCategory == null) {
-				// throw Exception?
-				return null;
+				throw new IllegalArgumentException("category does not exist");
 			}
 		}
 		
@@ -49,6 +60,10 @@ public class CategoryService implements ICategoryService {
 	@Override
 	public Category findById(long id) {
 		
+		if (id < ROOT_CATEGORY_ID) {
+			throw new IllegalArgumentException("id cant be negative");
+		}
+		
 		return categoryDao.findById(id);
 	}
 
@@ -62,9 +77,6 @@ public class CategoryService implements ICategoryService {
 		}
 		
 		List<Category> descendants = categoryDao.getDescendants(category);
-		
-		System.out.println("descendants");
-		System.out.println(descendants);
 		
 		return assembleCategoryTree(category, descendants);
 	}

@@ -4,8 +4,6 @@ import java.sql.Timestamp;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.sun.istack.internal.NotNull;
-
 public class Category {
 
 	private final long id;
@@ -62,7 +60,7 @@ public class Category {
 	public String getPath() {
 		return path;
 	}
-	public void addChild(@NotNull Category category) {
+	public void addChild(Category category) {
 		children.add(category);
 	}
 
