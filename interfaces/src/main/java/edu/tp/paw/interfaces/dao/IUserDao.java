@@ -15,7 +15,6 @@ public interface IUserDao {
 	 * Create a new user
 	 * 
 	 * @param username The name of the user
-	 * @param id The id of the user
 	 * @return The created user
 	 */
 	User create(String username);

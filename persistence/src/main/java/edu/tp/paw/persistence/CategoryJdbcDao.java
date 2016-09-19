@@ -57,6 +57,10 @@ public class CategoryJdbcDao implements ICategoryDao {
 //			return null;
 	};
 	
+	/**
+	 * Creates a new CategoryJdbcDao for #{dataSource}
+	 * @param dataSource The given dataSource
+	 */
 	@Autowired
 	public CategoryJdbcDao(final DataSource dataSource) {
 		jdbcTemplate = new JdbcTemplate(dataSource);
@@ -67,6 +71,9 @@ public class CategoryJdbcDao implements ICategoryDao {
 			.usingColumns("name", "parent");
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.dao.ICategoryDao#getDescendants(edu.tp.paw.model.Category)
+	 */
 	@Override
 	public List<Category> getDescendants(Category category) {
 		
@@ -79,6 +86,9 @@ public class CategoryJdbcDao implements ICategoryDao {
 		
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.dao.ICategoryDao#findById(long)
+	 */
 	@Override
 	public Category findById(long id) {
 		
@@ -93,12 +103,18 @@ public class CategoryJdbcDao implements ICategoryDao {
 		return categoryList.isEmpty() ? null : categoryList.get(0);
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.dao.ICategoryDao#categoryExists(long)
+	 */
 	@Override
 	public boolean categoryExists(long id) {
 		
 		return findById(id) == null ? false : true;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.dao.ICategoryDao#updatePath(edu.tp.paw.model.Category, java.lang.String)
+	 */
 	@Override
 	public Category updatePath(Category category, String path) {
 		
@@ -110,6 +126,9 @@ public class CategoryJdbcDao implements ICategoryDao {
 		
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.dao.ICategoryDao#create(java.lang.String, long)
+	 */
 	@Override
 	public Category create(String name, long parent) {
 		
@@ -126,6 +145,9 @@ public class CategoryJdbcDao implements ICategoryDao {
 		
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.dao.ICategoryDao#getSiblings(edu.tp.paw.model.Category)
+	 */
 	@Override
 	public List<Category> getSiblings(Category category) {
 		
@@ -138,6 +160,9 @@ public class CategoryJdbcDao implements ICategoryDao {
 	}
 
 
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.dao.ICategoryDao#getChildren(long)
+	 */
 	@Override
 	public List<Category> getChildren(long categoryId) {
 		
@@ -149,6 +174,9 @@ public class CategoryJdbcDao implements ICategoryDao {
 						categoryId);
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.dao.ICategoryDao#getChildren(edu.tp.paw.model.Category)
+	 */
 	@Override
 	public List<Category> getChildren(Category category) {
 		

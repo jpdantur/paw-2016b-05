@@ -80,6 +80,9 @@ public class StoreItem {
 		return category;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return "StoreItem [id=" + id + ", description=" + description

@@ -7,9 +7,7 @@
     <artifactId>tp-paw-2016-q2</artifactId>
     <version>1.0-SNAPSHOT</version>
   </parent>
-  <groupId>edu.tp.paw</groupId>
   <artifactId>persistence</artifactId>
-  <version>1.0-SNAPSHOT</version>
   <name>persistence</name>
   <url>http://maven.apache.org</url>
   <properties>
@@ -37,6 +35,14 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-test</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.hsqldb</groupId>
+      <artifactId>hsqldb</artifactId>
     </dependency>
   </dependencies>
 

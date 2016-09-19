@@ -19,6 +19,9 @@ public class CategoryService implements ICategoryService {
 	@Autowired
 	private ICategoryDao categoryDao; 
 	
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.service.ICategoryService#create(java.lang.String, long)
+	 */
 	@Override
 	public Category create(String name, long parent) {
 		
@@ -57,6 +60,10 @@ public class CategoryService implements ICategoryService {
 		return category;
 	}
 
+	/* (non-Javadoc)
+	 * {@inheritDoc}
+	 *
+	 */
 	@Override
 	public Category findById(long id) {
 		
@@ -67,6 +74,9 @@ public class CategoryService implements ICategoryService {
 		return categoryDao.findById(id);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.service.ICategoryService#findByIdWithTree(long)
+	 */
 	@Override
 	public Category findByIdWithTree(long id) {
 		
@@ -85,6 +95,12 @@ public class CategoryService implements ICategoryService {
 //		return child.getPath().startsWith(assumedParent.getPath());
 //	}
 	
+	/**
+	 * Checks if #{child} is a subcategory of #{assumedParent}
+	 * @param assumedParent The assumed parent category
+	 * @param child The assumed child category
+	 * @return true if #{child} is a subcategory of #{assumedParent}, false otherwise
+	 */
 	private static boolean isChildOf(final Category assumedParent, final Category child) {
 		
 		if ( StringUtils.countOccurrencesOf(child.getPath().replace(assumedParent.getPath(), ""), "#") == 1) {
@@ -94,6 +110,12 @@ public class CategoryService implements ICategoryService {
 	}
 	
 		
+	/**
+	 * Adds #{newCategory} to #{parentCategory} descendants
+	 * @param parentCategory The parent category
+	 * @param newCategory The descendant category
+	 * @return true if #{newCategory} was added to #{parentCategory} descendants, false otherwise
+	 */
 	private boolean buildDescendantsTree(Category parentCategory, Category newCategory) {
 		
 		if (isChildOf(parentCategory, newCategory)) {
@@ -116,6 +138,11 @@ public class CategoryService implements ICategoryService {
 		
 	}
 	
+	/** Adds #{descendants} to {category} descendant tree
+	 * @param category the parent category
+	 * @param descendants the descendants categories
+	 * @return the parent category
+	 */
 	private Category assembleCategoryTree(final Category category, final List<Category> descendants) {
 		
 		for (Category currentCategory : descendants) {
@@ -127,6 +154,9 @@ public class CategoryService implements ICategoryService {
 		return category;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.service.ICategoryService#getCategoryTree()
+	 */
 	@Override
 	public List<Category> getCategoryTree() {
 		
@@ -143,6 +173,9 @@ public class CategoryService implements ICategoryService {
 		return mainCategories;
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.service.ICategoryService#getCategories()
+	 */
 	@Override
 	public List<Category> getCategories() {
 		

@@ -38,6 +38,9 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 	@Value("classpath:schema.sql")
 	private Resource schemaSql;
 	
+	/* (non-Javadoc)
+	 * @see org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter#addResourceHandlers(org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry)
+	 */
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		
@@ -57,6 +60,10 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 //		return viewResolver;
 //	}
 	
+	/**
+	 * 
+	 * @return Spring Template Loader
+	 */
 	@Bean
   public SpringTemplateLoader templateLoader() {
       SpringTemplateLoader templateLoader = new SpringTemplateLoader();
@@ -67,7 +74,10 @@ public class WebConfig extends WebMvcConfigurerAdapter {
   }
 	
 
-  @Bean
+  /**
+ * @return Jade Configuration
+ */
+@Bean
   public JadeConfiguration jadeConfiguration() {
       JadeConfiguration configuration = new JadeConfiguration();
       configuration.setCaching(false);
@@ -83,7 +93,10 @@ public class WebConfig extends WebMvcConfigurerAdapter {
       return configuration;
   }
 
-  @Bean
+  /**
+ * @return Jade ViewResolver
+ */
+@Bean
   public ViewResolver viewResolver() {
       JadeViewResolver viewResolver = new JadeViewResolver();
       viewResolver.setConfiguration(jadeConfiguration());
@@ -108,7 +121,10 @@ public class WebConfig extends WebMvcConfigurerAdapter {
   }
 	
   
-  @Bean
+  /**
+ * @return Postgres Database Populator
+ */
+@Bean
   public DatabasePopulator databasePopulator() {
   	final ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
   	
@@ -117,7 +133,11 @@ public class WebConfig extends WebMvcConfigurerAdapter {
   	return databasePopulator;
   }
   
-  @Bean
+  /**
+ * @param dataSource
+ * @return Postgres DataSource Initializer
+ */
+@Bean
   public DataSourceInitializer dataSourceInitializer(final DataSource dataSource) {
   	
   	final DataSourceInitializer dataSourceInitializer = new DataSourceInitializer();
@@ -125,6 +145,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
   	dataSourceInitializer.setDataSource(dataSource);
   	dataSourceInitializer.setDatabasePopulator(databasePopulator());
   	
-  	return null;
+  	return dataSourceInitializer;
   }
 }

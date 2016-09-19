@@ -17,17 +17,54 @@ public interface ICategoryDao {
 	 */
 	public Category create(String name, long parent);
 	
+	/**
+	 * Finds category with certain id
+	 * @param id The id of the category to be found
+	 * @return The found category
+	 */
 	public Category findById(long id);
 	
+	/**
+	 * Checks if certain category exists
+	 * @param id The id of the category to check
+	 * @return true if it exists, false if it doesnt
+	 */
 	public boolean categoryExists(long id);
 	
+	/**
+	 * Updates given category's path
+	 * @param category The category to be updated
+	 * @param path The new path
+	 * @return The updated category
+	 */
 	public Category updatePath(Category category, String path);
 	
+	/**
+	 * Gets given category's siblings
+	 * @param category
+	 * @return List with category's siblings
+	 */
 	public List<Category> getSiblings(Category category);
 	
+	/**
+	 * Finds category children by id
+	 * @param categoryId id of the category
+	 * @return List with category children
+	 */
 	public List<Category> getChildren(long categoryId);
+	
+	/**
+	 * Finds category children
+	 * @param category
+	 * @return List with category children
+	 */
 	public List<Category> getChildren(Category category);
 	
+	/**
+	 * Finds category descendants
+	 * @param category
+	 * @return List with category descendants
+	 */
 	public List<Category> getDescendants(Category category);
 	
 }

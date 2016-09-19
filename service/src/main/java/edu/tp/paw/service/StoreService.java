@@ -24,12 +24,18 @@ public class StoreService implements IStoreService {
 	private IStoreDao storeDao;
 	
 	
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.service.IStoreService#fetchItemsInCategory(edu.tp.paw.model.Category)
+	 */
 	@Override
 	public List<StoreItem> fetchItemsInCategory(final Category category) {
 		
 		return storeDao.findInCategory(category);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.service.IStoreService#fetchItemsInCategory(long)
+	 */
 	@Override
 	public List<StoreItem> fetchItemsInCategory(final long categoryId) {
 		
@@ -42,6 +48,9 @@ public class StoreService implements IStoreService {
 		return fetchItemsInCategory(category);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.service.IStoreService#sell(java.lang.String, java.lang.String, float, long, java.lang.String)
+	 */
 	@Override
 	public StoreItem sell(String name, String description, float price, long categoryId, String email) {
 		return storeItemService.create(name, description, price, categoryId, email);

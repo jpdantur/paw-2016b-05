@@ -26,6 +26,10 @@ public class UserJdbcDao implements IUserDao {
 		return new User(resultSet.getString("username"), resultSet.getInt("userid"));
 	};
 	
+	/**
+	 * Creates a new User Dao for #{dataSource}
+	 * @param dataSource The Given Data Source
+	 */
 	@Autowired
 	public UserJdbcDao(final DataSource dataSource) {
 		jdbcTemplate = new JdbcTemplate(dataSource);
@@ -33,13 +37,16 @@ public class UserJdbcDao implements IUserDao {
 			.withTableName("users")
 			.usingGeneratedKeyColumns("userid");
 		
-		jdbcTemplate.execute("create table if not exists users ("
+		/*jdbcTemplate.execute("create table if not exists users ("
 				+ "userid serial primary key,"
 				+ "username varchar(100)"
 				+ ")"
-		);
+		);*/
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.dao.IUserDao#findById(long)
+	 */
 	@Override
 	public User findById(long id) {
 		
@@ -53,6 +60,9 @@ public class UserJdbcDao implements IUserDao {
 		return userList.isEmpty() ? null : userList.get(0);
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.dao.IUserDao#create(java.lang.String)
+	 */
 	@Override
 	public User create(final String username) {
 		

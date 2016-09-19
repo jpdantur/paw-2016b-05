@@ -7,6 +7,11 @@ import edu.tp.paw.model.StoreItem;
 
 public interface IStoreDao {
 
+	/**
+	 * Finds items from given category
+	 * @param category
+	 * @return List with found items
+	 */
 	public List<StoreItem> findInCategory(final Category category);
 	
 }

@@ -1,3 +1,13 @@
+create table if not exists store_categories (
+	category_id serial primary key,
+	name varchar(100),
+	parent integer,
+	category_path text,
+	created timestamp default current_timestamp,
+	last_updated timestamp default current_timestamp
+	--constraint parent_fk foreign key (parent) references store_categories 
+);
+
 create table if not exists store_items (
 	item_id serial primary key,
 	name varchar(100),
@@ -12,12 +22,4 @@ create table if not exists store_items (
 );
 
 
-create table if not exists store_categories (
-	category_id serial primary key,
-	name varchar(100),
-	parent integer,
-	category_path text,
-	created timestamp default current_timestamp,
-	last_updated timestamp default current_timestamp
-	--constraint parent_fk foreign key (parent) references store_categories 
-);
+

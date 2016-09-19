@@ -16,13 +16,28 @@ public interface ICategoryService {
 	 */
 	public Category create(String name, long parent);
 	
-	
+	/**
+	 * Finds category with certain id
+	 * @param id The id of the category to be found
+	 * @return The found category
+	 */
 	public Category findById(long id);
 	
+	/**
+	 * Finds category with certain id and builds tree with descendants
+	 * @param id The id of the category to be found
+	 * @return The found category
+	 */
 	public Category findByIdWithTree(long id);
 	
+	/**
+	 * @return List with Category Trees
+	 */
 	public List<Category> getCategoryTree();
 	
+	/**
+	 * @return List with all Categories
+	 */
 	public List<Category> getCategories();
 	
 }

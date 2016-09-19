@@ -28,6 +28,11 @@ public interface IStoreItemDao {
 	 */
 	public List<StoreItem> findByTerm(String term);
 	
+	/**
+	 * Retrieves a list of the store items with category in #{categories}
+	 * @param categories The categories to find
+	 * @return A list of the store items with category in #{categories}
+	 */
 	public List<StoreItem> findInCategories(List<Category> categories);
 	
 	/**

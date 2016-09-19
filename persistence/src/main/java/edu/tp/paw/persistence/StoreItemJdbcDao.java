@@ -49,6 +49,10 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 			.build();
 	};
 	
+	/**
+	 * Creates a StoreItem Dao for #{dataSource}
+	 * @param dataSource The given dataSource
+	 */
 	@Autowired
 	public StoreItemJdbcDao(final DataSource dataSource) {
 		jdbcTemplate = new JdbcTemplate(dataSource);
@@ -72,6 +76,9 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 //		);
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.dao.IStoreItemDao#findById(long)
+	 */
 	@Override
 	public StoreItem findById(long id) {
 		
@@ -85,6 +92,9 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 		return itemsList.isEmpty() ? null : itemsList.get(0);
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.dao.IStoreItemDao#findMostSold(int)
+	 */
 	@Override
 	public List<StoreItem> findMostSold(int n) {
 		
@@ -101,6 +111,9 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 						n);
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.dao.IStoreItemDao#findByTerm(java.lang.String)
+	 */
 	@Override
 	public List<StoreItem> findByTerm(String term) {
 		
@@ -115,6 +128,9 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 						"%"+term.toLowerCase()+"%");
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.dao.IStoreItemDao#create(java.lang.String, java.lang.String, float, edu.tp.paw.model.Category, java.lang.String)
+	 */
 	@Override
 	public StoreItem create(final String name, final String description, final float price, final Category category, final String email) {
 		
@@ -132,6 +148,9 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 		
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.dao.IStoreItemDao#findInCategories(java.util.List)
+	 */
 	@Override
 	public List<StoreItem> findInCategories(List<Category> categories) {
 		

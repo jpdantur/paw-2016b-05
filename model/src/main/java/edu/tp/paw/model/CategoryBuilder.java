@@ -20,6 +20,12 @@ public class CategoryBuilder implements IBuilder<Category> {
 	private String path = "";
 	
 	
+	/**
+	 * Creates a new Category builder
+	 * @param id The new Category id
+	 * @param name the new Category name
+	 * @param parent The new Category parent id
+	 */
 	public CategoryBuilder(long id, String name, long parent) {
 		
 		this.id = id;
@@ -28,26 +34,45 @@ public class CategoryBuilder implements IBuilder<Category> {
 		
 	}
 	
+	/**
+	 * Sets #{this} created time
+	 * @param created Timestamp when #{this} was created
+	 * @return #{this}
+	 */
 	public CategoryBuilder created(Timestamp created) {
 		this.created = created;
 		return this;
 	}
 	
+	/**
+	 * Sets #{this} last updated time
+	 * @param lastUpdated Timestamp when #{this} was last updated
+	 * @return #{this}
+	 */
 	public CategoryBuilder lastUpdated(Timestamp lastUpdated) {
 		this.lastUpdated = lastUpdated;
 		return this;
 	}
 	
+	/**
+	 * Sets #{this} path
+	 * @param path #{this} new path
+	 * @return #{this}
+	 */
 	public CategoryBuilder path(String path) {
 		this.path = path;
 		return this;
 	}
 	
 	
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.model.IBuilder#build()
+	 */
 	@Override
 	public Category build() {
 		return new Category(this);
 	}
+
 
 	public long getId() {
 		return id;

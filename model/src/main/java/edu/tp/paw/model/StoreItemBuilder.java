@@ -28,21 +28,39 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 		this.email = email;
 	}
 	
+	/**
+	 * Sets #{this} created time
+	 * @param created Timestamp when #{this} was created
+	 * @return #{this}
+	 */
 	public StoreItemBuilder created(Timestamp created) {
 		this.created = created;
 		return this;
 	}
 	
+	/**
+	 * Sets #{this} last updated time
+	 * @param lastUpdated Timestamp when #{this} was last updated
+	 * @return #{this}
+	 */
 	public StoreItemBuilder lastUpdated(Timestamp lastUpdated) {
 		this.lastUpdated = lastUpdated;
 		return this;
 	}
 	
+	/**
+	 * Set a value for StoreItemBuilder.sold
+	 * @param sold the value to set
+	 * @return #{this}
+	 */
 	public StoreItemBuilder sold(int sold) {
 		this.sold = sold;
 		return this;
 	}
 	
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.model.IBuilder#build()
+	 */
 	public StoreItem build() {
 	
 		return new StoreItem(this);

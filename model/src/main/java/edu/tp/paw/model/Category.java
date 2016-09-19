@@ -16,7 +16,10 @@ public class Category {
 	private final Timestamp created;
 	private final Timestamp lastUpdated;
 	
-	/* package */ Category(CategoryBuilder builder) {
+	/** Creates Category from #{builder}
+	 * @param builder The builder with the category
+	 */
+	/*package*/ Category(CategoryBuilder builder) {
 		this.id = builder.getId();
 		this.name = builder.getName();
 		this.parent = builder.getParent();
@@ -26,21 +29,29 @@ public class Category {
 		this.lastUpdated = builder.getLastUpdated();
 	}
 	
+
 	public void setParent(long parent) {
 		this.parent = parent;
 	}
 	
+
 	public void setPath(String path) {
 		this.path = path;
 	}
 	
 	// getters
+
 	public long getId() {
 		return id;
 	}
+	
 	public String getName() {
 		return name;
 	}
+	/**
+	 * gets Category parent id
+	 * @return Category parent id
+	 */
 	public long getParent() {
 		return parent;
 	}
@@ -53,17 +64,27 @@ public class Category {
 		return created;
 	}
 
+
 	public Timestamp getLastUpdated() {
 		return lastUpdated;
 	}
 
+
 	public String getPath() {
 		return path;
 	}
+	
+	/**
+	 * Adds #{category} to #{this} children
+	 * @param category The child category
+	 */
 	public void addChild(Category category) {
 		children.add(category);
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#toString()
+	 */
 	@Override
 	public String toString() {
 		return "Category [id=" + id + ", name=" + name + ", parent=" + parent

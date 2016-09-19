@@ -26,6 +26,9 @@ public class StoreJdbcDao implements IStoreDao {
 	@Autowired
 	private StoreItemJdbcDao storeItemDao;
 
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.dao.IStoreDao#findInCategory(edu.tp.paw.model.Category)
+	 */
 	@Override
 	public List<StoreItem> findInCategory(Category category) {
 		

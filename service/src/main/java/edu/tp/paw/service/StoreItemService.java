@@ -21,11 +21,17 @@ public class StoreItemService implements IStoreItemService {
 	@Autowired
 	private ICategoryService categoryService;
 	
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.service.IStoreItemService#findByTerm(java.lang.String)
+	 */
 	@Override
 	public List<StoreItem> findByTerm(String term) {
 		return storeItemDao.findByTerm(term);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.service.IStoreItemService#create(java.lang.String, java.lang.String, float, long, java.lang.String)
+	 */
 	@Override
 	public StoreItem create(String name, String description, float price, long categoryId, String email) {
 		
@@ -41,11 +47,17 @@ public class StoreItemService implements IStoreItemService {
 		return storeItemDao.create(name, description, price, category, email);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.service.IStoreItemService#fetchMostSold(int)
+	 */
 	@Override
 	public List<StoreItem> fetchMostSold(int n) {
 		return storeItemDao.findMostSold(n);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.service.IStoreItemService#fetchById(long)
+	 */
 	@Override
 	public StoreItem fetchById(long id) {
 		return storeItemDao.findById(id);

@@ -14,11 +14,17 @@ public class UserService implements IUserService {
 	@Autowired
 	private IUserDao userDao;
 	
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.service.IUserService#findById(long)
+	 */
 	@Override
 	public User findById(long id) {
 		return userDao.findById(id);
 	}
 
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.service.IUserService#create(java.lang.String)
+	 */
 	@Override
 	public User create(String username) {
 		return userDao.create(username);

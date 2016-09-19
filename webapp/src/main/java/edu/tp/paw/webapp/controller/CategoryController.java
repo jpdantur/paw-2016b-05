@@ -20,6 +20,10 @@ public class CategoryController {
 	@Autowired
 	private ICategoryService categoryService;
 	
+	/**
+	 * Shows Category tree
+	 * @return
+	 */
 	@RequestMapping("/categories")
 	public ModelAndView itemBrowser() {
 		
@@ -34,6 +38,12 @@ public class CategoryController {
 		return modelAndView;
 	}
 	
+	/**
+	 * Add a new category
+	 * @param name New Category name
+	 * @param parent New Category Parent
+	 * @return
+	 */
 	@RequestMapping("/category")
 	public ModelAndView itemBrowser(
 			@RequestParam(value = "name", required = true) final String name,
