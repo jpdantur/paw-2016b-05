@@ -9,6 +9,7 @@ public class StoreItem {
 	private final String name;
 	private final String description;
 	private final float price;
+	private final String email;
 	
 	private Category category;
 	
@@ -26,6 +27,7 @@ public class StoreItem {
 		this.created = builder.getCreated();
 		this.lastUpdated = builder.getLastUpdated();
 		this.category = builder.getCategory();
+		this.email = builder.getEmail();
 	}
 	
 	
@@ -83,6 +85,12 @@ public class StoreItem {
 		return "StoreItem [id=" + id + ", description=" + description
 				+ ", name=" + name + ", sold=" + sold + ", created=" + created
 				+ ", lastUpdated=" + lastUpdated + ", price=" + price + "]";
+	}
+
+
+
+	public String getEmail() {
+		return email;
 	}
 
 	

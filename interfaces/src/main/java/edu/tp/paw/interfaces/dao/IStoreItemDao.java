@@ -38,6 +38,6 @@ public interface IStoreItemDao {
 	 * @param description The description of the StoreItem
 	 * @return A new StoreItem
 	 */
-	public StoreItem create(final String name, final String description, final float price, final Category category);
+	public StoreItem create(final String name, final String description, final float price, final Category category, final String email);
 	
 }

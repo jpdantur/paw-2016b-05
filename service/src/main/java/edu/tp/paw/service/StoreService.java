@@ -6,8 +6,6 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.sun.istack.internal.NotNull;
-
 import edu.tp.paw.interfaces.dao.IStoreDao;
 import edu.tp.paw.interfaces.service.ICategoryService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
@@ -27,13 +25,13 @@ public class StoreService implements IStoreService {
 	
 	
 	@Override
-	public @NotNull List<StoreItem> fetchItemsInCategory(final Category category) {
+	public List<StoreItem> fetchItemsInCategory(final Category category) {
 		
 		return storeDao.findInCategory(category);
 	}
 
 	@Override
-	public @NotNull List<StoreItem> fetchItemsInCategory(final long categoryId) {
+	public List<StoreItem> fetchItemsInCategory(final long categoryId) {
 		
 		Category category = categoryService.findById(categoryId);
 		
@@ -45,8 +43,8 @@ public class StoreService implements IStoreService {
 	}
 
 	@Override
-	public StoreItem sell(String name, String description, float price, long categoryId) {
-		return storeItemService.create(name, description, price, categoryId);
+	public StoreItem sell(String name, String description, float price, long categoryId, String email) {
+		return storeItemService.create(name, description, price, categoryId, email);
 	}
 
 }

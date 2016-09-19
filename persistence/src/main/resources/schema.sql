@@ -5,6 +5,7 @@ create table if not exists store_items (
 	price decimal(20,2),
 	sold integer default 0,
 	category integer,
+	email varchar(100),
 	created timestamp default current_timestamp,
 	last_updated timestamp default current_timestamp,
 	constraint category_fk foreign key (category) references store_categories

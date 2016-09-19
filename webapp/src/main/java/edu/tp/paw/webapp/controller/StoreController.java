@@ -62,11 +62,12 @@ public class StoreController {
 		
 		if (!bindingResult.hasErrors()) {
 			
-			final StoreItem storeItem = storeService.sell(form.getName(), form.getDescription(), form.getPrice(), form.getCategoryId());
+			final StoreItem storeItem = storeService.sell(form.getName(), form.getDescription(), form.getPrice(), form.getCategoryId(), form.getEmail());
 			
 			return "redirect:/item/"+storeItem.getId()+"?s=1";
 		}
 		
+		model.addAttribute("categories", categoryService.getCategoryTree());
 		model.addAttribute("bindingResult", bindingResult);
 		model.addAttribute("item", form);
 		

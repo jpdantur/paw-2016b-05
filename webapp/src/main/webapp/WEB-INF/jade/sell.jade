@@ -38,7 +38,7 @@ block content
 						div.col-sm-10
 							textarea.form-control(name="description", id="description", placeholder="Descripcion", value="#{item.description?item.description:''}", rows="12")
 							+errors(bindingResult, 'description')
-					div.form-group
+					div.form-group(class="#{bindingResult.hasFieldErrors('price')?'has-error':''}")
 						label.col-sm-2.control-label(for="price") Precio
 						div.col-sm-10
 							div.input-group
@@ -55,6 +55,11 @@ block content
 							select.form-control(name="categoryId", id="category")
 								+categories(categories, 0)
 							+errors(bindingResult, 'category')
+					div.form-group(class="#{bindingResult.hasFieldErrors('email')?'has-error':''}")
+						label.col-sm-2.control-label(for="email") Email de Contacto
+						div.col-sm-10
+							input.form-control(type="text", id="email", name="email", placeholder="Email de Contacto", value="#{item.email?item.email:''}")
+							+errors(bindingResult, 'email')
 					div.form-group
 						div.col-sm-2.col-sm-offset-2
 							a.btn.btn-default.btn-block(href="#{context.url('/')}")

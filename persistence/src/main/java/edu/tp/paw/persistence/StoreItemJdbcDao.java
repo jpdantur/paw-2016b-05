@@ -40,7 +40,8 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 				resultSet.getString("name"),
 				resultSet.getString("description"),
 				resultSet.getFloat("price"),
-				categoryDao.findById(resultSet.getLong("category"))
+				categoryDao.findById(resultSet.getLong("category")),
+				resultSet.getString("email")
 			)
 			.created(resultSet.getTimestamp("created"))
 			.lastUpdated(resultSet.getTimestamp("last_updated"))
@@ -55,7 +56,7 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 		jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
 			.withTableName("store_items")
 			.usingGeneratedKeyColumns("item_id")
-			.usingColumns("name", "description", "price", "category");
+			.usingColumns("name", "description", "price", "category", "email");
 		
 		
 //		jdbcTemplate.execute(
@@ -115,7 +116,7 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 	}
 	
 	@Override
-	public StoreItem create(final String name, final String description, final float price, final Category category) {
+	public StoreItem create(final String name, final String description, final float price, final Category category, final String email) {
 		
 		final Map<String, Object> args = new HashMap<>();
 		
@@ -123,10 +124,11 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 		args.put("description", description);
 		args.put("price", price);
 		args.put("category", category.getId());
+		args.put("email", email);
 		
 		final Number storeItemId = jdbcInsert.executeAndReturnKey(args);
 		
-		return new StoreItemBuilder(storeItemId.longValue(), name, description, price, category).build();
+		return new StoreItemBuilder(storeItemId.longValue(), name, description, price, category, email).build();
 		
 	}
 

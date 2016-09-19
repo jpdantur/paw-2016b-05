@@ -27,7 +27,7 @@ public class StoreItemService implements IStoreItemService {
 	}
 
 	@Override
-	public StoreItem create(String name, String description, float price, long categoryId) {
+	public StoreItem create(String name, String description, float price, long categoryId, String email) {
 		
 		Category category = categoryService.findById(categoryId);
 		
@@ -38,7 +38,7 @@ public class StoreItemService implements IStoreItemService {
 		}
 		
 		
-		return storeItemDao.create(name, description, price, category);
+		return storeItemDao.create(name, description, price, category, email);
 	}
 
 	@Override

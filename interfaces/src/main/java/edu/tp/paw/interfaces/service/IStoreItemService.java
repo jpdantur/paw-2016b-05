@@ -14,7 +14,7 @@ public interface IStoreItemService {
 	 */
 	public StoreItem fetchById(final long id);	
 	
-	public StoreItem create(final String name, final String description, final float price, long categoryId);
+	public StoreItem create(final String name, final String description, final float price, long categoryId, String email);
 	
 	public List<StoreItem> fetchMostSold(final int n);
 	

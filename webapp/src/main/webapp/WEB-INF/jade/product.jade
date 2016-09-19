@@ -46,4 +46,7 @@ block content
 						h1 #{storeItem.name}
 						p #{storeItem.description}
 						h3 $#{storeItem.price}
-						a.btn.btn-success.btn-lg(href="#") Comprar
+						a.btn.btn-success.btn-lg(href="#", data-buyer-email="#{storeItem.email}") Comprar
+
+block scripts
+	script(type="text/javascript", src="#{context.url('/resources/dist/js/product.js')}")
