@@ -2,8 +2,6 @@ package edu.tp.paw.interfaces.service;
 
 import java.util.List;
 
-import com.sun.istack.internal.Nullable;
-
 import edu.tp.paw.model.Category;
 
 public interface ICategoryService {

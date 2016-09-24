@@ -1,9 +1,6 @@
 package edu.tp.paw.interfaces.dao;
 
 import java.util.List;
-import java.util.Map;
-
-import com.sun.istack.internal.Nullable;
 
 import edu.tp.paw.model.Category;
 

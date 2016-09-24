@@ -29,6 +29,9 @@ public class StoreController {
 	@Autowired
 	private IStoreService storeService;
 	
+	/**
+	 * @return
+	 */
 	@RequestMapping("/")
 	public ModelAndView index() {
 		
