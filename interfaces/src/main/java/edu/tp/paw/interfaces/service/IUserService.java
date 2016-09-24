@@ -17,6 +17,6 @@ public interface IUserService {
 	 * @param username The name of the user
 	 * @return The created user
 	 */
-	public User create(String username);
+	public User create(String username, String password);
 	
 }

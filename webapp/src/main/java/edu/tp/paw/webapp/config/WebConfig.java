@@ -5,7 +5,6 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.collections.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -17,7 +16,6 @@ import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
-import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
@@ -26,6 +24,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import de.neuland.jade4j.JadeConfiguration;
 import de.neuland.jade4j.spring.template.SpringTemplateLoader;
 import de.neuland.jade4j.spring.view.JadeViewResolver;
+
+import edu.tp.paw.webapp.config.ContextHelper;
 
 @EnableWebMvc
 @ComponentScan({"edu.tp.paw.webapp.controller", "edu.tp.paw.service", "edu.tp.paw.persistence"})
@@ -77,7 +77,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
   /**
  * @return Jade Configuration
  */
-@Bean
+  @Bean
   public JadeConfiguration jadeConfiguration() {
       JadeConfiguration configuration = new JadeConfiguration();
       configuration.setCaching(false);

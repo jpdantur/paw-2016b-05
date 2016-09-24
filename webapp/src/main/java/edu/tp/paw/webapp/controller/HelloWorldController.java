@@ -52,7 +52,7 @@ public class HelloWorldController {
 	
 	@RequestMapping("/helloWorld/create")
 	public ModelAndView helloWorld(@RequestParam(value = "name", required = true) final String username) {
-		final User user = userService.create(username);
+		final User user = userService.create(username, "pass");
 		
 		return new ModelAndView("redirect:/user/" + user.getId());
 	}

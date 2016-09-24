@@ -1,5 +1,6 @@
 package edu.tp.paw.model;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 
 public class StoreItem {
@@ -8,7 +9,7 @@ public class StoreItem {
 	
 	private final String name;
 	private final String description;
-	private final float price;
+	private final BigDecimal price;
 	private final String email;
 	
 	private Category category;
@@ -50,7 +51,7 @@ public class StoreItem {
 
 
 
-	public float getPrice() {
+	public BigDecimal getPrice() {
 		return price;
 	}
 

@@ -1,5 +1,6 @@
 package edu.tp.paw.service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,6 +13,7 @@ import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IStoreService;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
+import edu.tp.paw.model.StoreItemBuilder;
 
 @Service
 public class StoreService implements IStoreService {
@@ -52,8 +54,13 @@ public class StoreService implements IStoreService {
 	 * @see edu.tp.paw.interfaces.service.IStoreService#sell(java.lang.String, java.lang.String, float, long, java.lang.String)
 	 */
 	@Override
-	public StoreItem sell(String name, String description, float price, long categoryId, String email) {
+	public StoreItem sell(String name, String description, BigDecimal price, long categoryId, String email) {
 		return storeItemService.create(name, description, price, categoryId, email);
+	}
+
+	@Override
+	public StoreItem sell(StoreItemBuilder builder) {
+		return storeItemService.create(builder);
 	}
 
 }

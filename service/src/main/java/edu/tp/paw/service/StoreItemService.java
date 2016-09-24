@@ -1,5 +1,6 @@
 package edu.tp.paw.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +11,7 @@ import edu.tp.paw.interfaces.service.ICategoryService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
+import edu.tp.paw.model.StoreItemBuilder;
 
 
 @Service
@@ -33,7 +35,7 @@ public class StoreItemService implements IStoreItemService {
 	 * @see edu.tp.paw.interfaces.service.IStoreItemService#create(java.lang.String, java.lang.String, float, long, java.lang.String)
 	 */
 	@Override
-	public StoreItem create(String name, String description, float price, long categoryId, String email) {
+	public StoreItem create(String name, String description, BigDecimal price, long categoryId, String email) {
 		
 		Category category = categoryService.findById(categoryId);
 		
@@ -61,6 +63,17 @@ public class StoreItemService implements IStoreItemService {
 	@Override
 	public StoreItem fetchById(long id) {
 		return storeItemDao.findById(id);
+	}
+
+	@Override
+	public StoreItem create(final StoreItemBuilder builder) {
+		
+		if (builder.getCategory() == null) {
+			return null;
+		}
+		
+		
+		return storeItemDao.create(builder);
 	}
 	
 	

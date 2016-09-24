@@ -1,5 +1,7 @@
 package edu.tp.paw.webapp.form;
 
+import java.math.BigDecimal;
+
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -13,7 +15,7 @@ public class SellForm {
 	private String name;
 	private String description;
 	@Min(1)
-	private float price;
+	private BigDecimal price;
 	
 	@Min(0)
 	private long categoryId;
@@ -40,7 +42,7 @@ public class SellForm {
 		
 	}
 	
-	public SellForm(String name, String description, float price, long categoryId) {
+	public SellForm(String name, String description, BigDecimal price, long categoryId) {
 		this.name = name;
 		this.description = description;
 		this.price = price;
@@ -63,11 +65,11 @@ public class SellForm {
 		this.description = description;
 	}
 
-	public float getPrice() {
+	public BigDecimal getPrice() {
 		return price;
 	}
 
-	public void setPrice(float price) {
+	public void setPrice(BigDecimal price) {
 		this.price = price;
 	}
 	

@@ -1,5 +1,6 @@
 package edu.tp.paw.persistence;
 
+import java.math.BigDecimal;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -36,13 +37,13 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 	
 	private final RowMapper<StoreItem> rowMapper = (ResultSet resultSet, int rowNum) -> {
 		return new StoreItemBuilder(
-				resultSet.getInt("item_id"),
 				resultSet.getString("name"),
 				resultSet.getString("description"),
-				resultSet.getFloat("price"),
+				resultSet.getBigDecimal("price"),
 				categoryDao.findById(resultSet.getLong("category")),
 				resultSet.getString("email")
 			)
+			.id(resultSet.getLong("item_id"))
 			.created(resultSet.getTimestamp("created"))
 			.lastUpdated(resultSet.getTimestamp("last_updated"))
 			.sold(resultSet.getInt("sold"))
@@ -111,6 +112,8 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 						n);
 	}
 	
+//	private static escape
+	
 	/* (non-Javadoc)
 	 * @see edu.tp.paw.interfaces.dao.IStoreItemDao#findByTerm(java.lang.String)
 	 */
@@ -122,17 +125,22 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 				
 				jdbcTemplate
 				.query(
-						"select * from store_items where lower(name) LIKE ? OR lower(description) LIKE ?",
+						"select * from store_items "
+						+ "where lower(name) LIKE '%' || ? || '%' "
+						+ "OR lower(description) LIKE '%' || ? || '%' "
+						+ "OR exists (select * from store_categories where lower(name) like '%' || ? || '%')",
 						rowMapper,
-						"%"+term.toLowerCase()+"%",
-						"%"+term.toLowerCase()+"%");
+						term.toLowerCase().replace("%", "\\%"),
+						term.toLowerCase().replace("%", "\\%"),
+						term.toLowerCase().replace("%", "\\%")
+				);
 	}
 	
 	/* (non-Javadoc)
 	 * @see edu.tp.paw.interfaces.dao.IStoreItemDao#create(java.lang.String, java.lang.String, float, edu.tp.paw.model.Category, java.lang.String)
 	 */
 	@Override
-	public StoreItem create(final String name, final String description, final float price, final Category category, final String email) {
+	public StoreItem create(final String name, final String description, final BigDecimal price, final Category category, final String email) {
 		
 		final Map<String, Object> args = new HashMap<>();
 		
@@ -144,8 +152,26 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 		
 		final Number storeItemId = jdbcInsert.executeAndReturnKey(args);
 		
-		return new StoreItemBuilder(storeItemId.longValue(), name, description, price, category, email).build();
+		return new StoreItemBuilder(name, description, price, category, email).id(storeItemId.longValue()).build();
 		
+	}
+	
+	@Override
+	public StoreItem create(final StoreItemBuilder builder) {
+		
+		final Map<String, Object> args = new HashMap<>();
+		
+		args.put("name", builder.getName());
+		args.put("description", builder.getDescription());
+		args.put("price", builder.getPrice());
+		args.put("category", builder.getCategory());
+		args.put("email", builder.getEmail());
+		
+		final Number storeItemId = jdbcInsert.executeAndReturnKey(args);
+		
+		return builder.id(storeItemId.longValue()).build();
+		
+//		return new StoreItemBuilder(storeItemId.longValue(), buiu, description, price, category, email).build();
 	}
 
 	/* (non-Javadoc)
@@ -174,4 +200,6 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 				);
 		
 	}
+
+	
 }

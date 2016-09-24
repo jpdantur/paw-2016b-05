@@ -1,5 +1,6 @@
 package edu.tp.paw.model;
 
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -7,10 +8,9 @@ import java.util.Date;
 public class StoreItemBuilder implements IBuilder<StoreItem> {
 	
 	// Required parameters
-	private final long id;
 	private final String name;
 	private final String description;
-	private final float price;
+	private final BigDecimal price;
 	private final Category category;
 	private final String email;
 	
@@ -18,9 +18,9 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 	private Timestamp created = new Timestamp( (new Date()).getTime() );
 	private Timestamp lastUpdated = new Timestamp( (new Date()).getTime() );
 	private int sold = 0;
+	private long id;
 	
-	public StoreItemBuilder(long id, String name, String description, float price, Category category, String email) {
-		this.id = id;
+	public StoreItemBuilder(String name, String description, BigDecimal price, Category category, String email) {
 		this.name = name;
 		this.description = description;
 		this.price = price;
@@ -58,6 +58,11 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 		return this;
 	}
 	
+	public StoreItemBuilder id(long id) {
+		this.id = id;
+		return this;
+	}
+	
 	/* (non-Javadoc)
 	 * @see edu.tp.paw.model.IBuilder#build()
 	 */
@@ -81,7 +86,7 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 		return description;
 	}
 
-	public float getPrice() {
+	public BigDecimal getPrice() {
 		return price;
 	}
 

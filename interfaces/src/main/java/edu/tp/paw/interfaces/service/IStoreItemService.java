@@ -1,9 +1,11 @@
 package edu.tp.paw.interfaces.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
+import edu.tp.paw.model.StoreItemBuilder;
 
 public interface IStoreItemService {
 	
@@ -22,7 +24,9 @@ public interface IStoreItemService {
 	 * @param description The description of the StoreItem
 	 * @return A new StoreItem
 	 */
-	public StoreItem create(final String name, final String description, final float price, long categoryId, String email);
+	public StoreItem create(final String name, final String description, final BigDecimal price, long categoryId, String email);
+	
+	public StoreItem create(StoreItemBuilder builder);
 	
 	/**
 	 * Retrieves a list of the n most sold items
@@ -37,5 +41,7 @@ public interface IStoreItemService {
 	 * @return A list of the store items that match #{term}
 	 */
 	public List<StoreItem> findByTerm(final String term);
+
+	
 
 }

@@ -1,9 +1,11 @@
 package edu.tp.paw.interfaces.service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
+import edu.tp.paw.model.StoreItemBuilder;
 
 public interface IStoreService {
 	
@@ -16,7 +18,9 @@ public interface IStoreService {
 	 * @param email The email of the owner
 	 * @return The created item
 	 */
-	public StoreItem sell(final String name, final String description, final float price, final long categoryId, String email);
+	public StoreItem sell(final String name, final String description, final BigDecimal price, final long categoryId, String email);
+	
+	public StoreItem sell(final StoreItemBuilder builder);
 	
 	/**
 	 * Retrieves items from #{category}

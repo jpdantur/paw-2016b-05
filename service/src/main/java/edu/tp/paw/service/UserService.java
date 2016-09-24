@@ -26,8 +26,8 @@ public class UserService implements IUserService {
 	 * @see edu.tp.paw.interfaces.service.IUserService#create(java.lang.String)
 	 */
 	@Override
-	public User create(String username) {
-		return userDao.create(username);
+	public User create(String username, String password) {
+		return userDao.create(username, password);
 	}
 
 }

@@ -64,16 +64,21 @@ public class UserJdbcDao implements IUserDao {
 	 * @see edu.tp.paw.interfaces.dao.IUserDao#create(java.lang.String)
 	 */
 	@Override
-	public User create(final String username) {
+	public User create(final String username, final String password) {
 		
 		final Map<String, Object> args = new HashMap<>();
 		
 		args.put("username", username);
+		args.put("password", password);
 		
 		final Number userId = jdbcInsert.executeAndReturnKey(args);
 		
 		return new User(username, userId.longValue());
 		
+	}
+	
+	/* package */ JdbcTemplate getJdbcTemplate() {
+		return jdbcTemplate;
 	}
 
 }
