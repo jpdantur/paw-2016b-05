@@ -14,7 +14,9 @@ import org.springframework.web.servlet.ModelAndView;
 import edu.tp.paw.interfaces.service.ICategoryService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IStoreService;
+import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
+import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.webapp.form.SellForm;
 
 
@@ -22,6 +24,7 @@ import edu.tp.paw.webapp.form.SellForm;
 public class StoreController {
 
 	private static final int MOST_SOLD_ITEMS = 6;
+	
 	@Autowired
 	private IStoreItemService storeItemService;
 	@Autowired
@@ -38,7 +41,6 @@ public class StoreController {
 		final ModelAndView modelAndView = new ModelAndView("index");
 		
 		modelAndView.addObject("mostSoldItems", storeItemService.fetchMostSold(MOST_SOLD_ITEMS));
-		
 		modelAndView.addObject("categories", categoryService.getCategoryTree());
 		
 		return modelAndView;
@@ -65,7 +67,12 @@ public class StoreController {
 		
 		if (!bindingResult.hasErrors()) {
 			
-			final StoreItem storeItem = storeService.sell(form.getName(), form.getDescription(), form.getPrice(), form.getCategoryId(), form.getEmail());
+			Category category = categoryService.findById(form.getCategoryId());
+			StoreItemBuilder storeItemBuilder = new StoreItemBuilder(form.getName(), form.getDescription(), form.getPrice(), category, form.getEmail());
+			
+			final StoreItem storeItem = storeService.sell(storeItemBuilder);
+			
+//			final StoreItem storeItem = storeService.sell(form.getName(), form.getDescription(), form.getPrice(), form.getCategoryId(), form.getEmail());
 			
 			return "redirect:/item/"+storeItem.getId()+"?s=1";
 		}

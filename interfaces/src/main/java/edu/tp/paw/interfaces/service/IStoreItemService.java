@@ -23,9 +23,17 @@ public interface IStoreItemService {
 	 * @param name The name of the StoreItem
 	 * @param description The description of the StoreItem
 	 * @return A new StoreItem
+	 * @deprecated
 	 */
 	public StoreItem create(final String name, final String description, final BigDecimal price, long categoryId, String email);
 	
+	/**
+	 * Create a new StoreItem
+	 * 
+	 * 
+	 * @param builder The StoreItembBuilder associated to the StoreItem
+	 * @return A new StoreItem
+	 */
 	public StoreItem create(StoreItemBuilder builder);
 	
 	/**

@@ -10,6 +10,8 @@ import org.springframework.web.servlet.ModelAndView;
 import edu.tp.paw.interfaces.service.ICategoryService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IStoreService;
+import edu.tp.paw.model.StoreItem;
+import edu.tp.paw.webapp.exceptions.StoreItemNotFoundException;
 
 
 @Controller
@@ -57,7 +59,13 @@ public class StoreItemController {
 		
 		final ModelAndView modelAndView = new ModelAndView("product");
 		
-		modelAndView.addObject("storeItem", storeItemService.fetchById(id));
+		final StoreItem storeItem = storeItemService.fetchById(id);
+		
+		if (storeItem == null) {
+			throw new StoreItemNotFoundException();
+		}
+		
+		modelAndView.addObject("storeItem", storeItem);
 		modelAndView.addObject("published", published);
 		
 		return modelAndView;

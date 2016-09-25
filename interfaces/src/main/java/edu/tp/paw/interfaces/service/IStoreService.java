@@ -17,6 +17,7 @@ public interface IStoreService {
 	 * @param categoryId The id of the category of the item
 	 * @param email The email of the owner
 	 * @return The created item
+	 * @deprecated
 	 */
 	public StoreItem sell(final String name, final String description, final BigDecimal price, final long categoryId, String email);
 	
