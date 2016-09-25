@@ -128,7 +128,7 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 						"select * from store_items "
 						+ "where lower(name) LIKE '%' || ? || '%' "
 						+ "OR lower(description) LIKE '%' || ? || '%' "
-						+ "OR exists (select * from store_categories where lower(name) like '%' || ? || '%')",
+						+ "OR exists (select * from store_categories where category_id = store_items.category and lower(name) like '%' || ? || '%')",
 						rowMapper,
 						term.toLowerCase().replace("%", "\\%"),
 						term.toLowerCase().replace("%", "\\%"),

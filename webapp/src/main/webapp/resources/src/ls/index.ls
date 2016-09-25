@@ -30,17 +30,6 @@ $ document .ready !->
 			, 800
 			, 'easeOutQuint'
 
-	$ \input .keydown (e) !->
-
-		e.preventDefault!
-		return false
-
-	$ \input .bind 'cut copy pase', (e) !->
-		e.preventDefault!
-
-	$ \input .on 'contextmenu', (e) !->
-		return false
-
 
 
 

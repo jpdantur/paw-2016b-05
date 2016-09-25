@@ -23,14 +23,4 @@ $(document).ready(function(){
       scrollTop: $target.offset().top
     }, 800, 'easeOutQuint');
   });
-  $('input').keydown(function(e){
-    e.preventDefault();
-    return false;
-  });
-  $('input').bind('cut copy pase', function(e){
-    e.preventDefault();
-  });
-  $('input').on('contextmenu', function(e){
-    return false;
-  });
 });
