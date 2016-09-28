@@ -2,7 +2,7 @@ create table if not exists store_categories (
 	category_id serial primary key,
 	name varchar(100),
 	parent integer,
-	category_path text,
+--	category_path text,
 	created timestamp default current_timestamp,
 	last_updated timestamp default current_timestamp,
 	constraint parent_fk foreign key (parent) references store_categories 
@@ -19,8 +19,8 @@ create table if not exists store_categories (
 --			inner join tree as c2 on (c.parent=c2.category_id) where c.category_id <> 0
 --) select * from tree
 
-INSERT INTO store_categories (category_id, name, parent, category_path)
-	SELECT 0, 'root', 0, '0' WHERE NOT EXISTS (
+INSERT INTO store_categories (category_id, name, parent)
+	SELECT 0, 'root', 0 WHERE NOT EXISTS (
 		SELECT category_id FROM store_categories WHERE category_id = 0
 	);
 

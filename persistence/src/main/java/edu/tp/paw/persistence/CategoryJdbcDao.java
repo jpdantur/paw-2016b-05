@@ -43,9 +43,22 @@ public class CategoryJdbcDao implements ICategoryDao {
 	//name::text as fullname
 	//(c2.fullname || '~>' || c.name)::text as fullname
 	
-	private static final String CATEGORY_PATH_SEPARATOR = "#";
+//	private static final String CATEGORY_PATH_SEPARATOR = "#";
 	private final JdbcTemplate jdbcTemplate;
 	private final SimpleJdbcInsert jdbcInsert;
+	
+	private final static RowMapper<Category> rowMapperWithPath = (ResultSet resultSet, int rowNum) -> {
+		
+		return new CategoryBuilder(
+					resultSet.getString("name"),
+					resultSet.getLong("parent")
+				)
+				.id(resultSet.getLong("category_id"))
+				.created(resultSet.getTimestamp("created"))
+				.lastUpdated(resultSet.getTimestamp("last_updated"))
+				.path(resultSet.getString("category_path"))
+				.build();
+	};
 	
 	private final static RowMapper<Category> rowMapper = (ResultSet resultSet, int rowNum) -> {
 		
@@ -56,7 +69,6 @@ public class CategoryJdbcDao implements ICategoryDao {
 				.id(resultSet.getLong("category_id"))
 				.created(resultSet.getTimestamp("created"))
 				.lastUpdated(resultSet.getTimestamp("last_updated"))
-				.path(resultSet.getString("category_path"))
 				.build();
 	};
 	
@@ -90,7 +102,7 @@ public class CategoryJdbcDao implements ICategoryDao {
 		return jdbcTemplate
 				.query(
 						SQL_DESCENDANTS_OF,
-						rowMapper,
+						rowMapperWithPath,
 						category.getId(),
 						category.getId()
 				);
@@ -171,7 +183,7 @@ public class CategoryJdbcDao implements ICategoryDao {
 		
 		final Number categoryId = jdbcInsert.executeAndReturnKey(args);
 		
-		return builder.id(categoryId.longValue()).build();		
+		return builder.id(categoryId.longValue()).build();
 		
 	}
 	

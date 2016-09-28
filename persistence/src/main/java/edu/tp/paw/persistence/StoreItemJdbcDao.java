@@ -125,14 +125,27 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 				
 				jdbcTemplate
 				.query(
-						"select * from store_items "
+						"select * "
+						+ "from store_items "
 						+ "where lower(name) LIKE '%' || ? || '%' "
 						+ "OR lower(description) LIKE '%' || ? || '%' "
-						+ "OR exists (select * from store_categories where category_id = store_items.category and lower(name) like '%' || ? || '%')",
+//						+ "OR exists ("
+//							+ "select * from store_categories "
+//							+ "where category_id = store_items.category and "
+//							+ "lower(name) like '%' || ? || '%'"
+//						+ ") "
+						+ "union all "
+						+ "select * from store_items "
+						+ "where category in ("
+							+ "select category_id "
+							+ "from store_categories "
+							+ "where lower(name) LIKE '%' || ? || '%'"
+						+ ")",
 						rowMapper,
 						term.toLowerCase().replace("%", "\\%"),
 						term.toLowerCase().replace("%", "\\%"),
 						term.toLowerCase().replace("%", "\\%")
+//						term.toLowerCase().replace("%", "\\%")
 				);
 	}
 	

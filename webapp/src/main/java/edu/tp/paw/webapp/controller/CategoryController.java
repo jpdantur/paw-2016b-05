@@ -10,6 +10,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import edu.tp.paw.interfaces.service.ICategoryService;
 import edu.tp.paw.model.Category;
+import edu.tp.paw.model.CategoryBuilder;
 
 
 @Controller
@@ -49,7 +50,8 @@ public class CategoryController {
 		
 		System.out.println("controller received request to create category with name = " + name + " parent = " + parent);
 		
-		Category category = categoryService.create(name, parent);
+		CategoryBuilder builder = new CategoryBuilder(name, parent);
+		Category category = categoryService.create(builder);
 		
 		final ModelAndView modelAndView = new ModelAndView("dummy");
 		
