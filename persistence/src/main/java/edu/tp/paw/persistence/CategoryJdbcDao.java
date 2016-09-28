@@ -28,6 +28,21 @@ import edu.tp.paw.model.StoreItemBuilder;
 @Repository
 public class CategoryJdbcDao implements ICategoryDao {
 
+	private static final String SQL_DESCENDANTS_OF =
+			"with recursive tree as "
+			+ "( "
+			+ "select category_id, name, created, last_updated, parent, (0 || '#' || category_id::text) as category_path "
+			+ "from store_categories "
+			+ "where category_id <> ? and parent = ? "
+			+ "union all "
+				+ "select c.category_id, c.name, c.created, c.last_updated, c.parent, (c2.category_path || '#' || c.category_id::text)::text as category_path "
+				+ "from store_categories as c "
+				+ "inner join tree as c2 on (c.parent=c2.category_id) where c.category_id <> 0 "
+			+ ") select * from tree order by name";
+	
+	//name::text as fullname
+	//(c2.fullname || '~>' || c.name)::text as fullname
+	
 	private static final String CATEGORY_PATH_SEPARATOR = "#";
 	private final JdbcTemplate jdbcTemplate;
 	private final SimpleJdbcInsert jdbcInsert;
@@ -35,26 +50,14 @@ public class CategoryJdbcDao implements ICategoryDao {
 	private final static RowMapper<Category> rowMapper = (ResultSet resultSet, int rowNum) -> {
 		
 		return new CategoryBuilder(
-					resultSet.getLong("category_id"),
 					resultSet.getString("name"),
 					resultSet.getLong("parent")
 				)
+				.id(resultSet.getLong("category_id"))
 				.created(resultSet.getTimestamp("created"))
 				.lastUpdated(resultSet.getTimestamp("last_updated"))
 				.path(resultSet.getString("category_path"))
 				.build();
-		
-//		return new StoreItemBuilder(
-//				resultSet.getInt("item_id"),
-//				resultSet.getString("name"),
-//				resultSet.getString("description"),
-//				resultSet.getFloat("price")
-//			)
-//			.created(resultSet.getTimestamp("created"))
-//			.lastUpdated(resultSet.getTimestamp("last_updated"))
-//			.sold(resultSet.getInt("sold"))
-//			.build();
-//			return null;
 	};
 	
 	/**
@@ -77,12 +80,20 @@ public class CategoryJdbcDao implements ICategoryDao {
 	@Override
 	public List<Category> getDescendants(Category category) {
 		
+//		return jdbcTemplate
+//		.query(
+//				"select * from store_categories where category_path like ? rder by category_path asc",
+//				rowMapper,
+//				category.getPath()+CATEGORY_PATH_SEPARATOR+"%"
+//		);
+		
 		return jdbcTemplate
-		.query(
-				"select * from store_categories where category_path like ? order by category_path asc",
-				rowMapper,
-				category.getPath()+CATEGORY_PATH_SEPARATOR+"%"
-		);
+				.query(
+						SQL_DESCENDANTS_OF,
+						rowMapper,
+						category.getId(),
+						category.getId()
+				);
 		
 	}
 	
@@ -141,7 +152,26 @@ public class CategoryJdbcDao implements ICategoryDao {
 		
 		final Number categoryId = jdbcInsert.executeAndReturnKey(args);
 		
-		return new CategoryBuilder(categoryId.longValue(), name, parent).build();		
+		return new CategoryBuilder(name, parent).id(categoryId.longValue()).build();		
+		
+	}
+	
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.dao.ICategoryDao#create(java.lang.String, long)
+	 */
+	@Override
+	public Category create(CategoryBuilder builder) {
+		
+		final Map<String, Object> args = new HashMap<>();
+		
+		args.put("name", builder.getName());
+		args.put("parent", builder.getParent());
+		
+		System.out.println("dao:: creating new category");
+		
+		final Number categoryId = jdbcInsert.executeAndReturnKey(args);
+		
+		return builder.id(categoryId.longValue()).build();		
 		
 	}
 	

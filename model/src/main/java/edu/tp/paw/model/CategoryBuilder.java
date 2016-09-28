@@ -8,7 +8,6 @@ import java.util.List;
 public class CategoryBuilder implements IBuilder<Category> {
 
 	// Required parameters
-	private final long id;
 	private final String name;
 	private final long parent;
 	
@@ -18,6 +17,7 @@ public class CategoryBuilder implements IBuilder<Category> {
 	private Timestamp lastUpdated = new Timestamp( (new Date()).getTime() );
 	private List<Category> children = new LinkedList<>();
 	private String path = "";
+	private long id = -1;
 	
 	
 	/**
@@ -26,9 +26,8 @@ public class CategoryBuilder implements IBuilder<Category> {
 	 * @param name the new Category name
 	 * @param parent The new Category parent id
 	 */
-	public CategoryBuilder(long id, String name, long parent) {
+	public CategoryBuilder(String name, long parent) {
 		
-		this.id = id;
 		this.name = name;
 		this.parent = parent;
 		
@@ -61,6 +60,11 @@ public class CategoryBuilder implements IBuilder<Category> {
 	 */
 	public CategoryBuilder path(String path) {
 		this.path = path;
+		return this;
+	}
+	
+	public CategoryBuilder id(long id) {
+		this.id = id;
 		return this;
 	}
 	

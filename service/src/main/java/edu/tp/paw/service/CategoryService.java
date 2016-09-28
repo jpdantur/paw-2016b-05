@@ -10,10 +10,11 @@ import org.springframework.util.StringUtils;
 import edu.tp.paw.interfaces.dao.ICategoryDao;
 import edu.tp.paw.interfaces.service.ICategoryService;
 import edu.tp.paw.model.Category;
+import edu.tp.paw.model.CategoryBuilder;
 
 @Service
 public class CategoryService implements ICategoryService {
-
+	
 	private static final long ROOT_CATEGORY_ID = 0;
 	private static final String CATEGORY_PATH_SEPARATOR = "#";
 	@Autowired
@@ -59,7 +60,56 @@ public class CategoryService implements ICategoryService {
 		
 		return category;
 	}
+	
+	/* (non-Javadoc)
+	 * @see edu.tp.paw.interfaces.service.ICategoryService#create(java.lang.String, long)
+	 */
+	@Override
+	public Category create(CategoryBuilder builder) {
+		
+		if (builder.getName() == null) {
+			throw new IllegalArgumentException("name cant be null");
+		}
+		
+		if (builder.getName().trim().length() == 0) {
+			throw new IllegalArgumentException("name cant be empty");
+		}
+		
+		if (!exists(builder.getParent())) {
+			throw new IllegalArgumentException("invalid category");
+		}
+		
+		Category category = categoryDao.create(builder);
+		
+		return category;
+		
+//		Category parentCategory = null;
+//		
+//		if (builder.getParent() != ROOT_CATEGORY_ID) {
+//			parentCategory = findById(builder.getParent());
+//			
+//			if (parentCategory == null) {
+//				throw new IllegalArgumentException("category does not exist");
+//			}
+//		}
+//		
+//		Category category = categoryDao.create(builder);
+//		
+//		String categoryPath = Long.toString(category.getId());
+//		
+//		if (parentCategory != null) {
+//			categoryPath = parentCategory.getPath()+CATEGORY_PATH_SEPARATOR+Long.toString(category.getId());
+//		}
+//		
+//		category = categoryDao.updatePath(category, categoryPath);
+//		
+//		return category;
+	}
 
+	public boolean exists(long id) {
+		return categoryDao.categoryExists(id);
+	}
+	
 	/* (non-Javadoc)
 	 * {@inheritDoc}
 	 *
@@ -67,9 +117,11 @@ public class CategoryService implements ICategoryService {
 	@Override
 	public Category findById(long id) {
 		
-		if (id < ROOT_CATEGORY_ID) {
-			throw new IllegalArgumentException("id cant be negative");
-		}
+//		Category category = fin
+		
+//		if (id < ROOT_CATEGORY_ID) {
+//			throw new IllegalArgumentException("id cant be negative");
+//		}
 		
 		return categoryDao.findById(id);
 	}
@@ -145,7 +197,7 @@ public class CategoryService implements ICategoryService {
 	 */
 	private Category assembleCategoryTree(final Category category, final List<Category> descendants) {
 		
-		for (Category currentCategory : descendants) {
+		for (final Category currentCategory : descendants) {
 			
 			buildDescendantsTree(category, currentCategory);
 			
@@ -160,17 +212,18 @@ public class CategoryService implements ICategoryService {
 	@Override
 	public List<Category> getCategoryTree() {
 		
-		List<Category> mainCategories = categoryDao.getChildren(ROOT_CATEGORY_ID);
+		final Category rootCategory = categoryDao.findById(ROOT_CATEGORY_ID);
 		
-		for (Category category : mainCategories) {
-			
-			List<Category> descendants = categoryDao.getDescendants(category);
-			
-			assembleCategoryTree(category, descendants);
-			
+		if (rootCategory == null) {
+			throw new IllegalArgumentException("root category cant be null");
 		}
 		
-		return mainCategories;
+		List<Category> descendants = categoryDao.getDescendants(rootCategory);
+		
+		assembleCategoryTree(rootCategory, descendants);
+		
+		return rootCategory.getChildren();
+		
 	}
 
 	/* (non-Javadoc)

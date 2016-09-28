@@ -82,15 +82,14 @@ public class Category {
 		children.add(category);
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
+
 	@Override
 	public String toString() {
 		return "Category [id=" + id + ", name=" + name + ", parent=" + parent
-				+ ", path=" + path + ", children=" + children + ", created=" + created
-				+ ", lastUpdated=" + lastUpdated + "]";
+				+ ", path=" + path + ", children=" + children + "]";
 	}
+
+	
 	
 	
 	
