@@ -55,6 +55,10 @@ public class PriceFilterBuilder implements IBuilder<PriceFilter> {
 	public FilterBuilder and() {
 		return filterBuilder;
 	}
+	
+	public FilterBuilder end() {
+		return filterBuilder;
+	}
 
 	public Range<BigDecimal> getPriceRange() {
 		return priceRange;

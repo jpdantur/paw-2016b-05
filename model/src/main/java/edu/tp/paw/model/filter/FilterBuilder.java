@@ -6,8 +6,12 @@ public class FilterBuilder implements IBuilder<Filter> {
 
 	private final PriceFilterBuilder priceFilterBuilder = new PriceFilterBuilder(this);
 	
-	public FilterBuilder() {
+	private FilterBuilder() {
 		
+	}
+	
+	public static FilterBuilder create() {
+		return new FilterBuilder();
 	}
 	
 	public PriceFilterBuilder price() {

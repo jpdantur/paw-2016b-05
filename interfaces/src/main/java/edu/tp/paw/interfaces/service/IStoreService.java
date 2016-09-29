@@ -6,6 +6,7 @@ import java.util.List;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
+import edu.tp.paw.model.filter.Filter;
 
 public interface IStoreService {
 	
@@ -36,4 +37,19 @@ public interface IStoreService {
 	 * @return The found items
 	 */
 	public List<StoreItem> fetchItemsInCategory(final long categoryId);
+	
+	/**
+	 * Retrieves a list of the store items that match #{term}
+	 * @param term The term to match
+	 * @return A list of the store items that match #{term}
+	 * @deprecated
+	 */
+	public List<StoreItem> findByTerm(final String term);
+	
+	/**
+	 * Retrieves a list of the store items that match #{term}
+	 * @param term The term to match
+	 * @return A list of the store items that match #{term}
+	 */
+	public List<StoreItem> findByTerm(final String term, final Filter filter);
 }

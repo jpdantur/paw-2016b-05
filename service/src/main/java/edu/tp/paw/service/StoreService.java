@@ -14,6 +14,7 @@ import edu.tp.paw.interfaces.service.IStoreService;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
+import edu.tp.paw.model.filter.Filter;
 
 @Service
 public class StoreService implements IStoreService {
@@ -61,6 +62,16 @@ public class StoreService implements IStoreService {
 	@Override
 	public StoreItem sell(StoreItemBuilder builder) {
 		return storeItemService.create(builder);
+	}
+
+	@Override
+	public List<StoreItem> findByTerm(String term) {
+		return storeItemService.findByTerm(term);
+	}
+
+	@Override
+	public List<StoreItem> findByTerm(String term, Filter filter) {
+		return storeItemService.findByTerm(term, filter);
 	}
 
 }

@@ -6,6 +6,7 @@ import java.util.List;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
+import edu.tp.paw.model.filter.Filter;
 
 public interface IStoreItemService {
 	
@@ -47,8 +48,11 @@ public interface IStoreItemService {
 	 * Retrieves a list of the store items that match #{term}
 	 * @param term The term to match
 	 * @return A list of the store items that match #{term}
+	 * @deprecated
 	 */
 	public List<StoreItem> findByTerm(final String term);
+	
+	public List<StoreItem> findByTerm(final String term, final Filter filter);
 
 	
 

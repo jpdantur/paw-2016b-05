@@ -1,5 +1,7 @@
 package edu.tp.paw.webapp.controller;
 
+import java.math.BigDecimal;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -11,6 +13,8 @@ import edu.tp.paw.interfaces.service.ICategoryService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IStoreService;
 import edu.tp.paw.model.StoreItem;
+import edu.tp.paw.model.filter.Filter;
+import edu.tp.paw.model.filter.FilterBuilder;
 import edu.tp.paw.webapp.exceptions.StoreItemNotFoundException;
 
 
@@ -28,11 +32,20 @@ public class StoreItemController {
 	@RequestMapping(value = {"/items", "/items/"})
 	public ModelAndView itemBrowser(
 			@RequestParam(value = "pageNumber", defaultValue = "0") final int pageNumber,
-			@RequestParam(value = "query", required = true) final String query) {
+			@RequestParam(value = "query", defaultValue = "") final String query,
+			@RequestParam(value = "minPrice") final BigDecimal minPrice,
+			@RequestParam(value = "maxPrice") final BigDecimal maxPrice) {
+		
+		final Filter filter = FilterBuilder
+				.create()
+				.price()
+					.between(minPrice, maxPrice)
+				.end()
+				.build();
 		
 		final ModelAndView modelAndView = new ModelAndView("products");
 		
-		modelAndView.addObject("storeItems", storeItemService.findByTerm(query));
+		modelAndView.addObject("storeItems", storeService.findByTerm(query));
 		modelAndView.addObject("query", query);
 		modelAndView.addObject("pageNumber", pageNumber);
 		
