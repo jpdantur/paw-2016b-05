@@ -10,7 +10,7 @@ public class Range<T extends Comparable<T>> {
 	private BoundType minBoundType;
 	private BoundType maxBoundType;
 	
-	private enum BoundType {
+	public enum BoundType {
 		OPEN, CLOSED, INF;
 	};
 	
@@ -19,8 +19,8 @@ public class Range<T extends Comparable<T>> {
 	
 	public static <T extends Comparable<T>> Range<T> closed(final T minInclusive, final T maxInclusive) {
 		Range<T> range = new Range<T>();
-		range.min = Optional.of(minInclusive);
-		range.max = Optional.of(maxInclusive);
+		range.min = Optional.ofNullable(minInclusive);
+		range.max = Optional.ofNullable(maxInclusive);
 		
 		if (range.min.isPresent() && range.max.isPresent()) {
 			// min > max
@@ -48,8 +48,8 @@ public class Range<T extends Comparable<T>> {
 	
 	public static <T extends Comparable<T>> Range<T> closedOpen(final T minInclusive, final T max) {
 		Range<T> range = new Range<T>();
-		range.min = Optional.of(minInclusive);
-		range.max = Optional.of(max);
+		range.min = Optional.ofNullable(minInclusive);
+		range.max = Optional.ofNullable(max);
 		
 		if (range.min.isPresent() && range.max.isPresent()) {
 			// min = max
@@ -81,8 +81,8 @@ public class Range<T extends Comparable<T>> {
 	
 	public static <T extends Comparable<T>> Range<T> openClosed(final T min, final T maxInclusive) {
 		Range<T> range = new Range<T>();
-		range.min = Optional.of(min);
-		range.max = Optional.of(maxInclusive);
+		range.min = Optional.ofNullable(min);
+		range.max = Optional.ofNullable(maxInclusive);
 		
 		if (range.min.isPresent() && range.max.isPresent()) {
 			// min = max
@@ -125,7 +125,7 @@ public class Range<T extends Comparable<T>> {
 	
 	public static <T extends Comparable<T>> Range<T> greaterThan(final T min) {
 		Range<T> range = new Range<T>();
-		range.min = Optional.of(min);
+		range.min = Optional.ofNullable(min);
 		range.max = Optional.empty();
 		
 		range.minBoundType = BoundType.OPEN;
@@ -140,7 +140,7 @@ public class Range<T extends Comparable<T>> {
 	
 	public static <T extends Comparable<T>> Range<T> greaterThanOrEqual(final T min) {
 		Range<T> range = new Range<T>();
-		range.min = Optional.of(min);
+		range.min = Optional.ofNullable(min);
 		range.max = Optional.empty();
 		
 		range.minBoundType = BoundType.CLOSED;
@@ -156,7 +156,7 @@ public class Range<T extends Comparable<T>> {
 	public static <T extends Comparable<T>> Range<T> lessThan(final T max) {
 		Range<T> range = new Range<T>();
 		range.min = Optional.empty();
-		range.max = Optional.of(max);
+		range.max = Optional.ofNullable(max);
 		
 		range.minBoundType = BoundType.INF;
 		range.maxBoundType = BoundType.OPEN;
@@ -171,7 +171,7 @@ public class Range<T extends Comparable<T>> {
 	public static <T extends Comparable<T>> Range<T> lessThanOrEqual(final T max) {
 		Range<T> range = new Range<T>();
 		range.min = Optional.empty();
-		range.max = Optional.of(max);
+		range.max = Optional.ofNullable(max);
 		
 		range.minBoundType = BoundType.INF;
 		range.maxBoundType = BoundType.CLOSED;
@@ -184,7 +184,7 @@ public class Range<T extends Comparable<T>> {
 	}
 	
 	public Range<T> gt(final T min) {
-		this.min = Optional.of(min);
+		this.min = Optional.ofNullable(min);
 		this.minBoundType = BoundType.OPEN;
 		if (!this.min.isPresent()) {
 			this.minBoundType = BoundType.INF;
@@ -193,7 +193,7 @@ public class Range<T extends Comparable<T>> {
 	}
 	
 	public Range<T> lt(final T max) {
-		this.max = Optional.of(max);
+		this.max = Optional.ofNullable(max);
 		this.maxBoundType = BoundType.OPEN;
 		if (!this.max.isPresent()) {
 			this.maxBoundType = BoundType.INF;
@@ -202,7 +202,7 @@ public class Range<T extends Comparable<T>> {
 	}
 	
 	public Range<T> gte(final T min) {
-		this.min = Optional.of(min);
+		this.min = Optional.ofNullable(min);
 		this.minBoundType = BoundType.CLOSED;
 		if (!this.min.isPresent()) {
 			this.minBoundType = BoundType.INF;
@@ -211,7 +211,7 @@ public class Range<T extends Comparable<T>> {
 	}
 	
 	public Range<T> lte(final T max) {
-		this.max = Optional.of(max);
+		this.max = Optional.ofNullable(max);
 		this.maxBoundType = BoundType.CLOSED;
 		if (!this.max.isPresent()) {
 			this.maxBoundType = BoundType.INF;
@@ -229,6 +229,30 @@ public class Range<T extends Comparable<T>> {
 		this.min = Optional.empty();
 		this.minBoundType = BoundType.INF;
 		return this;
+	}
+	
+	public boolean hasUpperBound() {
+		return this.maxBoundType != BoundType.INF;
+	}
+	
+	public boolean hasLowerBound() {
+		return this.minBoundType != BoundType.INF;
+	}
+	
+	public BoundType lowerBoundType() {
+		return minBoundType;
+	}
+	
+	public BoundType upperBoundType() {
+		return maxBoundType;
+	}
+	
+	public Optional<T> lowerBound() {
+		return min;
+	}
+	
+	public Optional<T> upperBound() {
+		return max;
 	}
 	
 	public boolean contains(T val) {

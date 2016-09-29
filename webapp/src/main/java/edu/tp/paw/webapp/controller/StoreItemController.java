@@ -33,8 +33,11 @@ public class StoreItemController {
 	public ModelAndView itemBrowser(
 			@RequestParam(value = "pageNumber", defaultValue = "0") final int pageNumber,
 			@RequestParam(value = "query", defaultValue = "") final String query,
-			@RequestParam(value = "minPrice") final BigDecimal minPrice,
-			@RequestParam(value = "maxPrice") final BigDecimal maxPrice) {
+			@RequestParam(value = "minPrice", required = false) final BigDecimal minPrice,
+			@RequestParam(value = "maxPrice", required = false) final BigDecimal maxPrice) {
+		
+		System.out.println(minPrice);
+		System.out.println(maxPrice);
 		
 		final Filter filter = FilterBuilder
 				.create()
@@ -45,7 +48,7 @@ public class StoreItemController {
 		
 		final ModelAndView modelAndView = new ModelAndView("products");
 		
-		modelAndView.addObject("storeItems", storeService.findByTerm(query));
+		modelAndView.addObject("storeItems", storeService.findByTerm(query, filter));
 		modelAndView.addObject("query", query);
 		modelAndView.addObject("pageNumber", pageNumber);
 		

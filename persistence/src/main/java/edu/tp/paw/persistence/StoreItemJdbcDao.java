@@ -26,9 +26,30 @@ import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.model.filter.Filter;
+import edu.tp.paw.model.filter.PriceFilter;
+import edu.tp.paw.model.filter.Range;
 
 @Repository
 public class StoreItemJdbcDao implements IStoreItemDao {
+
+	private static final String ORDER_DESCENDING = "DESC";
+
+	private static final String ORDER_ASCENDING = "ASC";
+
+	private static final String TERM_BASED_QUERY_SQL = "select * "
+	+ "from store_items "
+	+ "where "
+	+ "("
+	+ "lower(name) LIKE '%' || ? || '%' "
+	+ "OR "
+	+ "lower(description) LIKE '%' || ? || '%' "
+	+ "OR "
+	+ "category in ("
+		+ "select store_categories.category_id "
+		+ "from store_categories "
+		+ "where lower(store_items.name) LIKE '%' || ? || '%'"
+		+ ")"
+	+ ")";
 
 	@Autowired
 	private CategoryJdbcDao categoryDao;
@@ -126,22 +147,7 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 				
 				jdbcTemplate
 				.query(
-						"select * "
-						+ "from store_items "
-						+ "where lower(name) LIKE '%' || ? || '%' "
-						+ "OR lower(description) LIKE '%' || ? || '%' "
-//						+ "OR exists ("
-//							+ "select * from store_categories "
-//							+ "where category_id = store_items.category and "
-//							+ "lower(name) like '%' || ? || '%'"
-//						+ ") "
-						+ "union all "
-						+ "select * from store_items "
-						+ "where category in ("
-							+ "select category_id "
-							+ "from store_categories "
-							+ "where lower(name) LIKE '%' || ? || '%'"
-						+ ")",
+						TERM_BASED_QUERY_SQL,
 						rowMapper,
 						term.toLowerCase().replace("%", "\\%"),
 						term.toLowerCase().replace("%", "\\%"),
@@ -218,35 +224,89 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 	@Override
 	public List<StoreItem> findByTerm(String term, Filter filter) {
 		
+		// build sql from filter
+		final PriceFilter priceFilter = filter.getPriceFilter();
+		final Range<BigDecimal> priceRange = priceFilter.getPriceRange();
 		
-return
-				
+		String query = TERM_BASED_QUERY_SQL;
+		
+		System.out.println(priceRange.lowerBoundType());
+		System.out.println(priceRange.upperBoundType());
+		
+		System.out.println(priceRange.hasLowerBound());
+		System.out.println(priceRange.hasUpperBound());
+		
+		if (priceRange.hasLowerBound() || priceRange.hasUpperBound()) {
+			query += " and ";
+			
+			if (priceRange.hasLowerBound() && priceRange.hasUpperBound()) {
+				query += "price <= ? && ? <= price";
+			} else if (priceRange.hasLowerBound()) {
+				query += "? <= price";
+			} else {
+				query += "price <= ?";
+			}
+		}
+		
+		query += " order by price " + (priceFilter.getSortOrder() == Filter.SortOrder.ASC ? ORDER_ASCENDING : ORDER_DESCENDING);
+		
+		System.out.println(priceRange);
+		System.out.println(query);
+		
+		if (priceRange.hasLowerBound() && priceRange.hasUpperBound()) {
+			return
+					jdbcTemplate
+					.query(
+							query,
+							rowMapper,
+							term.toLowerCase().replace("%", "\\%"),
+							term.toLowerCase().replace("%", "\\%"),
+							term.toLowerCase().replace("%", "\\%"),
+							priceRange.upperBoundType() == Range.BoundType.CLOSED
+							? priceRange.upperBound().get()
+							: priceRange.upperBound().get().subtract(new BigDecimal(1)),
+							priceRange.lowerBoundType() == Range.BoundType.CLOSED
+							? priceRange.lowerBound().get()
+							: priceRange.lowerBound().get().add(new BigDecimal(1))
+					);
+		} else if (priceRange.hasLowerBound()) {
+			return
+					jdbcTemplate
+					.query(
+							query,
+							rowMapper,
+							term.toLowerCase().replace("%", "\\%"),
+							term.toLowerCase().replace("%", "\\%"),
+							term.toLowerCase().replace("%", "\\%"),
+							priceRange.lowerBoundType() == Range.BoundType.CLOSED
+							? priceRange.lowerBound().get()
+							: priceRange.lowerBound().get().add(new BigDecimal(1))
+					);
+		} else if (priceRange.hasUpperBound()) {
+			return
+					jdbcTemplate
+					.query(
+							query,
+							rowMapper,
+							term.toLowerCase().replace("%", "\\%"),
+							term.toLowerCase().replace("%", "\\%"),
+							term.toLowerCase().replace("%", "\\%"),
+							priceRange.upperBoundType() == Range.BoundType.CLOSED
+							? priceRange.upperBound().get()
+							: priceRange.upperBound().get().subtract(new BigDecimal(1))
+					);
+		} else {
+	
+			return
 				jdbcTemplate
 				.query(
-						"select * "
-						+ "from store_items "
-						+ "where "
-						+ "lower(name) LIKE '%' || ? || '%' "
-						+ "OR "
-						+ "lower(description) LIKE '%' || ? || '%' "
-//						+ "OR exists ("
-//							+ "select * from store_categories "
-//							+ "where category_id = store_items.category and "
-//							+ "lower(name) like '%' || ? || '%'"
-//						+ ") "
-						+ "union all "
-						+ "select * from store_items "
-						+ "where category in ("
-							+ "select category_id "
-							+ "from store_categories "
-							+ "where lower(name) LIKE '%' || ? || '%'"
-						+ ") ",
+						query,
 						rowMapper,
 						term.toLowerCase().replace("%", "\\%"),
 						term.toLowerCase().replace("%", "\\%"),
 						term.toLowerCase().replace("%", "\\%")
-//						term.toLowerCase().replace("%", "\\%")
 				);
+		}
 	}
 
 	

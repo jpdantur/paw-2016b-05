@@ -80,7 +80,7 @@ public class StoreItemService implements IStoreItemService {
 	@Override
 	public List<StoreItem> findByTerm(String term, Filter filter) {
 		
-		return null;
+		return storeItemDao.findByTerm(term, filter);
 	}
 	
 	
