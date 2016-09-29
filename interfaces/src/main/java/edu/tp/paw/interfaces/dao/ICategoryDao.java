@@ -37,6 +37,7 @@ public interface ICategoryDao {
 	 * @param category The category to be updated
 	 * @param path The new path
 	 * @return The updated category
+	 * @deprecated
 	 */
 	public Category updatePath(Category category, String path);
 	

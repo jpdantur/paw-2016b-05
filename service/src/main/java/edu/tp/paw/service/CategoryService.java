@@ -16,7 +16,7 @@ import edu.tp.paw.model.CategoryBuilder;
 public class CategoryService implements ICategoryService {
 	
 	private static final long ROOT_CATEGORY_ID = 0;
-	private static final String CATEGORY_PATH_SEPARATOR = "#";
+//	private static final String CATEGORY_PATH_SEPARATOR = "#";
 	@Autowired
 	private ICategoryDao categoryDao; 
 	
@@ -26,39 +26,7 @@ public class CategoryService implements ICategoryService {
 	@Override
 	public Category create(String name, long parent) {
 		
-		if (name == null) {
-			throw new IllegalArgumentException("name cant be null");
-		}
-		
-		if (name.trim().length() == 0) {
-			throw new IllegalArgumentException("name cant be empty");
-		}
-		
-		if (parent < ROOT_CATEGORY_ID) {
-			throw new IllegalArgumentException("invalid category");
-		}
-		
-		Category parentCategory = null;
-		
-		if (parent != ROOT_CATEGORY_ID) {
-			parentCategory = findById(parent);
-			
-			if (parentCategory == null) {
-				throw new IllegalArgumentException("category does not exist");
-			}
-		}
-		
-		Category category = categoryDao.create(name, parent);
-		
-		String categoryPath = Long.toString(category.getId());
-		
-		if (parentCategory != null) {
-			categoryPath = parentCategory.getPath()+CATEGORY_PATH_SEPARATOR+Long.toString(category.getId());
-		}
-		
-		category = categoryDao.updatePath(category, categoryPath);
-		
-		return category;
+		throw new UnsupportedOperationException("create is to be used with a builder");
 	}
 	
 	/* (non-Javadoc)
@@ -82,28 +50,6 @@ public class CategoryService implements ICategoryService {
 		Category category = categoryDao.create(builder);
 		
 		return category;
-		
-//		Category parentCategory = null;
-//		
-//		if (builder.getParent() != ROOT_CATEGORY_ID) {
-//			parentCategory = findById(builder.getParent());
-//			
-//			if (parentCategory == null) {
-//				throw new IllegalArgumentException("category does not exist");
-//			}
-//		}
-//		
-//		Category category = categoryDao.create(builder);
-//		
-//		String categoryPath = Long.toString(category.getId());
-//		
-//		if (parentCategory != null) {
-//			categoryPath = parentCategory.getPath()+CATEGORY_PATH_SEPARATOR+Long.toString(category.getId());
-//		}
-//		
-//		category = categoryDao.updatePath(category, categoryPath);
-//		
-//		return category;
 	}
 
 	public boolean exists(long id) {
@@ -116,12 +62,6 @@ public class CategoryService implements ICategoryService {
 	 */
 	@Override
 	public Category findById(long id) {
-		
-//		Category category = fin
-		
-//		if (id < ROOT_CATEGORY_ID) {
-//			throw new IllegalArgumentException("id cant be negative");
-//		}
 		
 		return categoryDao.findById(id);
 	}
@@ -142,10 +82,6 @@ public class CategoryService implements ICategoryService {
 		
 		return assembleCategoryTree(category, descendants);
 	}
-
-//	private static boolean isSubcategoryOf(final Category assumedParent, final Category child) {
-//		return child.getPath().startsWith(assumedParent.getPath());
-//	}
 	
 	/**
 	 * Checks if #{child} is a subcategory of #{assumedParent}
