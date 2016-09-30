@@ -19,6 +19,11 @@ $ document .ready !->
 			$ \.navbar-brand .animate do
 				'font-size': '2em'
 
+	$ \#simple-search-form .submit (e) !->
+
+		if $ .trim($ \#simple-search-input .val!) == ''
+			e.preventDefault!
+
 	$ \#link-busqueda-compleja .click (e) !->
 
 		e.preventDefault!

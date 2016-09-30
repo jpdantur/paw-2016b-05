@@ -65,6 +65,8 @@ public class StoreController {
 			BindingResult bindingResult,
 			Model model) {
 		
+		System.out.println(form);
+		
 		if (!bindingResult.hasErrors()) {
 			
 			Category category = categoryService.findById(form.getCategoryId());

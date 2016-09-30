@@ -1,6 +1,7 @@
 package edu.tp.paw.webapp.controller;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,6 +22,7 @@ import edu.tp.paw.webapp.exceptions.StoreItemNotFoundException;
 @Controller
 public class StoreItemController {
 
+	private static final int NUMBER_OF_ITEMS_PER_PAGE = 20;
 	@Autowired
 	private IStoreItemService storeItemService;
 	@Autowired
@@ -36,21 +38,25 @@ public class StoreItemController {
 			@RequestParam(value = "minPrice", required = false) final BigDecimal minPrice,
 			@RequestParam(value = "maxPrice", required = false) final BigDecimal maxPrice) {
 		
-		System.out.println(minPrice);
-		System.out.println(maxPrice);
-		
 		final Filter filter = FilterBuilder
 				.create()
 				.price()
 					.between(minPrice, maxPrice)
 				.end()
+				.page()
+					.size(NUMBER_OF_ITEMS_PER_PAGE)
+					.take(pageNumber)
+				.end()
 				.build();
 		
 		final ModelAndView modelAndView = new ModelAndView("products");
 		
-		modelAndView.addObject("storeItems", storeService.findByTerm(query, filter));
+		final List<StoreItem> items = storeService.findByTerm(query, filter);
+		
+		modelAndView.addObject("storeItems", items);
 		modelAndView.addObject("query", query);
 		modelAndView.addObject("pageNumber", pageNumber);
+		modelAndView.addObject("numberOfResults", items.size());
 		
 		return modelAndView;
 	}

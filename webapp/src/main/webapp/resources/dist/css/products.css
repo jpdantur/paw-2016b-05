@@ -1,0 +1,12 @@
+.product-container {
+  background-color: white;
+  height: 248px;
+  padding: 10px;
+  margin: 5px;
+  border: 1px solid #eee;
+  border-radius: 7px;
+  -o-border-radius: 7px;
+  -moz-border-radius: 7px;
+  -webkit-border-radius: 7px; }
+  .product-container:hover {
+    background-color: #fafafa; }

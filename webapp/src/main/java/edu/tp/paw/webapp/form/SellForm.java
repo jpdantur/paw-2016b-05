@@ -72,6 +72,13 @@ public class SellForm {
 	public void setPrice(BigDecimal price) {
 		this.price = price;
 	}
+
+	@Override
+	public String toString() {
+		return "SellForm [name=" + name + ", description=" + description
+				+ ", price=" + price + ", categoryId=" + categoryId + ", email="
+				+ email + "]";
+	}
 	
 	
 	

@@ -1,0 +1,19 @@
+@mixin border-radius($property) {
+	border-radius: $property;
+	-o-border-radius: $property;
+	-moz-border-radius: $property;
+	-webkit-border-radius: $property;
+}
+
+.product-container {
+	background-color: white;
+	height: 248px;
+	padding: 10px;
+	margin: 5px;
+	border: 1px solid #eee;
+	@include border-radius(7px);
+	
+	&:hover {
+		background-color: #fafafa;
+	}
+}

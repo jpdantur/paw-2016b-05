@@ -26,6 +26,8 @@ import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.model.filter.Filter;
+import edu.tp.paw.model.filter.PageFilter;
+import edu.tp.paw.model.filter.PagedResult;
 import edu.tp.paw.model.filter.PriceFilter;
 import edu.tp.paw.model.filter.Range;
 
@@ -36,7 +38,8 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 
 	private static final String ORDER_ASCENDING = "ASC";
 
-	private static final String TERM_BASED_QUERY_SQL = "select * "
+	private static final String TERM_BASED_QUERY_SQL =
+		"select item_id, name, description, price, category, email, sold, count(*) OVER() as total_count "
 	+ "from store_items "
 	+ "where "
 	+ "("
@@ -47,7 +50,7 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 	+ "category in ("
 		+ "select store_categories.category_id "
 		+ "from store_categories "
-		+ "where lower(store_items.name) LIKE '%' || ? || '%'"
+		+ "where lower(store_categories.name) LIKE '%' || ? || '%'"
 		+ ")"
 	+ ")";
 
@@ -184,7 +187,7 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 		args.put("name", builder.getName());
 		args.put("description", builder.getDescription());
 		args.put("price", builder.getPrice());
-		args.put("category", builder.getCategory());
+		args.put("category", builder.getCategory().getId());
 		args.put("email", builder.getEmail());
 		
 		final Number storeItemId = jdbcInsert.executeAndReturnKey(args);
@@ -230,11 +233,6 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 		
 		String query = TERM_BASED_QUERY_SQL;
 		
-		System.out.println(priceRange.lowerBoundType());
-		System.out.println(priceRange.upperBoundType());
-		
-		System.out.println(priceRange.hasLowerBound());
-		System.out.println(priceRange.hasUpperBound());
 		
 		if (priceRange.hasLowerBound() || priceRange.hasUpperBound()) {
 			query += " and ";
@@ -250,15 +248,41 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 		
 		query += " order by price " + (priceFilter.getSortOrder() == Filter.SortOrder.ASC ? ORDER_ASCENDING : ORDER_DESCENDING);
 		
-		System.out.println(priceRange);
+		final PageFilter pageFilter = filter.getPageFilter();
+		
+		query += " limit ? offset ?";
+		
+		final PagedResult<StoreItem> pagedResult = new PagedResult<>();
+		
+		pagedResult.setCurrentPage(pageFilter.getPageNumber());
+		pagedResult.setPageSize(pageFilter.getPageSize());
+		
+		final RowMapper<StoreItem> mapper = (ResultSet resultSet, int rowNum) -> {
+			
+			pagedResult.setNumberOfTotalResults(resultSet.getInt("total_count"));
+			
+			return new StoreItemBuilder(
+					resultSet.getString("name"),
+					resultSet.getString("description"),
+					resultSet.getBigDecimal("price"),
+					categoryDao.findById(resultSet.getLong("category")),
+					resultSet.getString("email")
+				)
+				.id(resultSet.getLong("item_id"))
+				.sold(resultSet.getInt("sold"))
+				.build();
+		};
+		
+		List<StoreItem> results;
+		
 		System.out.println(query);
 		
 		if (priceRange.hasLowerBound() && priceRange.hasUpperBound()) {
-			return
+			results =
 					jdbcTemplate
 					.query(
 							query,
-							rowMapper,
+							mapper,
 							term.toLowerCase().replace("%", "\\%"),
 							term.toLowerCase().replace("%", "\\%"),
 							term.toLowerCase().replace("%", "\\%"),
@@ -267,46 +291,65 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 							: priceRange.upperBound().get().subtract(new BigDecimal(1)),
 							priceRange.lowerBoundType() == Range.BoundType.CLOSED
 							? priceRange.lowerBound().get()
-							: priceRange.lowerBound().get().add(new BigDecimal(1))
+							: priceRange.lowerBound().get().add(new BigDecimal(1)),
+							pageFilter.getPageSize(),
+							pageFilter.getPageNumber()*pageFilter.getPageSize()
 					);
 		} else if (priceRange.hasLowerBound()) {
-			return
+			results =
 					jdbcTemplate
 					.query(
 							query,
-							rowMapper,
+							mapper,
 							term.toLowerCase().replace("%", "\\%"),
 							term.toLowerCase().replace("%", "\\%"),
 							term.toLowerCase().replace("%", "\\%"),
 							priceRange.lowerBoundType() == Range.BoundType.CLOSED
 							? priceRange.lowerBound().get()
-							: priceRange.lowerBound().get().add(new BigDecimal(1))
+							: priceRange.lowerBound().get().add(new BigDecimal(1)),
+							pageFilter.getPageSize(),
+							pageFilter.getPageNumber()*pageFilter.getPageSize()
 					);
 		} else if (priceRange.hasUpperBound()) {
-			return
+			results =
 					jdbcTemplate
 					.query(
 							query,
-							rowMapper,
+							mapper,
 							term.toLowerCase().replace("%", "\\%"),
 							term.toLowerCase().replace("%", "\\%"),
 							term.toLowerCase().replace("%", "\\%"),
 							priceRange.upperBoundType() == Range.BoundType.CLOSED
 							? priceRange.upperBound().get()
-							: priceRange.upperBound().get().subtract(new BigDecimal(1))
+							: priceRange.upperBound().get().subtract(new BigDecimal(1)),
+							pageFilter.getPageSize(),
+							pageFilter.getPageNumber()*pageFilter.getPageSize()
 					);
 		} else {
 	
-			return
+			results =
 				jdbcTemplate
 				.query(
 						query,
-						rowMapper,
+						mapper,
 						term.toLowerCase().replace("%", "\\%"),
 						term.toLowerCase().replace("%", "\\%"),
-						term.toLowerCase().replace("%", "\\%")
+						term.toLowerCase().replace("%", "\\%"),
+						pageFilter.getPageSize(),
+						pageFilter.getPageNumber()*pageFilter.getPageSize()
 				);
 		}
+		
+		
+		
+		pagedResult.setNumberOfAvailableResults(results.size());
+		
+		System.out.println(results.size());
+		System.out.println(pagedResult.getNumberOfTotalResults());
+		System.out.println(pagedResult.getNumberOfAvailableResults());
+		
+		
+		return results;
 	}
 
 	

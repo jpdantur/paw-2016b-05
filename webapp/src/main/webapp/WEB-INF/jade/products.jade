@@ -1,6 +1,12 @@
 extends layout
 
+block styles
+	link(href="#{context.url('/resources/dist/css/products.css')}", rel="stylesheet")
+block scripts
+	script(src="#{context.url('/resources/dist/js/products.js')}", type="text/javascript")
+
 block content
+	include mixins/product
 	header.navbar.navbar-fixed-top#top-navbar
 		div.container
 			div.navbar-header
@@ -19,7 +25,7 @@ block content
 				form.navbar-form#navbar-search(action="#{context.url('/items')}")
 					div.form-group(style="width:50%")
 						div.input-group
-							input.form-control(type="text", placeholder="Busqueda de productos", style="width:100%", name="query")
+							input.form-control#navbar-query-input(type="text", placeholder="Busqueda de productos", style="width:100%", name="query")
 							span.input-group-btn(style="width:1%")
 								button.btn.btn-default(type="submit")
 									i.fa.fa-search
@@ -42,7 +48,8 @@ block content
 				if storeItems.size() == 0
 					h3.text-warning No hay productos que mostrar
 				each item in storeItems
-					div.col-sm-3
+					+product(item)
+					//-div.col-sm-3
 						a(href="#{context.url('/item/'+item.id)}")
 							img(src="http://lorempixel.com/200/200/fashion", style="width:100%;height:auto")
 						br

@@ -33,7 +33,7 @@ block content
 						div.col-sm-10
 							input.form-control(type="text", id="name", name="name", placeholder="Nombre", value="#{item.name?item.name:''}")
 							+errors(bindingResult, 'name')
-					div.form-group
+					div.form-group(class="#{bindingResult.hasFieldErrors('description')?'has-error':''}")
 						label.col-sm-2.control-label(for="description") Descripcion
 						div.col-sm-10
 							textarea.form-control(name="description", id="description", placeholder="Descripcion", value="#{item.description?item.description:''}", rows="12")

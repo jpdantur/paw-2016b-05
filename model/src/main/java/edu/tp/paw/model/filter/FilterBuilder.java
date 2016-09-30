@@ -5,6 +5,7 @@ import edu.tp.paw.model.IBuilder;
 public class FilterBuilder implements IBuilder<Filter> {
 
 	private final PriceFilterBuilder priceFilterBuilder = new PriceFilterBuilder(this);
+	private final PageFilterBuilder pageFilterBuilder = new PageFilterBuilder(this);
 	
 	private FilterBuilder() {
 		
@@ -18,8 +19,16 @@ public class FilterBuilder implements IBuilder<Filter> {
 		return priceFilterBuilder;
 	}
 	
+	public PageFilterBuilder page() {
+		return pageFilterBuilder;
+	}
+	
 	public PriceFilter getPriceFilter() {
 		return priceFilterBuilder.build();
+	}
+	
+	public PageFilter getPageFilter() {
+		return pageFilterBuilder.build();
 	}
 	
 	@Override

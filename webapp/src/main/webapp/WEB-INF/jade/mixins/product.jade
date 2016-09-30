@@ -1,0 +1,10 @@
+mixin product(item)
+	div.col-sm-3
+		div.product-container
+			a(href="#{context.url('/item/'+item.id)}")
+				img(src="http://lorempixel.com/200/200/fashion", style="width:100%;height:auto")
+			br
+			a(href="#{context.url('/item/'+item.id)}")
+				b #{item.name}
+			br
+			span $#{item.price}
