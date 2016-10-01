@@ -1,7 +1,5 @@
 package edu.tp.paw.model.filter;
 
-import java.math.BigDecimal;
-
 public class Filter {
 
 	public enum SortOrder {

@@ -8,6 +8,7 @@ import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.model.filter.Filter;
 import edu.tp.paw.model.filter.FilterBuilder;
+import edu.tp.paw.model.filter.PagedResult;
 
 public interface IStoreService {
 	
@@ -51,9 +52,17 @@ public interface IStoreService {
 	 * Retrieves a list of the store items that match #{term}
 	 * @param term The term to match
 	 * @return A list of the store items that match #{term}
+	 * @deprecated
 	 */
 	public List<StoreItem> findByTerm(final String term, final Filter filter);
+	/**
+	 * 
+	 * @param term
+	 * @param filter
+	 * @return
+	 * @deprecated
+	 */
 	public List<StoreItem> findByTerm(final String term, final FilterBuilder filter);
-	public List<StoreItem> findByTerm(final Filter filter);
-	public List<StoreItem> findByTerm(final FilterBuilder filter);
+	public PagedResult<StoreItem> findByTerm(final Filter filter);
+	public PagedResult<StoreItem> findByTerm(final FilterBuilder filter);
 }

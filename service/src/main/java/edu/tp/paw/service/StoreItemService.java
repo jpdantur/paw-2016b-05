@@ -17,6 +17,7 @@ import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.model.filter.Filter;
 import edu.tp.paw.model.filter.FilterBuilder;
+import edu.tp.paw.model.filter.PagedResult;
 
 
 @Service
@@ -103,13 +104,13 @@ public class StoreItemService implements IStoreItemService {
 	}
 
 	@Override
-	public List<StoreItem> findByTerm(Filter filter) {
+	public PagedResult<StoreItem> findByTerm(Filter filter) {
 		
 		return storeItemDao.findByTerm(filter);
 	}
 
 	@Override
-	public List<StoreItem> findByTerm(FilterBuilder filterBuilder) {
+	public PagedResult<StoreItem> findByTerm(FilterBuilder filterBuilder) {
 		
 		
 		Set<Category> categories = new HashSet<>(filterBuilder.category().getCategories());

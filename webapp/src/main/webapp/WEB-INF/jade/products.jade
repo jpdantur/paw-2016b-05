@@ -39,7 +39,9 @@ block content
 			div.col-sm-10
 				div.row
 					div.col-sm-6
-						span Su b&uacute;squeda ha producido #{storeItems.size()} resultado#{storeItems.size()!=1?'s':''}
+						span Su b&uacute;squeda ha producido #{numberOfResults} resultado#{numberOfResults!=1?'s':''}
+						| &nbsp;
+						span Mostrando #{shownResults}/#{numberOfResults} resultados
 					div.col-sm-6
 						//-form(action="#{context.url('/items')}")
 							input(type="hidden", name="query", value="#{query}")

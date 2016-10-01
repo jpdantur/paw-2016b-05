@@ -1,10 +1,7 @@
 package edu.tp.paw.persistence;
 
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -14,16 +11,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.stereotype.Repository;
-import org.springframework.util.StringUtils;
 
 import edu.tp.paw.interfaces.dao.ICategoryDao;
-import edu.tp.paw.interfaces.dao.IStoreItemDao;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.CategoryBuilder;
-import edu.tp.paw.model.StoreItem;
-import edu.tp.paw.model.StoreItemBuilder;
 
 @Repository
 public class CategoryJdbcDao implements ICategoryDao {

@@ -1,6 +1,5 @@
 package edu.tp.paw.model.filter;
 
-import java.util.List;
 import java.util.Set;
 
 import edu.tp.paw.model.Category;;

@@ -15,8 +15,8 @@ import edu.tp.paw.interfaces.service.ICategoryService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IStoreService;
 import edu.tp.paw.model.StoreItem;
-import edu.tp.paw.model.filter.Filter;
 import edu.tp.paw.model.filter.FilterBuilder;
+import edu.tp.paw.model.filter.PagedResult;
 import edu.tp.paw.webapp.exceptions.StoreItemNotFoundException;
 
 
@@ -65,12 +65,14 @@ public class StoreItemController {
 		
 		final ModelAndView modelAndView = new ModelAndView("products");
 		
-		final List<StoreItem> items = storeService.findByTerm(filter);
+		final PagedResult<StoreItem> items = storeService.findByTerm(filter);
 		
-		modelAndView.addObject("storeItems", items);
+		modelAndView.addObject("storeItems", items.getResults());
 		modelAndView.addObject("query", query);
 		modelAndView.addObject("pageNumber", pageNumber);
-		modelAndView.addObject("numberOfResults", items.size());
+		modelAndView.addObject("numberOfResults", items.getNumberOfTotalResults());
+		modelAndView.addObject("shownResults", items.getNumberOfAvailableResults());
+		modelAndView.addObject("pageSize", items.getPageSize());
 		
 		return modelAndView;
 	}

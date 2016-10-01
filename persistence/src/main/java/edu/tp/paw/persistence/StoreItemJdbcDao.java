@@ -34,8 +34,7 @@ import edu.tp.paw.model.filter.TermFilter;
 @Repository
 public class StoreItemJdbcDao implements IStoreItemDao {
 
-	private static final String ORDER_DESCENDING = "DESC";
-
+	private static final String ORDER_DESCENDING = "DESC";	
 	private static final String ORDER_ASCENDING = "ASC";
 
 	private static final String TERM_BASED_QUERY_SQL =
@@ -338,7 +337,7 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 	}
 
 	@Override
-	public List<StoreItem> findByTerm(Filter filter) {
+	public PagedResult<StoreItem> findByTerm(Filter filter) {
 		
 		StringBuilder query = new StringBuilder("select item_id, name, description, price, category, email, sold, count(*) OVER() as total_count from store_items where ");
 
@@ -417,7 +416,7 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 			System.out.println("logic: " + logicalOperator);
 			
 			if (logicalOperator) {
-				query.append(" or ");
+				query.append(" and ");
 			}
 			
 			query.append(" category in (:categories) ");
@@ -471,8 +470,9 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 		System.out.println(pagedResult.getNumberOfTotalResults());
 		System.out.println(pagedResult.getNumberOfAvailableResults());
 
+		pagedResult.setResults(results);
 
-		return results;
+		return pagedResult;
 	}
 
 

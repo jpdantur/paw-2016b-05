@@ -16,6 +16,7 @@ import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.model.filter.Filter;
 import edu.tp.paw.model.filter.FilterBuilder;
+import edu.tp.paw.model.filter.PagedResult;
 
 @Service
 public class StoreService implements IStoreService {
@@ -81,12 +82,12 @@ public class StoreService implements IStoreService {
 	}
 
 	@Override
-	public List<StoreItem> findByTerm(Filter filter) {
+	public PagedResult<StoreItem> findByTerm(Filter filter) {
 		return storeItemService.findByTerm(filter);
 	}
 
 	@Override
-	public List<StoreItem> findByTerm(FilterBuilder filter) {
+	public PagedResult<StoreItem> findByTerm(FilterBuilder filter) {
 		return storeItemService.findByTerm(filter);
 	}
 

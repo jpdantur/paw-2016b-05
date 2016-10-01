@@ -7,7 +7,7 @@ import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.model.filter.Filter;
-import edu.tp.paw.model.filter.FilterBuilder;
+import edu.tp.paw.model.filter.PagedResult;
 
 public interface IStoreItemDao {
 
@@ -34,7 +34,7 @@ public interface IStoreItemDao {
 	public List<StoreItem> findByTerm(final String term);
 	public List<StoreItem> findByTerm(final String term, final Filter filter);
 	
-	public List<StoreItem> findByTerm(final Filter filter);
+	public PagedResult<StoreItem> findByTerm(final Filter filter);
 	
 	/**
 	 * Retrieves a list of the store items with category in #{categories}
