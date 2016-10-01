@@ -11,10 +11,14 @@ public class Filter {
 	
 	private final PriceFilter priceFilter;
 	private final PageFilter pageFilter;
+	private final CategoryFilter categoryFilter;
+	private final TermFilter termFilter;
 	
 	/* package */ Filter(FilterBuilder builder) {
 		this.priceFilter = builder.getPriceFilter();
 		this.pageFilter = builder.getPageFilter();
+		this.categoryFilter = builder.getCategoryFilter();
+		this.termFilter = builder.getTermFilter();
 	}
 	
 	public PriceFilter getPriceFilter() {
@@ -23,6 +27,14 @@ public class Filter {
 	
 	public PageFilter getPageFilter() {
 		return pageFilter;
+	}
+	
+	public CategoryFilter getCategoryFilter() {
+		return categoryFilter;
+	}
+	
+	public TermFilter getTermFilter() {
+		return termFilter;
 	}
 	
 }

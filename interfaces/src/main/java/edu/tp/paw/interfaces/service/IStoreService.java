@@ -7,6 +7,7 @@ import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.model.filter.Filter;
+import edu.tp.paw.model.filter.FilterBuilder;
 
 public interface IStoreService {
 	
@@ -52,4 +53,7 @@ public interface IStoreService {
 	 * @return A list of the store items that match #{term}
 	 */
 	public List<StoreItem> findByTerm(final String term, final Filter filter);
+	public List<StoreItem> findByTerm(final String term, final FilterBuilder filter);
+	public List<StoreItem> findByTerm(final Filter filter);
+	public List<StoreItem> findByTerm(final FilterBuilder filter);
 }

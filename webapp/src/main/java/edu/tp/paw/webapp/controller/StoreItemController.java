@@ -2,6 +2,7 @@ package edu.tp.paw.webapp.controller;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -34,11 +35,14 @@ public class StoreItemController {
 	@RequestMapping(value = {"/items", "/items/"})
 	public ModelAndView itemBrowser(
 			@RequestParam(value = "pageNumber", defaultValue = "0") final int pageNumber,
-			@RequestParam(value = "query", defaultValue = "") final String query,
+			@RequestParam(value = "query", required = false) final String query,
 			@RequestParam(value = "minPrice", required = false) final BigDecimal minPrice,
-			@RequestParam(value = "maxPrice", required = false) final BigDecimal maxPrice) {
+			@RequestParam(value = "maxPrice", required = false) final BigDecimal maxPrice,
+			@RequestParam(value = "categories", required = false) final List<Long> categories) {
 		
-		final Filter filter = FilterBuilder
+		System.out.println(categories);
+		
+		final FilterBuilder filter = FilterBuilder
 				.create()
 				.price()
 					.between(minPrice, maxPrice)
@@ -47,11 +51,21 @@ public class StoreItemController {
 					.size(NUMBER_OF_ITEMS_PER_PAGE)
 					.take(pageNumber)
 				.end()
-				.build();
+				.term()
+					.whitelist(query)
+				.end();
+		if (categories != null) {
+			filter
+				.category()
+					.in(categories.stream().map((Long id) -> {
+						return categoryService.findById(id.longValue());
+					}).collect(Collectors.toList()))
+				.end();
+		}
 		
 		final ModelAndView modelAndView = new ModelAndView("products");
 		
-		final List<StoreItem> items = storeService.findByTerm(query, filter);
+		final List<StoreItem> items = storeService.findByTerm(filter);
 		
 		modelAndView.addObject("storeItems", items);
 		modelAndView.addObject("query", query);

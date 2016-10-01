@@ -1,11 +1,14 @@
 package edu.tp.paw.service;
 
 import java.math.BigDecimal;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import edu.tp.paw.interfaces.dao.ICategoryDao;
 import edu.tp.paw.interfaces.dao.IStoreItemDao;
 import edu.tp.paw.interfaces.service.ICategoryService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
@@ -13,6 +16,7 @@ import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.model.filter.Filter;
+import edu.tp.paw.model.filter.FilterBuilder;
 
 
 @Service
@@ -20,6 +24,9 @@ public class StoreItemService implements IStoreItemService {
 
 	@Autowired
 	private IStoreItemDao storeItemDao;
+	
+	@Autowired
+	private ICategoryDao categoryDao;
 
 	@Autowired
 	private ICategoryService categoryService;
@@ -81,6 +88,37 @@ public class StoreItemService implements IStoreItemService {
 	public List<StoreItem> findByTerm(String term, Filter filter) {
 		
 		return storeItemDao.findByTerm(term, filter);
+	}
+	
+	@Override
+	public List<StoreItem> findByTerm(String term, FilterBuilder filterBuilder) {
+		
+		Set<Category> categories = new HashSet<>(filterBuilder.category().getCategories());
+		
+		for (Category category : categories) {
+			filterBuilder.category().in(categoryDao.getDescendants(category));
+		}
+		
+		return storeItemDao.findByTerm(term, filterBuilder.build());
+	}
+
+	@Override
+	public List<StoreItem> findByTerm(Filter filter) {
+		
+		return storeItemDao.findByTerm(filter);
+	}
+
+	@Override
+	public List<StoreItem> findByTerm(FilterBuilder filterBuilder) {
+		
+		
+		Set<Category> categories = new HashSet<>(filterBuilder.category().getCategories());
+		
+		for (Category category : categories) {
+			filterBuilder.category().in(categoryDao.getDescendants(category));
+		}
+		
+		return storeItemDao.findByTerm(filterBuilder.build());
 	}
 	
 	
