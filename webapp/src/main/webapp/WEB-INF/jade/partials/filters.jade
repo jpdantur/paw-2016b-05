@@ -1,51 +1,34 @@
 div#filters
+	- min = filter.priceFilter.priceRange.lowerBound()
+	- max = filter.priceFilter.priceRange.upperBound()
+	if min.isPresent() || max.isPresent()
+		div.filter-content
+			div.filter-header
+				h6.filter-title Filtros Aplicados
+			div.filter-body
+				if min.isPresent() && max.isPresent()
+					div.applied-filter
+						button.close &times;
+						span $#{min.get()} - $#{max.get()}
+				else if min.isPresent()
+					div.applied-filter
+						button.close &times;
+						span A partir de $#{min.get()}
+				else
+					div.applied-filter
+						button.close &times;
+						span Hasta $#{max.get()}
 	div.filter-content
-		
-		div.filter-aerolinea
-			div.filter-title
-				i.fa.fa-plane
-				| &nbsp; Aerolínea
-			div.filter
-		div.filter-precio
-			div.filter-title
-				i.fa.fa-usd
-				| &nbsp; Precio
-			div.filter
-				b.left#min-filter
-				input#precio-filter
-				b.right#max-filter
-		div.filter-duration
-			div.filter-title
-				i.glyphicon.glyphicon-time
-				| &nbsp; Duraci&oacute;n
-			div.filter
-				b#min-duration-filter.left
-				input#duration-filter
-				b#max-duration-filter.right
-		//-div.filter-horario-salida
-			div.filter-title
-				i.fa.fa-hourglass-3
-				| &nbsp; Horarios
-			div.filter
-				h5 Salida
-				b.left 00:00
-				input#horario-salida-filter
-				b.right 23:30
-				h5 Llegada
-				b.left 00:00
-				input#horario-llegada-filter
-				b.right 23:30
-		div.filter-clase
-			div.filter-title
-				i.fa.fa-glass
-				| &nbsp; Clase
-			div.filter(style='padding:10px')
-				select.form-control#class-filter
-					option(value="ECONOMY") Turista
-					option(value="BUSINESS") Business
-					option(value="FIRST_CLASS") Primera
-	div.filter-header
-		span Filtros
-		br
-		i.fa.fa-cog
-	div.filter-footer
+		div.filter-header
+			h6.filter-title Precio
+		div.filter-body
+			div.col-sm-4
+				input.input-sm.form-control#filter-price-min(type="number", placeholder="Min", min=0, step=1, value="#{min.isPresent() ? min.get() : ''}")
+			div.col-sm-1.text-center
+				span.separator -
+			div.col-sm-4
+				input.input-sm.form-control#filter-price-max(type="number", placeholder="Max", min=0, step=1, value="#{max.isPresent() ? max.get() : ''}")
+			div.col-sm-2.col-sm-offset-1
+				a.btn.btn-primary.btn-sm.btn-block#filter-price-set(href="#")
+					i.fa.fa-chevron-right
+		div.filter-footer

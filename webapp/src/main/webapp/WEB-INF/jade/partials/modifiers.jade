@@ -1,0 +1,39 @@
+div.row.text-right#modifiers
+	div.col-sm-12
+		div.modifier
+			span.modifier-title Articulos:&nbsp;
+			span.modifier-content #{pageNumber*pageSize+1} - #{pageNumber*pageSize+shownResults}
+			span.modifier-title &nbsp;de&nbsp;
+			b #{numberOfResults}
+		div.modifier#modifier-page-size
+			span.modifier-title Mostrando&nbsp;
+			- pageSize = filter.pageFilter.pageSize;
+			a.modifier-option(href="#", class="#{pageSize == 20 ? 'selected' : ''}")
+				if pageSize == 20
+					b 20
+				else
+					span 20
+			div.space
+			a.modifier-option(href="#", class="#{pageSize == 40 ? 'selected' : ''}")
+				if pageSize == 40
+					b 40
+				else
+					span 40
+			div.space
+			a.modifier-option(href="#", class="#{pageSize == 100 ? 'selected' : ''}")
+				if pageSize == 100
+					b 100
+				else
+					span 100
+			div.space
+			a.modifier-option(href="#", class="#{pageSize == 200 ? 'selected' : ''}")
+				if pageSize == 200
+					b 200
+				else
+					span 200
+			span.modifier-title &nbsp; resultados por página
+		div.modifier#modifier-order
+			span.modifier-title Ordenar por:&nbsp;
+			select.form-control.input-xs#modifier-order-input
+				option(value="price-asc", selected) Menor Precio
+				option(value="price-desc") Mayor Precio

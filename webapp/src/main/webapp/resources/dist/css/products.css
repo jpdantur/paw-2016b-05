@@ -1,6 +1,36 @@
+.input-xs {
+  height: 22px;
+  padding: 5px 5px;
+  font-size: 12px;
+  line-height: 1.5;
+  border-radius: 3px; }
+
+.input-group-xs > .form-control,
+.input-group-xs > .input-group-addon,
+.input-group-xs > .input-group-btn > .btn {
+  height: 22px;
+  padding: 1px 5px;
+  font-size: 12px;
+  line-height: 1.5; }
+
+#modifiers .modifier {
+  margin-left: 6px;
+  padding-right: 6px;
+  display: inline-block;
+  border-right: 1px solid #888; }
+  #modifiers .modifier .space {
+    display: inline-block;
+    width: 5px; }
+  #modifiers .modifier .modifier-title {
+    font-size: 12px;
+    color: #999; }
+  #modifiers .modifier .form-control.input-xs {
+    width: auto;
+    display: inline-block; }
+
 .product-container {
   background-color: white;
-  height: 248px;
+  height: 250px;
   padding: 10px;
   margin: 5px;
   border: 1px solid #eee;
@@ -9,4 +39,82 @@
   -moz-border-radius: 7px;
   -webkit-border-radius: 7px; }
   .product-container:hover {
-    background-color: #fafafa; }
+    background-color: #fafafa;
+    border-width: 7px; }
+  .product-container .product-title {
+    height: 18px;
+    line-height: 18px;
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; }
+  .product-container .product-description {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-height: 25px;
+    font-size: 12px;
+    margin: 0; }
+  .product-container .product-price {
+    color: #900; }
+
+#filters .filter-content .col-sm-1 {
+  padding: 0; }
+
+#filters .filter-content .col-sm-2 {
+  padding: 0; }
+
+#filters .filter-content .col-sm-3 {
+  padding: 0; }
+
+#filters .filter-content .col-sm-4 {
+  padding: 0; }
+
+#filters .filter-content .col-sm-5 {
+  padding: 0; }
+
+#filters .filter-content .col-sm-6 {
+  padding: 0; }
+
+#filters .filter-content .col-sm-7 {
+  padding: 0; }
+
+#filters .filter-content .col-sm-8 {
+  padding: 0; }
+
+#filters .filter-content .col-sm-9 {
+  padding: 0; }
+
+#filters .filter-content .col-sm-10 {
+  padding: 0; }
+
+#filters .filter-content .col-sm-11 {
+  padding: 0; }
+
+#filters .filter-content .col-sm-12 {
+  padding: 0; }
+
+#filters .filter-content .col-half {
+  width: 50%;
+  float: left;
+  position: relative; }
+
+#filters .filter-content .filter-header .filter-title {
+  font-weight: 700; }
+
+#filters .filter-content .filter-body .separator {
+  line-height: 30px; }
+
+#filters .filter-content .filter-body .applied-filter {
+  background-color: #777;
+  padding: 5px;
+  color: white;
+  font-size: 75%;
+  font-weight: 700;
+  vertical-align: baseline;
+  border-radius: 4px;
+  -o-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px; }
+  #filters .filter-content .filter-body .applied-filter .close {
+    line-height: 75%; }

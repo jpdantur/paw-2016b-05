@@ -4,7 +4,7 @@ mixin product(item)
 			a(href="#{context.url('/item/'+item.id)}")
 				img(src="http://lorempixel.com/200/200/fashion", style="width:100%;height:auto")
 			br
-			a(href="#{context.url('/item/'+item.id)}")
+			a.product-title(href="#{context.url('/item/'+item.id)}", title="#{item.name}")
 				b #{item.name}
-			br
-			span $#{item.price}
+			p.product-description(title="#{item.description}") #{item.description}
+			span.product-price $#{item.price}

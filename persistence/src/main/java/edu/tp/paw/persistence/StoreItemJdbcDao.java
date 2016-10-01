@@ -102,7 +102,7 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 				jdbcTemplate
 				.getJdbcOperations()
 				.query(
-						"select * from store_items where item_id = :id",
+						"select * from store_items where item_id = ?",
 						rowMapper,
 						id);
 
@@ -380,7 +380,7 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 			}
 			
 			if (priceRange.hasLowerBound() && priceRange.hasUpperBound()) {
-				query.append(" price <= :upperBound && :lowerBound <= price");
+				query.append(" price <= :upperBound and :lowerBound <= price");
 				params.addValue("lowerBound",
 						priceRange.lowerBoundType() == Range.BoundType.CLOSED
 						? priceRange.lowerBound().get()

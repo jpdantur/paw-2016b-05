@@ -5,9 +5,53 @@
 	-webkit-border-radius: $property;
 }
 
+.input-xs {
+	height: 22px;
+	padding: 5px 5px;
+	font-size: 12px;
+	line-height: 1.5;
+	border-radius: 3px;
+}
+
+.input-group-xs>.form-control,
+.input-group-xs>.input-group-addon,
+.input-group-xs>.input-group-btn>.btn {
+	height: 22px;
+	padding: 1px 5px;
+	font-size: 12px;
+	line-height: 1.5;
+}
+
+#modifiers {
+
+	.modifier {
+
+		margin-left: 6px;
+		padding-right: 6px;
+		display: inline-block;
+		border-right: 1px solid #888;
+
+		.space {
+			display: inline-block;
+			width: 5px;
+		}
+
+		.modifier-title {
+			font-size: 12px;
+			color: #999
+		}
+
+		.form-control.input-xs {
+			width: auto;
+			display: inline-block;
+		}
+	}
+
+}
+
 .product-container {
 	background-color: white;
-	height: 248px;
+	height: 250px;
 	padding: 10px;
 	margin: 5px;
 	border: 1px solid #eee;
@@ -15,5 +59,78 @@
 	
 	&:hover {
 		background-color: #fafafa;
+		border-width: 7px;
 	}
+
+	.product-title {
+		height: 18px;
+		line-height: 18px;
+		display: block;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.product-description {
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		max-height: 25px;
+		font-size: 12px;
+		margin: 0
+	}
+
+	.product-price {
+		color: #900
+	}
+}
+
+#filters {
+
+	.filter-content {
+
+		@for $i from 1 through 12 {
+			.col-sm-#{$i} { padding: 0 }
+		}
+
+		.col-half {
+			width: 50%;
+			float: left;
+			position: relative;
+		}
+
+		.filter-header {
+			.filter-title {
+				font-weight: 700
+			}
+		}
+
+		.filter-body {
+
+			.separator {
+				line-height: 30px
+			}
+
+			.applied-filter {
+				background-color: #777;
+				padding: 5px;
+				color: white;
+				font-size: 75%;
+				font-weight: 700;
+				vertical-align: baseline;
+				@include border-radius(4px);
+				
+				.close {
+					line-height: 75%;
+				}
+			}
+
+		}
+
+		.filter-footer {
+
+		}
+
+	}
+
 }

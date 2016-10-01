@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,14 +34,20 @@ public class StoreItemController {
 	private IStoreService storeService;
 	
 	@RequestMapping(value = {"/items", "/items/"})
-	public ModelAndView itemBrowser(
+	public String itemBrowser(
 			@RequestParam(value = "pageNumber", defaultValue = "0") final int pageNumber,
+			@RequestParam(value = "pageSize", defaultValue = "-1") int pageSize,
 			@RequestParam(value = "query", required = false) final String query,
 			@RequestParam(value = "minPrice", required = false) final BigDecimal minPrice,
 			@RequestParam(value = "maxPrice", required = false) final BigDecimal maxPrice,
-			@RequestParam(value = "categories", required = false) final List<Long> categories) {
+			@RequestParam(value = "categories[]", required = false) final List<Long> categories,
+			Model model) {
 		
 		System.out.println(categories);
+		
+		if (pageSize == -1) {
+			pageSize = NUMBER_OF_ITEMS_PER_PAGE;
+		}
 		
 		final FilterBuilder filter = FilterBuilder
 				.create()
@@ -48,7 +55,7 @@ public class StoreItemController {
 					.between(minPrice, maxPrice)
 				.end()
 				.page()
-					.size(NUMBER_OF_ITEMS_PER_PAGE)
+					.size(pageSize)
 					.take(pageNumber)
 				.end()
 				.term()
@@ -63,18 +70,28 @@ public class StoreItemController {
 				.end();
 		}
 		
-		final ModelAndView modelAndView = new ModelAndView("products");
+		final PagedResult<StoreItem> pagedResults = storeService.findByTerm(filter);
 		
-		final PagedResult<StoreItem> items = storeService.findByTerm(filter);
+		// if there is just one item show it
+		if (pagedResults.getNumberOfAvailableResults() == 1) {
+			return "redirect:/item/"+pagedResults.getResults().get(0).getId()+"?s=1";
+		}
 		
-		modelAndView.addObject("storeItems", items.getResults());
-		modelAndView.addObject("query", query);
-		modelAndView.addObject("pageNumber", pageNumber);
-		modelAndView.addObject("numberOfResults", items.getNumberOfTotalResults());
-		modelAndView.addObject("shownResults", items.getNumberOfAvailableResults());
-		modelAndView.addObject("pageSize", items.getPageSize());
+		model.addAttribute("storeItems", pagedResults.getResults());
+		model.addAttribute("query", query);
+		model.addAttribute("pageNumber", pageNumber);
+		model.addAttribute("numberOfResults", pagedResults.getNumberOfTotalResults());
+		model.addAttribute("shownResults", pagedResults.getNumberOfAvailableResults());
+		model.addAttribute("lastPage", pagedResults.getNumberOfTotalResults()/pagedResults.getPageSize());
+		model.addAttribute("pageSize", pagedResults.getPageSize());
+		model.addAttribute("filter", filter);
 		
-		return modelAndView;
+		System.out.println("pageSize: " + pagedResults.getPageSize());
+		System.out.println("numberOfResults: " + pagedResults.getNumberOfTotalResults());
+		System.out.println("shownResults: " + pagedResults.getNumberOfAvailableResults());
+		System.out.println("lastPage: " + (pagedResults.getNumberOfTotalResults()/pagedResults.getPageSize()));
+		
+		return "products";
 	}
 	
 	@RequestMapping("/items/category/{categoryId}")

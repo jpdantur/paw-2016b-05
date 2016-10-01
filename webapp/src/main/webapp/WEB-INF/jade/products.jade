@@ -25,7 +25,7 @@ block content
 				form.navbar-form#navbar-search(action="#{context.url('/items')}")
 					div.form-group(style="width:50%")
 						div.input-group
-							input.form-control#navbar-query-input(type="text", placeholder="Busqueda de productos", style="width:100%", name="query")
+							input.form-control#navbar-query-input(type="text", placeholder="Busqueda de productos", style="width:100%", name="query", value="#{query}")
 							span.input-group-btn(style="width:1%")
 								button.btn.btn-default(type="submit")
 									i.fa.fa-search
@@ -36,41 +36,27 @@ block content
 					i #{query}
 		div.row
 			div.col-sm-2
+				include partials/filters
 			div.col-sm-10
+				include partials/modifiers
 				div.row
-					div.col-sm-6
-						span Su b&uacute;squeda ha producido #{numberOfResults} resultado#{numberOfResults!=1?'s':''}
-						| &nbsp;
-						span Mostrando #{shownResults}/#{numberOfResults} resultados
-					div.col-sm-6
-						//-form(action="#{context.url('/items')}")
-							input(type="hidden", name="query", value="#{query}")
-							input(type="hidden", name="pageNumber", value="#{pageNumber}")
-							select(name="sortBy")
-				if storeItems.size() == 0
-					h3.text-warning No hay productos que mostrar
-				each item in storeItems
-					+product(item)
-					//-div.col-sm-3
-						a(href="#{context.url('/item/'+item.id)}")
-							img(src="http://lorempixel.com/200/200/fashion", style="width:100%;height:auto")
-						br
-						a(href="#{context.url('/item/'+item.id)}")
-							b #{item.name}
-						br
-						span $#{item.price}
-				//-div.col-sm-12
-					table.table
-						thead
-							th id
-							th Nombre
-							th Descripcion
-							th Precio
-						each storeItem in storeItems
-							tr
-								td #{storeItem.id}
-								td #{storeItem.name}
-								td #{storeItem.description}
-								td $#{storeItem.price}
-								
+					if storeItems.size() == 0
+						h3.text-warning No hay productos que mostrar
+					each item in storeItems
+						+product(item)
+				div.row
+					div.col-sm-12
+						ul.pager#filter-page(data-page="#{pageNumber}", data-last-page="#{lastPage}")
+							li.previous(class="#{pageNumber==0?'disabled':''}")
+									a.filter-page-action(href="#")
+										span &larr;
+										span Primera
+							li.pre(class="#{pageNumber==0?'disabled':''}")
+								a.filter-page-action(href="#") Anterior
+							li.ne(class="#{pageNumber==lastPage?'disabled':''}")
+								a.filter-page-action(href="#") Proxima
+							li.next(class="#{pageNumber==lastPage?'disabled':''}")
+									a.filter-page-action(href="#")
+										span Última
+										span &rarr;
 								
