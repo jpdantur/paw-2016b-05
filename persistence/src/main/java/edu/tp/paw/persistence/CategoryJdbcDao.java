@@ -23,11 +23,11 @@ public class CategoryJdbcDao implements ICategoryDao {
 	private static final String SQL_DESCENDANTS_OF =
 			"with recursive tree as "
 			+ "( "
-			+ "select category_id, name, created, last_updated, parent, (0 || '#' || category_id::text) as category_path "
+			+ "select category_id, name, created, last_updated, parent, (0 || '#' || cast (category_id as text)) as category_path "
 			+ "from store_categories "
 			+ "where category_id <> ? and parent = ? "
 			+ "union all "
-				+ "select c.category_id, c.name, c.created, c.last_updated, c.parent, (c2.category_path || '#' || c.category_id::text)::text as category_path "
+				+ "select c.category_id, c.name, c.created, c.last_updated, c.parent, (c2.category_path || '#' || cast (c.category_id as text)) as category_path "
 				+ "from store_categories as c "
 				+ "inner join tree as c2 on (c.parent=c2.category_id) where c.category_id <> 0 "
 			+ ") select * from tree order by name";
