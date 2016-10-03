@@ -11,7 +11,7 @@ $(document).ready(function(){
     pageNumber: 0
   };
   buildFilters = function(){
-    var minPrice, maxPrice, $filterOption, filterOption, $selectedCheckboxes;
+    var minPrice, maxPrice, $filterOption, filterOption, $selectedCheckboxes, $categoryLabels;
     minPrice = parseInt($('#filter-price-min').val() || -1);
     maxPrice = parseInt($('#filter-price-max').val() || -1);
     if (minPrice !== -1) {
@@ -33,9 +33,16 @@ $(document).ready(function(){
         return $(this).val();
       }).toArray();
     } else {
-      filters.categories = $('#category-filter label.parent-label').map(function(){
-        return $(this).data('id');
-      }).toArray();
+      $categoryLabels = $('#category-filter label.parent-label');
+      if ($categoryLabels.length > 0) {
+        filters.categories = $categoryLabels.map(function(){
+          return $(this).data('id');
+        }).toArray();
+      } else {
+        filters.categories = $('.applied-filter[data-category-id]').map(function(){
+          return $(this).data('category-id');
+        }).toArray();
+      }
     }
     console.log(filters);
   };

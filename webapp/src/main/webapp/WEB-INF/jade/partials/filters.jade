@@ -19,7 +19,7 @@ div#filters
 						button.close &times;
 						span Hasta $#{max.get()}
 				each category in selectedCategories
-					div.applied-filter
+					div.applied-filter(data-category-id="#{category.id}")
 						button.close &times;
 						span #{category.name}
 	div.filter-content

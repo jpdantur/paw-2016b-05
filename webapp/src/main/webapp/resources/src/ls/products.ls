@@ -39,10 +39,20 @@ $ document .ready !->
 					$ this .val!
 				.toArray!
 		else
-			filters.categories = $ '#category-filter label.parent-label'
-				.map ->
-					$ this .data 'id'
-				.toArray!
+
+			$categoryLabels = $ '#category-filter label.parent-label'
+
+			if $categoryLabels.length > 0
+
+				filters.categories = $categoryLabels
+					.map ->
+						$ this .data 'id'
+					.toArray!
+			else
+				filters.categories = $ '.applied-filter[data-category-id]'
+					.map ->
+						$ this .data 'category-id'
+					.toArray!
 
 		console.log filters
 

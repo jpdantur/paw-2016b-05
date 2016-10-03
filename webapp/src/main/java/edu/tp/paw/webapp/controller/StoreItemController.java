@@ -89,7 +89,7 @@ public class StoreItemController {
 		
 		// if there is just one item show it
 		if (pagedResults.getNumberOfAvailableResults() == 1) {
-			return "redirect:/item/"+pagedResults.getResults().get(0).getId()+"?s=1";
+			return "redirect:/item/"+pagedResults.getResults().get(0).getId();
 		}
 		
 		model.addAttribute("storeItems", pagedResults.getResults());

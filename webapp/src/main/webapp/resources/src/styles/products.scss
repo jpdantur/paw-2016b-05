@@ -130,8 +130,9 @@
 				font-size: 10px;
 				font-weight: 700;
 				vertical-align: baseline;
+				margin-bottom: 3px;
 				@include border-radius(4px);
-				
+
 				.close {
 					line-height: 75%;
 				}
