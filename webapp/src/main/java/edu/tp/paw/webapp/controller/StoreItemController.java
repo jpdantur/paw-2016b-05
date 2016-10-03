@@ -2,6 +2,7 @@ package edu.tp.paw.webapp.controller;
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,8 +16,12 @@ import org.springframework.web.servlet.ModelAndView;
 import edu.tp.paw.interfaces.service.ICategoryService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IStoreService;
+import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.filter.FilterBuilder;
+import edu.tp.paw.model.filter.OrderFilter;
+import edu.tp.paw.model.filter.OrderFilter.SortField;
+import edu.tp.paw.model.filter.OrderFilter.SortOrder;
 import edu.tp.paw.model.filter.PagedResult;
 import edu.tp.paw.webapp.exceptions.StoreItemNotFoundException;
 
@@ -33,11 +38,15 @@ public class StoreItemController {
 	@Autowired
 	private IStoreService storeService;
 	
+	
+	
 	@RequestMapping(value = {"/items", "/items/"})
 	public String itemBrowser(
 			@RequestParam(value = "pageNumber", defaultValue = "0") final int pageNumber,
 			@RequestParam(value = "pageSize", defaultValue = "-1") int pageSize,
 			@RequestParam(value = "query", required = false) final String query,
+			@RequestParam(value = "orderBy", required = false, defaultValue = "price") final String orderBy,
+			@RequestParam(value = "sortOrder", required = false, defaultValue = "asc") final String sortOrder,
 			@RequestParam(value = "minPrice", required = false) final BigDecimal minPrice,
 			@RequestParam(value = "maxPrice", required = false) final BigDecimal maxPrice,
 			@RequestParam(value = "categories[]", required = false) final List<Long> categories,
@@ -48,6 +57,10 @@ public class StoreItemController {
 		if (pageSize == -1) {
 			pageSize = NUMBER_OF_ITEMS_PER_PAGE;
 		}
+		
+		final List<Category> selectedCategories = categories.stream().map((Long id) -> {
+			return categoryService.findById(id.longValue());
+		}).collect(Collectors.toList());
 		
 		final FilterBuilder filter = FilterBuilder
 				.create()
@@ -60,13 +73,15 @@ public class StoreItemController {
 				.end()
 				.term()
 					.whitelist(query)
+				.end()
+				.sort()
+					.by(OrderFilter.orderByMapping.apply(orderBy))
+					.order(OrderFilter.sortOrderMapping.apply(sortOrder))
 				.end();
 		if (categories != null) {
 			filter
 				.category()
-					.in(categories.stream().map((Long id) -> {
-						return categoryService.findById(id.longValue());
-					}).collect(Collectors.toList()))
+					.in(selectedCategories)
 				.end();
 		}
 		
@@ -84,6 +99,9 @@ public class StoreItemController {
 		model.addAttribute("shownResults", pagedResults.getNumberOfAvailableResults());
 		model.addAttribute("lastPage", pagedResults.getNumberOfTotalResults()/pagedResults.getPageSize());
 		model.addAttribute("pageSize", pagedResults.getPageSize());
+		model.addAttribute("sort", String.format("%s-%s", orderBy, sortOrder));
+		model.addAttribute("similarCategories", categoryService.getChildren(filter.getCategoryFilter().getCategories()));
+		model.addAttribute("selectedCategories", selectedCategories);
 		model.addAttribute("filter", filter);
 		
 		System.out.println("pageSize: " + pagedResults.getPageSize());

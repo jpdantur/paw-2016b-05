@@ -11,7 +11,6 @@ public class PriceFilterBuilder implements IBuilder<PriceFilter> {
 	 
 	
 	private FilterBuilder filterBuilder;
-	private Filter.SortOrder sortOrder = Filter.SortOrder.ASC;
 	
 	public PriceFilterBuilder(FilterBuilder filterBuilder) {
 		this.filterBuilder = filterBuilder;
@@ -47,11 +46,6 @@ public class PriceFilterBuilder implements IBuilder<PriceFilter> {
 		return this;
 	}
 	
-	public PriceFilterBuilder order(Filter.SortOrder order) {
-		this.sortOrder = order;
-		return this;
-	}
-	
 	public FilterBuilder and() {
 		return filterBuilder;
 	}
@@ -62,10 +56,6 @@ public class PriceFilterBuilder implements IBuilder<PriceFilter> {
 
 	public Range<BigDecimal> getPriceRange() {
 		return priceRange;
-	}
-	
-	public Filter.SortOrder getSortOrder() {
-		return sortOrder;
 	}
 	
 	@Override

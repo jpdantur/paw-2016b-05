@@ -1,7 +1,7 @@
 div#filters
 	- min = filter.priceFilter.priceRange.lowerBound()
 	- max = filter.priceFilter.priceRange.upperBound()
-	if min.isPresent() || max.isPresent()
+	if min.isPresent() || max.isPresent() || selectedCategories.size() > 0
 		div.filter-content
 			div.filter-header
 				h6.filter-title Filtros Aplicados
@@ -9,26 +9,54 @@ div#filters
 				if min.isPresent() && max.isPresent()
 					div.applied-filter
 						button.close &times;
-						span $#{min.get()} - $#{max.get()}
+						span Entre $#{min.get()} y $#{max.get()}
 				else if min.isPresent()
 					div.applied-filter
 						button.close &times;
 						span A partir de $#{min.get()}
-				else
+				else if max.isPresent()
 					div.applied-filter
 						button.close &times;
 						span Hasta $#{max.get()}
+				each category in selectedCategories
+					div.applied-filter
+						button.close &times;
+						span #{category.name}
 	div.filter-content
 		div.filter-header
 			h6.filter-title Precio
 		div.filter-body
-			div.col-sm-4
-				input.input-sm.form-control#filter-price-min(type="number", placeholder="Min", min=0, step=1, value="#{min.isPresent() ? min.get() : ''}")
-			div.col-sm-1.text-center
-				span.separator -
-			div.col-sm-4
-				input.input-sm.form-control#filter-price-max(type="number", placeholder="Max", min=0, step=1, value="#{max.isPresent() ? max.get() : ''}")
-			div.col-sm-2.col-sm-offset-1
-				a.btn.btn-primary.btn-sm.btn-block#filter-price-set(href="#")
-					i.fa.fa-chevron-right
-		div.filter-footer
+			div.row
+				div.col-sm-4
+					input.input-sm.form-control#filter-price-min(type="number", placeholder="Min", min=0, step=1, value="#{min.isPresent() ? min.get() : ''}")
+				div.col-sm-1.text-center
+					span.separator -
+				div.col-sm-4
+					input.input-sm.form-control#filter-price-max(type="number", placeholder="Max", min=0, step=1, value="#{max.isPresent() ? max.get() : ''}")
+				div.col-sm-2.col-sm-offset-1
+					a.btn.btn-primary.btn-sm.btn-block#filter-price-set(href="#")
+						i.fa.fa-chevron-right
+	if similarCategories.size() > 0
+		div.filter-content#category-filter
+			div.filter-header
+				h6.filter-title Categorias
+			div.filter-body
+				if selectedCategories.size() > 1
+					- i = 0
+					- currentParent = -1
+					each category in similarCategories
+						if currentParent != category.parent
+							label.parent-label(data-id="#{selectedCategories.get(i).id}") #{selectedCategories.get(i).name}
+							- i = i+1
+							- currentParent = category.parent
+						div.checkbox.padding
+							label
+								input(type="checkbox", value="#{category.id}")
+								| #{category.name}
+				else
+					each category in similarCategories
+						div.checkbox
+							label
+								input(type="checkbox", value="#{category.id}")
+								| #{category.name}
+				button.btn.btn-primary.btn-xs.col-sm-6.col-sm-offset-6#category-filter-button(type="button") Aplicar

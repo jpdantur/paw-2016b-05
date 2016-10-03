@@ -1,6 +1,7 @@
 package edu.tp.paw.interfaces.service;
 
 import java.util.List;
+import java.util.Set;
 
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.CategoryBuilder;
@@ -26,6 +27,9 @@ public interface ICategoryService {
 	public Category findById(long id);
 	
 	public boolean exists(long id);
+	
+	public List<Category> getChildren(Category category);
+	public List<Category> getChildren(Set<Category> categories);
 	
 	/**
 	 * Finds category with certain id and builds tree with descendants

@@ -11,7 +11,7 @@ $(document).ready(function(){
     pageNumber: 0
   };
   buildFilters = function(){
-    var minPrice, maxPrice, $filterOption, filterOption;
+    var minPrice, maxPrice, $filterOption, filterOption, $selectedCheckboxes;
     minPrice = parseInt($('#filter-price-min').val() || -1);
     maxPrice = parseInt($('#filter-price-max').val() || -1);
     if (minPrice !== -1) {
@@ -27,6 +27,16 @@ $(document).ready(function(){
     filters.sortOrder = filterOption[1];
     filters.query = $('#navbar-query-input').val();
     filters.pageNumber = parseInt($('#filter-page').data('page'));
+    $selectedCheckboxes = $('#category-filter input:checked');
+    if ($selectedCheckboxes.length) {
+      filters.categories = $selectedCheckboxes.map(function(){
+        return $(this).val();
+      }).toArray();
+    } else {
+      filters.categories = $('#category-filter label.parent-label').map(function(){
+        return $(this).data('id');
+      }).toArray();
+    }
     console.log(filters);
   };
   buildFilters();
@@ -40,6 +50,12 @@ $(document).ready(function(){
     e.preventDefault();
     buildFilters();
     window.location.search = $.param(filters);
+  });
+  $('#filter-price-min, #filter-price-max').keydown(function(e){
+    console.log(e.keyCode);
+    if (e.keyCode === 13) {
+      $('#filter-price-set').click();
+    }
   });
   $('.modifier-option').click(function(e){
     var $self, $row;
@@ -78,6 +94,11 @@ $(document).ready(function(){
     if ($self.parent().hasClass('next')) {
       filters.pageNumber = parseInt($('#filter-page').data('last-page'));
     }
+    window.location.search = $.param(filters);
+  });
+  $('#category-filter-button').click(function(e){
+    e.preventDefault();
+    buildFilters();
     window.location.search = $.param(filters);
   });
 });

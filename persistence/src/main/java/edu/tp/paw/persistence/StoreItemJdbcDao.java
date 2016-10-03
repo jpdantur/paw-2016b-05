@@ -25,6 +25,8 @@ import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.model.filter.CategoryFilter;
 import edu.tp.paw.model.filter.Filter;
+import edu.tp.paw.model.filter.OrderFilter;
+import edu.tp.paw.model.filter.OrderFilter.*;
 import edu.tp.paw.model.filter.PageFilter;
 import edu.tp.paw.model.filter.PagedResult;
 import edu.tp.paw.model.filter.PriceFilter;
@@ -425,6 +427,37 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 			logicalOperator = true;
 			
 		}
+		
+		final OrderFilter orderFilter = filter.getOrderFilter();
+		
+		switch (orderFilter.getField()) {
+			case PRICE:
+				query.append(String.format(" order by %s ", "price"));
+				break;
+			case NAME:
+				query.append(String.format(" order by %s ", "name"));
+				break;
+
+			default:
+				query.append(String.format(" order by %s ", "price"));
+				break;
+		}
+		
+		switch (orderFilter.getOrder()) {
+			case ASC:
+				query.append(String.format(" %s ", ORDER_ASCENDING));
+				break;
+			case DESC:
+				query.append(String.format(" %s ", ORDER_DESCENDING));
+				break;
+				
+			default:
+				query.append(String.format(" %s ", ORDER_DESCENDING));
+				break;
+		}
+		
+		System.out.println(params.getValues());
+		
 
 		final PageFilter pageFilter = filter.getPageFilter();
 

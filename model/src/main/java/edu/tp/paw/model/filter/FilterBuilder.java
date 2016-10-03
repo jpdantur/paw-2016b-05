@@ -8,6 +8,7 @@ public class FilterBuilder implements IBuilder<Filter> {
 	private final PageFilterBuilder pageFilterBuilder = new PageFilterBuilder(this);
 	private final CategoryFilterBuilder categoryFilterBuilder = new CategoryFilterBuilder(this);
 	private final TermFilterBuilder termFilterBuilder = new TermFilterBuilder(this);
+	private final OrderFilterBuilder orderFilterBuilder = new OrderFilterBuilder(this);
 	
 	private FilterBuilder() {
 		
@@ -33,6 +34,11 @@ public class FilterBuilder implements IBuilder<Filter> {
 		return termFilterBuilder;
 	}
 	
+	public OrderFilterBuilder sort() {
+		return orderFilterBuilder;
+	}
+	
+	
 	
 	public PriceFilter getPriceFilter() {
 		return priceFilterBuilder.build();
@@ -48,6 +54,10 @@ public class FilterBuilder implements IBuilder<Filter> {
 	
 	public TermFilter getTermFilter() {
 		return termFilterBuilder.build();
+	}
+	
+	public OrderFilter getOrderFilter() {
+		return orderFilterBuilder.build();
 	}
 	
 	@Override

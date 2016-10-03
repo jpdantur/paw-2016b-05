@@ -31,6 +31,19 @@ $ document .ready !->
 
 		filters.pageNumber = parseInt($ \#filter-page .data('page'))
 
+		$selectedCheckboxes = $ '#category-filter input:checked'
+
+		if $selectedCheckboxes.length
+			filters.categories = $selectedCheckboxes
+				.map ->
+					$ this .val!
+				.toArray!
+		else
+			filters.categories = $ '#category-filter label.parent-label'
+				.map ->
+					$ this .data 'id'
+				.toArray!
+
 		console.log filters
 
 	buildFilters!
@@ -53,6 +66,11 @@ $ document .ready !->
 		buildFilters!
 
 		window.location.search = $.param(filters)
+
+	$ '#filter-price-min, #filter-price-max' .keydown (e) !->
+		console.log e.keyCode
+		if e.keyCode == 13
+			$ \#filter-price-set .click!
 
 	$ \.modifier-option .click (e) !->
 		e.preventDefault!
@@ -103,3 +121,11 @@ $ document .ready !->
 			filters.pageNumber = parseInt($ \#filter-page .data('last-page'))
 
 		window.location.search = $.param(filters)
+
+	$ \#category-filter-button .click (e) !->
+		e.preventDefault!
+
+		buildFilters!
+
+		window.location.search = $.param(filters)
+

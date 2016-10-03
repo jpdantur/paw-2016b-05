@@ -1,6 +1,9 @@
 package edu.tp.paw.service;
 
+import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -168,6 +171,26 @@ public class CategoryService implements ICategoryService {
 	public List<Category> getCategories() {
 		
 		return categoryDao.getChildren(ROOT_CATEGORY_ID);
+	}
+
+	@Override
+	public List<Category> getChildren(Category category) {
+		
+		return categoryDao.getChildren(category);
+		
+	}
+	
+	@Override
+	public List<Category> getChildren(Set<Category> categories) {
+		
+		List<Category> _categories = new LinkedList<>();
+		
+		for (Category category : categories) {
+			_categories.addAll(categoryDao.getChildren(category));
+		}
+		
+		return _categories;
+		
 	}
 	
 }

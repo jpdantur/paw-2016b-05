@@ -89,23 +89,35 @@
 
 	.filter-content {
 
+		margin-bottom: 12px;
+
+		.row {
+			margin: 0;
+		}
+
 		@for $i from 1 through 12 {
 			.col-sm-#{$i} { padding: 0 }
 		}
 
-		.col-half {
-			width: 50%;
-			float: left;
-			position: relative;
-		}
-
 		.filter-header {
 			.filter-title {
+				font-size: 13px;
 				font-weight: 700
 			}
+
 		}
 
 		.filter-body {
+
+			font-size: 11px;
+
+			.checkbox {
+				margin: 0;
+			}
+
+			.checkbox.padding {
+				margin-left: 10px;
+			}
 
 			.separator {
 				line-height: 30px
@@ -115,7 +127,7 @@
 				background-color: #777;
 				padding: 5px;
 				color: white;
-				font-size: 75%;
+				font-size: 10px;
 				font-weight: 700;
 				vertical-align: baseline;
 				@include border-radius(4px);

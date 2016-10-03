@@ -35,5 +35,15 @@ div.row.text-right#modifiers
 		div.modifier#modifier-order
 			span.modifier-title Ordenar por:&nbsp;
 			select.form-control.input-xs#modifier-order-input
-				option(value="price-asc", selected) Menor Precio
-				option(value="price-desc") Mayor Precio
+				if sort.equals('price-asc')
+					option(value="price-asc", selected) Menor Precio
+				else
+					option(value="price-asc") Menor Precio
+				if sort.equals('price-desc')
+					option(value="price-desc", selected) Mayor Precio
+				else
+					option(value="price-desc") Mayor Precio
+				if sort.equals('name-asc')
+					option(value="name-asc", selected) Orden Alfabetico
+				else
+					option(value="name-asc") Orden Alfabetico
