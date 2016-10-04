@@ -24,7 +24,7 @@ public interface IStoreItemService {
 	 * @param builder The StoreItembBuilder associated to the StoreItem
 	 * @return A new StoreItem
 	 */
-	public StoreItem create(StoreItemBuilder builder);
+	public StoreItem create(final StoreItemBuilder builder);
 	
 	/**
 	 * Retrieves a list of the n most sold items
@@ -33,8 +33,8 @@ public interface IStoreItemService {
 	 */
 	public List<StoreItem> fetchMostSold(final int n);
 	
-	public PagedResult<StoreItem> findByTerm(final Filter filter);
-	public PagedResult<StoreItem> findByTerm(final FilterBuilder filter);
+	public PagedResult<StoreItem> findByFiltering(final Filter filter);
+	public PagedResult<StoreItem> findByFiltering(final FilterBuilder filter);
 
 	
 

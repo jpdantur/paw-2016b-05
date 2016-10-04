@@ -13,13 +13,6 @@ public interface IStoreService {
 	
 	public StoreItem sell(final StoreItemBuilder builder);
 	
-	/**
-	 * Retrieves items from #{category}
-	 * @param category The category of the items
-	 * @return The found items
-	 */
-	public List<StoreItem> fetchItemsInCategory(final Category category);
-	
-	public PagedResult<StoreItem> findByTerm(final Filter filter);
-	public PagedResult<StoreItem> findByTerm(final FilterBuilder filter);
+	public PagedResult<StoreItem> search(final Filter filter);
+	public PagedResult<StoreItem> search(final FilterBuilder filter);
 }

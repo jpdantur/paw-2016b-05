@@ -38,6 +38,7 @@ public class StoreItemController {
 	
 	
 	
+	//TODO move all parameters to SearchForm
 	@RequestMapping(value = {"/items", "/items/"})
 	public String itemBrowser(
 			@RequestParam(value = "pageNumber", defaultValue = "0") final int pageNumber,
@@ -78,7 +79,7 @@ public class StoreItemController {
 				.end();
 		}
 		
-		final PagedResult<StoreItem> pagedResults = storeService.findByTerm(filter);
+		final PagedResult<StoreItem> pagedResults = storeService.search(filter);
 		
 		// if there is just one item just show it
 		if (pagedResults.getNumberOfAvailableResults() == 1) {

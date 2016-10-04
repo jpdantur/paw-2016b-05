@@ -25,16 +25,6 @@ public class StoreService implements IStoreService {
 	private ICategoryService categoryService;
 	@Autowired
 	private IStoreDao storeDao;
-	
-	
-	/* (non-Javadoc)
-	 * @see edu.tp.paw.interfaces.service.IStoreService#fetchItemsInCategory(edu.tp.paw.model.Category)
-	 */
-	@Override
-	public List<StoreItem> fetchItemsInCategory(final Category category) {
-		
-		return storeDao.findInCategory(category);
-	}
 
 	@Override
 	public StoreItem sell(StoreItemBuilder builder) {
@@ -42,13 +32,13 @@ public class StoreService implements IStoreService {
 	}
 
 	@Override
-	public PagedResult<StoreItem> findByTerm(Filter filter) {
-		return storeItemService.findByTerm(filter);
+	public PagedResult<StoreItem> search(Filter filter) {
+		return storeItemService.findByFiltering(filter);
 	}
 
 	@Override
-	public PagedResult<StoreItem> findByTerm(FilterBuilder filter) {
-		return storeItemService.findByTerm(filter);
+	public PagedResult<StoreItem> search(FilterBuilder filter) {
+		return storeItemService.findByFiltering(filter);
 	}
 
 }

@@ -55,13 +55,13 @@ public class StoreItemService implements IStoreItemService {
 	}
 
 	@Override
-	public PagedResult<StoreItem> findByTerm(Filter filter) {
+	public PagedResult<StoreItem> findByFiltering(Filter filter) {
 		
 		return storeItemDao.findByTerm(filter);
 	}
 
 	@Override
-	public PagedResult<StoreItem> findByTerm(FilterBuilder filterBuilder) {
+	public PagedResult<StoreItem> findByFiltering(FilterBuilder filterBuilder) {
 		
 		
 		Set<Category> categories = new HashSet<>(filterBuilder.category().getCategories());
