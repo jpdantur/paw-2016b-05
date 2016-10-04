@@ -17,18 +17,9 @@ import edu.tp.paw.model.CategoryBuilder;
 public class CategoryService implements ICategoryService {
 	
 	private static final long ROOT_CATEGORY_ID = 0;
-//	private static final String CATEGORY_PATH_SEPARATOR = "#";
-	@Autowired
-	private ICategoryDao categoryDao; 
 	
-	/* (non-Javadoc)
-	 * @see edu.tp.paw.interfaces.service.ICategoryService#create(java.lang.String, long)
-	 */
-	@Override
-	public Category create(String name, long parent) {
-		
-		throw new UnsupportedOperationException("create is to be used with a builder");
-	}
+	@Autowired
+	private ICategoryDao categoryDao;
 	
 	/* (non-Javadoc)
 	 * @see edu.tp.paw.interfaces.service.ICategoryService#create(java.lang.String, long)

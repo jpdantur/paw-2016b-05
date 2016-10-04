@@ -26,7 +26,6 @@ import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.model.filter.CategoryFilter;
 import edu.tp.paw.model.filter.Filter;
 import edu.tp.paw.model.filter.OrderFilter;
-import edu.tp.paw.model.filter.OrderFilter.*;
 import edu.tp.paw.model.filter.PageFilter;
 import edu.tp.paw.model.filter.PagedResult;
 import edu.tp.paw.model.filter.PriceFilter;

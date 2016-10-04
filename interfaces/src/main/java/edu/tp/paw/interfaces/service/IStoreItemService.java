@@ -1,6 +1,5 @@
 package edu.tp.paw.interfaces.service;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import edu.tp.paw.model.StoreItem;
@@ -22,17 +21,6 @@ public interface IStoreItemService {
 	 * Create a new StoreItem
 	 * 
 	 * 
-	 * @param name The name of the StoreItem
-	 * @param description The description of the StoreItem
-	 * @return A new StoreItem
-	 * @deprecated
-	 */
-	public StoreItem create(final String name, final String description, final BigDecimal price, long categoryId, String email);
-	
-	/**
-	 * Create a new StoreItem
-	 * 
-	 * 
 	 * @param builder The StoreItembBuilder associated to the StoreItem
 	 * @return A new StoreItem
 	 */
@@ -45,29 +33,6 @@ public interface IStoreItemService {
 	 */
 	public List<StoreItem> fetchMostSold(final int n);
 	
-	/**
-	 * Retrieves a list of the store items that match #{term}
-	 * @param term The term to match
-	 * @return A list of the store items that match #{term}
-	 * @deprecated
-	 */
-	public List<StoreItem> findByTerm(final String term);
-	/**
-	 * 
-	 * @param term
-	 * @param filter
-	 * @return
-	 * @deprecated
-	 */
-	public List<StoreItem> findByTerm(final String term, final Filter filter);
-	/**
-	 * 
-	 * @param term
-	 * @param filter
-	 * @return
-	 * @deprecated
-	 */
-	public List<StoreItem> findByTerm(final String term, final FilterBuilder filter);
 	public PagedResult<StoreItem> findByTerm(final Filter filter);
 	public PagedResult<StoreItem> findByTerm(final FilterBuilder filter);
 

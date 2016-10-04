@@ -3,7 +3,6 @@ package edu.tp.paw.webapp.controller;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +20,6 @@ import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.filter.FilterBuilder;
 import edu.tp.paw.model.filter.OrderFilter;
-import edu.tp.paw.model.filter.OrderFilter.SortField;
-import edu.tp.paw.model.filter.OrderFilter.SortOrder;
 import edu.tp.paw.model.filter.PagedResult;
 import edu.tp.paw.webapp.exceptions.StoreItemNotFoundException;
 
@@ -114,19 +111,6 @@ public class StoreItemController {
 		System.out.println("lastPage: " + (pagedResults.getNumberOfTotalResults()/pagedResults.getPageSize()));
 		
 		return "products";
-	}
-	
-	@RequestMapping("/items/category/{categoryId}")
-	public ModelAndView itemBrowser(
-			@PathVariable("categoryId") final int categoryId) {
-		
-		final ModelAndView modelAndView = new ModelAndView("products");
-		
-		modelAndView.addObject("storeItems", storeService.fetchItemsInCategory(categoryId));
-		modelAndView.addObject("query", categoryService.findById(categoryId).getName());
-		modelAndView.addObject("pageNumber", 0);
-		
-		return modelAndView;
 	}
 	
 	@RequestMapping("/item/{itemId}")

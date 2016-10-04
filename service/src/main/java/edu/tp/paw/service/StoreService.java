@@ -1,7 +1,5 @@
 package edu.tp.paw.service;
 
-import java.math.BigDecimal;
-import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,47 +36,9 @@ public class StoreService implements IStoreService {
 		return storeDao.findInCategory(category);
 	}
 
-	/* (non-Javadoc)
-	 * @see edu.tp.paw.interfaces.service.IStoreService#fetchItemsInCategory(long)
-	 */
-	@Override
-	public List<StoreItem> fetchItemsInCategory(final long categoryId) {
-		
-		Category category = categoryService.findById(categoryId);
-		
-		if (category == null) {
-			return new ArrayList<>();
-		}
-		
-		return fetchItemsInCategory(category);
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.tp.paw.interfaces.service.IStoreService#sell(java.lang.String, java.lang.String, float, long, java.lang.String)
-	 */
-	@Override
-	public StoreItem sell(String name, String description, BigDecimal price, long categoryId, String email) {
-		return storeItemService.create(name, description, price, categoryId, email);
-	}
-
 	@Override
 	public StoreItem sell(StoreItemBuilder builder) {
 		return storeItemService.create(builder);
-	}
-
-	@Override
-	public List<StoreItem> findByTerm(String term) {
-		return storeItemService.findByTerm(term);
-	}
-
-	@Override
-	public List<StoreItem> findByTerm(final String term, final Filter filter) {
-		return storeItemService.findByTerm(term, filter);
-	}
-	
-	@Override
-	public List<StoreItem> findByTerm(final String term, final FilterBuilder filter) {
-		return storeItemService.findByTerm(term, filter);
 	}
 
 	@Override
