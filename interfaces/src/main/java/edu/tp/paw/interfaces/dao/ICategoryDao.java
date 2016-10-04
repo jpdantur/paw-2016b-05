@@ -69,4 +69,6 @@ public interface ICategoryDao {
 	 */
 	public List<Category> getDescendants(Category category);
 	
+	public List<Category> getAll();
+	
 }

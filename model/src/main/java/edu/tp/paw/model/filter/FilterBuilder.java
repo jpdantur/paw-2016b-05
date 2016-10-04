@@ -30,7 +30,7 @@ public class FilterBuilder implements IBuilder<Filter> {
 		return categoryFilterBuilder;
 	}
 	
-	public TermFilterBuilder term() {
+	public TermFilterBuilder query() {
 		return termFilterBuilder;
 	}
 	

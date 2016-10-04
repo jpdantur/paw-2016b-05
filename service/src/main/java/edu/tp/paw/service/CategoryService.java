@@ -1,6 +1,5 @@
 package edu.tp.paw.service;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -168,7 +167,7 @@ public class CategoryService implements ICategoryService {
 	 * @see edu.tp.paw.interfaces.service.ICategoryService#getCategories()
 	 */
 	@Override
-	public List<Category> getCategories() {
+	public List<Category> getMainCategories() {
 		
 		return categoryDao.getChildren(ROOT_CATEGORY_ID);
 	}
@@ -191,6 +190,12 @@ public class CategoryService implements ICategoryService {
 		
 		return _categories;
 		
+	}
+
+	@Override
+	public List<Category> getCategories() {
+		
+		return categoryDao.getAll();
 	}
 	
 }

@@ -14,7 +14,7 @@ public class TermFilterBuilder implements IBuilder<TermFilter> {
 		this.filterBuilder = filterBuilder;
 	}
 	
-	public TermFilterBuilder whitelist(String term) {
+	public TermFilterBuilder text(String term) {
 		this.term = Optional.ofNullable(term);
 		return this;
 	}

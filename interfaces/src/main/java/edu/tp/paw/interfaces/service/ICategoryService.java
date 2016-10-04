@@ -48,4 +48,6 @@ public interface ICategoryService {
 	 */
 	public List<Category> getCategories();
 	
+	public List<Category> getMainCategories();
+	
 }

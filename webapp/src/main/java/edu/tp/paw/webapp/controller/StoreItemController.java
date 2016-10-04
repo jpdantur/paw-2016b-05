@@ -1,6 +1,7 @@
 package edu.tp.paw.webapp.controller;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -43,7 +44,7 @@ public class StoreItemController {
 	@RequestMapping(value = {"/items", "/items/"})
 	public String itemBrowser(
 			@RequestParam(value = "pageNumber", defaultValue = "0") final int pageNumber,
-			@RequestParam(value = "pageSize", defaultValue = "-1") int pageSize,
+			@RequestParam(value = "pageSize", defaultValue = NUMBER_OF_ITEMS_PER_PAGE+"") int pageSize,
 			@RequestParam(value = "query", required = false) final String query,
 			@RequestParam(value = "orderBy", required = false, defaultValue = "price") final String orderBy,
 			@RequestParam(value = "sortOrder", required = false, defaultValue = "asc") final String sortOrder,
@@ -54,31 +55,26 @@ public class StoreItemController {
 		
 		System.out.println(categories);
 		
-		if (pageSize == -1) {
-			pageSize = NUMBER_OF_ITEMS_PER_PAGE;
-		}
-		
-		final List<Category> selectedCategories = categories.stream().map((Long id) -> {
-			return categoryService.findById(id.longValue());
-		}).collect(Collectors.toList());
-		
 		final FilterBuilder filter = FilterBuilder
 				.create()
 				.price()
 					.between(minPrice, maxPrice)
-				.end()
-				.page()
+				.end().page()
 					.size(pageSize)
 					.take(pageNumber)
-				.end()
-				.term()
-					.whitelist(query)
-				.end()
-				.sort()
+				.end().query()
+					.text(query)
+				.end().sort()
 					.by(OrderFilter.orderByMapping.apply(orderBy))
 					.order(OrderFilter.sortOrderMapping.apply(sortOrder))
 				.end();
+		
+		List<Category> selectedCategories = new ArrayList<>();
+		
 		if (categories != null) {
+			selectedCategories = categories.stream().map((Long id) -> {
+				return categoryService.findById(id.longValue());
+			}).collect(Collectors.toList());
 			filter
 				.category()
 					.in(selectedCategories)
@@ -87,9 +83,17 @@ public class StoreItemController {
 		
 		final PagedResult<StoreItem> pagedResults = storeService.findByTerm(filter);
 		
-		// if there is just one item show it
+		// if there is just one item just show it
 		if (pagedResults.getNumberOfAvailableResults() == 1) {
 			return "redirect:/item/"+pagedResults.getResults().get(0).getId();
+		}
+		
+		final List<Category> similarCategories;
+		
+		if (!filter.getCategoryFilter().getCategories().isEmpty()) {
+			similarCategories = categoryService.getChildren(filter.getCategoryFilter().getCategories());
+		} else {
+			similarCategories = categoryService.getMainCategories();
 		}
 		
 		model.addAttribute("storeItems", pagedResults.getResults());
@@ -100,7 +104,7 @@ public class StoreItemController {
 		model.addAttribute("lastPage", pagedResults.getNumberOfTotalResults()/pagedResults.getPageSize());
 		model.addAttribute("pageSize", pagedResults.getPageSize());
 		model.addAttribute("sort", String.format("%s-%s", orderBy, sortOrder));
-		model.addAttribute("similarCategories", categoryService.getChildren(filter.getCategoryFilter().getCategories()));
+		model.addAttribute("similarCategories", similarCategories);
 		model.addAttribute("selectedCategories", selectedCategories);
 		model.addAttribute("filter", filter);
 		

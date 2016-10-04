@@ -200,10 +200,12 @@ public class CategoryJdbcDao implements ICategoryDao {
 	@Override
 	public List<Category> getChildren(long categoryId) {
 		
+		System.out.println("querying getChildren with: " + categoryId);
+		
 		return
 				jdbcTemplate
 				.query(
-						"select * from store_categories where parent = ?",
+						"select * from store_categories where parent = ? and category_id <> 0",
 						rowMapper,
 						categoryId);
 	}
@@ -215,6 +217,15 @@ public class CategoryJdbcDao implements ICategoryDao {
 	public List<Category> getChildren(Category category) {
 		
 		return getChildren(category.getId());
+	}
+
+	@Override
+	public List<Category> getAll() {
+		return
+				jdbcTemplate
+				.query(
+						"select * from store_categories category_id <> 0",
+						rowMapper);
 	}
 
 }
