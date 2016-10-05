@@ -11,7 +11,7 @@ block content
 	div.container
 		div.row
 			div.col-sm-12
-				h1 Resultados de la b&uacute;squeda&nbsp;
+				h1 #{messageSource.getMessage('search.searchResults', [], locale)}&nbsp;
 					i #{query}
 		div.row
 			div.col-sm-2
@@ -29,13 +29,13 @@ block content
 							li.previous(class="#{pageNumber==0?'disabled':''}")
 									a.filter-page-action(href="#")
 										span &larr;
-										span Primera
+										span #{messageSource.getMessage('search.filters.pagination.pagers.first', [], locale)}
 							li.pre(class="#{pageNumber==0?'disabled':''}")
-								a.filter-page-action(href="#") Anterior
+								a.filter-page-action(href="#") #{messageSource.getMessage('search.filters.pagination.pagers.previous', [], locale)}
 							li.ne(class="#{pageNumber==lastPage?'disabled':''}")
-								a.filter-page-action(href="#") Proxima
+								a.filter-page-action(href="#") #{messageSource.getMessage('search.filters.pagination.pagers.next', [], locale)}
 							li.next(class="#{pageNumber==lastPage?'disabled':''}")
 									a.filter-page-action(href="#")
-										span Última
+										span #{messageSource.getMessage('search.filters.pagination.pagers.last', [], locale)}
 										span &rarr;
 								

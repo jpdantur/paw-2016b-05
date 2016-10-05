@@ -1,6 +1,6 @@
 div.row
 	div.col-sm-12
-		h2.category-heading Categorias
+		h2.category-heading #{messageSource.getMessage('index.categories',[],locale)}
 		mixin children(categories, depth)
 			if depth <= 1
 				if depth == 0

@@ -28,4 +28,4 @@ block content
 						h1 #{storeItem.name}
 						p #{storeItem.description}
 						h3 $#{storeItem.price}
-						a.btn.btn-success.btn-lg(href="#", data-buyer-email="#{storeItem.email}") Comprar
+						a.btn.btn-success.btn-lg(href="#", data-buyer-email="#{storeItem.email}") #{messageSource.getMessage('item.buy', [], locale)}

@@ -1,8 +1,11 @@
 package edu.tp.paw.webapp.controller;
 
+import java.util.Locale;
+
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -21,7 +24,7 @@ import edu.tp.paw.webapp.form.SellForm;
 
 
 @Controller
-public class StoreController {
+public class StoreController extends BaseController {
 
 	private static final int MOST_SOLD_ITEMS = 6;
 	

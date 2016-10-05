@@ -12,11 +12,11 @@ header.navbar.navbar-fixed-top#top-navbar
 		nav.collapse.navbar-collapse#navbar-content
 			ul.nav.navbar-nav.navbar-right
 				li
-					a(href="#{context.url('/sell')}") Vender
+					a(href="#{context.url('/sell')}") #{messageSource.getMessage('index.sell', [], locale)}
 			form.navbar-form#navbar-search(action="#{context.url('/items')}")
 				div.form-group(style="width:50%")
 					div.input-group
-						input.form-control#navbar-query-input(type="text", placeholder="Busqueda de productos", style="width:100%", name="query", value="#{query!=null?query:''}")
+						input.form-control#navbar-query-input(type="text", placeholder="#{messageSource.getMessage('index.search',[],locale)}...", style="width:100%", name="query", value="#{query!=null?query:''}")
 						span.input-group-btn(style="width:1%")
 							button.btn.btn-default(type="submit")
 								i.fa.fa-search

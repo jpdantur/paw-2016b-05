@@ -29,16 +29,11 @@ import edu.tp.paw.webapp.form.SearchForm;
 
 
 @Controller
-public class StoreItemController {
+public class StoreItemController extends BaseController {
 
-	private static final int NUMBER_OF_ITEMS_PER_PAGE = 20;
-	@Autowired
-	private IStoreItemService storeItemService;
-	@Autowired
-	private ICategoryService categoryService;
-	
-	@Autowired
-	private IStoreService storeService;
+	@Autowired private IStoreItemService storeItemService;
+	@Autowired private ICategoryService categoryService;
+	@Autowired private IStoreService storeService;
 	
 	@RequestMapping(value = {"/items", "/items/"})
 	public String itemBrowser(

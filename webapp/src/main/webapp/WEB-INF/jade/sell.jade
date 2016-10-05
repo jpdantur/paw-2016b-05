@@ -1,52 +1,31 @@
 extends layout
 
 block content
-	header.navbar.navbar-fixed-top#top-navbar
-		div.container
-			div.navbar-header
-				button.navbar-toggle.collapsed(data-toggle="collapse", data-target="#main-navbar")
-					span.sr-only Toggle navigation
-					span.icon-bar
-					span.icon-bar
-					span.icon-bar
-				a.navbar-brand(href="#{context.url('/')}", style="font-size:2em")
-					i.fa.fa-shopping-basket
-					| &nbsp;SIGLAS
-			nav.collapse.navbar-collapse#navbar-content
-				ul.nav.navbar-nav.navbar-right
-					li
-						a(href="#{context.url('/sell')}") Vender
-				form.navbar-form#navbar-search(action="#{context.url('/items')}")
-					div.form-group(style="width:50%")
-						div.input-group
-							input.form-control(type="text", placeholder="Busqueda de productos", style="width:100%", name="query")
-							span.input-group-btn(style="width:1%")
-								button.btn.btn-default(type="submit")
-									i.fa.fa-search
+	include partials/navbar-with-search
 	div.container
 		div.row
 			div.col-sm-10.col-sm-offset-1
-				h1 Vender un producto
+				h1 #{messageSource.getMessage('sell.headline',[],locale)}
 				form.form-horizontal(method="POST", action="#{context.url('/sell')}")
 					div.form-group(class="#{bindingResult.hasFieldErrors('name')?'has-error':''}")
-						label.col-sm-2.control-label(for="name") Nombre
+						label.col-sm-2.control-label(for="name") #{messageSource.getMessage('sell.field.name',[],locale)}
 						div.col-sm-10
-							input.form-control(type="text", id="name", name="name", placeholder="Nombre", value="#{item.name?item.name:''}")
+							input.form-control(type="text", id="name", name="name", placeholder="#{messageSource.getMessage('sell.field.name',[],locale)}", value="#{item.name?item.name:''}")
 							+errors(bindingResult, 'name')
 					div.form-group(class="#{bindingResult.hasFieldErrors('description')?'has-error':''}")
-						label.col-sm-2.control-label(for="description") Descripcion
+						label.col-sm-2.control-label(for="description") #{messageSource.getMessage('sell.field.description',[],locale)}
 						div.col-sm-10
-							textarea.form-control(name="description", id="description", placeholder="Descripcion", value="#{item.description?item.description:''}", rows="12")
+							textarea.form-control(name="description", id="description", placeholder="#{messageSource.getMessage('sell.field.description',[],locale)}", value="#{item.description?item.description:''}", rows="12")
 							+errors(bindingResult, 'description')
 					div.form-group(class="#{bindingResult.hasFieldErrors('price')?'has-error':''}")
-						label.col-sm-2.control-label(for="price") Precio
+						label.col-sm-2.control-label(for="price") #{messageSource.getMessage('sell.field.price',[],locale)}
 						div.col-sm-10
 							div.input-group
 								span.input-group-addon $
-								input.form-control(type="number", id="price", name="price", placeholder="Price", min="0", step="0.01", value="!{item.price}")
+								input.form-control(type="number", id="price", name="price", placeholder="#{messageSource.getMessage('sell.field.price',[],locale)}", min="0", step="0.01", value="!{item.price}")
 							+errors(bindingResult, 'price')
 					div.form-group
-						label.col-sm-2.control-label(for="category") Categoria
+						label.col-sm-2.control-label(for="category") #{messageSource.getMessage('sell.field.category',[],locale)}
 						div.col-sm-10
 							mixin categories(categories, depth)
 								each category in categories
@@ -56,16 +35,16 @@ block content
 								+categories(categories, 0)
 							+errors(bindingResult, 'category')
 					div.form-group(class="#{bindingResult.hasFieldErrors('email')?'has-error':''}")
-						label.col-sm-2.control-label(for="email") Email de Contacto
+						label.col-sm-2.control-label(for="email") #{messageSource.getMessage('sell.field.contactEmail',[],locale)}
 						div.col-sm-10
-							input.form-control(type="text", id="email", name="email", placeholder="Email de Contacto", value="#{item.email?item.email:''}")
+							input.form-control(type="text", id="email", name="email", placeholder="#{messageSource.getMessage('sell.field.contactEmail',[],locale)}", value="#{item.email?item.email:''}")
 							+errors(bindingResult, 'email')
 					div.form-group
 						div.col-sm-2.col-sm-offset-2
 							a.btn.btn-default.btn-block(href="#{context.url('/')}")
 								i.fa.fa-chevron-left
-								| &nbsp;Volver
+								| &nbsp;#{messageSource.getMessage('sell.back',[],locale)}
 						div.col-sm-4.col-sm-offset-4
-							button.btn.btn-success.btn-block(type="submit") Aceptar
+							button.btn.btn-success.btn-block(type="submit") #{messageSource.getMessage('sell.ok',[],locale)}
 					
 					

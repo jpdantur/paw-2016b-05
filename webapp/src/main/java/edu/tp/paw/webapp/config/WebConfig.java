@@ -1,5 +1,6 @@
 package edu.tp.paw.webapp.config;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -8,9 +9,11 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
@@ -20,6 +23,9 @@ import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+
+import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
+import com.sun.xml.internal.bind.api.impl.NameConverter.Standard;
 
 import de.neuland.jade4j.JadeConfiguration;
 import de.neuland.jade4j.spring.template.SpringTemplateLoader;
@@ -146,5 +152,15 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 		dataSourceInitializer.setDatabasePopulator(databasePopulator());
 
 		return dataSourceInitializer;
+	}
+	
+	@Bean
+	public MessageSource messageSource() {
+		final ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+		messageSource.setBasename("classpath:i18n/messages");
+		messageSource.setDefaultEncoding(StandardCharsets.UTF_8.displayName());
+		messageSource.setCacheSeconds(5);
+		
+		return messageSource;
 	}
 }

@@ -1,12 +1,12 @@
 div.row.text-right#modifiers
 	div.col-sm-12
 		div.modifier
-			span.modifier-title Articulos:&nbsp;
+			span.modifier-title #{messageSource.getMessage('search.filters.pagination.modifiers.amount', [], locale)}:&nbsp;
 			span.modifier-content #{pageNumber*pageSize+1} - #{pageNumber*pageSize+shownResults}
-			span.modifier-title &nbsp;de&nbsp;
+			span.modifier-title &nbsp;#{messageSource.getMessage('search.filters.pagination.modifiers.of', [], locale)}&nbsp;
 			b #{numberOfResults}
 		div.modifier#modifier-page-size
-			span.modifier-title Mostrando&nbsp;
+			span.modifier-title #{messageSource.getMessage('search.filters.pagination.modifiers.showing', [], locale)}&nbsp;
 			- pageSize = filter.pageFilter.pageSize;
 			a.modifier-option(href="#", class="#{pageSize == 20 ? 'selected' : ''}")
 				if pageSize == 20
@@ -31,19 +31,19 @@ div.row.text-right#modifiers
 					b 200
 				else
 					span 200
-			span.modifier-title &nbsp; resultados por página
+			span.modifier-title &nbsp; #{messageSource.getMessage('search.filters.pagination.modifiers.perPage', [], locale)}
 		div.modifier#modifier-order
-			span.modifier-title Ordenar por:&nbsp;
+			span.modifier-title #{messageSource.getMessage('search.filters.order.by', [], locale)}:&nbsp;
 			select.form-control.input-xs#modifier-order-input
 				if sort.equals('price-asc')
-					option(value="price-asc", selected) Menor Precio
+					option(value="price-asc", selected) #{messageSource.getMessage('search.filters.order.priceAsc', [], locale)}
 				else
-					option(value="price-asc") Menor Precio
+					option(value="price-asc") #{messageSource.getMessage('search.filters.order.priceAsc', [], locale)}
 				if sort.equals('price-desc')
-					option(value="price-desc", selected) Mayor Precio
+					option(value="price-desc", selected) #{messageSource.getMessage('search.filters.order.priceDesc', [], locale)}
 				else
-					option(value="price-desc") Mayor Precio
+					option(value="price-desc") #{messageSource.getMessage('search.filters.order.priceDesc', [], locale)}
 				if sort.equals('name-asc')
-					option(value="name-asc", selected) Orden Alfabetico
+					option(value="name-asc", selected) #{messageSource.getMessage('search.filters.order.alphabetic', [], locale)}
 				else
-					option(value="name-asc") Orden Alfabetico
+					option(value="name-asc") #{messageSource.getMessage('search.filters.order.alphabetic', [], locale)}
