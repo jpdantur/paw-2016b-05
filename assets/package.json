@@ -1,0 +1,25 @@
+{
+  "name": "tp-paw-2016-q2",
+  "version": "0.0.1",
+  "devDependencies": {
+    "bower": "~1.7.2",
+    "grunt": "~0.4.5",
+    "grunt-cli": "~0.1.13",
+    "grunt-bower-task": "^0.4.0",
+    "grunt-contrib-clean": "^1.0.0",
+    "grunt-contrib-concat": "^1.0.1",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-cssmin": "^1.0.1",
+    "grunt-contrib-jshint": "~0.10.0",
+    "grunt-contrib-pug": "0.0.0",
+    "grunt-contrib-sass": "^1.0.0",
+    "grunt-contrib-uglify": "^1.0.1",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-livescript": "^0.6.0",
+    "grunt-notify": "^0.4.5",
+    "grunt-sass": "^1.2.0"
+  },
+  "scripts": {
+    "start": "grunt"
+  }
+}

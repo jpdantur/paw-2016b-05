@@ -1,146 +1,197 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
-  <groupId>edu.tp.paw</groupId>
-  <artifactId>tp-paw-2016-q2</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <packaging>pom</packaging>
-  <name>tp-paw-2016-q2</name>
-    
-  <properties>
-    <maven-eclipse-plugin.version>2.10</maven-eclipse-plugin.version>
-    <org.hsqldb.version>2.3.1</org.hsqldb.version>
-    <org.springframework.version>4.2.5.RELEASE</org.springframework.version>
-    <org.postgresql.version>9.4.1209</org.postgresql.version>
-    <junit.version>4.12</junit.version>
-    <de.neuland-bfi.version>1.2.3</de.neuland-bfi.version>
-    <javax.validation.version>1.1.0.Final</javax.validation.version>
-    <org.hibernate.version>5.0.1.Final</org.hibernate.version>
-    <org.slf4j.version>1.7.5</org.slf4j.version>
-	<logback.version>1.1.2</logback.version>
-	<logback-ext-spring.version>0.1.1</logback-ext-spring.version>
-  </properties>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>edu.tp.paw</groupId>
+	<artifactId>tp-paw-2016-q2</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<packaging>pom</packaging>
+	<name>tp-paw-2016-q2</name>
 
-  <build>
-    <plugins>
-       <plugin>
-         <groupId>org.apache.maven.plugins</groupId>
-         <artifactId>maven-eclipse-plugin</artifactId>
-         <version>${maven-eclipse-plugin.version}</version>
-         <configuration>
-            <downloadSources>true</downloadSources>
-            <downloadJavadoc>true</downloadJavadoc>
-         </configuration>
-       </plugin>
-      <plugin>
-        <artifactId>maven-compiler-plugin</artifactId>
-        <configuration>
-          <source>1.8</source>
-          <target>1.8</target>
-        </configuration>
-      </plugin>
-    </plugins>
-  </build>
+	<properties>
+		<maven-eclipse-plugin.version>2.10</maven-eclipse-plugin.version>
+		<org.hsqldb.version>2.3.1</org.hsqldb.version>
+		<org.springframework.version>4.2.5.RELEASE</org.springframework.version>
+		<org.postgresql.version>9.4.1209</org.postgresql.version>
+		<junit.version>4.12</junit.version>
+		<de.neuland-bfi.version>1.2.3</de.neuland-bfi.version>
+		<javax.validation.version>1.1.0.Final</javax.validation.version>
+		<org.hibernate.version>5.0.1.Final</org.hibernate.version>
+		<org.slf4j.version>1.7.5</org.slf4j.version>
+		<logback.version>1.1.2</logback.version>
+		<logback-ext-spring.version>0.1.1</logback-ext-spring.version>
+		<com.github.eirslett.version>1.0</com.github.eirslett.version>
+	</properties>
 
-  <dependencyManagement>
-    <dependencies>
-      <!-- Spring -->
-      <dependency>
-        <groupId>org.springframework</groupId>
-         <artifactId>spring-context</artifactId>
-         <version>${org.springframework.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-         <artifactId>spring-jdbc</artifactId>
-         <version>${org.springframework.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.springframework</groupId>
-         <artifactId>spring-webmvc</artifactId>
-         <version>${org.springframework.version}</version>
-      </dependency>
-      <!-- Bean validation -->
-      <dependency>
-        <groupId>javax.validation</groupId>
-        <artifactId>validation-api</artifactId>
-        <version>${javax.validation.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.hibernate</groupId>
-        <artifactId>hibernate-validator</artifactId>
-        <version>${org.hibernate.version}</version>
-      </dependency>
-      <!-- Jade -->
-      <dependency>
-        <groupId>de.neuland-bfi</groupId>
-        <artifactId>spring-jade4j</artifactId>
-        <version>${de.neuland-bfi.version}</version>
-      </dependency>
-      <!-- Postgres -->
-      <dependency>
-        <groupId>org.postgresql</groupId>
-         <artifactId>postgresql</artifactId>
-         <version>${org.postgresql.version}</version>
-      </dependency>
-      <!-- Testing -->
-      <dependency>
-      	<groupId>org.springframework</groupId>
-      	<artifactId>spring-test</artifactId>
-      	<version>${org.springframework.version}</version>
-      	<scope>test</scope>
-      </dependency>
-      <dependency>
-        <groupId>org.hsqldb</groupId>
-        <artifactId>hsqldb</artifactId>
-        <version>${org.hsqldb.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <!-- Junit -->
-      <dependency>
-        <groupId>junit</groupId>
-        <artifactId>junit</artifactId>
-        <version>${junit.version}</version>
-        <scope>test</scope>
-      </dependency>
-      <!--  Logging -->
-      <dependency>
-		<groupId>org.slf4j</groupId>
-		<artifactId>slf4j-api</artifactId>
-		<version>${org.slf4j.version}</version>
-	  </dependency>
-	  <dependency>
-		<groupId>ch.qos.logback</groupId>
-		<artifactId>logback-classic</artifactId>
-		<version>${logback.version}</version>
-	  </dependency>
-	  <dependency>
-		<groupId>ch.qos.logback</groupId>
-		<artifactId>logback-core</artifactId>
-		<version>${logback.version}</version>
-      </dependency>
-      <dependency>
-		<groupId>org.slf4j</groupId>
-		<artifactId>jcl-over-slf4j</artifactId>
-		<version>${org.slf4j.version}</version>
-	  </dependency>
-	  <dependency>
-		<groupId>org.logback-extensions</groupId>
-		<artifactId>logback-ext-spring</artifactId>
-		<version>${logback-ext-spring.version}</version>
-		<scope>runtime</scope>
-	  </dependency>
-      
-    </dependencies>
-  </dependencyManagement>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>${maven-eclipse-plugin.version}</version>
+				<configuration>
+					<downloadSources>true</downloadSources>
+					<downloadJavadoc>true</downloadJavadoc>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.8</source>
+					<target>1.8</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.github.eirslett</groupId>
+				<artifactId>frontend-maven-plugin</artifactId>
+				<version>${com.github.eirslett.version}</version>
+				<inherited>false</inherited>
+
+				<configuration>
+					<workingDirectory>assets/</workingDirectory>
+				</configuration>
+
+				<executions>
+					
+					<execution>
+						<id>install node and npm</id>
+						<goals>
+							<goal>install-node-and-npm</goal>
+						</goals>
+						<configuration>
+							<nodeVersion>v0.12.7</nodeVersion>
+							<npmVersion>2.11.3</npmVersion>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>npm install</id>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<arguments>install</arguments>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>bower install</id>
+						<goals>
+							<goal>bower</goal>
+						</goals>
+					</execution>
+
+					<execution>
+						<id>grunt</id>
+						<goals>
+							<goal>grunt</goal>
+						</goals>
+					</execution>
+
+				</executions>
+
+			</plugin>
+		</plugins>
+	</build>
+
+	<dependencyManagement>
+		<dependencies>
+			<!-- Spring -->
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context</artifactId>
+				<version>${org.springframework.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-jdbc</artifactId>
+				<version>${org.springframework.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-webmvc</artifactId>
+				<version>${org.springframework.version}</version>
+			</dependency>
+			<!-- Bean validation -->
+			<dependency>
+				<groupId>javax.validation</groupId>
+				<artifactId>validation-api</artifactId>
+				<version>${javax.validation.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.hibernate</groupId>
+				<artifactId>hibernate-validator</artifactId>
+				<version>${org.hibernate.version}</version>
+			</dependency>
+			<!-- Jade -->
+			<dependency>
+				<groupId>de.neuland-bfi</groupId>
+				<artifactId>spring-jade4j</artifactId>
+				<version>${de.neuland-bfi.version}</version>
+			</dependency>
+			<!-- Postgres -->
+			<dependency>
+				<groupId>org.postgresql</groupId>
+				<artifactId>postgresql</artifactId>
+				<version>${org.postgresql.version}</version>
+			</dependency>
+			<!-- Testing -->
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-test</artifactId>
+				<version>${org.springframework.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.hsqldb</groupId>
+				<artifactId>hsqldb</artifactId>
+				<version>${org.hsqldb.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<!-- Junit -->
+			<dependency>
+				<groupId>junit</groupId>
+				<artifactId>junit</artifactId>
+				<version>${junit.version}</version>
+				<scope>test</scope>
+			</dependency>
+			<!--  Logging -->
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>slf4j-api</artifactId>
+				<version>${org.slf4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-classic</artifactId>
+				<version>${logback.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>ch.qos.logback</groupId>
+				<artifactId>logback-core</artifactId>
+				<version>${logback.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.slf4j</groupId>
+				<artifactId>jcl-over-slf4j</artifactId>
+				<version>${org.slf4j.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.logback-extensions</groupId>
+				<artifactId>logback-ext-spring</artifactId>
+				<version>${logback-ext-spring.version}</version>
+				<scope>runtime</scope>
+			</dependency>
+
+		</dependencies>
+	</dependencyManagement>
 
 
-  <modules>
-    <module>webapp</module>
-    <module>service</module>
-    <module>persistence</module>
-    <module>model</module>
-    <module>interfaces</module>
-  </modules>
-  
+	<modules>
+		<module>webapp</module>
+		<module>service</module>
+		<module>persistence</module>
+		<module>model</module>
+		<module>interfaces</module>
+	</modules>
+
 </project>
