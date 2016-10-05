@@ -219,6 +219,36 @@ public class Range<T extends Comparable<T>> {
 		return this;
 	}
 	
+	public Range<T> between (final T min, final T max) {
+		this.max = Optional.ofNullable(max);
+		this.min = Optional.ofNullable(min);
+		if (this.min.isPresent() && this.max.isPresent()) {
+			// min = max
+			if (this.min.get().compareTo(this.max.get()) == 0) {
+				this.minBoundType = BoundType.CLOSED;
+				this.maxBoundType = BoundType.CLOSED;
+			}
+			// min > max
+			else if (this.min.get().compareTo(this.max.get()) > 0) {
+				Optional<T> temp = this.min;
+				this.min = this.max;
+				this.max = temp;
+			}
+			this.minBoundType = BoundType.CLOSED;
+			this.maxBoundType = BoundType.CLOSED;
+		} else if (!this.min.isPresent() && !this.max.isPresent()) {
+			this.minBoundType = BoundType.INF;
+			this.maxBoundType = BoundType.INF;
+		} else if (this.min.isPresent()) {
+			this.minBoundType = BoundType.CLOSED;
+			this.maxBoundType = BoundType.INF;
+		} else {
+			this.minBoundType = BoundType.INF;
+			this.maxBoundType = BoundType.CLOSED;
+		}
+		return this;
+	}
+	
 	public Range<T> toInfinity() {
 		this.max = Optional.empty();
 		this.maxBoundType = BoundType.INF;

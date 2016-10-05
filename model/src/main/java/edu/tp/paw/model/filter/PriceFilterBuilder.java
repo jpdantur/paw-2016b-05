@@ -17,7 +17,8 @@ public class PriceFilterBuilder implements IBuilder<PriceFilter> {
 	}
 	
 	public PriceFilterBuilder between(BigDecimal price1, BigDecimal price2) {
-		priceRange.gte(price1).lte(price2);
+		priceRange.between(price1, price2);
+		//.gte(price1).lte(price2);
 		return this;
 	}
 	
