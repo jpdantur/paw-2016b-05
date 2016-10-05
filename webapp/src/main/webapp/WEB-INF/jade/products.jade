@@ -20,7 +20,7 @@ block content
 				include partials/modifiers
 				div.row
 					if storeItems.size() == 0
-						h3.text-warning No hay productos que mostrar
+						h3.text-warning #{messageSource.getMessage('search.none',[],locale)}
 					each item in storeItems
 						+product(item)
 				div.row

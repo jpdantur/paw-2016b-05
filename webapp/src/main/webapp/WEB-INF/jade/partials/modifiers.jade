@@ -2,7 +2,7 @@ div.row.text-right#modifiers
 	div.col-sm-12
 		div.modifier
 			span.modifier-title #{messageSource.getMessage('search.filters.pagination.modifiers.amount', [], locale)}:&nbsp;
-			span.modifier-content #{pageNumber*pageSize+1} - #{pageNumber*pageSize+shownResults}
+			span.modifier-content #{shownResults!=0?pageNumber*pageSize+1:0} - #{pageNumber*pageSize+shownResults}
 			span.modifier-title &nbsp;#{messageSource.getMessage('search.filters.pagination.modifiers.of', [], locale)}&nbsp;
 			b #{numberOfResults}
 		div.modifier#modifier-page-size
@@ -35,15 +35,15 @@ div.row.text-right#modifiers
 		div.modifier#modifier-order
 			span.modifier-title #{messageSource.getMessage('search.filters.order.by', [], locale)}:&nbsp;
 			select.form-control.input-xs#modifier-order-input
-				if sort.equals('price-asc')
-					option(value="price-asc", selected) #{messageSource.getMessage('search.filters.order.priceAsc', [], locale)}
+				if sort.equals('PRICE-ASC')
+					option(value="PRICE-ASC", selected) #{messageSource.getMessage('search.filters.order.priceAsc', [], locale)}
 				else
-					option(value="price-asc") #{messageSource.getMessage('search.filters.order.priceAsc', [], locale)}
-				if sort.equals('price-desc')
-					option(value="price-desc", selected) #{messageSource.getMessage('search.filters.order.priceDesc', [], locale)}
+					option(value="PRICE-ASC") #{messageSource.getMessage('search.filters.order.priceAsc', [], locale)}
+				if sort.equals('PRICE-DESC')
+					option(value="PRICE-DESC", selected) #{messageSource.getMessage('search.filters.order.priceDesc', [], locale)}
 				else
-					option(value="price-desc") #{messageSource.getMessage('search.filters.order.priceDesc', [], locale)}
-				if sort.equals('name-asc')
-					option(value="name-asc", selected) #{messageSource.getMessage('search.filters.order.alphabetic', [], locale)}
+					option(value="PRICE-DESC") #{messageSource.getMessage('search.filters.order.priceDesc', [], locale)}
+				if sort.equals('NAME-ASC')
+					option(value="NAME-ASC", selected) #{messageSource.getMessage('search.filters.order.alphabetic', [], locale)}
 				else
 					option(value="name-asc") #{messageSource.getMessage('search.filters.order.alphabetic', [], locale)}
