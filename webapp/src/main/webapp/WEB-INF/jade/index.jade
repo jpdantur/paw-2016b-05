@@ -1,5 +1,8 @@
 extends layout
 
+block scripts
+	script(src="#{context.url('/resources/js/index.js')}")
+
 block content
 	header.navbar.navbar-fixed-top#top-navbar
 		div.container
@@ -23,6 +26,3 @@ block content
 	section.section#busqueda-compleja
 		div.container
 			include partials/categories
-
-block scripts
-	script(src="#{context.url('/resources/js/index.js')}")

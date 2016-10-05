@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.text.Normalizer.Form;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -103,7 +104,8 @@ public class StoreItemController {
 	@RequestMapping("/item/{itemId}")
 	public ModelAndView individualItem(
 			@PathVariable("itemId") final int id,
-			@RequestParam(value = "s", defaultValue = "false") final boolean published) {
+			@RequestParam(value = "s", defaultValue = "false") final boolean published,
+			Locale locale) {
 		
 		final ModelAndView modelAndView = new ModelAndView("product");
 		
