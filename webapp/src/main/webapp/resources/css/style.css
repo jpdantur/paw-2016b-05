@@ -35,7 +35,7 @@ header#top-navbar {
     margin-top: 20px; }
   #busqueda-simple #promociones {
     width: 100%;
-    height: 220px;
+    height: 230px;
     margin: 0;
     margin-top: 50px;
     position: relative; }
@@ -43,17 +43,17 @@ header#top-navbar {
       width: 100%;
       text-align: center; }
     #busqueda-simple #promociones .thumbnail {
-      width: 210px;
-      height: 210px;
+      width: 220px;
+      height: 220px;
       position: relative; }
       #busqueda-simple #promociones .thumbnail img {
         position: absolute;
-        width: 200px;
-        height: 200px; }
+        width: 210px;
+        height: 210px; }
       #busqueda-simple #promociones .thumbnail span {
         position: absolute;
         text-align: center;
-        width: 210px;
+        width: 220px;
         color: white;
         text-decoration: none;
         text-shadow: 2px 2px #222;
@@ -63,7 +63,7 @@ header#top-navbar {
           top: 20px; }
         #busqueda-simple #promociones .thumbnail span.promotion-price {
           font-size: 32px;
-          line-height: 210px;
+          line-height: 220px;
           color: #59ABE3; }
           #busqueda-simple #promociones .thumbnail span.promotion-price .promotion-currency {
             font-size: 16px; }
@@ -74,90 +74,8 @@ header#top-navbar {
 #busqueda-compleja {
   padding-top: 20px;
   padding-bottom: 50px; }
-  #busqueda-compleja #form-ida {
-    margin-top: 80px; }
-    #busqueda-compleja #form-ida .control-label {
-      font-size: 18px; }
-    #busqueda-compleja #form-ida .pasajeros p {
-      font-size: 16px;
-      margin-bottom: 0;
-      margin-top: 15px; }
-    #busqueda-compleja #form-ida .pasajeros .plus {
-      display: block; }
-    #busqueda-compleja #form-ida .pasajeros input.form-control {
-      width: 30%; }
-    #busqueda-compleja #form-ida .form-group.hidden {
-      display: none; }
-    #busqueda-compleja #form-ida .mas-opciones {
-      color: #222;
-      text-decoration: none;
-      margin-top: 5px;
-      margin-bottom: 5px; }
-      #busqueda-compleja #form-ida .mas-opciones:hover {
-        font-weight: 700; }
-  #busqueda-compleja #form-idayvuelta {
-    margin-top: 80px; }
-    #busqueda-compleja #form-idayvuelta .control-label {
-      font-size: 18px; }
-    #busqueda-compleja #form-idayvuelta .pasajeros p {
-      font-size: 16px;
-      margin-bottom: 0;
-      margin-top: 15px; }
-    #busqueda-compleja #form-idayvuelta .pasajeros .plus {
-      display: block; }
-    #busqueda-compleja #form-idayvuelta .pasajeros input.form-control {
-      width: 30%; }
-    #busqueda-compleja #form-idayvuelta .form-group.hidden {
-      display: none; }
-    #busqueda-compleja #form-idayvuelta .mas-opciones {
-      color: #222;
-      text-decoration: none;
-      margin-top: 5px;
-      margin-bottom: 5px; }
-      #busqueda-compleja #form-idayvuelta .mas-opciones:hover {
-        font-weight: 700; }
-  #busqueda-compleja #form-multiples {
-    margin-top: 80px; }
-    #busqueda-compleja #form-multiples .control-label {
-      font-size: 18px; }
-    #busqueda-compleja #form-multiples .pasajeros p {
-      font-size: 16px;
-      margin-bottom: 0;
-      margin-top: 15px; }
-    #busqueda-compleja #form-multiples .pasajeros .plus {
-      display: block; }
-    #busqueda-compleja #form-multiples .pasajeros input.form-control {
-      width: 30%; }
-    #busqueda-compleja #form-multiples .form-group.hidden {
-      display: none; }
-    #busqueda-compleja #form-multiples .mas-opciones {
-      color: #222;
-      text-decoration: none;
-      margin-top: 5px;
-      margin-bottom: 5px; }
-      #busqueda-compleja #form-multiples .mas-opciones:hover {
-        font-weight: 700; }
-  #busqueda-compleja #form-mundo {
-    margin-top: 80px; }
-    #busqueda-compleja #form-mundo .control-label {
-      font-size: 18px; }
-    #busqueda-compleja #form-mundo .pasajeros p {
-      font-size: 16px;
-      margin-bottom: 0;
-      margin-top: 15px; }
-    #busqueda-compleja #form-mundo .pasajeros .plus {
-      display: block; }
-    #busqueda-compleja #form-mundo .pasajeros input.form-control {
-      width: 30%; }
-    #busqueda-compleja #form-mundo .form-group.hidden {
-      display: none; }
-    #busqueda-compleja #form-mundo .mas-opciones {
-      color: #222;
-      text-decoration: none;
-      margin-top: 5px;
-      margin-bottom: 5px; }
-      #busqueda-compleja #form-mundo .mas-opciones:hover {
-        font-weight: 700; }
+  #busqueda-compleja .category-heading {
+    margin-bottom: 60px; }
 
 #navbar-content {
   text-align: center; }

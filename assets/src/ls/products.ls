@@ -1,6 +1,6 @@
 $ document .ready !->
 
-	filters =
+	defaultFilterValues =
 		minPrice: null
 		maxPrice: null
 		categories: []
@@ -9,6 +9,17 @@ $ document .ready !->
 		sortOrder: 'asc'
 		query: ''
 		pageNumber: 0
+
+	filters = $.extend {},
+		do
+			minPrice: null
+			maxPrice: null
+			categories: []
+			pageSize: 20
+			orderBy: 'price'
+			sortOrder: 'asc'
+			query: ''
+			pageNumber: 0
 
 	buildFilters = !->
 
@@ -56,26 +67,26 @@ $ document .ready !->
 
 		console.log filters
 
-	buildFilters!
+	buildFilters!	
 
-	
+	resetPageNumber = !->
+		filters.pageNumber = defaultFilterValues.pageNumber
 
 	$ \#modifier-order-input .change (e) !->
 
 		e.preventDefault!
 
 		buildFilters!
+		resetPageNumber!
 
-		console.log($.param(filters))
-
-		window.location.search = $.param(filters)
+		window.location.search = $.param filters, true
 
 	$ \#filter-price-set .click (e) !->
 		e.preventDefault!
 
 		buildFilters!
 
-		window.location.search = $.param(filters)
+		window.location.search = $ .param filters, true
 
 	$ '#filter-price-min, #filter-price-max' .keydown (e) !->
 		console.log e.keyCode
@@ -95,8 +106,9 @@ $ document .ready !->
 		$self .toggleClass \selected
 
 		buildFilters!
+		resetPageNumber!
 
-		window.location.search = $.param(filters)
+		window.location.search = $ .param filters, true
 
 	$ \#navbar-search .on \submit, (e) !->
 
@@ -107,7 +119,7 @@ $ document .ready !->
 
 		# buildFilters!
 
-		# window.location.search = $.param(filters)
+		# window.location.search = $ .param filters, true
 
 
 	$ \.filter-page-action .click (e) !-> 
@@ -130,12 +142,31 @@ $ document .ready !->
 		if $self .parent! .hasClass \next
 			filters.pageNumber = parseInt($ \#filter-page .data('last-page'))
 
-		window.location.search = $.param(filters)
+		window.location.search = $ .param filters, true
 
 	$ \#category-filter-button .click (e) !->
 		e.preventDefault!
 
 		buildFilters!
 
-		window.location.search = $.param(filters)
+		window.location.search = $ .param filters, true
+
+	$ '.applied-filter .close' .click (e) !->
+
+		e.preventDefault!
+
+		$self = $ this .parent!
+
+		if $self.data 'target'
+			targets = $self.data 'target' .split ','
+			for target in targets
+				filters[target] = defaultFilterValues[target]
+		else
+			index = filters[$self.data 'target-complex'].indexOf $self.data('category-id')
+			filters[$self.data 'target-complex'].splice( index, 1 )
+
+		console .log filters
+
+		window.location.search = $ .param filters, true
+
 

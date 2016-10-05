@@ -1,6 +1,6 @@
 $(document).ready(function(){
-  var filters, buildFilters;
-  filters = {
+  var defaultFilterValues, filters, buildFilters, resetPageNumber;
+  defaultFilterValues = {
     minPrice: null,
     maxPrice: null,
     categories: [],
@@ -10,6 +10,16 @@ $(document).ready(function(){
     query: '',
     pageNumber: 0
   };
+  filters = $.extend({}, {
+    minPrice: null,
+    maxPrice: null,
+    categories: [],
+    pageSize: 20,
+    orderBy: 'price',
+    sortOrder: 'asc',
+    query: '',
+    pageNumber: 0
+  });
   buildFilters = function(){
     var minPrice, maxPrice, $filterOption, filterOption, $selectedCheckboxes, $categoryLabels;
     minPrice = parseInt($('#filter-price-min').val() || -1);
@@ -47,16 +57,19 @@ $(document).ready(function(){
     console.log(filters);
   };
   buildFilters();
+  resetPageNumber = function(){
+    filters.pageNumber = defaultFilterValues.pageNumber;
+  };
   $('#modifier-order-input').change(function(e){
     e.preventDefault();
     buildFilters();
-    console.log($.param(filters));
-    window.location.search = $.param(filters);
+    resetPageNumber();
+    window.location.search = $.param(filters, true);
   });
   $('#filter-price-set').click(function(e){
     e.preventDefault();
     buildFilters();
-    window.location.search = $.param(filters);
+    window.location.search = $.param(filters, true);
   });
   $('#filter-price-min, #filter-price-max').keydown(function(e){
     console.log(e.keyCode);
@@ -75,7 +88,8 @@ $(document).ready(function(){
     $row.find('.selected').toggleClass('selected');
     $self.toggleClass('selected');
     buildFilters();
-    window.location.search = $.param(filters);
+    resetPageNumber();
+    window.location.search = $.param(filters, true);
   });
   $('#navbar-search').on('submit', function(e){
     if ($.trim($('#navbar-query-input').val()) === '') {
@@ -101,11 +115,28 @@ $(document).ready(function(){
     if ($self.parent().hasClass('next')) {
       filters.pageNumber = parseInt($('#filter-page').data('last-page'));
     }
-    window.location.search = $.param(filters);
+    window.location.search = $.param(filters, true);
   });
   $('#category-filter-button').click(function(e){
     e.preventDefault();
     buildFilters();
-    window.location.search = $.param(filters);
+    window.location.search = $.param(filters, true);
+  });
+  $('.applied-filter .close').click(function(e){
+    var $self, targets, i$, len$, target, index;
+    e.preventDefault();
+    $self = $(this).parent();
+    if ($self.data('target')) {
+      targets = $self.data('target').split(',');
+      for (i$ = 0, len$ = targets.length; i$ < len$; ++i$) {
+        target = targets[i$];
+        filters[target] = defaultFilterValues[target];
+      }
+    } else {
+      index = filters[$self.data('target-complex')].indexOf($self.data('category-id'));
+      filters[$self.data('target-complex')].splice(index, 1);
+    }
+    console.log(filters);
+    window.location.search = $.param(filters, true);
   });
 });

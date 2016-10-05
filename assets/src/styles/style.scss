@@ -66,7 +66,7 @@ header#top-navbar {
 		margin-top: 20px;
 	}
 
-	$thumbnail-size: 210px;
+	$thumbnail-size: 220px;
 
 	#promociones {
 		// position: absolute;
@@ -137,54 +137,8 @@ header#top-navbar {
 	padding-bottom: 50px;
 	
 
-	@each $tipo in ida, idayvuelta, multiples, mundo {
-
-		#form-#{$tipo} {
-			margin-top: 80px;
-
-			.control-label {
-				font-size: 18px;
-			}
-
-			.pasajeros {
-
-				p {
-					font-size: 16px;
-					margin: {
-						bottom: 0;
-						top: 15px;
-					}
-					// font-weight: 700;
-				}
-
-				.plus {
-					display: block;
-				}
-
-				input.form-control {
-					width: 30%;
-				}
-			}
-
-			.form-group.hidden {
-				display: none;
-			}
-
-			.mas-opciones {
-
-				color: #222;
-				text-decoration: none;
-				margin: {
-					top: 5px;
-					bottom: 5px;
-				}
-
-				&:hover {
-					font-weight: 700;
-				}
-
-			}
-		}
+	.category-heading {
+		margin-bottom: 60px
 	}
 }
 
