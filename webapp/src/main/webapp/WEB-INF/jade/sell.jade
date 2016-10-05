@@ -15,7 +15,7 @@ block content
 					div.form-group(class="#{bindingResult.hasFieldErrors('description')?'has-error':''}")
 						label.col-sm-2.control-label(for="description") #{messageSource.getMessage('sell.field.description',[],locale)}
 						div.col-sm-10
-							textarea.form-control(name="description", id="description", placeholder="#{messageSource.getMessage('sell.field.description',[],locale)}", value="#{item.description?item.description:''}", rows="12")
+							textarea.form-control(name="description", id="description", placeholder="#{messageSource.getMessage('sell.field.description',[],locale)}", value="#{item.description?item.description:''}", rows="12") #{messageSource.getMessage('sell.field.description',[],locale)}
 							+errors(bindingResult, 'description')
 					div.form-group(class="#{bindingResult.hasFieldErrors('price')?'has-error':''}")
 						label.col-sm-2.control-label(for="price") #{messageSource.getMessage('sell.field.price',[],locale)}
