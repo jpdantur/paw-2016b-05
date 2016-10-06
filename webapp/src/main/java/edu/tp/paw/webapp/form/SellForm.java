@@ -2,6 +2,7 @@ package edu.tp.paw.webapp.form;
 
 import java.math.BigDecimal;
 
+import javax.validation.constraints.Digits;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
@@ -16,13 +17,16 @@ public class SellForm {
 	private String name;
 	@NotNull
 	private String description;
-	@Min(1)
-	@Max(99999999)
+	
+	@NotNull
+	@Digits(integer=9, fraction=2)
 	private BigDecimal price;
 	
 	@Min(0)
 	private long categoryId;
+	
 	@Email
+	@NotEmpty
 	private String email;
 	
 	public long getCategoryId() {
