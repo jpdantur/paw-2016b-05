@@ -25,7 +25,7 @@ block content
 		div.row
 			div.col-sm-4.col-sm-offset-4
 				div.well
-					form.form-horizontal
+					form.form-horizontal(action="/login", method="POST")
 						div.form-group
 							label.control-label.col-sm-3(for="username") Usuario
 							div.col-sm-9
@@ -34,3 +34,8 @@ block content
 							label.control-label.col-sm-3(for="password") Password
 							div.col-sm-9
 								input.form-control#password(type="password", placeholder="Password", name="password")
+						div.form-group
+								button.btn.btn-success.btn-block(type="submit") Ingresar
+						div.form-group
+							span No tienes un usuario aun?&nbsp;
+							a(href="#{context.url('/register')}") Registrese
