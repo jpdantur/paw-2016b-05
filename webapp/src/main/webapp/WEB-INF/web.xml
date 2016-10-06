@@ -10,7 +10,7 @@
   </context-param>
   <context-param>
   	<param-name>contextConfigLocation</param-name>
-  	<param-value>edu.tp.paw.webapp.config.WebConfig</param-value>
+  	<param-value>edu.tp.paw.webapp.config.WebConfig,edu.tp.paw.webapp.config.WebAuthConfig,</param-value>
   </context-param>
   
   <listener>

@@ -1,7 +1,6 @@
 package edu.tp.paw.webapp.controller;
 
-import java.math.BigDecimal;
-import java.text.Normalizer.Form;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -22,7 +21,6 @@ import edu.tp.paw.interfaces.service.IStoreService;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.filter.FilterBuilder;
-import edu.tp.paw.model.filter.OrderFilter;
 import edu.tp.paw.model.filter.PagedResult;
 import edu.tp.paw.webapp.exceptions.StoreItemNotFoundException;
 import edu.tp.paw.webapp.form.SearchForm;
@@ -96,7 +94,7 @@ public class StoreItemController extends BaseController {
 		return "products";
 	}
 	
-	@RequestMapping("/item/{itemId}")
+	@RequestMapping(value = {"/item/{itemId}", "/item/{itemId}/"})
 	public ModelAndView individualItem(
 			@PathVariable("itemId") final int id,
 			@RequestParam(value = "s", defaultValue = "false") final boolean published,

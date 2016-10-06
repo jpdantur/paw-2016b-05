@@ -9,7 +9,9 @@ public interface IUserService {
 	 * @param id The id of the user to retrieve
 	 * @return The requested user, or null if not found
 	 */
-	public User findById(long id);
+	public User findById(final long id);
+	
+	public User findByUsername(final String username);
 	
 	/**
 	 * Create a new user
@@ -17,6 +19,6 @@ public interface IUserService {
 	 * @param username The name of the user
 	 * @return The created user
 	 */
-	public User create(String username, String password);
+	public User create(final String username, final String password);
 	
 }

@@ -77,8 +77,6 @@ public class StoreController extends BaseController {
 			
 			final StoreItem storeItem = storeService.sell(storeItemBuilder);
 			
-//			final StoreItem storeItem = storeService.sell(form.getName(), form.getDescription(), form.getPrice(), form.getCategoryId(), form.getEmail());
-			
 			return "redirect:/item/"+storeItem.getId()+"?s=1";
 		}
 		

@@ -1,8 +1,5 @@
 extends layout
 
-block scripts
-	script(src="#{context.url('/resources/js/index.js')}")
-
 block content
 	header.navbar.navbar-fixed-top#top-navbar
 		div.container
@@ -23,10 +20,17 @@ block content
 						a(href="#{context.url('/login')}") Ingresar
 					li
 						a(href="#{context.url('/sell')}") #{messageSource.getMessage("index.sell", [], locale)}
-	include partials/noscript
-	section.section#busqueda-simple
-		div.container
-			include partials/busqueda-simple
-	section.section#busqueda-compleja
-		div.container
-			include partials/categories
+
+	div.container
+		div.row
+			div.col-sm-4.col-sm-offset-4
+				div.well
+					form.form-horizontal
+						div.form-group
+							label.control-label.col-sm-3(for="username") Usuario
+							div.col-sm-9
+								input.form-control#username(type="text", placeholder="Usuario", name="username")
+						div.form-group
+							label.control-label.col-sm-3(for="password") Password
+							div.col-sm-9
+								input.form-control#password(type="password", placeholder="Password", name="password")
