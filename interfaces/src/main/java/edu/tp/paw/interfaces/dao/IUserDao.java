@@ -1,6 +1,7 @@
 package edu.tp.paw.interfaces.dao;
 
 import edu.tp.paw.model.User;
+import edu.tp.paw.model.UserBuilder;
 
 public interface IUserDao {
 
@@ -9,7 +10,9 @@ public interface IUserDao {
 	 * @param id The id of the user to retrieve
 	 * @return The requested user, or null if not found
 	 */
-	User findById(long id);
+	User findById(final long id);
+	
+	User findByUsername(final String username);
 	
 	/**
 	 * Create a new user
@@ -17,6 +20,6 @@ public interface IUserDao {
 	 * @param username The name of the user
 	 * @return The created user
 	 */
-	User create(String username, String password);
+	User create(final UserBuilder builder);
 	
 }

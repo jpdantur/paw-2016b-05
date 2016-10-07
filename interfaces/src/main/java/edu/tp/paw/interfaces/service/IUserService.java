@@ -1,6 +1,7 @@
 package edu.tp.paw.interfaces.service;
 
 import edu.tp.paw.model.User;
+import edu.tp.paw.model.UserBuilder;
 
 public interface IUserService {
 
@@ -19,6 +20,6 @@ public interface IUserService {
 	 * @param username The name of the user
 	 * @return The created user
 	 */
-	public User create(final String username, final String password);
+	public User create(final UserBuilder builder);
 	
 }

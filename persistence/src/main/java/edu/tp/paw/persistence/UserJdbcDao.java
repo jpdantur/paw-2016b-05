@@ -15,15 +15,25 @@ import org.springframework.stereotype.Repository;
 
 import edu.tp.paw.interfaces.dao.IUserDao;
 import edu.tp.paw.model.User;
+import edu.tp.paw.model.UserBuilder;
 
 @Repository
 public class UserJdbcDao implements IUserDao {
-
+	
 	private final JdbcTemplate jdbcTemplate;
 	private final SimpleJdbcInsert jdbcInsert;
 	
 	private final static RowMapper<User> rowMapper = (ResultSet resultSet, int rowNum) -> {
-		return new User(resultSet.getString("username"), resultSet.getInt("userid"));
+		final User user = new UserBuilder(
+				resultSet.getString("first_name"),
+				resultSet.getString("last_name"),
+				resultSet.getString("username"),
+				resultSet.getString("email")
+			)
+			.id(resultSet.getLong("user_id"))
+			.password(resultSet.getString("password"))
+			.build(); 
+		return user;
 	};
 	
 	/**
@@ -35,13 +45,7 @@ public class UserJdbcDao implements IUserDao {
 		jdbcTemplate = new JdbcTemplate(dataSource);
 		jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
 			.withTableName("users")
-			.usingGeneratedKeyColumns("userid");
-		
-		/*jdbcTemplate.execute("create table if not exists users ("
-				+ "userid serial primary key,"
-				+ "username varchar(100)"
-				+ ")"
-		);*/
+			.usingGeneratedKeyColumns("user_id");
 	}
 	
 	/* (non-Javadoc)
@@ -53,9 +57,22 @@ public class UserJdbcDao implements IUserDao {
 		List<User> userList =
 		jdbcTemplate
 		.query(
-				"SELECT * FROM users where userid = ?",
+				"select * from users where user_id = ?",
 				rowMapper,
 				id);
+		
+		return userList.isEmpty() ? null : userList.get(0);
+	}
+	
+	@Override
+	public User findByUsername(final String username) {
+		
+		List<User> userList =
+		jdbcTemplate
+		.query(
+				"select * from users where username = ?",
+				rowMapper,
+				username);
 		
 		return userList.isEmpty() ? null : userList.get(0);
 	}
@@ -64,16 +81,19 @@ public class UserJdbcDao implements IUserDao {
 	 * @see edu.tp.paw.interfaces.dao.IUserDao#create(java.lang.String)
 	 */
 	@Override
-	public User create(final String username, final String password) {
+	public User create(final UserBuilder builder) {
 		
 		final Map<String, Object> args = new HashMap<>();
 		
-		args.put("username", username);
-		args.put("password", password);
+		args.put("username", builder.getUsername());
+		args.put("password", builder.getPassword());
+		args.put("first_name", builder.getFirstName());
+		args.put("last_name", builder.getLastName());
+		args.put("email", builder.getEmail());
 		
 		final Number userId = jdbcInsert.executeAndReturnKey(args);
 		
-		return new User(username, userId.longValue());
+		return builder.id(userId.longValue()).build();
 		
 	}
 	

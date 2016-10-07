@@ -12,6 +12,10 @@ header.navbar.navbar-fixed-top#top-navbar
 		nav.collapse.navbar-collapse#navbar-content
 			ul.nav.navbar-nav.navbar-right
 				li
+					a(href="#{context.url('/register')}") Registrate
+				li
+					a(href="#{context.url('/login')}") Ingresar
+				li
 					a(href="#{context.url('/sell')}") #{messageSource.getMessage('index.sell', [], locale)}
 			form.navbar-form#navbar-search(action="#{context.url('/items')}")
 				div.form-group(style="width:50%")

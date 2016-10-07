@@ -14,6 +14,8 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.SavedRequestAwareAuthenticationSuccessHandler;
 
 import edu.tp.paw.webapp.auth.SiglasUserDetailsService;
 @Configuration
@@ -28,6 +30,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 	@Autowired
 	private SiglasUserDetailsService userDetailsService;
 	
+	
 	@Override
 	protected void configure(final HttpSecurity http) throws Exception {
 		
@@ -36,8 +39,8 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 			.sessionManagement()
 				.invalidSessionUrl("/login")
 			.and().authorizeRequests()
-//				.antMatchers("/login").anonymous()
-				.antMatchers("/", "/item/**", "/items", "/items/**", "/login", "/register").anonymous()
+				.antMatchers("/", "/item/**", "/items", "/items/**").permitAll()
+				.antMatchers("/login", "/register").anonymous()
 				.antMatchers("/sell/**").hasRole("USER")
 				.antMatchers("/admin/**").hasAnyRole("ROOT", "ADMIN")
 				.antMatchers("/**").authenticated()
@@ -45,7 +48,8 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 				.loginPage("/login")
 				.usernameParameter("username")
 				.passwordParameter("password")
-				.defaultSuccessUrl("/sell", false)
+				.successHandler(successHandler())
+//				.defaultSuccessUrl("/", false)
 			.and().rememberMe()
 				.rememberMeParameter("rememberMe")
 				.rememberMeCookieName("paw-remember-me")
@@ -54,7 +58,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 				.tokenValiditySeconds((int)TimeUnit.DAYS.toSeconds(30))
 			.and().logout()
 				.logoutUrl("/logout")
-				.logoutSuccessUrl("/login")
+				.logoutSuccessUrl("/?l=1")
 			.and().exceptionHandling()
 				.accessDeniedPage("/403")
 			.and().csrf().disable();
@@ -62,7 +66,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 	
 	@Override
 	public void configure(final WebSecurity web) throws Exception {
-		web.ignoring().antMatchers("/resources/**", "/favicon.icon", "/403", "/404");
+		web.ignoring().antMatchers("/resources/**", "/favicon.ico", "/403", "/404");
 	}
 	
 	@Autowired
@@ -82,6 +86,17 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder(BCRYPT_ROUNDS);
+	}
+	
+	@Bean
+	public AuthenticationSuccessHandler successHandler() {
+		SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
+		
+		successHandler.setDefaultTargetUrl("/");
+		successHandler.setTargetUrlParameter("next");
+//		successHandler.setUseReferer(true);
+		
+		return successHandler;
 	}
 	
 }

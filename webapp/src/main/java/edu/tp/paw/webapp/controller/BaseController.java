@@ -7,16 +7,23 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
+
+import edu.tp.paw.model.User;
+import edu.tp.paw.service.UserService;
 
 @Controller
 public class BaseController {
 	
 	final static Logger logger = LoggerFactory.getLogger(BaseController.class);
 	
-	@Autowired
-	private MessageSource messageSource;
+	@Autowired private MessageSource messageSource;
+	
+	@Autowired private UserService userService;
 	
 	@ModelAttribute("locale")
 	public Locale currentLocale() {
@@ -26,6 +33,27 @@ public class BaseController {
 	@ModelAttribute("messageSource")
 	public MessageSource messageSource() {
 		return messageSource;
+	}
+	
+	@ModelAttribute("loggedUser")
+	public User user() {
+		final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		if (auth == null || !auth.isAuthenticated()) {
+			return null;
+		}
+		
+		Object principal = auth.getPrincipal();
+		
+		logger.debug("modelAttribute loggedUser");
+		
+		if (principal instanceof String) {
+			logger.debug("principal is of kind String[{}]", (String)principal);
+			return userService.findByUsername((String)principal);
+		} else if (principal instanceof UserDetails) {
+			return userService.findByUsername(((UserDetails)principal).getUsername());
+		} else {
+			return userService.findByUsername(principal.toString());
+		}
 	}
 	
 }

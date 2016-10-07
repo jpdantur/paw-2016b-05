@@ -4,7 +4,8 @@ create table if not exists users (
 	last_name varchar(100),
 	username varchar(100),
 	password varchar(100),
-	email varchar(100)
+	email varchar(100),
+	constraint unique_username unique(username)
 );
 
 -- $2a$10$2780YD5RxxP8TdDuH75OL.HraXvr7oqExc/ZqdCIT7WZ8XtA78eK2 = 'root'
@@ -57,6 +58,7 @@ create table if not exists comments (
 	comment_id serial primary key,
 	user_id integer,
 	comment_content varchar(300),
+	created timestamp default current_timestamp,
 	constraint user_fk foreign key (user_id) references users
 );
 

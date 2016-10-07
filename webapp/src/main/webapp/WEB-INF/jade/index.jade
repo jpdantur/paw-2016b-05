@@ -17,12 +17,26 @@ block content
 					| &nbsp;SIGLAS
 			nav.collapse.navbar-collapse#navbar-content
 				ul.nav.navbar-nav.navbar-right
+					if !loggedUser
+						li
+							a(href="#{context.url('/register')}") Registrate
+						li
+							a(href="#{context.url('/login')}") Ingresar
 					li
-						a(href="#{context.url('/register')}") Registrate
-					li
-						a(href="#{context.url('/login')}") Ingresar
-					li
-						a(href="#{context.url('/sell')}") #{messageSource.getMessage("index.sell", [], locale)}
+						a(href="#{context.url('/sell?next=/sell')}") #{messageSource.getMessage("index.sell", [], locale)}
+					if loggedUser
+						li
+							a.dropdown-toggle(href="#", data-toggle="dropdown")
+								span #{loggedUser.firstName} #{loggedUser.lastName}&nbsp;
+								span.caret
+							ul.dropdown-menu
+								li
+									a(href="#") Mi Perfil
+								li
+									a(href="#") Mis Articulos
+								li.separator
+								li
+									a(href="#{context.url('/logout')}") Cerrar Sesión
 	include partials/noscript
 	section.section#busqueda-simple
 		div.container

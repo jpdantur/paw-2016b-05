@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import edu.tp.paw.interfaces.dao.IUserDao;
 import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.User;
+import edu.tp.paw.model.UserBuilder;
 
 
 @Service
@@ -20,22 +21,24 @@ public class UserService implements IUserService {
 	 * @see edu.tp.paw.interfaces.service.IUserService#findById(long)
 	 */
 	@Override
-	public User findById(long id) {
+	public User findById(final long id) {
 		return userDao.findById(id);
 	}
-
+	
+	@Override
+	public User findByUsername(final String username) {
+		return userDao.findByUsername(username);
+	}
+	
 	/* (non-Javadoc)
 	 * @see edu.tp.paw.interfaces.service.IUserService#create(java.lang.String)
 	 */
 	@Override
-	public User create(String username, String password) {
-		return userDao.create(username, passwordEncoder.encode(password));
+	public User create(final UserBuilder builder) {
+		builder.password(passwordEncoder.encode(builder.getPassword()));
+		return userDao.create(builder);
 	}
 
-	@Override
-	public User findByUsername(String username) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+	
 
 }
