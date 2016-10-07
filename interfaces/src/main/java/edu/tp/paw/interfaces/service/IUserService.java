@@ -11,8 +11,11 @@ public interface IUserService {
 	 * @return The requested user, or null if not found
 	 */
 	public User findById(final long id);
-	
 	public User findByUsername(final String username);
+	
+	boolean idExists(final long id);
+	boolean usernameExists(final String username);
+	boolean emailExists(final String email);
 	
 	/**
 	 * Create a new user
@@ -20,6 +23,6 @@ public interface IUserService {
 	 * @param username The name of the user
 	 * @return The created user
 	 */
-	public User create(final UserBuilder builder);
+	public User registerUser(final UserBuilder builder);
 	
 }

@@ -6,20 +6,33 @@ import java.util.Set;
 
 public class UserBuilder implements IBuilder<User> {
 
-	private final String firstName;
-	private final String lastName;
 	private final String username;
-	private final String email;
+	
+	private String firstName;
+	private String lastName;
+	private String email;
 	
 	private long id;
 	private String password;
 	private Set<StoreItem> favourites = new HashSet<>();
 	
-	public UserBuilder(final String firstName, final String lastName, final String username, final String email) {
-		this.firstName = firstName;
-		this.lastName = lastName;
+	public UserBuilder(final String username) {
 		this.username = username;
-		this.email = email;
+	}
+	
+	public UserBuilder firstName(final String firstName) {
+		this.firstName = firstName;
+		return this;
+	}
+	
+	public UserBuilder lastName(final String lastName) {
+		this.lastName = lastName;
+		return this;
+	}
+	
+	public UserBuilder email(final String email) {
+		this.email= email;
+		return this;
 	}
 	
 	public UserBuilder password(final String password) {

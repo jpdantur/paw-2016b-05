@@ -1,11 +1,8 @@
 package edu.tp.paw.webapp.controller;
 
-import java.util.Locale;
-
 import javax.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -73,7 +70,7 @@ public class StoreController extends BaseController {
 		if (!bindingResult.hasErrors()) {
 			
 			Category category = categoryService.findById(form.getCategoryId());
-			StoreItemBuilder storeItemBuilder = new StoreItemBuilder(form.getName(), form.getDescription(), form.getPrice(), category, form.getEmail());
+			StoreItemBuilder storeItemBuilder = new StoreItemBuilder(form.getName(), form.getDescription(), form.getPrice(), category, form.getEmail(), form.isUsed());
 			
 			final StoreItem storeItem = storeService.sell(storeItemBuilder);
 			

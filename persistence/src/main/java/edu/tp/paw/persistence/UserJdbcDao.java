@@ -24,15 +24,13 @@ public class UserJdbcDao implements IUserDao {
 	private final SimpleJdbcInsert jdbcInsert;
 	
 	private final static RowMapper<User> rowMapper = (ResultSet resultSet, int rowNum) -> {
-		final User user = new UserBuilder(
-				resultSet.getString("first_name"),
-				resultSet.getString("last_name"),
-				resultSet.getString("username"),
-				resultSet.getString("email")
-			)
-			.id(resultSet.getLong("user_id"))
-			.password(resultSet.getString("password"))
-			.build(); 
+		final User user = new UserBuilder(resultSet.getString("username"))
+				.firstName(resultSet.getString("first_name"))
+				.lastName(resultSet.getString("last_name"))
+				.email(resultSet.getString("email"))
+				.id(resultSet.getLong("user_id"))
+				.password(resultSet.getString("password"))
+				.build(); 
 		return user;
 	};
 	
@@ -77,6 +75,19 @@ public class UserJdbcDao implements IUserDao {
 		return userList.isEmpty() ? null : userList.get(0);
 	}
 	
+	@Override
+	public User findByEmail(final String email) {
+		
+		List<User> userList =
+		jdbcTemplate
+		.query(
+				"select * from users where email = ?",
+				rowMapper,
+				email);
+		
+		return userList.isEmpty() ? null : userList.get(0);
+	}
+	
 	/* (non-Javadoc)
 	 * @see edu.tp.paw.interfaces.dao.IUserDao#create(java.lang.String)
 	 */
@@ -99,6 +110,21 @@ public class UserJdbcDao implements IUserDao {
 	
 	/* package */ JdbcTemplate getJdbcTemplate() {
 		return jdbcTemplate;
+	}
+
+	@Override
+	public boolean usernameExists(final String username) {
+		return findByUsername(username) == null ?  false : true;
+	}
+	
+	@Override
+	public boolean idExists(final long id) {
+		return findById(id) == null ?  false : true;
+	}
+	
+	@Override
+	public boolean emailExists(final String email) {
+		return findByEmail(email) == null ?  false : true;
 	}
 
 }

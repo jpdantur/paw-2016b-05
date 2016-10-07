@@ -57,7 +57,8 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 				resultSet.getString("description"),
 				resultSet.getBigDecimal("price"),
 				categoryDao.findById(resultSet.getLong("category")),
-				resultSet.getString("email")
+				resultSet.getString("email"),
+				resultSet.getBoolean("used")
 				)
 		.id(resultSet.getLong("item_id"))
 		.created(resultSet.getTimestamp("created"))
@@ -154,26 +155,6 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 						//						term.toLowerCase().replace("%", "\\%")
 						////						term.toLowerCase().replace("%", "\\%")
 						);
-	}
-
-	/* (non-Javadoc)
-	 * @see edu.tp.paw.interfaces.dao.IStoreItemDao#create(java.lang.String, java.lang.String, float, edu.tp.paw.model.Category, java.lang.String)
-	 */
-	@Override
-	public StoreItem create(final String name, final String description, final BigDecimal price, final Category category, final String email) {
-
-		final Map<String, Object> args = new HashMap<>();
-
-		args.put("name", name);
-		args.put("description", description);
-		args.put("price", price);
-		args.put("category", category.getId());
-		args.put("email", email);
-
-		final Number storeItemId = jdbcInsert.executeAndReturnKey(args);
-
-		return new StoreItemBuilder(name, description, price, category, email).id(storeItemId.longValue()).build();
-
 	}
 
 	@Override
@@ -280,7 +261,8 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 					resultSet.getString("description"),
 					resultSet.getBigDecimal("price"),
 					categoryDao.findById(resultSet.getLong("category")),
-					resultSet.getString("email")
+					resultSet.getString("email"),
+					resultSet.getBoolean("used")
 					)
 			.id(resultSet.getLong("item_id"))
 			.sold(resultSet.getInt("sold"))
@@ -482,7 +464,8 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 					resultSet.getString("description"),
 					resultSet.getBigDecimal("price"),
 					categoryDao.findById(resultSet.getLong("category")),
-					resultSet.getString("email")
+					resultSet.getString("email"),
+					resultSet.getBoolean("used")
 					)
 			.id(resultSet.getLong("item_id"))
 			.sold(resultSet.getInt("sold"))

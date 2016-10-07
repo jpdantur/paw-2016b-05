@@ -13,19 +13,28 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 	private final BigDecimal price;
 	private final Category category;
 	private final String email;
+	private final boolean used;
 	
 	// Optional parameters
 	private Timestamp created = new Timestamp( (new Date()).getTime() );
 	private Timestamp lastUpdated = new Timestamp( (new Date()).getTime() );
 	private int sold = 0;
 	private long id;
+	private User owner;
 	
-	public StoreItemBuilder(String name, String description, BigDecimal price, Category category, String email) {
+	public StoreItemBuilder(String name, String description, BigDecimal price, Category category, String email, boolean used) {
 		this.name = name;
 		this.description = description;
 		this.price = price;
 		this.category = category;
 		this.email = email;
+		this.used = used;
+	}
+	
+	
+	public StoreItemBuilder owner(User owner) {
+		this.owner = owner;
+		return this;
 	}
 	
 	/**
@@ -108,6 +117,14 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 	
 	public String getEmail() {
 		return email;
+	}
+	
+	public User getOwner() {
+		return owner;
+	}
+
+	public boolean isUsed() {
+		return used;
 	}
 	
 }

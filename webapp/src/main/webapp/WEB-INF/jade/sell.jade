@@ -7,6 +7,7 @@ block content
 			div.col-sm-10.col-sm-offset-1
 				h1 #{messageSource.getMessage('sell.headline',[],locale)}
 				form.form-horizontal(method="POST", action="#{context.url('/sell')}")
+					input(type="hidden", name="owner", value="#{loggedUser.id}")
 					div.form-group(class="#{bindingResult.hasFieldErrors('name')?'has-error':''}")
 						label.col-sm-2.control-label(for="name") #{messageSource.getMessage('sell.field.name',[],locale)}
 						div.col-sm-10
@@ -39,6 +40,13 @@ block content
 						div.col-sm-10
 							input.form-control(type="text", id="email", name="email", placeholder="#{messageSource.getMessage('sell.field.contactEmail',[],locale)}", value="#{item.email?item.email:''}")
 							+errors(bindingResult, 'email')
+					div.form-group(class="#{bindingResult.hasFieldErrors('used')?'has-error':''}")
+						div.col-sm-10.col-sm-offset-2
+							div.checkbox
+								label
+									input(type="checkbox", id="used", name="used", value="#{item.used?item.used:''}")
+									span #{messageSource.getMessage('sell.field.used',[],locale)}
+							+errors(bindingResult, 'used')
 					div.form-group
 						div.col-sm-2.col-sm-offset-2
 							a.btn.btn-default.btn-block(href="#{context.url('/')}")

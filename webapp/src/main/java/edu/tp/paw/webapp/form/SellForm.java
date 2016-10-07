@@ -3,7 +3,6 @@ package edu.tp.paw.webapp.form;
 import java.math.BigDecimal;
 
 import javax.validation.constraints.Digits;
-import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -13,21 +12,24 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 public class SellForm {
 
-	@Size(min = 2, max = 100)
+	@Size(min = 2, max = 100, message = "{Size.SellForm.name}")
 	private String name;
-	@NotNull
+	
+	
 	private String description;
 	
 	@NotNull
-	@Digits(integer=9, fraction=2)
+	@Digits(integer=20, fraction=2)
 	private BigDecimal price;
 	
 	@Min(0)
 	private long categoryId;
 	
-	@Email
-	@NotEmpty
+	@Email( message = "{Email.SellForm.email}" )
+	@NotEmpty( message = "{NotEmpty.SellForm.email}" )
 	private String email;
+	
+	private boolean used;
 	
 	public long getCategoryId() {
 		return categoryId;
@@ -43,17 +45,6 @@ public class SellForm {
 
 	public void setEmail(String email) {
 		this.email = email;
-	}
-
-	public SellForm() {
-		
-	}
-	
-	public SellForm(String name, String description, BigDecimal price, long categoryId) {
-		this.name = name;
-		this.description = description;
-		this.price = price;
-		this.categoryId = categoryId;
 	}
 
 	public String getName() {
@@ -85,6 +76,14 @@ public class SellForm {
 		return "SellForm [name=" + name + ", description=" + description
 				+ ", price=" + price + ", categoryId=" + categoryId + ", email="
 				+ email + "]";
+	}
+
+	public boolean isUsed() {
+		return used;
+	}
+
+	public void setUsed(boolean used) {
+		this.used = used;
 	}
 	
 	

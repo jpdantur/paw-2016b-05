@@ -8,7 +8,7 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 public class RegisterForm {
 
-	@Size(min = 2, max = 100)
+	@Size(min = 2, max = 100, message = "{Size.RegisterForm.firstName}")
 	private String firstName;
 	@Size(min = 2, max = 100)
 	private String lastName;

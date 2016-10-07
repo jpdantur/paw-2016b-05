@@ -5,7 +5,8 @@ create table if not exists users (
 	username varchar(100),
 	password varchar(100),
 	email varchar(100),
-	constraint unique_username unique(username)
+	constraint unique_username unique(username),
+	constraint unique_email unique(email)
 );
 
 -- $2a$10$2780YD5RxxP8TdDuH75OL.HraXvr7oqExc/ZqdCIT7WZ8XtA78eK2 = 'root'
@@ -41,6 +42,7 @@ create table if not exists store_items (
 	sold integer default 0,
 	category integer,
 	email varchar(100),
+	used boolean,
 	created timestamp default current_timestamp,
 	last_updated timestamp default current_timestamp,
 	constraint category_fk foreign key (category) references store_categories

@@ -43,17 +43,6 @@ public interface IStoreItemDao {
 	 */
 	public List<StoreItem> findInCategories(List<Category> categories);
 	
-	/**
-	 * Create a new StoreItem
-	 * 
-	 * 
-	 * @param name The name of the StoreItem
-	 * @param description The description of the StoreItem
-	 * @return A new StoreItem
-	 * @deprecated
-	 */
-	public StoreItem create(final String name, final String description, final BigDecimal price, final Category category, final String email);
-	
 	
 	/**
 	 * Create a new StoreItem

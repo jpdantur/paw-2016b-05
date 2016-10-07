@@ -8,6 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.Validator;
+import org.springframework.web.bind.WebDataBinder;
+import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -15,17 +18,17 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.UserBuilder;
-import edu.tp.paw.model.User;
-import edu.tp.paw.webapp.form.LoginForm;
 import edu.tp.paw.webapp.form.RegisterForm;
+import edu.tp.paw.webapp.form.validator.RegisterFormValidator;
 
 @Controller
 public class AuthenticationController extends BaseController {
 
 	private static final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
 	
-	@Autowired
-	IUserService userService;
+	@Autowired private IUserService userService;
+	
+	@Autowired private RegisterFormValidator validator;
 	
 	@RequestMapping("/login")
 	public String login(
@@ -34,6 +37,8 @@ public class AuthenticationController extends BaseController {
 			@RequestParam( value = "logout", required = false ) String logout,
 			@RequestParam( value = "next", required = false ) String next,
 			Model model) {
+		
+//		logger.debug("$> avalidator class {}", avalidator.getClass());
 		
 		if (logout != null) {
 			// user just logout
@@ -70,18 +75,21 @@ public class AuthenticationController extends BaseController {
 			BindingResult result,
 			Model model) {
 		
+		validator.validate(form, result);
+		
 		if (!result.hasErrors()) {
 			
 			System.out.println(form);
 			
 			final UserBuilder userBuiler = new UserBuilder(
-					form.getFirstName(),
-					form.getLastName(),
-					form.getUsername(),
-					form.getEmail()
-				).password(form.getPassword());
+					form.getUsername()
+				)
+				.firstName(form.getFirstName())
+				.lastName(form.getLastName())
+				.email(form.getEmail())
+				.password(form.getPassword());
 			
-			userService.create(userBuiler);
+			userService.registerUser(userBuiler);
 			
 			return "redirect:/login?r=1";
 			

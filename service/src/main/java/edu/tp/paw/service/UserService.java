@@ -34,9 +34,38 @@ public class UserService implements IUserService {
 	 * @see edu.tp.paw.interfaces.service.IUserService#create(java.lang.String)
 	 */
 	@Override
-	public User create(final UserBuilder builder) {
+	public User registerUser(final UserBuilder builder) {
+		
+		if (builder == null) {
+			throw new IllegalArgumentException("builder cannot be null");
+		}
+		
+		
+		if (userDao.emailExists(builder.getEmail())) {
+			throw new IllegalStateException("a user with username " + builder.getUsername() + " already exists");
+		}
+		
+		if (userDao.usernameExists(builder.getUsername())) {
+			throw new IllegalStateException("a user with username " + builder.getUsername() + " already exists");
+		}
+		
 		builder.password(passwordEncoder.encode(builder.getPassword()));
 		return userDao.create(builder);
+	}
+
+	@Override
+	public boolean idExists(final long id) {
+		return userDao.idExists(id);
+	}
+
+	@Override
+	public boolean usernameExists(final String username) {
+		return userDao.usernameExists(username);
+	}
+
+	@Override
+	public boolean emailExists(final String email) {
+		return userDao.emailExists(email);
 	}
 
 	

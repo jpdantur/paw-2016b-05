@@ -13,6 +13,11 @@ public interface IUserDao {
 	User findById(final long id);
 	
 	User findByUsername(final String username);
+	User findByEmail(final String username);
+	
+	boolean idExists(final long id);
+	boolean usernameExists(final String username);
+	boolean emailExists(final String email);
 	
 	/**
 	 * Create a new user

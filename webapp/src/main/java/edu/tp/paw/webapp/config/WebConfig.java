@@ -19,22 +19,21 @@ import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import org.springframework.validation.Validator;
+import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 
-import com.sun.corba.se.impl.protocol.giopmsgheaders.Message;
-import com.sun.xml.internal.bind.api.impl.NameConverter.Standard;
-
 import de.neuland.jade4j.JadeConfiguration;
 import de.neuland.jade4j.spring.template.SpringTemplateLoader;
 import de.neuland.jade4j.spring.view.JadeViewResolver;
-
 import edu.tp.paw.webapp.config.ContextHelper;
+import edu.tp.paw.webapp.form.validator.RegisterFormValidator;
 
 @EnableWebMvc
-@ComponentScan({"edu.tp.paw.webapp.controller", "edu.tp.paw.service", "edu.tp.paw.persistence"})
+@ComponentScan({"edu.tp.paw.webapp.controller", "edu.tp.paw.webapp.form.validator", "edu.tp.paw.service", "edu.tp.paw.persistence"})
 @Configuration
 public class WebConfig extends WebMvcConfigurerAdapter {
 
@@ -163,4 +162,17 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 		
 		return messageSource;
 	}
+	
+	@Bean
+	public LocalValidatorFactoryBean validator() {
+		LocalValidatorFactoryBean bean = new LocalValidatorFactoryBean();
+		bean.setValidationMessageSource(messageSource());
+		return bean;
+	}
+	 
+	@Override
+	public Validator getValidator() {
+		return validator();
+	}
+	
 }

@@ -11,6 +11,8 @@ public class StoreItem {
 	private final String description;
 	private final BigDecimal price;
 	private final String email;
+	private final User owner;
+	private final boolean used;
 	
 	private Category category;
 	
@@ -29,6 +31,8 @@ public class StoreItem {
 		this.lastUpdated = builder.getLastUpdated();
 		this.category = builder.getCategory();
 		this.email = builder.getEmail();
+		this.owner = builder.getOwner();
+		this.used = builder.isUsed();
 	}
 	
 	
@@ -96,7 +100,13 @@ public class StoreItem {
 	public String getEmail() {
 		return email;
 	}
-
 	
+	public User getOwner() {
+		return owner;
+	}
+
+	public boolean isUsed() {
+		return used;
+	}
 
 }
