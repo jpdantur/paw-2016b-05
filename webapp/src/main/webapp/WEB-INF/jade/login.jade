@@ -25,15 +25,19 @@ block content
 		div.row
 			div.col-sm-6.col-sm-offset-3
 				div.well
-					form.form-horizontal(action="#{context.url('/login')}", method="POST")
-						div.form-group(class="#{result.hasFieldErrors('username')?'has-error':''}")
+					if error
+						div.alert.alert-danger
+							b Error!&nbsp;
+							span Usuario o contraseña incorrectas
+					form.form-horizontal(action="#{context.url('/login'+(next?'?next='+next:''))}", method="POST")
+						div.form-group
 							label.control-label.col-sm-3(for="username") Usuario
 							div.col-sm-9
-								input.form-control#username(type="text", placeholder="Usuario", name="username", value="#{user.username?user.username:''}")
-						div.form-group(class="#{result.hasFieldErrors('password')?'has-error':''}")
+								input.form-control#username(type="text", placeholder="Usuario", name="username")
+						div.form-group
 							label.control-label.col-sm-3(for="password") Password
 							div.col-sm-9
-								input.form-control#password(type="password", placeholder="Password", name="password", value="#{user.password?user.password:''}")
+								input.form-control#password(type="password", placeholder="Password", name="password")
 						div.form-group
 								div.col-sm-12
 									button.btn.btn-success.btn-block(type="submit") Ingresar

@@ -1,12 +1,17 @@
 package edu.tp.paw.webapp.controller;
 
 import java.util.Locale;
+import java.util.Optional;
+
+import javax.servlet.http.HttpServletRequest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.http.HttpRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,9 +26,11 @@ public class BaseController {
 	
 	final static Logger logger = LoggerFactory.getLogger(BaseController.class);
 	
+	@Autowired private ApplicationContext appContext;
 	@Autowired private MessageSource messageSource;
-	
 	@Autowired private UserService userService;
+	
+	
 	
 	@ModelAttribute("locale")
 	public Locale currentLocale() {
@@ -54,6 +61,12 @@ public class BaseController {
 		} else {
 			return userService.findByUsername(principal.toString());
 		}
+	}
+	
+	@ModelAttribute("currentURI")
+	public String currentUrl(HttpServletRequest request) {
+		
+		return String.format("%s?%s", request.getRequestURI().replace(appContext.getApplicationName(), ""), Optional.ofNullable(request.getQueryString()).orElse(""));
 	}
 	
 }

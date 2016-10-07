@@ -37,7 +37,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 		http
 			.userDetailsService(userDetailsService)
 			.sessionManagement()
-				.invalidSessionUrl("/login")
+				.invalidSessionUrl("/")
 			.and().authorizeRequests()
 				.antMatchers("/", "/item/**", "/items", "/items/**").permitAll()
 				.antMatchers("/login", "/register").anonymous()
@@ -90,7 +90,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 	
 	@Bean
 	public AuthenticationSuccessHandler successHandler() {
-		SavedRequestAwareAuthenticationSuccessHandler successHandler = new SavedRequestAwareAuthenticationSuccessHandler();
+		CustomSavedRequestAwareAuthenticationSuccessHandler successHandler = new CustomSavedRequestAwareAuthenticationSuccessHandler();
 		
 		successHandler.setDefaultTargetUrl("/");
 		successHandler.setTargetUrlParameter("next");

@@ -2,6 +2,8 @@ package edu.tp.paw.webapp.controller;
 
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +22,8 @@ import edu.tp.paw.webapp.form.RegisterForm;
 @Controller
 public class AuthenticationController extends BaseController {
 
+	private static final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
+	
 	@Autowired
 	IUserService userService;
 	
@@ -28,21 +32,22 @@ public class AuthenticationController extends BaseController {
 			@RequestParam( value = "r", required = false) boolean hasRegistered,
 			@RequestParam( value = "error", required = false) String error,
 			@RequestParam( value = "logout", required = false ) String logout,
-			@ModelAttribute("loginForm") LoginForm user,
-			BindingResult result,
+			@RequestParam( value = "next", required = false ) String next,
 			Model model) {
-		
-		if (error != null) {
-			// invalid username or password
-		}
 		
 		if (logout != null) {
 			// user just logout
 		}
 		
+		if (error != null) {
+			model.addAttribute("error", "user or password incorrect");
+		}
+		
+		logger.debug("received error: {}", error);
+		
 		model.addAttribute("hasRegistered", hasRegistered);
-		model.addAttribute("user", user);
-		model.addAttribute("result", result);
+		model.addAttribute("next", next);
+		
 		
 		return "login";
 	}
