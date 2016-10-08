@@ -19,6 +19,7 @@ import edu.tp.paw.interfaces.service.IStoreService;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
+import edu.tp.paw.model.User;
 import edu.tp.paw.webapp.exceptions.StoreItemNotFoundException;
 import edu.tp.paw.webapp.form.SellForm;
 
@@ -40,7 +41,7 @@ public class StoreSellController extends BaseController {
 			BindingResult bindingResult,
 			Model model) {
 		
-		model.addAttribute("categories", categoryService.getCategoryTree());
+		model.addAttribute("categories", categoryService.getCategories());
 		model.addAttribute("bindingResult", bindingResult);
 		model.addAttribute("item", form);
 		
@@ -50,15 +51,16 @@ public class StoreSellController extends BaseController {
 	@RequestMapping( value = "/details", method = RequestMethod.POST)
 	public String sell(
 			@Valid @ModelAttribute("sellForm") SellForm form,
-			BindingResult bindingResult,
-			Model model) {
+			final BindingResult bindingResult,
+			final Model model,
+			@ModelAttribute("loggedUser") final User user) {
 		
 		System.out.println(form);
 		
 		if (!bindingResult.hasErrors()) {
 			
 			Category category = categoryService.findById(form.getCategoryId());
-			StoreItemBuilder storeItemBuilder = new StoreItemBuilder(form.getName(), form.getDescription(), form.getPrice(), category, form.isUsed());
+			StoreItemBuilder storeItemBuilder = new StoreItemBuilder(form.getName(), form.getDescription(), form.getPrice(), category, form.isUsed()).owner(user);
 			
 			final StoreItem storeItem = storeService.sell(storeItemBuilder);
 			

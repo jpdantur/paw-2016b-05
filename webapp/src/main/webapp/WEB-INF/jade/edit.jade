@@ -3,15 +3,14 @@ extends layout
 block scripts
 
 block styles
-	
 
 block content
 	+navbar(true)
 	div.container
 		div.row
 			div.col-sm-10.col-sm-offset-1
-				h1 #{messageSource.getMessage('sell.headline',[],locale)}
-				form.form-horizontal(method="POST", action="#{context.url('/store/sell/details')}")
+				h1 #{messageSource.getMessage('edit.headline',[],locale)} `#{item.name}`
+				form.form-horizontal(method="POST", action="#{context.url('/store/item/'+item.id+'/details')}")
 					input(type="hidden", name="owner", value="#{loggedUser.id}")
 					div.form-group(class="#{bindingResult.hasFieldErrors('name')?'has-error':''}")
 						label.col-sm-2.control-label(for="name") #{messageSource.getMessage('sell.field.name',[],locale)}
@@ -51,7 +50,7 @@ block content
 							+errors(bindingResult, 'used')
 					div.form-group
 						div.col-sm-2.col-sm-offset-2
-							a.btn.btn-default.btn-block(href="#{context.url('/')}")
+							a.btn.btn-default.btn-block(href="#{context.url('/profile/details#items')}")
 								i.fa.fa-chevron-left
 								| &nbsp;#{messageSource.getMessage('sell.back',[],locale)}
 						div.col-sm-4.col-sm-offset-4

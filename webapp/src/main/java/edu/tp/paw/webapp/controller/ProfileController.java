@@ -4,6 +4,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import edu.tp.paw.interfaces.service.IStoreItemService;
+import edu.tp.paw.model.User;
 import edu.tp.paw.webapp.form.ChangePasswordForm;
 import edu.tp.paw.webapp.form.ProfileForm;
 import edu.tp.paw.webapp.form.validator.ChangePasswordFormValidator;
@@ -25,6 +27,9 @@ public class ProfileController extends BaseController {
 	private static final Logger logger = LoggerFactory.getLogger(ProfileController.class);
 	
 	@Autowired
+	private IStoreItemService itemService;
+	
+	@Autowired
 	private ProfileFormValidator validator;
 	
 	@Autowired
@@ -34,8 +39,11 @@ public class ProfileController extends BaseController {
 	public String profile(
 			@ModelAttribute("profileForm") final ProfileForm form,
 			final BindingResult result,
-			final Model model) {
+			final Model model,
+			@ModelAttribute("loggedUser") final User user) {
 		
+		
+		model.addAttribute("items", itemService.getUserItems(user));
 		model.addAttribute("result", result);
 		
 		return "profile";
@@ -58,6 +66,11 @@ public class ProfileController extends BaseController {
 	@RequestMapping( value = "/password", method = RequestMethod.GET )
 	public String password() {
 		return "redirect:/profile/details#password";
+	}
+	
+	@RequestMapping( value = "/items", method = RequestMethod.GET )
+	public String items() {
+		return "redirect:/profile/details#items";
 	}
 	
 	@RequestMapping( value = "/password", method = RequestMethod.POST )

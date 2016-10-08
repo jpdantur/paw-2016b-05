@@ -14,6 +14,7 @@ import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
+import edu.tp.paw.model.User;
 import edu.tp.paw.model.filter.Filter;
 import edu.tp.paw.model.filter.FilterBuilder;
 import edu.tp.paw.model.filter.PagedResult;
@@ -71,6 +72,22 @@ public class StoreItemService implements IStoreItemService {
 		}
 		
 		return storeItemDao.findByTerm(filterBuilder.build());
+	}
+
+	@Override
+	public List<StoreItem> getUserItems(final User user) {
+		
+		if (user == null) {
+			throw new IllegalStateException("user cant be null");
+		}
+		
+		return storeItemDao.getUserItems(user);
+	}
+
+	@Override
+	public boolean updateItem(StoreItem item) {
+		
+		return storeItemDao.updateItem(item);
 	}
 	
 	

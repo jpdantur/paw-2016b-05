@@ -107,6 +107,8 @@ public class CategoryJdbcDao implements ICategoryDao {
 	@Override
 	public Category findById(long id) {
 		
+		new Throwable().printStackTrace();
+		
 		List<Category> categoryList =
 		jdbcTemplate
 		.query(
@@ -224,7 +226,7 @@ public class CategoryJdbcDao implements ICategoryDao {
 		return
 				jdbcTemplate
 				.query(
-						"select * from store_categories category_id <> 0",
+						"select * from store_categories where category_id <> 0 order by name asc",
 						rowMapper);
 	}
 

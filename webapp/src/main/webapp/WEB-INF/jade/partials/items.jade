@@ -1,0 +1,21 @@
+table.table.table-striped
+	thead
+		tr
+			th Foto
+			th Nombre
+			th Precio
+			th Vendidos
+			th Publicado
+			th Ultima Modificación
+			th
+	tbody
+		each item in items
+			tr
+				td
+				td #{item.name}
+				td $#{item.price}
+				td #{item.sold} Vendidos
+				td #{item.created}
+				td #{item.lastUpdated}
+				td
+					a(href="#{context.url('/store/item/'+item.id+'/details')}") Editar

@@ -6,6 +6,7 @@ import java.util.List;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
+import edu.tp.paw.model.User;
 import edu.tp.paw.model.filter.Filter;
 import edu.tp.paw.model.filter.PagedResult;
 
@@ -24,15 +25,6 @@ public interface IStoreItemDao {
 	 * @return A list of the most sold items
 	 */
 	public List<StoreItem> findMostSold(final int n);
-	
-	/**
-	 * Retrieves a list of the store items that match #{term}
-	 * @param term The term to match
-	 * @return A list of the store items that match #{term}
-	 * @deprecated
-	 */
-	public List<StoreItem> findByTerm(final String term);
-	public List<StoreItem> findByTerm(final String term, final Filter filter);
 	
 	public PagedResult<StoreItem> findByTerm(final Filter filter);
 	
@@ -53,5 +45,9 @@ public interface IStoreItemDao {
 	 * @return A new StoreItem
 	 */
 	public StoreItem create(final StoreItemBuilder builder);
+	
+	public List<StoreItem> getUserItems(final User user);
+	
+	public boolean updateItem(final StoreItem item);
 	
 }

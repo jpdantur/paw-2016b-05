@@ -4,6 +4,7 @@ import java.util.List;
 
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
+import edu.tp.paw.model.User;
 import edu.tp.paw.model.filter.Filter;
 import edu.tp.paw.model.filter.FilterBuilder;
 import edu.tp.paw.model.filter.PagedResult;
@@ -36,6 +37,8 @@ public interface IStoreItemService {
 	public PagedResult<StoreItem> findByFiltering(final Filter filter);
 	public PagedResult<StoreItem> findByFiltering(final FilterBuilder filter);
 
+	public List<StoreItem> getUserItems(final User user);
 	
+	public boolean updateItem(final StoreItem item);
 
 }

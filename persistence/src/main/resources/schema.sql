@@ -21,12 +21,10 @@ create table if not exists store_categories (
 	category_id serial primary key,
 	name varchar(100),
 	parent integer,
---	category_path text,
 	created timestamp default current_timestamp,
 	last_updated timestamp default current_timestamp,
-	owner integer,
 	constraint parent_fk foreign key (parent) references store_categories,
-	constraint owner_fk foreign key (owner) references users
+	
 );
 
 insert into store_categories (category_id, name, parent)
@@ -43,9 +41,11 @@ create table if not exists store_items (
 	category integer,
 	used boolean default false,
 	published boolean default false,
+	owner integer,
 	created timestamp default current_timestamp,
 	last_updated timestamp default current_timestamp,
-	constraint category_fk foreign key (category) references store_categories
+	constraint category_fk foreign key (category) references store_categories,
+	constraint owner_fk foreign key (owner) references users
 );
 
 create table if not exists favourites (

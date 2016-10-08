@@ -19,10 +19,13 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
+import edu.tp.paw.interfaces.dao.ICategoryDao;
 import edu.tp.paw.interfaces.dao.IStoreItemDao;
+import edu.tp.paw.interfaces.dao.IUserDao;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
+import edu.tp.paw.model.User;
 import edu.tp.paw.model.filter.CategoryFilter;
 import edu.tp.paw.model.filter.Filter;
 import edu.tp.paw.model.filter.OrderFilter;
@@ -38,17 +41,13 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 	private static final String ORDER_DESCENDING = "DESC";	
 	private static final String ORDER_ASCENDING = "ASC";
 
-	private static final String TERM_BASED_QUERY_SQL =
-			"select item_id, name, description, price, category, used, sold, count(*) OVER() as total_count "
-					+ "from store_items "
-					+ "where ";
-
 	@Autowired
-	private CategoryJdbcDao categoryDao;
+	private ICategoryDao categoryDao;
+	
+	@Autowired
+	private IUserDao userDao;
 
 	private final NamedParameterJdbcTemplate jdbcTemplate;
-
-	//	private final JdbcTemplate jdbcTemplate;
 	private final SimpleJdbcInsert jdbcInsert;
 
 	private final RowMapper<StoreItem> rowMapper = (ResultSet resultSet, int rowNum) -> {
@@ -63,6 +62,7 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 		.created(resultSet.getTimestamp("created"))
 		.lastUpdated(resultSet.getTimestamp("last_updated"))
 		.sold(resultSet.getInt("sold"))
+		.owner(userDao.findById(resultSet.getLong("owner")))
 		.build();
 	};
 
@@ -76,21 +76,8 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 
 		jdbcInsert = new SimpleJdbcInsert(dataSource)
 		.withTableName("store_items")
-		.usingGeneratedKeyColumns("item_id")
-		.usingColumns("name", "description", "price", "category", "email");
-
-
-		//		jdbcTemplate.execute(
-		//			"create table if not exists store_items ("
-		//				+ "item_id serial primary key,"
-		//				+ "name varchar(100),"
-		//				+ "description text,"
-		//				+ "sold integer default 0,"
-		//				+ "price real,"
-		//				+ "created timestamp default current_timestamp,"
-		//				+ "last_updated timestamp default current_timestamp"
-		//			+ ")"
-		//		);
+		.usingGeneratedKeyColumns("item_id");
+//		.usingColumns("name", "description", "price", "category", "used", "owner");
 	}
 
 	/* (non-Javadoc)
@@ -128,33 +115,7 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 						"select * from store_items order by sold desc limit ?",
 						rowMapper,
 						n);
-	}
-
-	//	private static escape
-
-	/* (non-Javadoc)
-	 * @see edu.tp.paw.interfaces.dao.IStoreItemDao#findByTerm(java.lang.String)
-	 */
-	@Override
-	public List<StoreItem> findByTerm(String term) {
-
-		MapSqlParameterSource mapSqlParameterSource = new MapSqlParameterSource();
-
-		mapSqlParameterSource.addValue("term", term.toLowerCase().replace("%", "\\%"));
-
-		return
-
-				jdbcTemplate
-				.getJdbcOperations()
-				.query(
-						TERM_BASED_QUERY_SQL,
-						rowMapper,
-						mapSqlParameterSource
-						//						term.toLowerCase().replace("%", "\\%"),
-						//						term.toLowerCase().replace("%", "\\%")
-						////						term.toLowerCase().replace("%", "\\%")
-						);
-	}
+	}	
 
 	@Override
 	public StoreItem create(final StoreItemBuilder builder) {
@@ -170,8 +131,6 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 		final Number storeItemId = jdbcInsert.executeAndReturnKey(args);
 
 		return builder.id(storeItemId.longValue()).build();
-
-		//		return new StoreItemBuilder(storeItemId.longValue(), buiu, description, price, category, email).build();
 	}
 
 	/* (non-Javadoc)
@@ -203,118 +162,11 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 	}
 
 	@Override
-	public List<StoreItem> findByTerm(String term, Filter filter) {
-
-		// build sql from filter
-		final PriceFilter priceFilter = filter.getPriceFilter();
-		final Range<BigDecimal> priceRange = priceFilter.getPriceRange();
-
-		StringBuilder query = new StringBuilder(TERM_BASED_QUERY_SQL);
-
-
-		if (priceRange.hasLowerBound() || priceRange.hasUpperBound()) {
-			query.append(" and ");
-
-			if (priceRange.hasLowerBound() && priceRange.hasUpperBound()) {
-				query.append("price <= :upperBound && :lowerBound <= price");
-			} else if (priceRange.hasLowerBound()) {
-				query.append(":lowerBound <= price");
-			} else {
-				query.append("price <= :upperBound");
-			}
-		}
-
-		final CategoryFilter categoryFilter = filter.getCategoryFilter();
-
-		final Set<Category> categories = categoryFilter.getCategories();
-
-		if (!categories.isEmpty()) {
-
-			query.append(" or category in (:categories)");
-
-		}
-
-		final PageFilter pageFilter = filter.getPageFilter();
-
-		query.append(" limit :limit offset :offset");
-
-		final PagedResult<StoreItem> pagedResult = new PagedResult<>();
-
-		pagedResult.setCurrentPage(pageFilter.getPageNumber());
-		pagedResult.setPageSize(pageFilter.getPageSize());
-
-		final RowMapper<StoreItem> mapper = (ResultSet resultSet, int rowNum) -> {
-
-			pagedResult.setNumberOfTotalResults(resultSet.getInt("total_count"));
-
-			return new StoreItemBuilder(
-					resultSet.getString("name"),
-					resultSet.getString("description"),
-					resultSet.getBigDecimal("price"),
-					categoryDao.findById(resultSet.getLong("category")),
-					resultSet.getBoolean("used")
-					)
-			.id(resultSet.getLong("item_id"))
-			.sold(resultSet.getInt("sold"))
-			.build();
-		};
-
-		//		List<StoreItem> results = new ArrayList<>();
-
-
-		MapSqlParameterSource params = new MapSqlParameterSource();
-
-		params.addValue("term", term.toLowerCase().replace("%", "\\%"), Types.VARCHAR);
-		//		params.addValue("term2", term.toLowerCase().replace("%", "\\%"), Types.VARCHAR);
-		//		params.addValue("term3", term.toLowerCase().replace("%", "\\%"), Types.VARCHAR);
-		params.addValue("limit", pageFilter.getPageSize(), Types.INTEGER);
-		params.addValue("offset", pageFilter.getPageNumber()*pageFilter.getPageSize(), Types.INTEGER);
-
-
-		System.out.println(query);
-
-		if (priceRange.hasLowerBound()) {
-			params.addValue("lowerBound",
-					priceRange.lowerBoundType() == Range.BoundType.CLOSED
-					? priceRange.lowerBound().get()
-							: priceRange.lowerBound().get().add(new BigDecimal(1)));
-		}
-
-		if (priceRange.hasUpperBound()) {
-			params.addValue("upperBound",
-					priceRange.upperBoundType() == Range.BoundType.CLOSED
-					? priceRange.upperBound().get()
-							: priceRange.upperBound().get().subtract(new BigDecimal(1)));
-		}
-
-		if (!categories.isEmpty()) {
-
-			params.addValue("categories", categories.stream().map(x -> x.getId()).collect(Collectors.toList()));
-		}
-
-		List<StoreItem> results =
-				jdbcTemplate
-				.query(
-						query.toString(),
-						params,
-						mapper);
-
-		pagedResult.setNumberOfAvailableResults(results.size());
-
-		System.out.println(results.size());
-		System.out.println(pagedResult.getNumberOfTotalResults());
-		System.out.println(pagedResult.getNumberOfAvailableResults());
-
-
-		return results;
-	}
-
-	@Override
 	public PagedResult<StoreItem> findByTerm(Filter filter) {
 		
-		StringBuilder query = new StringBuilder("select item_id, name, description, price, category, used, sold, count(*) OVER() as total_count from store_items where ");
+		final StringBuilder query = new StringBuilder("select item_id, name, description, price, category, used, owner, sold, count(*) OVER() as total_count from store_items where ");
 
-		MapSqlParameterSource params = new MapSqlParameterSource();
+		final MapSqlParameterSource params = new MapSqlParameterSource();
 		
 		final TermFilter termFilter = filter.getTermFilter();
 		
@@ -442,9 +294,6 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 		params.addValue("limit", pageFilter.getPageSize());
 		params.addValue("offset", pageFilter.getPageNumber()*pageFilter.getPageSize());
 
-
-		System.out.println(query);
-
 		final RowMapper<StoreItem> mapper = (ResultSet resultSet, int rowNum) -> {
 
 			pagedResult.setNumberOfTotalResults(resultSet.getInt("total_count"));
@@ -461,22 +310,47 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 			.build();
 		};
 		
-		List<StoreItem> results =
-				jdbcTemplate
-				.query(
-						query.toString(),
-						params,
-						mapper);
+		List<StoreItem> results = jdbcTemplate.query(query.toString(), params, mapper);
 
 		pagedResult.setNumberOfAvailableResults(results.size());
-
-		System.out.println(results.size());
-		System.out.println(pagedResult.getNumberOfTotalResults());
-		System.out.println(pagedResult.getNumberOfAvailableResults());
-
 		pagedResult.setResults(results);
 
 		return pagedResult;
+	}
+
+	@Override
+	public List<StoreItem> getUserItems(User user) {
+		
+		return 
+				jdbcTemplate
+				.getJdbcOperations()
+				.query(
+						"select * from store_items where owner = ?",
+						rowMapper,
+						user.getId());
+	}
+
+	@Override
+	public boolean updateItem(final StoreItem item) {
+		
+		final MapSqlParameterSource params = new MapSqlParameterSource();
+		
+		System.out.println(item);
+		
+		params.addValue("name", item.getName());
+		params.addValue("description", item.getDescription());
+		params.addValue("price", item.getPrice());
+		params.addValue("category", item.getCategory().getId());
+		params.addValue("used", item.isUsed());
+		params.addValue("owner", item.getOwner().getId());
+		params.addValue("id", item.getId());
+		
+		return 
+				jdbcTemplate
+				.update(
+						"update store_items "
+						+ "set name=:name, description=:description, price=:price, category=:category, used=:used, owner=:owner "
+						+ "where item_id = :id", params) == 1;
 	}
 
 
