@@ -139,6 +139,20 @@ module.exports = function (grunt) {
 					src: ['*.js'],
 					dest: destinationDirectory+'js/lib/'
 				}, {
+					// dropzone js
+					expand: true,
+					dot: true,
+					cwd: 'bower_components/dropzone/dist/',
+					src: ['dropzone.js'],
+					dest: destinationDirectory+'js/lib/'
+				}, {
+					// dropzone css
+					expand: true,
+					dot: true,
+					cwd: 'bower_components/dropzone/dist/',
+					src: ['*.css'],
+					dest: destinationDirectory+'css/'
+				}, {
 					// my js files
 					expand: true,
     			dot: true,

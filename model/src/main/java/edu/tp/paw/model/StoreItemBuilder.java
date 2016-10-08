@@ -12,7 +12,6 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 	private final String description;
 	private final BigDecimal price;
 	private final Category category;
-	private final String email;
 	private final boolean used;
 	
 	// Optional parameters
@@ -22,12 +21,11 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 	private long id;
 	private User owner;
 	
-	public StoreItemBuilder(String name, String description, BigDecimal price, Category category, String email, boolean used) {
+	public StoreItemBuilder(String name, String description, BigDecimal price, Category category, boolean used) {
 		this.name = name;
 		this.description = description;
 		this.price = price;
 		this.category = category;
-		this.email = email;
 		this.used = used;
 	}
 	
@@ -113,10 +111,6 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 	
 	public Category getCategory() {
 		return category;
-	}
-	
-	public String getEmail() {
-		return email;
 	}
 	
 	public User getOwner() {

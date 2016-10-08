@@ -57,7 +57,6 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 				resultSet.getString("description"),
 				resultSet.getBigDecimal("price"),
 				categoryDao.findById(resultSet.getLong("category")),
-				resultSet.getString("email"),
 				resultSet.getBoolean("used")
 				)
 		.id(resultSet.getLong("item_id"))
@@ -166,7 +165,7 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 		args.put("description", builder.getDescription());
 		args.put("price", builder.getPrice());
 		args.put("category", builder.getCategory().getId());
-		args.put("email", builder.getEmail());
+		args.put("used", builder.isUsed());
 
 		final Number storeItemId = jdbcInsert.executeAndReturnKey(args);
 
@@ -224,8 +223,6 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 				query.append("price <= :upperBound");
 			}
 		}
-		// TODO make an ordered set of store items
-		//query += " order by price " + (priceFilter.getSortOrder() == Filter.SortOrder.ASC ? ORDER_ASCENDING : ORDER_DESCENDING);
 
 		final CategoryFilter categoryFilter = filter.getCategoryFilter();
 
@@ -233,13 +230,7 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 
 		if (!categories.isEmpty()) {
 
-			query.append(" or category in (");
-			query.append(":categories");
-			/*
-			query.append(categories.stream().map(x -> "?").collect(Collectors.joining(",")));
-			 */
-
-			query.append(") ");
+			query.append(" or category in (:categories)");
 
 		}
 
@@ -261,7 +252,6 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 					resultSet.getString("description"),
 					resultSet.getBigDecimal("price"),
 					categoryDao.findById(resultSet.getLong("category")),
-					resultSet.getString("email"),
 					resultSet.getBoolean("used")
 					)
 			.id(resultSet.getLong("item_id"))
@@ -464,7 +454,6 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 					resultSet.getString("description"),
 					resultSet.getBigDecimal("price"),
 					categoryDao.findById(resultSet.getLong("category")),
-					resultSet.getString("email"),
 					resultSet.getBoolean("used")
 					)
 			.id(resultSet.getLong("item_id"))

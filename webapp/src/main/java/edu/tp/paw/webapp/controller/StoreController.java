@@ -7,6 +7,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
@@ -17,6 +18,7 @@ import edu.tp.paw.interfaces.service.IStoreService;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
+import edu.tp.paw.webapp.exceptions.StoreItemNotFoundException;
 import edu.tp.paw.webapp.form.SellForm;
 
 
@@ -70,11 +72,13 @@ public class StoreController extends BaseController {
 		if (!bindingResult.hasErrors()) {
 			
 			Category category = categoryService.findById(form.getCategoryId());
-			StoreItemBuilder storeItemBuilder = new StoreItemBuilder(form.getName(), form.getDescription(), form.getPrice(), category, form.getEmail(), form.isUsed());
+			StoreItemBuilder storeItemBuilder = new StoreItemBuilder(form.getName(), form.getDescription(), form.getPrice(), category, form.isUsed());
 			
 			final StoreItem storeItem = storeService.sell(storeItemBuilder);
 			
-			return "redirect:/item/"+storeItem.getId()+"?s=1";
+			return "redirect:/sell/stage2/"+storeItem.getId();
+			
+//			return "redirect:/item/"+storeItem.getId()+"?s=1";
 		}
 		
 		model.addAttribute("categories", categoryService.getCategoryTree());
@@ -84,6 +88,21 @@ public class StoreController extends BaseController {
 		return "sell";
 		
 //		return modelAndView;
+	}
+	
+	@RequestMapping( value = "/sell/stage2/{itemId}", method = RequestMethod.GET )
+	public String sellStage2(@PathVariable("itemId") long itemId, Model model) {
+		
+		final StoreItem item = storeItemService.fetchById(itemId);
+		
+		if (item == null) {
+			throw new StoreItemNotFoundException();
+		}
+		
+		model.addAttribute("item", item);
+		
+		return "sell2";
+		
 	}
 
 }

@@ -41,8 +41,8 @@ create table if not exists store_items (
 	price decimal(20,2),
 	sold integer default 0,
 	category integer,
-	email varchar(100),
 	used boolean,
+	published boolean,
 	created timestamp default current_timestamp,
 	last_updated timestamp default current_timestamp,
 	constraint category_fk foreign key (category) references store_categories
@@ -62,6 +62,15 @@ create table if not exists comments (
 	comment_content varchar(300),
 	created timestamp default current_timestamp,
 	constraint user_fk foreign key (user_id) references users
+);
+
+create table if not exists images (
+	image_id serial primary key,
+	item_id integer,
+	content bytea,
+	mime_type varchar(100),
+	filename varchar(100),
+	constraint item_fk foreign key (item_id) references store_items
 );
 
 create table if not exists roles (

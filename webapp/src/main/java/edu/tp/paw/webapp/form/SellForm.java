@@ -1,6 +1,8 @@
 package edu.tp.paw.webapp.form;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.validation.constraints.Digits;
 import javax.validation.constraints.Min;
@@ -9,12 +11,12 @@ import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.Email;
 import org.hibernate.validator.constraints.NotEmpty;
+import org.springframework.web.multipart.MultipartFile;
 
 public class SellForm {
 
 	@Size(min = 2, max = 100, message = "{Size.SellForm.name}")
 	private String name;
-	
 	
 	private String description;
 	
@@ -25,26 +27,14 @@ public class SellForm {
 	@Min(0)
 	private long categoryId;
 	
-	@Email( message = "{Email.SellForm.email}" )
-	@NotEmpty( message = "{NotEmpty.SellForm.email}" )
-	private String email;
-	
 	private boolean used;
-	
+
 	public long getCategoryId() {
 		return categoryId;
 	}
 
 	public void setCategoryId(long categoryId) {
 		this.categoryId = categoryId;
-	}
-
-	public String getEmail() {
-		return email;
-	}
-
-	public void setEmail(String email) {
-		this.email = email;
 	}
 
 	public String getName() {
@@ -74,8 +64,7 @@ public class SellForm {
 	@Override
 	public String toString() {
 		return "SellForm [name=" + name + ", description=" + description
-				+ ", price=" + price + ", categoryId=" + categoryId + ", email="
-				+ email + "]";
+				+ ", price=" + price + ", categoryId=" + categoryId + "]";
 	}
 
 	public boolean isUsed() {

@@ -10,7 +10,6 @@ public class StoreItem {
 	private final String name;
 	private final String description;
 	private final BigDecimal price;
-	private final String email;
 	private final User owner;
 	private final boolean used;
 	
@@ -30,7 +29,6 @@ public class StoreItem {
 		this.created = builder.getCreated();
 		this.lastUpdated = builder.getLastUpdated();
 		this.category = builder.getCategory();
-		this.email = builder.getEmail();
 		this.owner = builder.getOwner();
 		this.used = builder.isUsed();
 	}
@@ -93,12 +91,6 @@ public class StoreItem {
 		return "StoreItem [id=" + id + ", description=" + description
 				+ ", name=" + name + ", sold=" + sold + ", created=" + created
 				+ ", lastUpdated=" + lastUpdated + ", price=" + price + "]";
-	}
-
-
-
-	public String getEmail() {
-		return email;
 	}
 	
 	public User getOwner() {
