@@ -12,7 +12,7 @@ block scripts
 				url: "#{context.url('/images/'+item.id+'/upload')}",
 				acceptedFiles: 'image/*',
 				addRemoveLinks: true,
-				//- autoProcessQueue: false,
+				autoProcessQueue: false,
 				paramName: function () {
 					return 'images';
 				}
@@ -23,12 +23,12 @@ block scripts
 
 			$dropzone.addClass('dropzone')
 
-			//- $('#uploadImages').click(function (e) {
-				//- e.preventDefault();
+			$('#uploadImages').click(function (e) {
+				e.preventDefault();
 				
-				//- dropzone.processQueue();
+				dropzone.processQueue();
 
-			//- })
+			})
 			
 		});
 
@@ -50,7 +50,7 @@ block content
 					div.form-group
 						label.col-sm-2.control-label #{messageSource.getMessage('sell.field.pictures',[],locale)}
 						div.col-sm-10
-							input(name="images", type="file", multiple)
+							//-input(name="images", type="file")
 							div#dropzone
 								div.fallback
 									input(name="images", type="file", multiple)

@@ -177,9 +177,9 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 		return validator();
 	}
 	
-//	@Bean
-//	public MultipartResolver multipartResolver() {
-//		return new CommonsMultipartResolver();
-//	}
+	@Bean
+	public MultipartResolver multipartResolver() {
+		return new CommonsMultipartResolver();
+	}
 	
 }

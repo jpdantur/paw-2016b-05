@@ -74,7 +74,7 @@ public class StoreImageJdbcDao implements IImageDao {
 	}
 
 	@Override
-	public StoreImage createImage(StoreImageBuilder builder) {
+	public StoreImage createImage(final StoreImageBuilder builder) {
 		
 		final Map<String, Object> args = new HashMap<>();
 		
