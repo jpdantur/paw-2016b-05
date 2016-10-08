@@ -6,14 +6,12 @@ public class StoreImage {
 	private final StoreItem item;
 	private final byte[] content;
 	private final String mimeType;
-	private final String filename;
 	
 	public StoreImage(StoreImageBuilder builder) {
 		this.id = builder.getId();
 		this.item = builder.getItem();
 		this.content = builder.getContent();
 		this.mimeType = builder.getMimeType();
-		this.filename = builder.getFilename();
 	}
 	
 	
@@ -28,9 +26,6 @@ public class StoreImage {
 	}
 	public long getId() {
 		return id;
-	}
-	public String getFilename() {
-		return filename;
 	}
 	
 	

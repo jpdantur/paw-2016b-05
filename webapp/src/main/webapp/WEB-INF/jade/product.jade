@@ -7,7 +7,7 @@ block scripts
 	script(type="text/javascript", src="#{context.url('/resources/js/product.js')}")
 
 block content
-	include partials/navbar-with-search
+	+navbar(true)
 	div.container
 		div.row
 			div.col-sm-10.col-sm-offset-1
@@ -20,7 +20,7 @@ block content
 								strong Enhorabuena!
 								span &nbsp; Su producto ha sido publicado con exito
 								br
-								a.btn.btn-success(href="#{context.url('/sell')}") Publicar otro
+								a.btn.btn-success(href="#{context.url('/store/sell/details')}") Publicar otro
 				div.row#product-container
 					div.col-sm-3
 						img(src="http://lorempixel.com/400/400/fashion", style="width:100%;height:auto")

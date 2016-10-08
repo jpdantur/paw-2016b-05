@@ -33,7 +33,6 @@ public class StoreImageJdbcDao implements IImageDao {
 	private final RowMapper<StoreImage> rowMapper = (ResultSet resultSet, int rowNum) -> {
 		final StoreImage storeImage = 
 				new StoreImageBuilder(
-						resultSet.getString("filename"),
 						resultSet.getString("mime_type"),
 						resultSet.getBytes("content"))
 			.item(itemDao.findById(resultSet.getLong("item_id")))
@@ -81,7 +80,6 @@ public class StoreImageJdbcDao implements IImageDao {
 		args.put("item_id", builder.getItem().getId());
 		args.put("content", builder.getContent());
 		args.put("mime_type", builder.getMimeType());
-		args.put("filename", builder.getFilename());
 		
 		final Number imageId = jdbcInsert.executeAndReturnKey(args);
 		

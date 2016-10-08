@@ -1,10 +1,10 @@
 mixin product(item)
 	div.col-sm-3
 		div.product-container
-			a(href="#{context.url('/item/'+item.id)}")
+			a(href="#{context.url('/store/items/'+item.id)}")
 				img(src="http://lorempixel.com/200/200/fashion", style="width:100%;height:auto")
 			br
-			a.product-title(href="#{context.url('/item/'+item.id)}", title="#{item.name}")
+			a.product-title(href="#{context.url('/store/items/'+item.id)}", title="#{item.name}")
 				b #{item.name}
 			p.product-description(title="#{item.description}") #{item.description}
 			span.product-price $#{item.price}

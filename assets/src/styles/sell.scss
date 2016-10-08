@@ -1,0 +1,12 @@
+@mixin border-radius($property) {
+	border-radius: $property;
+	-o-border-radius: $property;
+	-moz-border-radius: $property;
+	-webkit-border-radius: $property;
+}
+
+.dropzone {
+	border: 2px dashed #0087F7;
+	@include border-radius(5px);
+	background: white;
+}

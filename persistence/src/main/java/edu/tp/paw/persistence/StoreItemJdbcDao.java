@@ -39,7 +39,7 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 	private static final String ORDER_ASCENDING = "ASC";
 
 	private static final String TERM_BASED_QUERY_SQL =
-			"select item_id, name, description, price, category, email, sold, count(*) OVER() as total_count "
+			"select item_id, name, description, price, category, used, sold, count(*) OVER() as total_count "
 					+ "from store_items "
 					+ "where ";
 
@@ -312,7 +312,7 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 	@Override
 	public PagedResult<StoreItem> findByTerm(Filter filter) {
 		
-		StringBuilder query = new StringBuilder("select item_id, name, description, price, category, email, sold, count(*) OVER() as total_count from store_items where ");
+		StringBuilder query = new StringBuilder("select item_id, name, description, price, category, used, sold, count(*) OVER() as total_count from store_items where ");
 
 		MapSqlParameterSource params = new MapSqlParameterSource();
 		

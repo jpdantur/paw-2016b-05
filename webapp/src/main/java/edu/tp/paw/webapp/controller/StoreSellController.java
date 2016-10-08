@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
 import edu.tp.paw.interfaces.service.ICategoryService;
@@ -23,9 +24,8 @@ import edu.tp.paw.webapp.form.SellForm;
 
 
 @Controller
-public class StoreController extends BaseController {
-
-	private static final int MOST_SOLD_ITEMS = 6;
+@RequestMapping("/store/sell")
+public class StoreSellController extends BaseController {
 	
 	@Autowired
 	private IStoreItemService storeItemService;
@@ -34,21 +34,7 @@ public class StoreController extends BaseController {
 	@Autowired
 	private IStoreService storeService;
 	
-	/**
-	 * @return
-	 */
-	@RequestMapping("/")
-	public ModelAndView index() {
-		
-		final ModelAndView modelAndView = new ModelAndView("index");
-		
-		modelAndView.addObject("mostSoldItems", storeItemService.fetchMostSold(MOST_SOLD_ITEMS));
-		modelAndView.addObject("categories", categoryService.getCategoryTree());
-		
-		return modelAndView;
-	}
-	
-	@RequestMapping( value = "/sell", method = RequestMethod.GET)
+	@RequestMapping( value = "/details", method = RequestMethod.GET)
 	public String sellItem(
 			@ModelAttribute("sellForm") SellForm form,
 			BindingResult bindingResult,
@@ -61,7 +47,7 @@ public class StoreController extends BaseController {
 		return "sell";
 	}
 	
-	@RequestMapping( value = "/sell", method = RequestMethod.POST)
+	@RequestMapping( value = "/details", method = RequestMethod.POST)
 	public String sell(
 			@Valid @ModelAttribute("sellForm") SellForm form,
 			BindingResult bindingResult,
@@ -76,9 +62,7 @@ public class StoreController extends BaseController {
 			
 			final StoreItem storeItem = storeService.sell(storeItemBuilder);
 			
-			return "redirect:/sell/stage2/"+storeItem.getId();
-			
-//			return "redirect:/item/"+storeItem.getId()+"?s=1";
+			return "redirect:/store/sell/images/"+storeItem.getId()+"?s=1";
 		}
 		
 		model.addAttribute("categories", categoryService.getCategoryTree());
@@ -90,8 +74,11 @@ public class StoreController extends BaseController {
 //		return modelAndView;
 	}
 	
-	@RequestMapping( value = "/sell/stage2/{itemId}", method = RequestMethod.GET )
-	public String sellStage2(@PathVariable("itemId") long itemId, Model model) {
+	@RequestMapping( value = "/images/{itemId}", method = RequestMethod.GET )
+	public String sellStage2(
+			@RequestParam( value = "s", required = false) boolean s,
+			@PathVariable("itemId") long itemId,
+			Model model) {
 		
 		final StoreItem item = storeItemService.fetchById(itemId);
 		
@@ -99,6 +86,7 @@ public class StoreController extends BaseController {
 			throw new StoreItemNotFoundException();
 		}
 		
+		model.addAttribute("publishedItem", s);
 		model.addAttribute("item", item);
 		
 		return "sell2";

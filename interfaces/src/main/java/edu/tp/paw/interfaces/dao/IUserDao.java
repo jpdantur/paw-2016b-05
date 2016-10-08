@@ -27,4 +27,6 @@ public interface IUserDao {
 	 */
 	User create(final UserBuilder builder);
 	
+	boolean changePassword(final User user, final String password);
+	
 }

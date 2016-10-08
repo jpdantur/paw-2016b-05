@@ -4,13 +4,11 @@ public class StoreImageBuilder implements IBuilder<StoreImage> {
 
 	private final byte[] content;
 	private final String mimeType;
-	private final String filename;
 	
 	private StoreItem item;
 	private long id;
 	
-	public StoreImageBuilder(String filename, String mimeType, byte[] content) {
-		this.filename = filename;
+	public StoreImageBuilder(String mimeType, byte[] content) {
 		this.mimeType = mimeType;
 		this.content = content;
 	}
@@ -32,10 +30,6 @@ public class StoreImageBuilder implements IBuilder<StoreImage> {
 
 	public String getMimeType() {
 		return mimeType;
-	}
-
-	public String getFilename() {
-		return filename;
 	}
 
 	public StoreItem getItem() {

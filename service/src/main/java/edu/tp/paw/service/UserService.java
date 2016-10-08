@@ -68,6 +68,19 @@ public class UserService implements IUserService {
 		return userDao.emailExists(email);
 	}
 
+	@Override
+	public boolean changePassword(User user, String password) {
+		
+		return userDao.changePassword(user, password);
+	}
+
+	@Override
+	public boolean isUsersPassword(User user, String password) {
+		
+		return passwordEncoder.matches(password, user.getPassword());
+		
+	}
+
 	
 
 }

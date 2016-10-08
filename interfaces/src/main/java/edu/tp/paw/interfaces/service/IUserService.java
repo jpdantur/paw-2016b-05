@@ -25,4 +25,8 @@ public interface IUserService {
 	 */
 	public User registerUser(final UserBuilder builder);
 	
+	public boolean changePassword(final User user, final String password);
+	
+	public boolean isUsersPassword(final User user, final String password);
+	
 }

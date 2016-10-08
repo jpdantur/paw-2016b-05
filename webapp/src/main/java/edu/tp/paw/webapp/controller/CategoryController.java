@@ -26,8 +26,6 @@ public class CategoryController {
 	@RequestMapping("/categories")
 	public ModelAndView itemBrowser() {
 		
-//		System.out.println("controller received request to create category with name = " + name + " parent = " + parent);
-		
 		List<Category> category = categoryService.getCategoryTree();
 		
 		final ModelAndView modelAndView = new ModelAndView("dummy");

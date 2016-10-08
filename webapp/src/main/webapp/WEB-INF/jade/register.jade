@@ -1,31 +1,12 @@
 extends layout
 
 block content
-	header.navbar.navbar-fixed-top#top-navbar
-		div.container
-			div.navbar-header
-				button.navbar-toggle.collapsed(data-toggle="collapse", data-target="#main-navbar")
-					span.sr-only Toggle navigation
-					span.icon-bar
-					span.icon-bar
-					span.icon-bar
-				a.navbar-brand(href="#{context.url('/')}", style="font-size:2em")
-					i.fa.fa-shopping-basket
-					| &nbsp;SIGLAS
-			nav.collapse.navbar-collapse#navbar-content
-				ul.nav.navbar-nav.navbar-right
-					li
-						a(href="#{context.url('/register')}") Registrate
-					li
-						a(href="#{context.url('/login')}") Ingresar
-					li
-						a(href="#{context.url('/sell')}") #{messageSource.getMessage("index.sell", [], locale)}
-
+	+navbar(true)
 	div.container
 		div.row
 			div.col-sm-6.col-sm-offset-3
 				div.well
-					form.form-horizontal(action="#{context.url('/register')}", method="POST")
+					form.form-horizontal(action="#{context.url('/auth/register')}", method="POST")
 						div.form-group(class="#{result.hasFieldErrors('firstName')?'has-error':''}")
 							label.control-label.col-sm-3(for="firstName") Nombre
 							div.col-sm-9
@@ -58,8 +39,8 @@ block content
 								+errors(result, 'repeatPassword')
 						div.form-group
 								div.col-sm-12
-									button.btn.btn-success.btn-block(type="submit") Ingresar
+									button.btn.btn-success.btn-block(type="submit") Crear Cuenta
 						div.form-group
 							div.col-sm-12
-								span No tienes un usuario aun?&nbsp;
-								a(href="#{context.url('/register')}") Registrese
+								span Ya tiene una cuenta?&nbsp;
+								a(href="#{context.url('/auth/login')}") Ingrese Aqui

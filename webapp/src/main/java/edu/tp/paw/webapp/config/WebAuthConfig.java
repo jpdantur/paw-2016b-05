@@ -38,13 +38,13 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 			.sessionManagement()
 				.invalidSessionUrl("/")
 			.and().authorizeRequests()
-				.antMatchers("/", "/item/**", "/items", "/items/**").permitAll()
-				.antMatchers("/login", "/register").anonymous()
-				.antMatchers("/sell/**").hasRole("USER")
+				.antMatchers("/", "/store/items/**").permitAll()
+				.antMatchers("/auth/login", "/auth/register").anonymous()
+				.antMatchers("/store/sell/**", "/store/item/**", "/images/upload/**", "/profile/**").hasRole("USER")
 				.antMatchers("/admin/**").hasAnyRole("ROOT", "ADMIN")
 				.antMatchers("/**").authenticated()
 			.and().formLogin()
-				.loginPage("/login")
+				.loginPage("/auth/login")
 				.usernameParameter("username")
 				.passwordParameter("password")
 				.successHandler(successHandler())
@@ -56,7 +56,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 				.key(SECRET_KEY)
 				.tokenValiditySeconds((int)TimeUnit.DAYS.toSeconds(30))
 			.and().logout()
-				.logoutUrl("/logout")
+				.logoutUrl("/auth/logout")
 				.logoutSuccessUrl("/?l=1")
 			.and().exceptionHandling()
 				.accessDeniedPage("/403")
@@ -65,7 +65,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 	
 	@Override
 	public void configure(final WebSecurity web) throws Exception {
-		web.ignoring().antMatchers("/resources/**", "/favicon.ico", "/403", "/404");
+		web.ignoring().antMatchers("/resources/**", "/favicon.ico", "/403", "/404", "/images/get/**");
 	}
 	
 	@Autowired

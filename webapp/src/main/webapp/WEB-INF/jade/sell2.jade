@@ -9,14 +9,14 @@ block scripts
 		$(document).ready(function () {
 
 			var dropzone = new Dropzone('#dropzone', {
-				url: "#{context.url('/images/'+item.id+'/upload')}",
+				url: "#{context.url('/images/upload/'+item.id)}",
 				acceptedFiles: 'image/*',
 				addRemoveLinks: true,
 				autoProcessQueue: false,
 				paramName: function () {
 					return 'images';
-				}
-				//- dictDefaultMessage: '' // <---- rellenar con messageSource.getMessage
+				},
+				dictDefaultMessage: "#{messageSource.getMessage('sell.image.upload.drag',[],locale)}" // <---- rellenar con messageSource.getMessage
 			});
 
 			$dropzone = $('#dropzone');
@@ -39,19 +39,31 @@ block scripts
 
 block styles
 	link(href="#{context.url('/resources/css/dropzone.css')}", rel="stylesheet")
+	link(href="#{context.url('/resources/css/sell.css')}", rel="stylesheet")
 
 block content
-	include partials/navbar-with-search
+	+navbar(true)
 	div.container
 		div.row
 			div.col-sm-10.col-sm-offset-1
-				h1 Subir fotos para `#{item.name}`
-				form.form-horizontal(method="POST",action="#{context.url('/images/'+item.id+'/upload')}", enctype="multipart/form-data")
+				h1 #{messageSource.getMessage('sell.image.upload.headline',[],locale)} `#{item.name}`
+				if publishedItem
+					div.row
+						div.col-sm-12
+							div.alert.alert-success.alert-dismissable
+								button.close(type="button", data-dismiss="alert")
+									span &times;
+								strong Enhorabuena!
+								span &nbsp; Su producto ha sido creado con exito
+								br
+								a.btn.btn-default(href="#{context.url('/store/item/'+item.id+'/details/')}") Editar Detalles
+				form.form-horizontal(method="POST",action="#{context.url('/images/upload/'+item.id)}", enctype="multipart/form-data")
 					div.form-group
 						label.col-sm-2.control-label #{messageSource.getMessage('sell.field.pictures',[],locale)}
 						div.col-sm-10
 							//-input(name="images", type="file")
 							div#dropzone
+								div.dz-message #{messageSource.getMessage('sell.image.upload.drag',[],locale)}
 								div.fallback
 									input(name="images", type="file", multiple)
 					div.form-group

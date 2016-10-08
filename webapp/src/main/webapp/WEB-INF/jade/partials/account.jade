@@ -1,0 +1,26 @@
+if success
+	div.col-sm-12
+		div.alert.alert-success
+			b Enhorabuena!&nbsp;
+			span Se ha modificado sus datos
+form.form-horizontal(action="#{context.url('/profile/details')}", method="POST")
+	div.form-group
+		label.col-sm-2.control-label Nombre
+		div.col-sm-10
+			p.form-control-static #{loggedUser.firstName}
+	div.form-group
+		label.col-sm-2.control-label Apellido
+		div.col-sm-10
+			p.form-control-static #{loggedUser.lastName}
+	div.form-group
+		label.col-sm-2.control-label Usuario
+		div.col-sm-10
+			p.form-control-static #{loggedUser.username}
+	div.form-group(class="#{result.hasFieldErrors('email')?'has-error':''}")
+		label.col-sm-2.control-label(for="email") Email
+		div.col-sm-10
+			input.form-control#email(type="text", placeholder="Email", name="email", value="#{loggedUser.email}")
+			+errors(result, 'email')
+	div.form-group
+		div.col-sm-4.col-sm-offset-8
+			button.btn.btn-success.btn-block(type="submit") Modificar

@@ -42,20 +42,17 @@ public class ImageController extends BaseController {
 	@Autowired
 	private IStoreItemService itemService;
 
-	//Download a file
-	@RequestMapping(value = "/{imageId}", method = RequestMethod.GET )
+	@RequestMapping(value = "/get/{imageId}", method = RequestMethod.GET )
 	public ResponseEntity<?> downloadFile(@PathVariable("imageId") final long id) {
 
 		final StoreImage image = imageService.findById(id);
-
-		// No file found based on the supplied filename
+		
 		if (image == null) {
 			return new ResponseEntity<>("{}", HttpStatus.NOT_FOUND);
 		}
 
 		// Generate the http headers with the file properties
 		HttpHeaders headers = new HttpHeaders();
-		headers.add("content-disposition", "attachment; filename=" + image.getFilename());
 
 		// Split the mimeType into primary and sub types
 		String primaryType, subType;
@@ -71,44 +68,9 @@ public class ImageController extends BaseController {
 
 		return new ResponseEntity<>(image.getContent(), headers, HttpStatus.OK);
 	}
-
-//	@RequestMapping(
-//			value = "/{itemId}/upload",
-//			method = RequestMethod.POST
-//			)
-//	public ResponseEntity<?> uploadFile(@PathVariable("itemId") final long id, final MultipartHttpServletRequest request) {
-//
-//		try {
-//			Iterator<String> itr = request.getFileNames();
-//
-//			while (itr.hasNext()) {
-//				final String uploadedFile = itr.next();
-//				final MultipartFile file = request.getFile(uploadedFile);
-//				final String mimeType = file.getContentType();
-//				final String filename = file.getOriginalFilename();
-//				final byte[] bytes = file.getBytes();
-//
-//				final StoreImageBuilder builder = new StoreImageBuilder(filename, mimeType, bytes);
-//				final StoreItem item = itemService.fetchById(id);
-//				
-//				if (item == null) {
-//					throw new StoreItemNotFoundException();
-//				}
-//				
-//				builder.item(item);
-//				
-//				imageService.uploadImage(builder);
-//			}
-//		}
-//		catch (IOException e) {
-//			return new ResponseEntity<>("{}", HttpStatus.INTERNAL_SERVER_ERROR);
-//		}
-//
-//		return new ResponseEntity<>("{}", HttpStatus.OK);
-//	}
 	
 	@RequestMapping(
-			value = "/{itemId}/upload",
+			value = "/upload/{itemId}",
 			method = RequestMethod.POST
 			)
 	@ResponseBody
@@ -119,28 +81,19 @@ public class ImageController extends BaseController {
 		logger.debug("received {} files", form.getImages().size());
 		
 		try {
-//			Iterator<String> itr = request.getFileNames();
 
 			for (MultipartFile file : form.getImages()) {
 				
-				logger.debug("file: {}", file);
-				
-//				final String uploadedFile = itr.next();
-//				final MultipartFile file = request.getFile(uploadedFile);
 				final String mimeType = file.getContentType();
-				final String filename = file.getOriginalFilename();
 				final byte[] bytes = file.getBytes();
-
-				logger.debug("filename: {}", filename);
 				
-				final StoreImageBuilder builder = new StoreImageBuilder(filename, mimeType, bytes);
 				final StoreItem item = itemService.fetchById(id);
 				
 				if (item == null) {
 					throw new StoreItemNotFoundException();
 				}
 				
-				builder.item(item);
+				final StoreImageBuilder builder = new StoreImageBuilder(mimeType, bytes).item(item);
 				
 				imageService.uploadImage(builder);
 			}
@@ -152,55 +105,5 @@ public class ImageController extends BaseController {
 
 		return "OK";
 	}
-	
-//	@RequestMapping(
-//			value = "/{itemId}/upload",
-//			method = RequestMethod.POST
-//			)
-//	public ResponseEntity<?> uploadFile(
-//			@PathVariable("itemId") final long id,
-//			@RequestParam("images") MultipartFile file) {
-//
-//		logger.debug("received {}", file);
-//		if (file != null) {
-//			logger.debug("received {}", file.getOriginalFilename());
-//		}
-//		
-//		return new ResponseEntity<>("{}", HttpStatus.OK);
-		
-//		try {
-////			Iterator<String> itr = request.getFileNames();
-//
-//			for (MultipartFile file : form.getImages()) {
-//				
-//				logger.debug("file: {}", file);
-//				
-////				final String uploadedFile = itr.next();
-////				final MultipartFile file = request.getFile(uploadedFile);
-//				final String mimeType = file.getContentType();
-//				final String filename = file.getOriginalFilename();
-//				final byte[] bytes = file.getBytes();
-//
-//				logger.debug("filename: {}", filename);
-//				
-//				final StoreImageBuilder builder = new StoreImageBuilder(filename, mimeType, bytes);
-//				final StoreItem item = itemService.fetchById(id);
-//				
-//				if (item == null) {
-//					throw new StoreItemNotFoundException();
-//				}
-//				
-//				builder.item(item);
-//				
-//				imageService.uploadImage(builder);
-//			}
-//		}
-//		catch (IOException e) {
-//			logger.warn("exception", e);
-//			return new ResponseEntity<>("{}", HttpStatus.INTERNAL_SERVER_ERROR);
-//		}
-//
-//		return new ResponseEntity<>("{}", HttpStatus.OK);
-//	}
 
 }

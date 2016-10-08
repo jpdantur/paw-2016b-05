@@ -22,12 +22,12 @@ import edu.tp.paw.webapp.form.RegisterForm;
 import edu.tp.paw.webapp.form.validator.RegisterFormValidator;
 
 @Controller
+@RequestMapping("/auth")
 public class AuthenticationController extends BaseController {
 
 	private static final Logger logger = LoggerFactory.getLogger(AuthenticationController.class);
 	
 	@Autowired private IUserService userService;
-	
 	@Autowired private RegisterFormValidator validator;
 	
 	@RequestMapping("/login")
@@ -37,8 +37,6 @@ public class AuthenticationController extends BaseController {
 			@RequestParam( value = "logout", required = false ) String logout,
 			@RequestParam( value = "next", required = false ) String next,
 			Model model) {
-		
-//		logger.debug("$> avalidator class {}", avalidator.getClass());
 		
 		if (logout != null) {
 			// user just logout
@@ -52,7 +50,6 @@ public class AuthenticationController extends BaseController {
 		
 		model.addAttribute("hasRegistered", hasRegistered);
 		model.addAttribute("next", next);
-		
 		
 		return "login";
 	}
@@ -79,8 +76,6 @@ public class AuthenticationController extends BaseController {
 		
 		if (!result.hasErrors()) {
 			
-			System.out.println(form);
-			
 			final UserBuilder userBuiler = new UserBuilder(
 					form.getUsername()
 				)
@@ -91,7 +86,7 @@ public class AuthenticationController extends BaseController {
 			
 			userService.registerUser(userBuiler);
 			
-			return "redirect:/login?r=1";
+			return "redirect:/auth/login?r=1";
 			
 		}
 		

@@ -1,26 +1,7 @@
 extends layout
 
 block content
-	header.navbar.navbar-fixed-top#top-navbar
-		div.container
-			div.navbar-header
-				button.navbar-toggle.collapsed(data-toggle="collapse", data-target="#main-navbar")
-					span.sr-only Toggle navigation
-					span.icon-bar
-					span.icon-bar
-					span.icon-bar
-				a.navbar-brand(href="#{context.url('/')}", style="font-size:2em")
-					i.fa.fa-shopping-basket
-					| &nbsp;SIGLAS
-			nav.collapse.navbar-collapse#navbar-content
-				ul.nav.navbar-nav.navbar-right
-					li
-						a(href="#{context.url('/register')}") Registrate
-					li
-						a(href="#{context.url('/login')}") Ingresar
-					li
-						a(href="#{context.url('/sell')}") #{messageSource.getMessage("index.sell", [], locale)}
-
+	+navbar(true)
 	div.container
 		div.row
 			div.col-sm-6.col-sm-offset-3
@@ -29,19 +10,19 @@ block content
 						div.alert.alert-danger
 							b Error!&nbsp;
 							span Usuario o contraseña incorrectas
-					form.form-horizontal(action="#{context.url('/login'+(next?'?next='+next:''))}", method="POST")
+					form.form-horizontal(action="#{context.url('/auth/login'+(next?'?next='+next:''))}", method="POST")
 						div.form-group
-							label.control-label.col-sm-3(for="username") Usuario
+							label.control-label.col-sm-3(for="username") #{messageSource.getMessage('login.field.user', [], locale)}
 							div.col-sm-9
-								input.form-control#username(type="text", placeholder="Usuario", name="username")
+								input.form-control#username(type="text", placeholder="#{messageSource.getMessage('login.field.user', [], locale)}", name="username")
 						div.form-group
-							label.control-label.col-sm-3(for="password") Password
+							label.control-label.col-sm-3(for="password") #{messageSource.getMessage('login.field.password', [], locale)}
 							div.col-sm-9
-								input.form-control#password(type="password", placeholder="Password", name="password")
+								input.form-control#password(type="password", placeholder="#{messageSource.getMessage('login.field.password', [], locale)}", name="password")
 						div.form-group
 								div.col-sm-12
 									button.btn.btn-success.btn-block(type="submit") Ingresar
 						div.form-group
 							div.col-sm-12
 								span No tienes un usuario aun?&nbsp;
-								a(href="#{context.url('/register')}") Registrese
+								a(href="#{context.url('/auth/register')}") Registrese

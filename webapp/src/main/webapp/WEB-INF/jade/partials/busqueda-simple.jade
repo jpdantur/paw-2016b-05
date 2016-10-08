@@ -6,7 +6,7 @@ div.row
 			h1 #{messageSource.getMessage("index.headline", [], locale)}
 		div.row
 			div.col-sm-12
-				form.col-sm-offset-3#simple-search-form(action="#{context.url('/items')}")
+				form.col-sm-offset-3#simple-search-form(action="#{context.url('/store/items/all')}")
 					div.form-group.col-sm-8
 						input.form-control.input-lg#simple-search-input(type="text", placeholder="#{messageSource.getMessage('index.search', [], locale)}...", name="query")
 					div.form-group.col-sm-2
@@ -19,10 +19,6 @@ div.row
 					i.fa.fa-circle-thin.fa-stack-2x
 					i.fa.fa-angle-double-down.fa-stack-1x
 div.row#promociones
-	//-div#loading-promociones
-		i.fa.fa-pulse.fa-5x.fa-spinner.fa-fw
-		br
-		span Cargando Promociones...
 	h4(style="position:absolute;top:-35px;left:16px") #{messageSource.getMessage("index.promoted", [], locale)}
 	div.carousel.slide(data-ride="carousel")#promotion-carousel
 		
@@ -30,10 +26,10 @@ div.row#promociones
 			div.item.active
 				each item in mostSoldItems
 					div.col-sm-2
-						a(href="#{context.url('/item/'+item.id)}")
+						a(href="#{context.url('/store/items/'+item.id)}")
 							img(src="http://lorempixel.com/100/100/fashion", style="width:100%;height:auto")
 						br
-						a(href="#{context.url('/item/'+item.id)}")
+						a(href="#{context.url('/store/items/'+item.id)}")
 							b #{item.name}
 						br
 						span $#{item.price}

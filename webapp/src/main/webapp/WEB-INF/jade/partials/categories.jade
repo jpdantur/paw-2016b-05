@@ -10,7 +10,7 @@ div.row
 								div.panel.panel-default
 									div.panel-heading
 										h3.panel-title
-											a(href="#{context.url('/items?categories='+category.id)}") #{category.name}
+											a(href="#{context.url('/store/items/all?categories='+category.id)}") #{category.name}
 								//-if !category.children.isEmpty()
 									div.panel-body
 										+children(category.children, depth+1)

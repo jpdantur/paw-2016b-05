@@ -127,4 +127,16 @@ public class UserJdbcDao implements IUserDao {
 		return findByEmail(email) == null ?  false : true;
 	}
 
+	@Override
+	public boolean changePassword(User user, String password) {
+		
+		return
+			jdbcTemplate
+			.update(
+				"update users where user_id = ? set password=?",
+				rowMapper,
+				user.getId(),
+				user.getPassword()) == 1;
+	}
+
 }

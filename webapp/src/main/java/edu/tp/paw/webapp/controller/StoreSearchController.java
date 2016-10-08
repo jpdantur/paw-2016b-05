@@ -1,6 +1,5 @@
 package edu.tp.paw.webapp.controller;
 
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -25,16 +24,15 @@ import edu.tp.paw.model.filter.PagedResult;
 import edu.tp.paw.webapp.exceptions.StoreItemNotFoundException;
 import edu.tp.paw.webapp.form.SearchForm;
 
-
 @Controller
 @RequestMapping("/store/items")
-public class StoreItemController extends BaseController {
-
+public class StoreSearchController extends BaseController {
+	
 	@Autowired private IStoreItemService storeItemService;
 	@Autowired private ICategoryService categoryService;
 	@Autowired private IStoreService storeService;
 	
-	@RequestMapping(value = "/")
+	@RequestMapping(value = "/all")
 	public String itemBrowser(
 			@ModelAttribute("searchForm") SearchForm form,
 			Model model) {
@@ -95,7 +93,7 @@ public class StoreItemController extends BaseController {
 		return "products";
 	}
 	
-	@RequestMapping(value = {"/item/{itemId}", "/item/{itemId}/"})
+	@RequestMapping(value = "/{itemId}")
 	public ModelAndView individualItem(
 			@PathVariable("itemId") final int id,
 			@RequestParam(value = "s", defaultValue = "false") final boolean published,
@@ -114,5 +112,5 @@ public class StoreItemController extends BaseController {
 		
 		return modelAndView;
 	}
-
+	
 }

@@ -41,8 +41,8 @@ create table if not exists store_items (
 	price decimal(20,2),
 	sold integer default 0,
 	category integer,
-	used boolean,
-	published boolean,
+	used boolean default false,
+	published boolean default false,
 	created timestamp default current_timestamp,
 	last_updated timestamp default current_timestamp,
 	constraint category_fk foreign key (category) references store_categories
@@ -69,7 +69,6 @@ create table if not exists images (
 	item_id integer,
 	content bytea,
 	mime_type varchar(100),
-	filename varchar(100),
 	constraint item_fk foreign key (item_id) references store_items
 );
 
