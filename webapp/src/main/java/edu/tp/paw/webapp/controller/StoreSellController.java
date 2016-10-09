@@ -66,6 +66,11 @@ public class StoreSellController extends BaseController {
 			
 			final StoreItem storeItem = storeService.sell(storeItemBuilder);
 			
+			if (storeItem == null) {
+				//something wrong happened
+			}
+			
+			
 			return "redirect:/store/sell/images/"+storeItem.getId()+"?s=1";
 		}
 		

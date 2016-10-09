@@ -2,8 +2,10 @@ package edu.tp.paw.webapp.config;
 
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +27,14 @@ import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
+import org.springframework.web.servlet.handler.ConversionServiceExposingInterceptor;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
+import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
+import org.springframework.web.servlet.resource.ResourceUrlProviderExposingInterceptor;
 
 import de.neuland.jade4j.JadeConfiguration;
 import de.neuland.jade4j.spring.template.SpringTemplateLoader;
@@ -39,6 +47,9 @@ import edu.tp.paw.webapp.form.validator.RegisterFormValidator;
 @Configuration
 public class WebConfig extends WebMvcConfigurerAdapter {
 
+	@Autowired
+  private RequestMappingHandlerAdapter requestMappingHandlerAdapter;
+	
 	@Autowired
 	private ApplicationContext appContext;
 
@@ -181,5 +192,10 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 	public MultipartResolver multipartResolver() {
 		return new CommonsMultipartResolver();
 	}
+	
+	@PostConstruct
+  public void init() {
+     requestMappingHandlerAdapter.setIgnoreDefaultModelOnRedirect(true);
+  }
 	
 }

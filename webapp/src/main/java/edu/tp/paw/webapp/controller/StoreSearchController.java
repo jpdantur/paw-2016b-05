@@ -67,7 +67,8 @@ public class StoreSearchController extends BaseController {
 		
 		// if there is just one item just show it
 		if (pagedResults.getNumberOfAvailableResults() == 1) {
-			return "redirect:/item/"+pagedResults.getResults().get(0).getId();
+			
+			return "redirect:/store/items/"+pagedResults.getResults().get(0).getId();
 		}
 		
 		final List<Category> similarCategories;
