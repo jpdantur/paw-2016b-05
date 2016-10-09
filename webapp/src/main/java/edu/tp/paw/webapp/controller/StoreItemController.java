@@ -8,9 +8,11 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import edu.tp.paw.interfaces.service.ICategoryService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
+import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
@@ -22,11 +24,9 @@ import edu.tp.paw.webapp.form.SellForm;
 @RequestMapping("/store/item")
 public class StoreItemController extends BaseController {
 
-	@Autowired
-	private IStoreItemService itemService;
-	
-	@Autowired
-	private ICategoryService categoryService;
+	@Autowired private IStoreItemService itemService;
+	@Autowired private ICategoryService categoryService;
+	@Autowired private IUserService userService;
 	
 	@RequestMapping( value = "/{itemId}/details", method = RequestMethod.GET)
 	public String details(
@@ -81,6 +81,48 @@ public class StoreItemController extends BaseController {
 		model.addAttribute("item", form);
 		
 		return "sell";
+	}
+	
+	@RequestMapping( value = "/{itemId}/favourite", method = RequestMethod.POST, produces = "application/json; charset=utf-8" )
+	@ResponseBody
+	public String makeFavourite(
+			@PathVariable("itemId") final long id,
+			@ModelAttribute("loggedUser") final User user
+			) {
+		
+		final StoreItem item = itemService.fetchById(id);
+		
+		if (item == null) {
+			return "{\"err\":3 }";
+		}
+		
+		if (userService.addFavourite(user, item)) {
+			
+			return "{\"err\":0 }";
+		}
+		
+		return "{\"err\":2 }";
+	}
+	
+	@RequestMapping( value = "/{itemId}/favourite/remove", method = RequestMethod.POST, produces = "application/json; charset=utf-8" )
+	@ResponseBody
+	public String removeFavourite(
+			@PathVariable("itemId") final long id,
+			@ModelAttribute("loggedUser") final User user
+			) {
+		
+		final StoreItem item = itemService.fetchById(id);
+		
+		if (item == null) {
+			return "{\"err\":3 }";
+		}
+		
+		if (userService.removeFavourite(user, item)) {
+			
+			return "{\"err\":0 }";
+		}
+		
+		return "{\"err\":2 }";
 	}
 	
 	

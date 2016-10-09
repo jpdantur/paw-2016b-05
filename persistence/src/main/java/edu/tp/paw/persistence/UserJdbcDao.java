@@ -4,16 +4,25 @@ import java.sql.ResultSet;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import edu.tp.paw.interfaces.dao.IUserDao;
+import edu.tp.paw.model.Category;
+import edu.tp.paw.model.CategoryBuilder;
+import edu.tp.paw.model.StoreImage;
+import edu.tp.paw.model.StoreImageBuilder;
+import edu.tp.paw.model.StoreItem;
+import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
 
@@ -22,6 +31,69 @@ public class UserJdbcDao implements IUserDao {
 	
 	private final JdbcTemplate jdbcTemplate;
 	private final SimpleJdbcInsert jdbcInsert;
+	
+//private static final ResultSetExtractor<List<User>> extractor = (ResultSet resultSet) -> {
+//		
+//		final Map<Long, UserBuilder> items = new HashMap<>();
+//		
+//		while (resultSet.next()) {
+//			
+//			
+//			
+//			final Category category = new CategoryBuilder(
+//						resultSet.getString("category_name"),
+//						resultSet.getLong("parent")
+//						)
+//					.id(resultSet.getLong("category_id"))
+//					.build();
+//			
+//			final StoreItemBuilder item = new StoreItemBuilder(
+//					resultSet.getString("name"),
+//					resultSet.getString("description"),
+//					resultSet.getBigDecimal("price"),
+//					category,
+//					resultSet.getBoolean("used")
+//					)
+//			.id(resultSet.getLong("item_id"))
+//			.created(resultSet.getTimestamp("created"))
+//			.lastUpdated(resultSet.getTimestamp("last_updated"))
+//			.sold(resultSet.getInt("sold"))
+//			.owner(user);
+//			
+//			final User user = new UserBuilder(resultSet.getString("username"))
+//					.email(resultSet.getString("email"))
+//					.firstName(resultSet.getString("first_name"))
+//					.lastName(resultSet.getString("last_name"))
+//					.id(resultSet.getLong("user_id"))
+//					.build();
+//			
+//			
+//			if (!items.containsKey(item.getId())) {
+//				
+//				items.put(item.getId(), item);
+//				
+//			}
+//			
+//			if (resultSet.getString("mime_type") != null) {
+//				
+//				final StoreImage image = new StoreImageBuilder(
+//						resultSet.getString("mime_type"),
+//						resultSet.getBytes("content"))
+//						.id(resultSet.getLong("image_id"))
+//						.build();
+//				
+//				items.get(item.getId()).images(image);
+//			}
+//			
+//		}
+//		
+//		return items
+//				.values()
+//				.stream()
+//				.map( UserBuilder::build )
+//				.collect(Collectors.toList());
+//		
+//	};
 	
 	private final static RowMapper<User> rowMapper = (ResultSet resultSet, int rowNum) -> {
 		final User user = new UserBuilder(resultSet.getString("username"))
@@ -55,7 +127,11 @@ public class UserJdbcDao implements IUserDao {
 		List<User> userList =
 		jdbcTemplate
 		.query(
-				"select * from users where user_id = ?",
+				"select * from users "
+//				+ "inner join favourites on favourites.user_id=users.user_id "
+//				+ "inner join store_items on favourites.item_id=store_items.item_id "
+//				+ "inner join store_categories on store_categories.category_id=store_items.category "
+				+ "where users.user_id = ?",
 				rowMapper,
 				id);
 		
@@ -134,9 +210,30 @@ public class UserJdbcDao implements IUserDao {
 			jdbcTemplate
 			.update(
 				"update users where user_id = ? set password=?",
-				rowMapper,
 				user.getId(),
 				user.getPassword()) == 1;
+	}
+
+	@Override
+	public boolean addFavourite(final User user, final StoreItem item) {
+		
+		return
+				jdbcTemplate
+				.update(
+					"insert into favourites (store_item_id, user_id) values (?, ?)",
+					item.getId(),
+					user.getId()) == 1;		
+	}
+	
+	@Override
+	public boolean removeFavourite(final User user, final StoreItem item) {
+		
+		return
+				jdbcTemplate
+				.update(
+					"delete from favourites where user_id=? and store_item_id=?",
+					user.getId(),
+					item.getId()) == 1;		
 	}
 
 }

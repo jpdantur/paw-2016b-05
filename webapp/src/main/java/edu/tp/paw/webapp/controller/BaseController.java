@@ -1,5 +1,6 @@
 package edu.tp.paw.webapp.controller;
 
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import edu.tp.paw.model.User;
+import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.service.UserService;
 
 @Controller
@@ -60,6 +62,16 @@ public class BaseController {
 		} else {
 			return userService.findByUsername(principal.toString());
 		}
+	}
+	
+	@ModelAttribute("userFavourites")
+	public List<StoreItem> favourites(
+			@ModelAttribute("loggedUser") final User user
+			) {
+		if (user == null) {
+			return null;
+		}
+		return userService.getFavourites(user);
 	}
 	
 	@ModelAttribute("currentURI")

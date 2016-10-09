@@ -89,9 +89,15 @@ public class StoreItemService implements IStoreItemService {
 	}
 
 	@Override
-	public boolean updateItem(StoreItem item) {
+	public boolean updateItem(final StoreItem item) {
 		
 		return storeItemDao.updateItem(item);
+	}
+
+	@Override
+	public List<StoreItem> getFavourites(final User user) {
+		
+		return storeItemDao.getFavourites(user);
 	}
 	
 	

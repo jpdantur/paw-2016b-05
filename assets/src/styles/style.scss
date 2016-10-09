@@ -186,8 +186,80 @@ header#top-navbar {
 	font-size: 24px;
 }
 
+#favourite-dropdown {
+
+	.dropdown-favourite {
+		min-width: 250px;
+		font-size: 12px;
+
+		.fav-title {
+			padding:3px 10px;
+			display: block;
+			font-size: 13px;
+			font-weight: 700;
+		}
+
+		li .item {
+			display:block;
+			padding:3px 10px;
+			margin: 3px 0;
+
+			&:hover {
+				background-color:#f3f3f3;
+			}
+
+			&:after {
+				visibility: hidden;
+				display: block;
+				font-size: 0;
+				content: " ";
+				clear: both;
+				height: 0;
+			}
+
+			.item-left {
+				float: left;
+
+				img, span.item-info {
+					float: left
+				}
+
+				img {
+					width: 40px;
+					height: 40px;
+				}
+
+				span.item-info {
+					margin-left: 10px;
+					// white-space: nowrap;
+					overflow: hidden;
+					text-overflow: ellipsis;
+					max-width: 150px;
+
+					span {
+						display: block;
+						
+					}
+
+					span.price {
+						color: #900
+					}
+				}
+			}
+
+			.item-right {
+				float: right;
+
+				button {
+					margin-top: 14px;
+				}
+			}
+		}
+
+	}
 
 
+}
 
 
 footer {

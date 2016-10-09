@@ -6,6 +6,7 @@ block styles
 block scripts
 	script(type="text/javascript", src="#{context.url('/resources/js/product.js')}")
 
+
 block content
 	+navbar(true)
 	div.container
@@ -23,26 +24,44 @@ block content
 								a.btn.btn-success(href="#{context.url('/store/sell/details')}") Publicar otro
 				div.row#product-container
 					div.col-sm-4
-						if storeItem.images.isEmpty
+						if storeItem.images.isEmpty()
 							img(src="http://lorempixel.com/400/400/fashion", style="width:100%;height:auto")
-						div.carousel.slide#carousel(data-ride="carousel")
-							ol.carousel-indicators
-								each image, i in storeItem.images
-									li(data-target="#carousel", data-slide-to="#{i}", class="#{i==0?'active':''}")
+						else
+							div.carousel.slide#carousel(data-ride="carousel")
+								ol.carousel-indicators
+									each image, i in storeItem.images
+										li(data-target="#carousel", data-slide-to="#{i}", class="#{i==0?'active':''}")
 
-							div.carousel-inner
-								each image, i in storeItem.images
-									div.item(class="#{i==0?'active':''}")
-										img(src="#{context.url('/images/get/'+image.id)}", alt="Imagen #{(i+1)}")
-							if storeItem.images.size() > 1
-								a.left.carousel-control(href="#carousel", data-slide="prev")
-									span.glyphicon.glyphicon-chevron-left
-									span.sr-only Previous
-								a.right.carousel-control(href="#carousel", data-slide="next")
-									span.glyphicon.glyphicon-chevron-right
-									span.sr-only Next
+								div.carousel-inner
+									each image, i in storeItem.images
+										div.item(class="#{i==0?'active':''}")
+											img(src="#{context.url('/images/get/'+image.id)}", alt="Imagen #{(i+1)}")
+								if storeItem.images.size() > 1
+									a.left.carousel-control(href="#carousel", data-slide="prev")
+										span.glyphicon.glyphicon-chevron-left
+										span.sr-only Previous
+									a.right.carousel-control(href="#carousel", data-slide="next")
+										span.glyphicon.glyphicon-chevron-right
+										span.sr-only Next
 					div.col-sm-8
-						h1 #{storeItem.name}
+						h1 #{storeItem.name}&nbsp;
+							if loggedUser
+								if userFavourites.contains(storeItem)
+									a.text-danger.add-favourite(href="#", data-item="#{storeItem.id}")
+										i.fa.fa-heart
+								else
+									a.text-muted.add-favourite(href="#", data-item="#{storeItem.id}")
+										i.fa.fa-heart
+						span #{storeItem.sold} vendidos
+						br
+						br
+						span Articulo&nbsp;
+							if storeItem.used
+								span usado
+							else
+								span nuevo
+						h3.price $#{storeItem.price}
+						a.btn.btn-success.btn-lg(href="#", data-buyer-email="#{storeItem.owner.email}") #{messageSource.getMessage('item.buy', [], locale)}
+					div.col-sm-12
 						p #{storeItem.description}
-						h3 $#{storeItem.price}
-						a.btn.btn-success.btn-lg(href="#", data-buyer-email="#{storeItem.email}") #{messageSource.getMessage('item.buy', [], locale)}
+						

@@ -1,5 +1,6 @@
 package edu.tp.paw.interfaces.dao;
 
+import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
 
@@ -28,5 +29,8 @@ public interface IUserDao {
 	User create(final UserBuilder builder);
 	
 	boolean changePassword(final User user, final String password);
+	
+	boolean addFavourite(final User user, final StoreItem item);
+	boolean removeFavourite(final User user, final StoreItem item);
 	
 }

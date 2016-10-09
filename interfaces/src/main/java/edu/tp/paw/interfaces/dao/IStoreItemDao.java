@@ -53,6 +53,8 @@ public interface IStoreItemDao {
 	
 	public int getNumberOfItems();
 	
+	public List<StoreItem> getFavourites(final User user);
+	
 //	public boolean addImagetoItem(final StoreItem item, final StoreImage image);
 	
 }

@@ -20,6 +20,29 @@ mixin navbar(search)
 					li
 						a(href="#{context.url('/store/sell/details')}") #{messageSource.getMessage('index.sell', [], locale)}
 					if loggedUser
+							li#favourite-dropdown
+								a.dropdown-toggle(href="#", data-toggle="dropdown", title="Favoritos")
+									i.fa.fa-heart
+									span.caret
+								ul.dropdown-menu.dropdown-favourite
+									if !userFavourites.isEmpty()
+										li
+											span.fav-title Favoritos
+									else
+										li
+											a No tiene favoritos, agregue favoritos para verlos
+									each favourite in userFavourites
+										li
+											span.item
+												span.item-left
+													a(href="#{context.url('/store/items/'+favourite.id)}")
+														img(src="http://placehold.it/80x80")
+													span.item-info
+														a(href="#{context.url('/store/items/'+favourite.id)}")
+															span #{favourite.name}
+														span.price $#{favourite.price}
+												span.item-right
+													button.btn.btn-xs.btn-danger.pull-right.remove-fav(data-id="#{favourite.id}") x
 							li
 								a.dropdown-toggle(href="#", data-toggle="dropdown")
 									span #{loggedUser.firstName} #{loggedUser.lastName}&nbsp;

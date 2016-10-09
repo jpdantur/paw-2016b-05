@@ -441,5 +441,21 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 		return jdbcTemplate.getJdbcOperations().queryForObject("select count(*) from store_items", Integer.class);
 	}
 
+	@Override
+	public List<StoreItem> getFavourites(final User user) {
+		return 
+				jdbcTemplate
+				.getJdbcOperations()
+				.query(
+						"select * from store_items "
+						+ "inner join favourites on store_items.item_id=favourites.store_item_id "
+						+ "inner join users on store_items.owner=users.user_id "
+						+ "inner join store_categories on store_items.category=store_categories.category_id "
+						+ "left outer join images on store_items.item_id=images.item_id "
+						+ "where favourites.user_id = ?",
+						extractor,
+						user.getId());
+	}
+
 
 }

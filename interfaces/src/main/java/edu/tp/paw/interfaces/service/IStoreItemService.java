@@ -40,5 +40,7 @@ public interface IStoreItemService {
 	public List<StoreItem> getUserItems(final User user);
 	
 	public boolean updateItem(final StoreItem item);
+	
+	public List<StoreItem> getFavourites(final User user);
 
 }
