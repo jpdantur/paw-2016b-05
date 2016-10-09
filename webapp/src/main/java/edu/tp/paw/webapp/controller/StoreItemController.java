@@ -1,5 +1,9 @@
 package edu.tp.paw.webapp.controller;
 
+import javax.validation.Valid;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -14,16 +18,20 @@ import edu.tp.paw.interfaces.service.ICategoryService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.Category;
+import edu.tp.paw.model.Comment;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.model.User;
 import edu.tp.paw.webapp.exceptions.StoreItemNotFoundException;
+import edu.tp.paw.webapp.form.CommentForm;
 import edu.tp.paw.webapp.form.SellForm;
 
 @Controller
 @RequestMapping("/store/item")
 public class StoreItemController extends BaseController {
 
+	private final static Logger logger = LoggerFactory.getLogger(StoreItemController.class);
+	
 	@Autowired private IStoreItemService itemService;
 	@Autowired private ICategoryService categoryService;
 	@Autowired private IUserService userService;
@@ -50,7 +58,7 @@ public class StoreItemController extends BaseController {
 	
 	@RequestMapping( value = "/{itemId}/details", method = RequestMethod.POST)
 	public String detailsSubmit(
-			@ModelAttribute("sellForm") final SellForm form,
+			@Valid @ModelAttribute("sellForm") final SellForm form,
 			final BindingResult result,
 			final Model model,
 			@ModelAttribute("loggedUser") final User user,
@@ -81,6 +89,34 @@ public class StoreItemController extends BaseController {
 		model.addAttribute("item", form);
 		
 		return "sell";
+	}
+	
+	@RequestMapping( value = "/{itemId}/comment", method = RequestMethod.POST)
+	public String commentSubmit(
+			@Valid @ModelAttribute("commentForm") final CommentForm form,
+			final BindingResult result,
+			final Model model,
+			@ModelAttribute("loggedUser") final User user,
+			@PathVariable("itemId") final long id) {
+		
+		if (!result.hasErrors()) {
+			
+			final StoreItem item = itemService.fetchById(id);
+			
+			if (item == null) {
+				//algo salio mal
+			}
+			final Comment comment = itemService.addCommentBy(user, item, form.getContent());
+			
+			if (comment == null) {
+				// algo salio mal
+			}
+			
+			return "redirect:/store/items/"+id;
+			
+		}
+		
+		return "redirect:/store/items/"+id+"?e=1";
 	}
 	
 	@RequestMapping( value = "/{itemId}/favourite", method = RequestMethod.POST, produces = "application/json; charset=utf-8" )

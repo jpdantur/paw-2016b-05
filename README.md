@@ -17,6 +17,7 @@
 	|   |____+ /item/{id}                #(StoreItemController)
 	|        |__ /details
 	|        |__ /images
+	|        |__ /comment
 	|
 	|___+ /profile                       #(ProfileController)
 	|   |____ /details

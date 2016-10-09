@@ -22,7 +22,7 @@ public class SiglasUserDetailsService implements UserDetailsService {
 	private static final Logger logger = LoggerFactory.getLogger(SiglasUserDetailsService.class);
 	
 	@Autowired
-	IUserService userService;
+	private IUserService userService;
 	
 	@Override
 	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
@@ -44,7 +44,4 @@ public class SiglasUserDetailsService implements UserDetailsService {
 		
 		return new org.springframework.security.core.userdetails.User(username, user.getPassword(), authorities);
 	}
-
-	
-	
 }

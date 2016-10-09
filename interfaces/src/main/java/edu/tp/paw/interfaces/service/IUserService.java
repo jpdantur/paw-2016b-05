@@ -2,6 +2,7 @@ package edu.tp.paw.interfaces.service;
 
 import java.util.List;
 
+import edu.tp.paw.model.Comment;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
@@ -37,6 +38,6 @@ public interface IUserService {
 	public boolean addFavourite(final User user, final StoreItem item);
 	public boolean removeFavourite(final User user, final StoreItem item);
 	
-	
+	public Comment commentOn(final User user, final StoreItem item, final String string);
 	
 }

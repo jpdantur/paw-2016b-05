@@ -98,7 +98,7 @@ public class StoreSearchController extends BaseController {
 	public ModelAndView individualItem(
 			@PathVariable("itemId") final int id,
 			@RequestParam(value = "s", defaultValue = "false") final boolean published,
-			Locale locale) {
+			@RequestParam(value = "e", defaultValue = "false") final boolean commentError) {
 		
 		final ModelAndView modelAndView = new ModelAndView("product");
 		
@@ -110,6 +110,8 @@ public class StoreSearchController extends BaseController {
 		
 		modelAndView.addObject("storeItem", storeItem);
 		modelAndView.addObject("published", published);
+		modelAndView.addObject("commentError", commentError);
+		modelAndView.addObject("comments", storeItemService.getComments(storeItem));
 		
 		return modelAndView;
 	}

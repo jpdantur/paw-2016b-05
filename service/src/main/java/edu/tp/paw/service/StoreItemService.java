@@ -10,8 +10,10 @@ import org.springframework.stereotype.Service;
 import edu.tp.paw.interfaces.dao.ICategoryDao;
 import edu.tp.paw.interfaces.dao.IStoreItemDao;
 import edu.tp.paw.interfaces.service.ICategoryService;
+import edu.tp.paw.interfaces.service.ICommentService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.model.Category;
+import edu.tp.paw.model.Comment;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.model.User;
@@ -25,14 +27,14 @@ public class StoreItemService implements IStoreItemService {
 
 	@Autowired private IStoreItemDao storeItemDao;
 	@Autowired private ICategoryDao categoryDao;
-	@Autowired private ICategoryService categoryService;
+	@Autowired private ICommentService commentService;
 	
 
 	/* (non-Javadoc)
 	 * @see edu.tp.paw.interfaces.service.IStoreItemService#fetchMostSold(int)
 	 */
 	@Override
-	public List<StoreItem> fetchMostSold(int n) {
+	public List<StoreItem> fetchMostSold(final int n) {
 		return storeItemDao.findMostSold(n);
 	}
 
@@ -40,7 +42,7 @@ public class StoreItemService implements IStoreItemService {
 	 * @see edu.tp.paw.interfaces.service.IStoreItemService#fetchById(long)
 	 */
 	@Override
-	public StoreItem fetchById(long id) {
+	public StoreItem fetchById(final long id) {
 		return storeItemDao.findById(id);
 	}
 
@@ -56,7 +58,7 @@ public class StoreItemService implements IStoreItemService {
 	}
 
 	@Override
-	public PagedResult<StoreItem> findByFiltering(Filter filter) {
+	public PagedResult<StoreItem> findByFiltering(final Filter filter) {
 		
 		final PagedResult<StoreItem> pagedResult = storeItemDao.findByTerm(filter);
 		
@@ -66,7 +68,7 @@ public class StoreItemService implements IStoreItemService {
 	}
 
 	@Override
-	public PagedResult<StoreItem> findByFiltering(FilterBuilder filterBuilder) {
+	public PagedResult<StoreItem> findByFiltering(final FilterBuilder filterBuilder) {
 		
 		
 		Set<Category> categories = new HashSet<>(filterBuilder.category().getCategories());
@@ -98,6 +100,16 @@ public class StoreItemService implements IStoreItemService {
 	public List<StoreItem> getFavourites(final User user) {
 		
 		return storeItemDao.getFavourites(user);
+	}
+
+	@Override
+	public Comment addCommentBy(final User user, final StoreItem item, final String comment) {
+		return commentService.createComment(user, item, comment);
+	}
+
+	@Override
+	public List<Comment> getComments(final StoreItem item) {
+		return commentService.commentsForItem(item);
 	}
 	
 	

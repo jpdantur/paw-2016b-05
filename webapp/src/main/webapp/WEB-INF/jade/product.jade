@@ -63,5 +63,33 @@ block content
 						h3.price $#{storeItem.price}
 						a.btn.btn-success.btn-lg(href="#", data-buyer-email="#{storeItem.owner.email}") #{messageSource.getMessage('item.buy', [], locale)}
 					div.col-sm-12
+						h3 Descripcion
 						p #{storeItem.description}
+		div.row
+			div.col-sm-10.col-sm-offset-1
+				div.well
+					h3 Comentarios
+					if loggedUser
+						form.form-horizontal(action="#{context.url('/store/item/'+storeItem.id+'/comment')}", method="POST")
+							div.form-group(class="#{commentError?'has-error':''}")
+								div.col-sm-12
+									textarea.form-control#content(name="content", placeholder="Comentario")
+							div.form-group
+								div.col-sm-offset-8.col-sm-4
+									button.btn.btn-block.btn-success(type="submit")
+										i.fa.fa-comment
+										span &nbsp;Comentar
+					else
+						a.btn.btn-success(href="#{context.url('/auth/login?next='+currentURI)}")
+							i.fa.fa-comment
+							span &nbsp;Comentar
+					if comments.isEmpty()
+						p.lead No hay comentarios aun
+					each comment in comments
+						div.comment
+							b.comment-author #{comment.user.firstName}
+							span.pull-right
+								i.fa.fa-clock-o
+								span &nbsp;2016-06-06
+							p #{comment.content}
 						

@@ -67,24 +67,13 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 		.addResourceLocations("/resources/");
 	}
 
-	//	public ViewResolver viewResolver() {
-	//		InternalResourceViewResolver viewResolver = new InternalResourceViewResolver();
-	//		
-	//		viewResolver.setViewClass(JstlView.class);
-	//		viewResolver.setPrefix("WEB-INF/jsp/");
-	//		viewResolver.setSuffix(".jsp");
-	//		
-	//		
-	//		return viewResolver;
-	//	}
-
 	/**
 	 * 
 	 * @return Spring Template Loader
 	 */
 	@Bean
 	public SpringTemplateLoader templateLoader() {
-		SpringTemplateLoader templateLoader = new SpringTemplateLoader();
+		final SpringTemplateLoader templateLoader = new SpringTemplateLoader();
 		templateLoader.setBasePath("/WEB-INF/jade/");
 		templateLoader.setEncoding("UTF-8");
 		templateLoader.setSuffix(".jade");
@@ -97,11 +86,11 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 	 */
 	@Bean
 	public JadeConfiguration jadeConfiguration() {
-		JadeConfiguration configuration = new JadeConfiguration();
+		final JadeConfiguration configuration = new JadeConfiguration();
 		configuration.setCaching(false);
 		configuration.setTemplateLoader(templateLoader());
-		Map<String, Object> sharedVariables = new HashMap<String, Object>();
-		ContextHelper context = new ContextHelper(appContext.getApplicationName());
+		final Map<String, Object> sharedVariables = new HashMap<String, Object>();
+		final ContextHelper context = new ContextHelper(appContext.getApplicationName());
 		sharedVariables.put("context", context);
 		System.out.println("-----------------");
 		System.out.println(appContext.getApplicationName());
@@ -116,7 +105,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 	 */
 	@Bean
 	public ViewResolver viewResolver() {
-		JadeViewResolver viewResolver = new JadeViewResolver();
+		final JadeViewResolver viewResolver = new JadeViewResolver();
 		viewResolver.setConfiguration(jadeConfiguration());
 		return viewResolver;
 	}

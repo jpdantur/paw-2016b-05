@@ -48,12 +48,6 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 	private static final String ORDER_DESCENDING = "DESC";	
 	private static final String ORDER_ASCENDING = "ASC";
 
-	@Autowired
-	private ICategoryDao categoryDao;
-	
-	@Autowired
-	private IUserDao userDao;
-
 	private final NamedParameterJdbcTemplate jdbcTemplate;
 	private final SimpleJdbcInsert jdbcInsert;
 
@@ -116,37 +110,6 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 				.map( StoreItemBuilder::build )
 				.collect(Collectors.toList());
 		
-	};
-	
-	private final RowMapper<StoreItem> rowMapper = (ResultSet resultSet, int rowNum) -> {
-		
-		final User user = new UserBuilder(resultSet.getString("username"))
-				.email(resultSet.getString("email"))
-				.firstName(resultSet.getString("first_name"))
-				.lastName(resultSet.getString("last_name"))
-				.id(resultSet.getLong("user_id"))
-				.build();
-		
-		final Category category = new CategoryBuilder(
-					resultSet.getString("category_name"),
-					resultSet.getLong("parent")
-					)
-				.id(resultSet.getLong("category_id"))
-				.build();
-		
-		return new StoreItemBuilder(
-				resultSet.getString("name"),
-				resultSet.getString("description"),
-				resultSet.getBigDecimal("price"),
-				category,
-				resultSet.getBoolean("used")
-				)
-		.id(resultSet.getLong("item_id"))
-		.created(resultSet.getTimestamp("created"))
-		.lastUpdated(resultSet.getTimestamp("last_updated"))
-		.sold(resultSet.getInt("sold"))
-		.owner(user)
-		.build();
 	};
 
 	/**

@@ -2,6 +2,7 @@ package edu.tp.paw.interfaces.service;
 
 import java.util.List;
 
+import edu.tp.paw.model.Comment;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.model.User;
@@ -43,4 +44,8 @@ public interface IStoreItemService {
 	
 	public List<StoreItem> getFavourites(final User user);
 
+	public Comment addCommentBy(final User user, final StoreItem item, final String comment);
+	
+	public List<Comment> getComments(final StoreItem item);
+	
 }

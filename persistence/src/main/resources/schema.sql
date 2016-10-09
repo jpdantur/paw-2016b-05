@@ -58,9 +58,11 @@ create table if not exists favourites (
 create table if not exists comments (
 	comment_id serial primary key,
 	user_id integer,
+	item_id integer,
 	comment_content varchar(300),
 	created timestamp default current_timestamp,
-	constraint user_fk foreign key (user_id) references users
+	constraint user_fk foreign key (user_id) references users,
+	constraint item_fk foreign key (item_id) references store_items
 );
 
 create table if not exists images (

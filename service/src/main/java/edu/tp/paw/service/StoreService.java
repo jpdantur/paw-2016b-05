@@ -21,10 +21,6 @@ public class StoreService implements IStoreService {
 
 	@Autowired
 	private IStoreItemService storeItemService;
-	@Autowired
-	private ICategoryService categoryService;
-	@Autowired
-	private IStoreDao storeDao;
 
 	@Override
 	public StoreItem sell(final StoreItemBuilder builder) {
