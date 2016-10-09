@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.List;
 
 import edu.tp.paw.model.Category;
+import edu.tp.paw.model.StoreImage;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.model.User;
@@ -49,5 +50,9 @@ public interface IStoreItemDao {
 	public List<StoreItem> getUserItems(final User user);
 	
 	public boolean updateItem(final StoreItem item);
+	
+	public int getNumberOfItems();
+	
+//	public boolean addImagetoItem(final StoreItem item, final StoreImage image);
 	
 }

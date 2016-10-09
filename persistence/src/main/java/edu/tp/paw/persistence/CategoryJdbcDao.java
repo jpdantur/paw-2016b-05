@@ -23,14 +23,14 @@ public class CategoryJdbcDao implements ICategoryDao {
 	private static final String SQL_DESCENDANTS_OF =
 			"with recursive tree as "
 			+ "( "
-			+ "select category_id, name, created, last_updated, parent, (0 || '#' || cast (category_id as text)) as category_path "
+			+ "select category_id, category_name, created, last_updated, parent, (0 || '#' || cast (category_id as text)) as category_path "
 			+ "from store_categories "
 			+ "where category_id <> ? and parent = ? "
 			+ "union all "
-				+ "select c.category_id, c.name, c.created, c.last_updated, c.parent, (c2.category_path || '#' || cast (c.category_id as text)) as category_path "
+				+ "select c.category_id, c.category_name, c.created, c.last_updated, c.parent, (c2.category_path || '#' || cast (c.category_id as text)) as category_path "
 				+ "from store_categories as c "
 				+ "inner join tree as c2 on (c.parent=c2.category_id) where c.category_id <> 0 "
-			+ ") select * from tree order by name";
+			+ ") select * from tree order by category_name";
 	
 	//name::text as fullname
 	//(c2.fullname || '~>' || c.name)::text as fullname
@@ -42,7 +42,7 @@ public class CategoryJdbcDao implements ICategoryDao {
 	private final static RowMapper<Category> rowMapperWithPath = (ResultSet resultSet, int rowNum) -> {
 		
 		return new CategoryBuilder(
-					resultSet.getString("name"),
+					resultSet.getString("category_name"),
 					resultSet.getLong("parent")
 				)
 				.id(resultSet.getLong("category_id"))
@@ -55,7 +55,7 @@ public class CategoryJdbcDao implements ICategoryDao {
 	private final static RowMapper<Category> rowMapper = (ResultSet resultSet, int rowNum) -> {
 		
 		return new CategoryBuilder(
-					resultSet.getString("name"),
+					resultSet.getString("category_name"),
 					resultSet.getLong("parent")
 				)
 				.id(resultSet.getLong("category_id"))
@@ -75,7 +75,7 @@ public class CategoryJdbcDao implements ICategoryDao {
 		jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
 			.withTableName("store_categories")
 			.usingGeneratedKeyColumns("category_id")
-			.usingColumns("name", "parent");
+			.usingColumns("category_name", "parent");
 	}
 	
 	/* (non-Javadoc)
@@ -106,8 +106,6 @@ public class CategoryJdbcDao implements ICategoryDao {
 	 */
 	@Override
 	public Category findById(long id) {
-		
-		new Throwable().printStackTrace();
 		
 		List<Category> categoryList =
 		jdbcTemplate
@@ -151,7 +149,7 @@ public class CategoryJdbcDao implements ICategoryDao {
 		
 		final Map<String, Object> args = new HashMap<>();
 		
-		args.put("name", name);
+		args.put("category_name", name);
 		args.put("parent", parent);
 		
 		System.out.println("dao:: creating new category");
@@ -170,7 +168,7 @@ public class CategoryJdbcDao implements ICategoryDao {
 		
 		final Map<String, Object> args = new HashMap<>();
 		
-		args.put("name", builder.getName());
+		args.put("category_name", builder.getName());
 		args.put("parent", builder.getParent());
 		
 		System.out.println("dao:: creating new category");
@@ -226,7 +224,7 @@ public class CategoryJdbcDao implements ICategoryDao {
 		return
 				jdbcTemplate
 				.query(
-						"select * from store_categories where category_id <> 0 order by name asc",
+						"select * from store_categories where category_id <> 0 order by category_name asc",
 						rowMapper);
 	}
 

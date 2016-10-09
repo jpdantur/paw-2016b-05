@@ -5,14 +5,17 @@ import java.sql.ResultSet;
 import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -23,9 +26,13 @@ import edu.tp.paw.interfaces.dao.ICategoryDao;
 import edu.tp.paw.interfaces.dao.IStoreItemDao;
 import edu.tp.paw.interfaces.dao.IUserDao;
 import edu.tp.paw.model.Category;
+import edu.tp.paw.model.CategoryBuilder;
+import edu.tp.paw.model.StoreImage;
+import edu.tp.paw.model.StoreImageBuilder;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.model.User;
+import edu.tp.paw.model.UserBuilder;
 import edu.tp.paw.model.filter.CategoryFilter;
 import edu.tp.paw.model.filter.Filter;
 import edu.tp.paw.model.filter.OrderFilter;
@@ -50,19 +57,95 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 	private final NamedParameterJdbcTemplate jdbcTemplate;
 	private final SimpleJdbcInsert jdbcInsert;
 
+	private static final ResultSetExtractor<List<StoreItem>> extractor = (ResultSet resultSet) -> {
+		
+		final Map<Long, StoreItemBuilder> items = new HashMap<>();
+		
+		while (resultSet.next()) {
+			
+			final User user = new UserBuilder(resultSet.getString("username"))
+					.email(resultSet.getString("email"))
+					.firstName(resultSet.getString("first_name"))
+					.lastName(resultSet.getString("last_name"))
+					.id(resultSet.getLong("user_id"))
+					.build();
+			
+			final Category category = new CategoryBuilder(
+						resultSet.getString("category_name"),
+						resultSet.getLong("parent")
+						)
+					.id(resultSet.getLong("category_id"))
+					.build();
+			
+			final StoreItemBuilder item = new StoreItemBuilder(
+					resultSet.getString("name"),
+					resultSet.getString("description"),
+					resultSet.getBigDecimal("price"),
+					category,
+					resultSet.getBoolean("used")
+					)
+			.id(resultSet.getLong("item_id"))
+			.created(resultSet.getTimestamp("created"))
+			.lastUpdated(resultSet.getTimestamp("last_updated"))
+			.sold(resultSet.getInt("sold"))
+			.owner(user);
+			
+			
+			if (!items.containsKey(item.getId())) {
+				
+				items.put(item.getId(), item);
+				
+			}
+			
+			if (resultSet.getString("mime_type") != null) {
+				
+				final StoreImage image = new StoreImageBuilder(
+						resultSet.getString("mime_type"),
+						resultSet.getBytes("content"))
+						.id(resultSet.getLong("image_id"))
+						.build();
+				
+				items.get(item.getId()).images(image);
+			}
+			
+		}
+		
+		return items
+				.values()
+				.stream()
+				.map( StoreItemBuilder::build )
+				.collect(Collectors.toList());
+		
+	};
+	
 	private final RowMapper<StoreItem> rowMapper = (ResultSet resultSet, int rowNum) -> {
+		
+		final User user = new UserBuilder(resultSet.getString("username"))
+				.email(resultSet.getString("email"))
+				.firstName(resultSet.getString("first_name"))
+				.lastName(resultSet.getString("last_name"))
+				.id(resultSet.getLong("user_id"))
+				.build();
+		
+		final Category category = new CategoryBuilder(
+					resultSet.getString("category_name"),
+					resultSet.getLong("parent")
+					)
+				.id(resultSet.getLong("category_id"))
+				.build();
+		
 		return new StoreItemBuilder(
 				resultSet.getString("name"),
 				resultSet.getString("description"),
 				resultSet.getBigDecimal("price"),
-				categoryDao.findById(resultSet.getLong("category")),
+				category,
 				resultSet.getBoolean("used")
 				)
 		.id(resultSet.getLong("item_id"))
 		.created(resultSet.getTimestamp("created"))
 		.lastUpdated(resultSet.getTimestamp("last_updated"))
 		.sold(resultSet.getInt("sold"))
-		.owner(userDao.findById(resultSet.getLong("owner")))
+		.owner(user)
 		.build();
 	};
 
@@ -76,8 +159,8 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 
 		jdbcInsert = new SimpleJdbcInsert(dataSource)
 		.withTableName("store_items")
-		.usingGeneratedKeyColumns("item_id");
-//		.usingColumns("name", "description", "price", "category", "used", "owner");
+		.usingGeneratedKeyColumns("item_id")
+		.usingColumns("name", "description", "price", "category", "used", "owner");
 	}
 
 	/* (non-Javadoc)
@@ -90,8 +173,12 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 				jdbcTemplate
 				.getJdbcOperations()
 				.query(
-						"select * from store_items where item_id = ?",
-						rowMapper,
+						"select * from store_items "
+								+ "inner join users on store_items.owner=users.user_id "
+								+ "inner join store_categories on store_items.category=store_categories.category_id "
+								+ "left outer join images on store_items.item_id=images.item_id "
+								+ "where store_items.item_id = ?",
+						extractor,
 						id);
 
 		return itemsList.isEmpty() ? null : itemsList.get(0);
@@ -112,8 +199,12 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 				jdbcTemplate
 				.getJdbcOperations()
 				.query(
-						"select * from store_items order by sold desc limit ?",
-						rowMapper,
+						"select * from store_items "
+								+ "inner join users on store_items.owner=users.user_id "
+								+ "inner join store_categories on store_items.category=store_categories.category_id "
+								+ "left outer join images on store_items.item_id=images.item_id "
+								+ "order by sold desc limit ?",
+						extractor,
 						n);
 	}	
 
@@ -127,6 +218,7 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 		args.put("price", builder.getPrice());
 		args.put("category", builder.getCategory().getId());
 		args.put("used", builder.isUsed());
+		args.put("owner", builder.getOwner().getId());
 
 		final Number storeItemId = jdbcInsert.executeAndReturnKey(args);
 
@@ -139,32 +231,36 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 	@Override
 	public List<StoreItem> findInCategories(List<Category> categories) {
 
-		StringBuilder stringBuilder = new StringBuilder();
-
-		for (int i = 0; i < categories.size(); i++) {
-			stringBuilder.append("?,");
-		}
-
-		stringBuilder.deleteCharAt(stringBuilder.length() - 1);
-
+		final MapSqlParameterSource params = new MapSqlParameterSource();
+		
+		params.addValue("categories",
+				categories.stream().map((category) -> {
+						return category.getId();
+				}).toArray());
+		
 		return
-
 				jdbcTemplate
-				.getJdbcOperations()
 				.query(
-						"select * from store_items where category in ("+stringBuilder.toString()+")",
-						rowMapper,
-						categories.stream().map((category) -> {
-							return category.getId();
-						}).toArray()
-						);
+						"select * from store_items "
+								+ "inner join users on store_items.owner=users.user_id "
+								+ "inner join store_categories on store_items.category=store_categories.category_id "
+								+ "left outer join images on store_items.item_id=images.item_id "
+								+ "where category in (:categories)",
+						params,
+						extractor);
 
 	}
 
 	@Override
 	public PagedResult<StoreItem> findByTerm(Filter filter) {
 		
-		final StringBuilder query = new StringBuilder("select item_id, name, description, price, category, used, owner, sold, count(*) OVER() as total_count from store_items where ");
+		final StringBuilder query = new StringBuilder(
+				"select * "
+				+ "from store_items "
+				+ "inner join users on store_items.owner=users.user_id "
+				+ "inner join store_categories on store_items.category=store_categories.category_id "
+				+ "left outer join images on store_items.item_id=images.item_id "
+				+ "where ");
 
 		final MapSqlParameterSource params = new MapSqlParameterSource();
 		
@@ -185,7 +281,7 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 							+ "category in ("
 							+ "select store_categories.category_id "
 							+ "from store_categories "
-							+ "where lower(store_categories.name) LIKE '%' || :term || '%'"
+							+ "where lower(store_categories.category_name) LIKE '%' || :term || '%'"
 							+ ")"
 					+ ")"
 			);
@@ -230,8 +326,6 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 			
 			logicalOperator = true;
 		}
-		// TODO make an ordered set of store items
-		//query += " order by price " + (priceFilter.getSortOrder() == Filter.SortOrder.ASC ? ORDER_ASCENDING : ORDER_DESCENDING);
 
 		final CategoryFilter categoryFilter = filter.getCategoryFilter();
 		final Set<Category> categories = categoryFilter.getCategories();
@@ -293,24 +387,8 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 
 		params.addValue("limit", pageFilter.getPageSize());
 		params.addValue("offset", pageFilter.getPageNumber()*pageFilter.getPageSize());
-
-		final RowMapper<StoreItem> mapper = (ResultSet resultSet, int rowNum) -> {
-
-			pagedResult.setNumberOfTotalResults(resultSet.getInt("total_count"));
-
-			return new StoreItemBuilder(
-					resultSet.getString("name"),
-					resultSet.getString("description"),
-					resultSet.getBigDecimal("price"),
-					categoryDao.findById(resultSet.getLong("category")),
-					resultSet.getBoolean("used")
-					)
-			.id(resultSet.getLong("item_id"))
-			.sold(resultSet.getInt("sold"))
-			.build();
-		};
 		
-		List<StoreItem> results = jdbcTemplate.query(query.toString(), params, mapper);
+		List<StoreItem> results = jdbcTemplate.query(query.toString(), params, extractor);
 
 		pagedResult.setNumberOfAvailableResults(results.size());
 		pagedResult.setResults(results);
@@ -325,8 +403,12 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 				jdbcTemplate
 				.getJdbcOperations()
 				.query(
-						"select * from store_items where owner = ?",
-						rowMapper,
+						"select * from store_items "
+						+ "inner join users on store_items.owner=users.user_id "
+						+ "inner join store_categories on store_items.category=store_categories.category_id "
+						+ "left outer join images on store_items.item_id=images.item_id "
+						+ "where owner = ?",
+						extractor,
 						user.getId());
 	}
 
@@ -351,6 +433,12 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 						"update store_items "
 						+ "set name=:name, description=:description, price=:price, category=:category, used=:used, owner=:owner "
 						+ "where item_id = :id", params) == 1;
+	}
+
+	@Override
+	public int getNumberOfItems() {
+		
+		return jdbcTemplate.getJdbcOperations().queryForObject("select count(*) from store_items", Integer.class);
 	}
 
 

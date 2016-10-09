@@ -22,9 +22,26 @@ block content
 								br
 								a.btn.btn-success(href="#{context.url('/store/sell/details')}") Publicar otro
 				div.row#product-container
-					div.col-sm-3
-						img(src="http://lorempixel.com/400/400/fashion", style="width:100%;height:auto")
-					div.col-sm-9
+					div.col-sm-4
+						if storeItem.images.isEmpty
+							img(src="http://lorempixel.com/400/400/fashion", style="width:100%;height:auto")
+						div.carousel.slide#carousel(data-ride="carousel")
+							ol.carousel-indicators
+								each image, i in storeItem.images
+									li(data-target="#carousel", data-slide-to="#{i}", class="#{i==0?'active':''}")
+
+							div.carousel-inner
+								each image, i in storeItem.images
+									div.item(class="#{i==0?'active':''}")
+										img(src="#{context.url('/images/get/'+image.id)}", alt="Imagen #{(i+1)}")
+							if storeItem.images.size() > 1
+								a.left.carousel-control(href="#carousel", data-slide="prev")
+									span.glyphicon.glyphicon-chevron-left
+									span.sr-only Previous
+								a.right.carousel-control(href="#carousel", data-slide="next")
+									span.glyphicon.glyphicon-chevron-right
+									span.sr-only Next
+					div.col-sm-8
 						h1 #{storeItem.name}
 						p #{storeItem.description}
 						h3 $#{storeItem.price}

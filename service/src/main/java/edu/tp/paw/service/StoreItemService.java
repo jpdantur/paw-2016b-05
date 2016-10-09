@@ -58,7 +58,11 @@ public class StoreItemService implements IStoreItemService {
 	@Override
 	public PagedResult<StoreItem> findByFiltering(Filter filter) {
 		
-		return storeItemDao.findByTerm(filter);
+		final PagedResult<StoreItem> pagedResult = storeItemDao.findByTerm(filter);
+		
+		pagedResult.setNumberOfTotalResults(storeItemDao.getNumberOfItems());
+		
+		return pagedResult;
 	}
 
 	@Override
@@ -71,7 +75,7 @@ public class StoreItemService implements IStoreItemService {
 			filterBuilder.category().in(categoryDao.getDescendants(category));
 		}
 		
-		return storeItemDao.findByTerm(filterBuilder.build());
+		return findByFiltering(filterBuilder.build());
 	}
 
 	@Override

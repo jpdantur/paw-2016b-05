@@ -19,15 +19,14 @@ insert into users (user_id, first_name, last_name, username, password, email)
 
 create table if not exists store_categories (
 	category_id serial primary key,
-	name varchar(100),
+	category_name varchar(100),
 	parent integer,
 	created timestamp default current_timestamp,
 	last_updated timestamp default current_timestamp,
-	constraint parent_fk foreign key (parent) references store_categories,
-	
+	constraint parent_fk foreign key (parent) references store_categories
 );
 
-insert into store_categories (category_id, name, parent)
+insert into store_categories (category_id, category_name, parent)
 	select 0, 'root', 0 where not exists (
 		select category_id from store_categories where category_id = 0
 	);

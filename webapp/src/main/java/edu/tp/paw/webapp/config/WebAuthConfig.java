@@ -36,7 +36,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 		http
 			.userDetailsService(userDetailsService)
 			.sessionManagement()
-				.invalidSessionUrl("/")
+//				.invalidSessionUrl("/")
 			.and().authorizeRequests()
 				.antMatchers("/", "/store/items/**").permitAll()
 				.antMatchers("/auth/login", "/auth/register").anonymous()

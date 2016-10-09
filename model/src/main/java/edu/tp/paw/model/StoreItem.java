@@ -2,6 +2,7 @@ package edu.tp.paw.model;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.List;
 
 public class StoreItem {
 	
@@ -13,12 +14,14 @@ public class StoreItem {
 	private final User owner;
 	private final boolean used;
 	
-	private Category category;
+	private final Category category;
 	
 	private final long sold;
 	
 	private final Timestamp created;
 	private final Timestamp lastUpdated;
+	
+	private final List<StoreImage> images;
 	
 	/* package */ StoreItem(final StoreItemBuilder builder) {
 		this.id = builder.getId();
@@ -31,6 +34,7 @@ public class StoreItem {
 		this.category = builder.getCategory();
 		this.owner = builder.getOwner();
 		this.used = builder.isUsed();
+		this.images = builder.getImages();
 	}
 	
 	
@@ -74,10 +78,6 @@ public class StoreItem {
 	public Timestamp getLastUpdated() {
 		return lastUpdated;
 	}
-
-	public void setCategory(Category category) {
-		this.category = category;
-	}
 	
 	public Category getCategory() {
 		return category;
@@ -93,6 +93,34 @@ public class StoreItem {
 				+ ", lastUpdated=" + lastUpdated + ", price=" + price + "]";
 	}
 	
+	
+	
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + (int) (id ^ (id >>> 32));
+		return result;
+	}
+
+
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		StoreItem other = (StoreItem) obj;
+		if (id != other.id)
+			return false;
+		return true;
+	}
+
+
+
 	public User getOwner() {
 		return owner;
 	}
@@ -101,4 +129,8 @@ public class StoreItem {
 		return used;
 	}
 
+	public List<StoreImage> getImages() {
+		return images;
+	}
+	
 }

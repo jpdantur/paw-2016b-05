@@ -59,6 +59,8 @@ public class StoreSellController extends BaseController {
 		
 		if (!bindingResult.hasErrors()) {
 			
+			System.out.println(user);
+			
 			Category category = categoryService.findById(form.getCategoryId());
 			StoreItemBuilder storeItemBuilder = new StoreItemBuilder(form.getName(), form.getDescription(), form.getPrice(), category, form.isUsed()).owner(user);
 			

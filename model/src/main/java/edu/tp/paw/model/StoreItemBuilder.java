@@ -2,7 +2,9 @@ package edu.tp.paw.model;
 
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 
 public class StoreItemBuilder implements IBuilder<StoreItem> {
@@ -20,6 +22,7 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 	private int sold = 0;
 	private long id;
 	private User owner;
+	private List<StoreImage> images = new ArrayList<>();
 	
 	public StoreItemBuilder(String name, String description, BigDecimal price, Category category, boolean used) {
 		this.name = name;
@@ -32,6 +35,16 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 	
 	public StoreItemBuilder owner(User owner) {
 		this.owner = owner;
+		return this;
+	}
+	
+	public StoreItemBuilder images(List<StoreImage> images) {
+		this.images = images;
+		return this;
+	}
+	
+	public StoreItemBuilder images(StoreImage images) {
+		this.images.add(images);
 		return this;
 	}
 	
@@ -119,6 +132,10 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 
 	public boolean isUsed() {
 		return used;
+	}
+	
+	public List<StoreImage> getImages() {
+		return images;
 	}
 	
 }
