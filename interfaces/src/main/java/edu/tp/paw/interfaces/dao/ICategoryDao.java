@@ -71,4 +71,6 @@ public interface ICategoryDao {
 	
 	public List<Category> getAll();
 	
+	public int getNumberOfCategories();
+	
 }

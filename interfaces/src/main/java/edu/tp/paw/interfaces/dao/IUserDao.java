@@ -33,4 +33,6 @@ public interface IUserDao {
 	boolean addFavourite(final User user, final StoreItem item);
 	boolean removeFavourite(final User user, final StoreItem item);
 	
+	int getNumberOfUsers();
+	
 }

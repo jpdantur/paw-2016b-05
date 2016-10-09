@@ -48,4 +48,6 @@ public interface IStoreItemService {
 	
 	public List<Comment> getComments(final StoreItem item);
 	
+	public int getNumberOfItems();
+	
 }

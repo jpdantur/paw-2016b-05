@@ -40,4 +40,6 @@ public interface IUserService {
 	
 	public Comment commentOn(final User user, final StoreItem item, final String string);
 	
+	public int getNumberOfUsers();
+	
 }

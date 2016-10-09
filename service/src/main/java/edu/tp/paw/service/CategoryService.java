@@ -188,5 +188,10 @@ public class CategoryService implements ICategoryService {
 		
 		return categoryDao.getAll();
 	}
+
+	@Override
+	public int getNumberOfCategories() {
+		return categoryDao.getNumberOfCategories();
+	}
 	
 }

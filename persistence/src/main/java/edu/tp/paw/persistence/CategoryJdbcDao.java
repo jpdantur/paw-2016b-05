@@ -228,4 +228,10 @@ public class CategoryJdbcDao implements ICategoryDao {
 						rowMapper);
 	}
 
+	@Override
+	public int getNumberOfCategories() {
+		
+		return jdbcTemplate.queryForObject("select count(*) from store_categories", Integer.class);
+	}
+
 }

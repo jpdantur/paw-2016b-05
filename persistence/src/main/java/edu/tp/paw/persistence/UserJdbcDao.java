@@ -236,4 +236,9 @@ public class UserJdbcDao implements IUserDao {
 					item.getId()) == 1;		
 	}
 
+	@Override
+	public int getNumberOfUsers() {
+		return jdbcTemplate.queryForObject("select count(*) from users", Integer.class);
+	}
+
 }

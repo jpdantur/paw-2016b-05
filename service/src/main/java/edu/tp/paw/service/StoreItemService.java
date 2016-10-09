@@ -111,6 +111,11 @@ public class StoreItemService implements IStoreItemService {
 	public List<Comment> getComments(final StoreItem item) {
 		return commentService.commentsForItem(item);
 	}
+
+	@Override
+	public int getNumberOfItems() {
+		return storeItemDao.getNumberOfItems();
+	}
 	
 	
 

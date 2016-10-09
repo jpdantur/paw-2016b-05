@@ -32,8 +32,6 @@ public class CustomSavedRequestAwareAuthenticationSuccessHandler extends SavedRe
 		logger.debug("targetUrlParameter={}", targetUrlParameter);
 		logger.debug("req[next]={}", request.getParameter("next"));
 		
-//		logger.debug("savedReq={}", savedRequest.toString());
-		
 		if (savedRequest == null) {
 			super.onAuthenticationSuccess(request, response, authentication);
 

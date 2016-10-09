@@ -111,6 +111,11 @@ public class UserService implements IUserService {
 		return commentService.createComment(user, item, string);
 	}
 
+	@Override
+	public int getNumberOfUsers() {
+		return userDao.getNumberOfUsers();
+	}
+
 	
 
 }
