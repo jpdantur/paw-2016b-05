@@ -46,7 +46,7 @@ block content
 						div.col-sm-10.col-sm-offset-2
 							div.checkbox
 								label
-									input(type="checkbox", id="used", name="used", value="#{item.used?item.used:''}")
+									input(type="checkbox", id="used", name="used", value="#{item.used?item.used:'true'}")
 									span #{messageSource.getMessage('sell.field.used',[],locale)}
 							+errors(bindingResult, 'used')
 					div.form-group
