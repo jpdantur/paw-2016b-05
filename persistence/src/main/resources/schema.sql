@@ -114,3 +114,14 @@ create table if not exists resource_role (
 	constraint resource_fk foreign key (resource_id) references resource,
 	constraint role_fk foreign key (role_id) references roles
 );
+
+create table if not exists sales (
+	sale_id serial primary key,
+	user_id integer,
+	item_id integer,
+	approved boolean default false,
+	constraint user_fk foreign key (user_id) references users,
+	constraint item_fk foreign key (item_id) references store_items
+);
+
+

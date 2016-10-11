@@ -153,6 +153,27 @@ module.exports = function (grunt) {
 					src: ['*.css'],
 					dest: destinationDirectory+'css/'
 				}, {
+					// jquery cookie
+					expand: true,
+					dot: true,
+					cwd: 'bower_components/jquery.cookie/',
+					src: ['*.js'],
+					dest: destinationDirectory+'js/lib/'
+				}, {
+					// jquery-treegrid js
+					expand: true,
+					dot: true,
+					cwd: 'bower_components/jquery-treegrid/js',
+					src: ['jquery.treegrid.js','jquery.treegrid.bootstrap3.js'],
+					dest: destinationDirectory+'js/lib/'
+				}, {
+					// jquery-treegrid css
+					expand: true,
+					dot: true,
+					cwd: 'bower_components/jquery-treegrid/css',
+					src: ['*.css'],
+					dest: destinationDirectory+'css/'
+				}, {
 					// my js files
 					expand: true,
     			dot: true,
