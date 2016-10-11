@@ -131,32 +131,16 @@ public class CategoryJdbcDao implements ICategoryDao {
 	 * @see edu.tp.paw.interfaces.dao.ICategoryDao#updatePath(edu.tp.paw.model.Category, java.lang.String)
 	 */
 	@Override
-	public Category updatePath(Category category, String path) {
+	public boolean updateCategory(final Category category) {
 		
-		jdbcTemplate.update("update store_categories set category_path = ? where category_id = ?", path, category.getId());
-		
-		category.setPath(path);
-		
-		return category;
-		
-	}
-	
-	/* (non-Javadoc)
-	 * @see edu.tp.paw.interfaces.dao.ICategoryDao#create(java.lang.String, long)
-	 */
-	@Override
-	public Category create(String name, long parent) {
-		
-		final Map<String, Object> args = new HashMap<>();
-		
-		args.put("category_name", name);
-		args.put("parent", parent);
-		
-		System.out.println("dao:: creating new category");
-		
-		final Number categoryId = jdbcInsert.executeAndReturnKey(args);
-		
-		return new CategoryBuilder(name, parent).id(categoryId.longValue()).build();		
+		return
+				jdbcTemplate
+				.update("update store_categories "
+						+ "set category_name = ?, parent = ? "
+						+ "where category_id = ?",
+						category.getName(),
+						category.getParent(),
+						category.getId()) == 1;
 		
 	}
 	
@@ -164,7 +148,7 @@ public class CategoryJdbcDao implements ICategoryDao {
 	 * @see edu.tp.paw.interfaces.dao.ICategoryDao#create(java.lang.String, long)
 	 */
 	@Override
-	public Category create(CategoryBuilder builder) {
+	public Category create(final CategoryBuilder builder) {
 		
 		final Map<String, Object> args = new HashMap<>();
 		
@@ -188,7 +172,7 @@ public class CategoryJdbcDao implements ICategoryDao {
 		return
 				jdbcTemplate
 				.query(
-						"select * from store_categories where parent = ?",
+						"select * from store_categories where parent = ? order by category_name",
 						rowMapper,
 						category.getParent());
 	}
@@ -205,7 +189,7 @@ public class CategoryJdbcDao implements ICategoryDao {
 		return
 				jdbcTemplate
 				.query(
-						"select * from store_categories where parent = ? and category_id <> 0",
+						"select * from store_categories where parent = ? and category_id <> 0 order by category_name",
 						rowMapper,
 						categoryId);
 	}

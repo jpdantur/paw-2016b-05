@@ -61,18 +61,23 @@ public class SellForm {
 		this.price = price;
 	}
 
-	@Override
-	public String toString() {
-		return "SellForm [name=" + name + ", description=" + description
-				+ ", price=" + price + ", categoryId=" + categoryId + "]";
-	}
-
 	public boolean isUsed() {
+		return used;
+	}
+	
+	public boolean getUsed() {
 		return used;
 	}
 
 	public void setUsed(boolean used) {
 		this.used = used;
+	}
+
+	@Override
+	public String toString() {
+		return "SellForm [name=" + name + ", description=" + description
+				+ ", price=" + price + ", categoryId=" + categoryId + ", used=" + used
+				+ "]";
 	}
 	
 	

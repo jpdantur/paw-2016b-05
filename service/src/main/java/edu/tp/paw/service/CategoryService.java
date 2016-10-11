@@ -193,5 +193,10 @@ public class CategoryService implements ICategoryService {
 	public int getNumberOfCategories() {
 		return categoryDao.getNumberOfCategories();
 	}
+
+	@Override
+	public boolean updateCategory(final Category category) {
+		return categoryDao.updateCategory(category);
+	}
 	
 }

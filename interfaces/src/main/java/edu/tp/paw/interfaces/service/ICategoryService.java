@@ -13,15 +13,15 @@ public interface ICategoryService {
 	 * @param id The id of the category to be found
 	 * @return The found category
 	 */
-	public Category findById(long id);
+	public Category findById(final long id);
 	/**
 	 * Finds category with certain id and builds tree with descendants
 	 * @param id The id of the category to be found
 	 * @return The found category
 	 */
-	public Category findByIdWithTree(long id);
+	public Category findByIdWithTree(final long id);
 	
-	public boolean exists(long id);
+	public boolean exists(final long id);
 	
 	/**
 	 * Creates a new category
@@ -29,10 +29,10 @@ public interface ICategoryService {
 	 * @param parent The parent of the new category. A null parent means the category is a child of the root node
 	 * @return The created category
 	 */
-	public Category create(CategoryBuilder builder);
+	public Category create(final CategoryBuilder builder);
 	
-	public List<Category> getChildren(Category category);
-	public List<Category> getChildren(Set<Category> categories);
+	public List<Category> getChildren(final Category category);
+	public List<Category> getChildren(final Set<Category> categories);
 	
 	
 	
@@ -49,5 +49,7 @@ public interface ICategoryService {
 	public List<Category> getMainCategories();
 	
 	public int getNumberOfCategories();
+	
+	public boolean updateCategory(final Category category);
 	
 }

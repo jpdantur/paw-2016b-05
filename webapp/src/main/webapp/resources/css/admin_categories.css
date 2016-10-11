@@ -1,0 +1,10 @@
+#treegrid td .accesory-container {
+  display: inline-block;
+  position: relative; }
+
+#treegrid td .accesory {
+  display: none;
+  cursor: pointer; }
+
+#treegrid td:hover .accesory {
+  display: inline-block; }

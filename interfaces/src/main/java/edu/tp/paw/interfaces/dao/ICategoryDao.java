@@ -6,71 +6,55 @@ import edu.tp.paw.model.Category;
 import edu.tp.paw.model.CategoryBuilder;
 
 public interface ICategoryDao {
-
-	/**
-	 * Creates a new category
-	 * @param name The name of the new category
-	 * @param parent The parent of the new category. A null parent means a child of the root node
-	 * @return The created category
-	 * @deprecated
-	 */
-	public Category create(String name, long parent);
 	
-	public Category create(CategoryBuilder builder);
+	public Category create(final CategoryBuilder builder);
 	
 	/**
 	 * Finds category with certain id
 	 * @param id The id of the category to be found
 	 * @return The found category
 	 */
-	public Category findById(long id);
+	public Category findById(final long id);
 	
 	/**
 	 * Checks if certain category exists
 	 * @param id The id of the category to check
 	 * @return true if it exists, false if it doesnt
 	 */
-	public boolean categoryExists(long id);
-	
-	/**
-	 * Updates given category's path
-	 * @param category The category to be updated
-	 * @param path The new path
-	 * @return The updated category
-	 * @deprecated
-	 */
-	public Category updatePath(Category category, String path);
+	public boolean categoryExists(final long id);
 	
 	/**
 	 * Gets given category's siblings
 	 * @param category
 	 * @return List with category's siblings
 	 */
-	public List<Category> getSiblings(Category category);
+	public List<Category> getSiblings(final Category category);
 	
 	/**
 	 * Finds category children by id
 	 * @param categoryId id of the category
 	 * @return List with category children
 	 */
-	public List<Category> getChildren(long categoryId);
+	public List<Category> getChildren(final long categoryId);
 	
 	/**
 	 * Finds category children
 	 * @param category
 	 * @return List with category children
 	 */
-	public List<Category> getChildren(Category category);
+	public List<Category> getChildren(final Category category);
 	
 	/**
 	 * Finds category descendants
 	 * @param category
 	 * @return List with category descendants
 	 */
-	public List<Category> getDescendants(Category category);
+	public List<Category> getDescendants(final Category category);
 	
 	public List<Category> getAll();
 	
 	public int getNumberOfCategories();
+	
+	public boolean updateCategory(final Category category);
 	
 }

@@ -2,6 +2,8 @@ package edu.tp.paw.webapp.controller;
 
 import javax.validation.Valid;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -27,6 +29,8 @@ import edu.tp.paw.webapp.form.SellForm;
 @Controller
 @RequestMapping("/store/sell")
 public class StoreSellController extends BaseController {
+	
+	private final static Logger logger = LoggerFactory.getLogger(StoreSellController.class);
 	
 	@Autowired
 	private IStoreItemService storeItemService;
@@ -55,7 +59,7 @@ public class StoreSellController extends BaseController {
 			final Model model,
 			@ModelAttribute("loggedUser") final User user) {
 		
-		System.out.println(form);
+		logger.debug("received form: {}", form);
 		
 		if (!bindingResult.hasErrors()) {
 			

@@ -9,6 +9,7 @@ block scripts
 block styles
 	link(href="#{context.url('/resources/css/jquery.treegrid.css')}", rel="stylesheet")
 	link(href="#{context.url('/resources/css/admin.css')}", rel="stylesheet")
+	link(href="#{context.url('/resources/css/admin_categories.css')}", rel="stylesheet")
 
 block content
 	+navbar(false)
@@ -22,7 +23,18 @@ block content
 					table.table.tree#treegrid
 						mixin tree(categories, depth)
 							each category in categories
-								tr(class="treegrid-#{category.id} #{depth>0?'treegrid-parent-'+category.parent:''}")
-									td #{category.name}
+								tr(class="treegrid-#{category.id} #{depth>0?'treegrid-parent-'+category.parent:''}", data-id="#{category.id}", data-parent="#{category.parent}")
+									td
+										span #{category.name}
+										| &nbsp;
+										div.accesory-container
+											a.accesory.dropdown-toggle(data-toggle="dropdown")
+												i.fa.fa-cog
+											ul.dropdown-menu
+												li
+													a.create-subcategory(href="#") Nueva Subcategoria
+												li.separator
+												li
+													a.rename-category(href="#") Renombrar
 								+tree(category.children, depth+1)
 						+tree(categories, 0)

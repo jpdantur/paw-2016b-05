@@ -28,4 +28,7 @@
 	|   |___ /upload/{itemId}
 	|
 	|___+ /admin                         #(AdminController)
+	    |____/dashboard
 	    |____/categories
+	    |____/categories/create
+	    |____/categories/{categoryId}/edit
