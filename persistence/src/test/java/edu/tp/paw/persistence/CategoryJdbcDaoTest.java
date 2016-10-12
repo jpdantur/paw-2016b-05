@@ -32,7 +32,7 @@ public class CategoryJdbcDaoTest {
 	@Before
 	public void setUp() {
 		jdbcTemplate = new JdbcTemplate(ds);
-		JdbcTestUtils.deleteFromTables(jdbcTemplate, "store_categories");
+		JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, "store_categories", "category_id != 0");
 	}
 	
 	@Test
@@ -43,7 +43,7 @@ public class CategoryJdbcDaoTest {
 		
 		assertNotNull(category);
 		assertEquals(categoryBuilder.build(), category);
-		assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, "store_categories"));
+		assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, "store_categories") - 1); //substract root
 	}
 	
 	@Test
@@ -61,7 +61,6 @@ public class CategoryJdbcDaoTest {
 		CategoryBuilder categoryBuilder = new CategoryBuilder("FOO",0);
 		categoryDao.create(categoryBuilder);
 		assertTrue(categoryDao.categoryExists(categoryBuilder.getId()));
-		assertEquals(1, JdbcTestUtils.countRowsInTable(jdbcTemplate, "store_categories"));
 	}
 	
 	@Test
@@ -72,7 +71,7 @@ public class CategoryJdbcDaoTest {
 		CategoryBuilder otherCategoryBuilder = new CategoryBuilder("BAR", categoryBuilder.getParent());
 		Category otherCategory = categoryDao.create(otherCategoryBuilder);
 		List<Category> siblings = categoryDao.getSiblings(category);
-		assertEquals(2, siblings.size());
+		assertEquals(2, siblings.size() - 1); //substract root
 		assertTrue(siblings.contains(otherCategory));
 	}
 	

@@ -13,8 +13,7 @@ create table if not exists users (
 
 -- $2a$10$2780YD5RxxP8TdDuH75OL.HraXvr7oqExc/ZqdCIT7WZ8XtA78eK2 = 'root'
 
-insert into users (user_id, first_name, last_name, username, password, email)
-	select 0, 'Sr.', 'Admin', 'system.admin', '$2a$10$2780YD5RxxP8TdDuH75OL.HraXvr7oqExc/ZqdCIT7WZ8XtA78eK2', 'admin@siglas.com';;
+
 
 create table if not exists store_categories (
 	category_id serial primary key,
@@ -27,6 +26,7 @@ create table if not exists store_categories (
 
 insert into store_categories (category_id, category_name, parent)
 	select 0, 'root', 0;
+
 
 create table if not exists store_items (
 	item_id serial primary key,
@@ -73,9 +73,6 @@ create table if not exists roles (
 	role_slug varchar(100) unique
 );
 
-insert into roles (role_id, role_name, role_slug)
-	select 0, 'root', 'ROOT';
-
 
 create table if not exists user_roles (
 	user_role_id serial primary key,
@@ -83,8 +80,6 @@ create table if not exists user_roles (
 	role_id integer REFERENCES roles
 );
 
-insert into user_roles (user_id, role_id)
-	select 0, 0;
 
 create table if not exists resource (
 	resource_id serial primary key,

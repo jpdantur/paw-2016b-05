@@ -38,12 +38,15 @@ public class CommentJdbcDaoTest {
 	
 	@Autowired
 	private UserJdbcDao userDao;
+	private User user;
 	
 	@Autowired
 	private StoreItemJdbcDao storeItemDao;
+	private StoreItem storeItem;
 	
 	@Autowired
 	private CategoryJdbcDao categoryDao;
+	private Category category;
 	
 
 	private JdbcTemplate jdbcTemplate;
@@ -51,19 +54,33 @@ public class CommentJdbcDaoTest {
 	private static final String COMMENT = "Esto es un comentario";
 
 	private static final String OTHER_COMMENT = "Esto es otro comentario";
+
+	private static final String CATEGORY = "root";
+
+	private static final String USERNAME = "Nombre de usuario";
+
+	private static final String NAME = "Nombre Item";
+
+	private static final String DESCRIPTION = "Descripcion";
+
+	private static final BigDecimal PRICE = new BigDecimal(123);
+
+	private static final boolean USED = false;
 	
 	@Before
 	public void setUp() {
 		jdbcTemplate = new JdbcTemplate(ds);
 		JdbcTestUtils.deleteFromTables(jdbcTemplate, "comments");
+		JdbcTestUtils.deleteFromTables(jdbcTemplate, "store_items");
+		JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, "store_categories", "category_id != 0");
+		JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
+		category = categoryDao.create(new CategoryBuilder(CATEGORY,0));
+		user = userDao.create(new UserBuilder(USERNAME));
+		storeItem = storeItemDao.create(new StoreItemBuilder(NAME, DESCRIPTION, PRICE, category, USED).owner(user));
 	}
 	
 	@Test
-	public void testCreate() {
-		User user = createUser("Create", "create@c.com");
-		Category category = createCategory("Creategory",0);
-		StoreItem storeItem = createItem("ItemCreate","Very Nice",new BigDecimal(123),category,false,user);
-		
+	public void testCreate() {		
 		final Comment comment = commentDao.createComment(user, storeItem, COMMENT);
 		
 		assertNotNull(comment);
@@ -73,9 +90,6 @@ public class CommentJdbcDaoTest {
 	
 	@Test
 	public void testCommentsForItem() {
-		User user = createUser("List", "list@c.com");
-		Category category = createCategory("Listegory",0);
-		StoreItem storeItem = createItem("ItemList","Very Nice",new BigDecimal(123),category,false,user);
 		final Comment comment = commentDao.createComment(user, storeItem, COMMENT);
 		final Comment otherComment = commentDao.createComment(user, storeItem, OTHER_COMMENT);
 		List<Comment> commentList = commentDao.commentsForItem(storeItem);
@@ -83,17 +97,5 @@ public class CommentJdbcDaoTest {
 		assertTrue(commentList.contains(comment));
 		assertTrue(commentList.contains(otherComment));
 		
-	}
-
-	private StoreItem createItem(String name, String description, BigDecimal price, Category category, boolean used, User user) {
-		return storeItemDao.create(new StoreItemBuilder("ItemName","Description",new BigDecimal(123),category,false).owner(user));
-	}
-
-	private User createUser(String username, String email) {
-		return userDao.create(new UserBuilder(username).email(email));
-	}
-
-	private Category createCategory(String name, int parent) {
-		return categoryDao.create(new CategoryBuilder(name,parent));
 	}
 }
