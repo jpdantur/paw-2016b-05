@@ -22,6 +22,7 @@ public interface ICategoryService {
 	public Category findByIdWithTree(final long id);
 	
 	public boolean exists(final long id);
+	public boolean exists(final Category category);
 	
 	/**
 	 * Creates a new category

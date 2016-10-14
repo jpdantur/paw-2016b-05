@@ -93,7 +93,7 @@ public class StoreSellController extends BaseController {
 			@PathVariable("itemId") long itemId,
 			Model model) {
 		
-		final StoreItem item = storeItemService.fetchById(itemId);
+		final StoreItem item = storeItemService.findById(itemId);
 		
 		if (item == null) {
 			throw new StoreItemNotFoundException();

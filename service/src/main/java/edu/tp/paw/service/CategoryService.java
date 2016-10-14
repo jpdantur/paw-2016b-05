@@ -18,14 +18,13 @@ public class CategoryService implements ICategoryService {
 	
 	private static final long ROOT_CATEGORY_ID = 0;
 	
-	@Autowired
-	private ICategoryDao categoryDao;
+	@Autowired private ICategoryDao categoryDao;
 	
 	/* (non-Javadoc)
 	 * @see edu.tp.paw.interfaces.service.ICategoryService#create(java.lang.String, long)
 	 */
 	@Override
-	public Category create(CategoryBuilder builder) {
+	public Category create(final CategoryBuilder builder) {
 		
 		if (builder.getName() == null) {
 			throw new IllegalArgumentException("name cant be null");
@@ -36,7 +35,7 @@ public class CategoryService implements ICategoryService {
 		}
 		
 		if (!exists(builder.getParent())) {
-			throw new IllegalArgumentException("invalid category");
+			throw new IllegalArgumentException("invalid category, parent does not exist");
 		}
 		
 		Category category = categoryDao.create(builder);
@@ -44,8 +43,16 @@ public class CategoryService implements ICategoryService {
 		return category;
 	}
 
-	public boolean exists(long id) {
+	public boolean exists(final long id) {
 		return categoryDao.categoryExists(id);
+	}
+	
+	@Override
+	public boolean exists(final Category category) {
+		if (category == null) {
+			throw new IllegalArgumentException("category cant be null");
+		}
+		return exists(category.getId());
 	}
 	
 	/* (non-Javadoc)
@@ -64,7 +71,7 @@ public class CategoryService implements ICategoryService {
 	@Override
 	public Category findByIdWithTree(long id) {
 		
-		Category category = categoryDao.findById(id);
+		final Category category = categoryDao.findById(id);
 		
 		if (category == null) {
 			return null;
@@ -164,18 +171,30 @@ public class CategoryService implements ICategoryService {
 	}
 
 	@Override
-	public List<Category> getChildren(Category category) {
+	public List<Category> getChildren(final Category category) {
+		
+		if (category == null) {
+			throw new IllegalArgumentException("category cant be null");
+		}
+		
+		if (!exists(category.getId())) {
+			throw new IllegalArgumentException("category must exists");
+		}
 		
 		return categoryDao.getChildren(category);
 		
 	}
 	
 	@Override
-	public List<Category> getChildren(Set<Category> categories) {
+	public List<Category> getChildren(final Set<Category> categories) {
 		
-		List<Category> _categories = new LinkedList<>();
+		if (categories == null) {
+			throw new IllegalArgumentException("categories cant be null");
+		}
 		
-		for (Category category : categories) {
+		final List<Category> _categories = new LinkedList<>();
+		
+		for (final Category category : categories) {
 			_categories.addAll(categoryDao.getChildren(category));
 		}
 		
@@ -196,6 +215,15 @@ public class CategoryService implements ICategoryService {
 
 	@Override
 	public boolean updateCategory(final Category category) {
+		
+		if (category == null) {
+			throw new IllegalArgumentException("category cant be null");
+		}
+		
+		if (!exists(category.getId())) {
+			throw new IllegalArgumentException("category must exist");
+		}
+		
 		return categoryDao.updateCategory(category);
 	}
 	

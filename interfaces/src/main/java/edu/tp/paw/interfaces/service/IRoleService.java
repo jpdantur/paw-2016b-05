@@ -13,6 +13,9 @@ public interface IRoleService {
 	public List<Role> getRoles();
 	public List<Role> getRolesForUser(final User user);
 	
+	public boolean roleExists(final long id);
+	public boolean roleExists(final Role role);
+	
 	public Role createRole(final RoleBuilder builder);
 	
 	public Role findRoleById(final long id);

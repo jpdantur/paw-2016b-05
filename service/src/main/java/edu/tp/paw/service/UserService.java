@@ -66,35 +66,81 @@ public class UserService implements IUserService {
 	}
 
 	@Override
-	public boolean idExists(final long id) {
+	public boolean userExists(final long id) {
 		return userDao.idExists(id);
+	}
+	
+	@Override
+	public boolean userExists(final User user) {
+		if (user == null) {
+			throw new IllegalArgumentException("user cant be null");
+		}
+		return userExists(user.getId());
 	}
 
 	@Override
 	public boolean usernameExists(final String username) {
+		if (username == null) {
+			throw new IllegalArgumentException("username cant be null");
+		}
 		return userDao.usernameExists(username);
 	}
 
 	@Override
 	public boolean emailExists(final String email) {
+		if (email == null) {
+			throw new IllegalArgumentException("email cant be null");
+		}
 		return userDao.emailExists(email);
 	}
 
 	@Override
-	public boolean changePassword(User user, String password) {
+	public boolean changePassword(final User user, final String password) {
+		
+		if (user == null) {
+			throw new IllegalArgumentException("user cant be null");
+		}
+		
+		if (password == null) {
+			throw new IllegalArgumentException("password cant be null");
+		}
+		
+		if (!userExists(user)) {
+			throw new IllegalArgumentException("user must exist");
+		}
 		
 		return userDao.changePassword(user, password);
 	}
 
 	@Override
-	public boolean isUsersPassword(User user, String password) {
+	public boolean isUsersPassword(final User user, final String password) {
+		
+		if (user == null) {
+			throw new IllegalArgumentException("user cant be null");
+		}
+		
+		if (password == null) {
+			throw new IllegalArgumentException("password cant be null");
+		}
+		
+		if (!userExists(user)) {
+			throw new IllegalArgumentException("user must exist");
+		}
 		
 		return passwordEncoder.matches(password, user.getPassword());
 		
 	}
 
 	@Override
-	public List<StoreItem> getFavourites(User user) {
+	public List<StoreItem> getFavourites(final User user) {
+		
+		if (user == null) {
+			throw new IllegalArgumentException("user cant be null");
+		}
+		
+		if (!userExists(user)) {
+			throw new IllegalArgumentException("user must exist");
+		}
 		
 		return itemService.getFavourites(user);
 		
@@ -102,16 +148,51 @@ public class UserService implements IUserService {
 
 	@Override
 	public boolean addFavourite(final User user, final StoreItem item) {
+		
+		if (user == null) {
+			throw new IllegalArgumentException("user cant be null");
+		}
+		
+		if (item == null) {
+			throw new IllegalArgumentException("item cant be null");
+		}
+		
+		if (!userExists(user)) {
+			throw new IllegalArgumentException("user must exist");
+		}
+		
+		if (!itemService.itemExists(item)) {
+			throw new IllegalArgumentException("item must exist");
+		}
+		
 		return userDao.addFavourite(user, item);
 	}
 	
 	@Override
 	public boolean removeFavourite(final User user, final StoreItem item) {
+		
+		if (user == null) {
+			throw new IllegalArgumentException("user cant be null");
+		}
+		
+		if (item == null) {
+			throw new IllegalArgumentException("item cant be null");
+		}
+		
+		if (!userExists(user)) {
+			throw new IllegalArgumentException("user must exist");
+		}
+		
+		if (!itemService.itemExists(item)) {
+			throw new IllegalArgumentException("item must exist");
+		}
+		
 		return userDao.removeFavourite(user, item);
 	}
 
 	@Override
 	public Comment commentOn(final User user, final StoreItem item, final String string) {
+		
 		return commentService.createComment(user, item, string);
 	}
 
@@ -124,11 +205,23 @@ public class UserService implements IUserService {
 	@Transactional
 	public User createUser(final UserBuilder builder, final Role role) {
 		
-		final User user = userDao.create(builder);
-		
-		if (user == null) {
-			// ups
+		if (builder == null) {
+			throw new IllegalArgumentException("user cant be null");
 		}
+		
+		if (role == null) {
+			throw new IllegalArgumentException("role cant be null");
+		}
+		
+		if (!userExists(builder.getId())) {
+			throw new IllegalArgumentException("user must exist");
+		}
+		
+		if (!roleService.roleExists(role)) {
+			throw new IllegalArgumentException("role must exist");
+		}
+		
+		final User user = userDao.create(builder);
 		
 		if (userDao.addRole(user, role)) {
 			return user;
@@ -139,11 +232,37 @@ public class UserService implements IUserService {
 
 	@Override
 	public List<Role> getRoles(final User user) {
+		
+		if (user == null) {
+			throw new IllegalArgumentException("user cant be null");
+		}
+		
+		if (!userExists(user)) {
+			throw new IllegalArgumentException("user must exist");
+		}
+		
 		return roleService.getRolesForUser(user);
 	}
 
 	@Override
 	public boolean addRole(final User user, final Role role) {
+		
+		if (user == null) {
+			throw new IllegalArgumentException("user cant be null");
+		}
+		
+		if (role == null) {
+			throw new IllegalArgumentException("role cant be null");
+		}
+		
+		if (!userExists(user)) {
+			throw new IllegalArgumentException("user must exist");
+		}
+		
+		if (!roleService.roleExists(role)) {
+			throw new IllegalArgumentException("role must exist");
+		}
+		
 		return userDao.addRole(user, role);
 	}
 

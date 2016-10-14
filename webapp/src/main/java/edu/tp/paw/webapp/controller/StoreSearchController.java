@@ -102,7 +102,7 @@ public class StoreSearchController extends BaseController {
 		
 		final ModelAndView modelAndView = new ModelAndView("product");
 		
-		final StoreItem storeItem = storeItemService.fetchById(id);
+		final StoreItem storeItem = storeItemService.findById(id);
 		
 		if (storeItem == null) {
 			throw new StoreItemNotFoundException();

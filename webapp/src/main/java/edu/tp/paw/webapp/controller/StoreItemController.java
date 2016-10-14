@@ -43,7 +43,7 @@ public class StoreItemController extends BaseController {
 			final BindingResult result,
 			final Model model) {
 		
-		final StoreItem item = itemService.fetchById(id);
+		final StoreItem item = itemService.findById(id);
 		
 		if (item == null) {
 			throw new StoreItemNotFoundException();
@@ -101,7 +101,7 @@ public class StoreItemController extends BaseController {
 		
 		if (!result.hasErrors()) {
 			
-			final StoreItem item = itemService.fetchById(id);
+			final StoreItem item = itemService.findById(id);
 			
 			if (item == null) {
 				//algo salio mal
@@ -126,7 +126,7 @@ public class StoreItemController extends BaseController {
 			@ModelAttribute("loggedUser") final User user
 			) {
 		
-		final StoreItem item = itemService.fetchById(id);
+		final StoreItem item = itemService.findById(id);
 		
 		if (item == null) {
 			return "{\"err\":3 }";
@@ -147,7 +147,7 @@ public class StoreItemController extends BaseController {
 			@ModelAttribute("loggedUser") final User user
 			) {
 		
-		final StoreItem item = itemService.fetchById(id);
+		final StoreItem item = itemService.findById(id);
 		
 		if (item == null) {
 			return "{\"err\":3 }";

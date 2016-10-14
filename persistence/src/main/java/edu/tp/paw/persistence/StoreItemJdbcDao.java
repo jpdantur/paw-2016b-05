@@ -420,5 +420,23 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 						user.getId());
 	}
 
+	@Override
+	public boolean itemExists(long id) {
+		return
+				jdbcTemplate
+				.getJdbcOperations()
+				.queryForObject(
+						"select count(*) "
+						+ "from store_items "
+						+ "where item_id=?",
+						Integer.class,
+						id) > 0;
+	}
+
+	@Override
+	public boolean itemExists(StoreItem item) {
+		return itemExists(item.getId());
+	}
+
 
 }

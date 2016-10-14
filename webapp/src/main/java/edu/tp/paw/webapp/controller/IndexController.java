@@ -23,10 +23,20 @@ public class IndexController extends BaseController {
 		
 		final ModelAndView modelAndView = new ModelAndView("index");
 		
-		modelAndView.addObject("mostSoldItems", storeItemService.fetchMostSold(MOST_SOLD_ITEMS));
+		modelAndView.addObject("mostSoldItems", storeItemService.getMostSold(MOST_SOLD_ITEMS));
 		modelAndView.addObject("categories", categoryService.getCategoryTree());
 		
 		return modelAndView;
+	}
+	
+	@RequestMapping("/403")
+	public String forbidden() {
+		return "403";
+	}
+	
+	@RequestMapping("/404")
+	public String notFound() {
+		return "404";
 	}
 
 }

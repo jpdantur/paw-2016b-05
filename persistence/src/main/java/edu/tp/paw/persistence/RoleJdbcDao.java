@@ -115,4 +115,21 @@ public class RoleJdbcDao implements IRoleDao {
 						user.getId());
 	}
 
+	@Override
+	public boolean roleExists(final long id) {
+		return
+				jdbcTemplate
+				.queryForObject(
+						"select count(*) "
+						+ "from roles "
+						+ "where role_id=?",
+						Integer.class,
+						id) > 0;
+	}
+
+	@Override
+	public boolean roleExists(final Role role) {
+		return roleExists(role.getId());
+	}
+
 }

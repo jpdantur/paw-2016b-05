@@ -17,7 +17,10 @@ public interface IStoreItemService {
 	 * @param id id of the StoreItem
 	 * @return the StoreItem with id
 	 */
-	public StoreItem fetchById(final long id);	
+	public StoreItem findById(final long id);	
+	
+	public boolean itemExists(final long id);
+	public boolean itemExists(final StoreItem item);
 	
 	/**
 	 * Create a new StoreItem
@@ -33,7 +36,7 @@ public interface IStoreItemService {
 	 * @param n The number of items to find
 	 * @return A list of the most sold items
 	 */
-	public List<StoreItem> fetchMostSold(final int n);
+	public List<StoreItem> getMostSold(final int n);
 	
 	public PagedResult<StoreItem> findByFiltering(final Filter filter);
 	public PagedResult<StoreItem> findByFiltering(final FilterBuilder filter);

@@ -55,4 +55,7 @@ public interface IStoreItemDao {
 	
 	public List<StoreItem> getFavourites(final User user);
 	
+	public boolean itemExists(final long id);
+	public boolean itemExists(final StoreItem item);
+	
 }

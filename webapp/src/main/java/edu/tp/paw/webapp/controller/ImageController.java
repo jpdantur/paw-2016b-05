@@ -87,7 +87,7 @@ public class ImageController extends BaseController {
 				final String mimeType = file.getContentType();
 				final byte[] bytes = file.getBytes();
 				
-				final StoreItem item = itemService.fetchById(id);
+				final StoreItem item = itemService.findById(id);
 				
 				if (item == null) {
 					throw new StoreItemNotFoundException();

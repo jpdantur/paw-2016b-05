@@ -18,7 +18,8 @@ public interface IUserService {
 	public User findById(final long id);
 	public User findByUsername(final String username);
 	
-	boolean idExists(final long id);
+	boolean userExists(final User user);
+	boolean userExists(final long id);
 	boolean usernameExists(final String username);
 	boolean emailExists(final String email);
 	

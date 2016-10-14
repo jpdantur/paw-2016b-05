@@ -13,6 +13,9 @@ public interface IRoleDao {
 	public Role findRoleById(final long id);
 	public Role findRoleBySlug(final String slug);
 	
+	public boolean roleExists(final long id);
+	public boolean roleExists(final Role role);
+	
 	public List<Role> getAll();
 	public List<Role> getForUser(final User user);
 	

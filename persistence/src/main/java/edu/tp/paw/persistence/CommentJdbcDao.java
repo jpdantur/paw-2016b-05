@@ -59,11 +59,9 @@ public class CommentJdbcDao implements ICommentDao {
 	}
 	
 	@Override
-	public Comment createComment(final User user, final StoreItem item, final String comment) {
-
-			
+	public Comment createComment(final CommentBuilder builder) {
+		
 		final Map<String, Object> args = new HashMap<>();
-		final CommentBuilder builder = new CommentBuilder(user, comment).item(item);
 			
 		args.put("item_id", builder.getItem().getId());
 		args.put("user_id", builder.getUser().getId());
@@ -76,12 +74,6 @@ public class CommentJdbcDao implements ICommentDao {
 				.timestamp(new Timestamp((new Date()).getTime()))
 				.id(commentId.longValue())
 				.build();
-	}
-	
-	@Override
-	public Comment createComment(CommentBuilder builder) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
