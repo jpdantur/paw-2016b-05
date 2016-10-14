@@ -42,11 +42,15 @@ block content
 								+categories(categories)
 							+errors(bindingResult, 'category')
 					div.form-group(class="#{bindingResult.hasFieldErrors('used')?'has-error':''}")
-						div.col-sm-10.col-sm-offset-2
-							div.checkbox
-								label
-									input(type="checkbox", id="used", name="used", value="#{item.used?item.used:''}")
-									span #{messageSource.getMessage('sell.field.used',[],locale)}
+						label.col-sm-2.control-label(for="used") #{messageSource.getMessage('sell.field.status',[],locale)}
+						div.col-sm-10
+							div.btn-group(data-toggle="buttons")
+								label.btn.btn-primary(class="#{item.used?'active':''}")
+									input(type="radio", name="used", id="used", value="1", checked=item.used)
+									span Usado
+								label.btn.btn-primary(class="#{item.used?'':'active'}")
+									input(type="radio", name="used", value="0", checked=!item.used)
+									span Nuevo
 							+errors(bindingResult, 'used')
 					div.form-group
 						div.col-sm-2.col-sm-offset-2
