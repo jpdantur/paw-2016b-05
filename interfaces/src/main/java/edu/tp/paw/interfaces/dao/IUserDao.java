@@ -1,5 +1,8 @@
 package edu.tp.paw.interfaces.dao;
 
+import java.util.List;
+
+import edu.tp.paw.model.Role;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
@@ -34,5 +37,9 @@ public interface IUserDao {
 	boolean removeFavourite(final User user, final StoreItem item);
 	
 	int getNumberOfUsers();
+	
+	public boolean addRole(final User user, final Role role);
+	
+	public List<User> getAll();
 	
 }

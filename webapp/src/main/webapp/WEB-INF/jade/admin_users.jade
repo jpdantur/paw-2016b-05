@@ -1,0 +1,38 @@
+extends layout
+
+block scripts
+
+block styles
+	link(href="#{context.url('/resources/css/admin.css')}", rel="stylesheet")
+
+block content
+	+navbar(false)
+	div.container-fluid
+		div.row
+			div.col-sm-3
+				include partials/admin_sidebar
+			div.col-sm-9
+				h1 Usuarios
+					a.pull-right(href="#{context.url('/admin/users/create')}")
+						i.fa.fa-plus
+						span &nbsp;Agregar
+				div.row
+					table.table.table-striped
+						thead
+							tr
+								th id
+								th Nombre
+								th Apellido
+								th Usuario
+								th Email
+								th Roles
+						tbody
+							each user in users
+								tr
+									td #{user.id}
+									td #{user.firstName}
+									td #{user.lastName}
+									td #{user.username}
+									td #{user.email}
+									td
+										a(href="#{context.url('/admin/users/'+user.id+'/roles')}") Editar Roles

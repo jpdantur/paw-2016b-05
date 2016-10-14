@@ -19,6 +19,7 @@ import org.springframework.stereotype.Repository;
 import edu.tp.paw.interfaces.dao.IUserDao;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.CategoryBuilder;
+import edu.tp.paw.model.Role;
 import edu.tp.paw.model.StoreImage;
 import edu.tp.paw.model.StoreImageBuilder;
 import edu.tp.paw.model.StoreItem;
@@ -164,6 +165,15 @@ public class UserJdbcDao implements IUserDao {
 		return userList.isEmpty() ? null : userList.get(0);
 	}
 	
+	@Override
+	public List<User> getAll() {
+		return
+			jdbcTemplate
+			.query(
+					"select * from users",
+					rowMapper);
+	}
+	
 	/* (non-Javadoc)
 	 * @see edu.tp.paw.interfaces.dao.IUserDao#create(java.lang.String)
 	 */
@@ -239,6 +249,17 @@ public class UserJdbcDao implements IUserDao {
 	@Override
 	public int getNumberOfUsers() {
 		return jdbcTemplate.queryForObject("select count(*) from users", Integer.class);
+	}
+
+	@Override
+	public boolean addRole(final User user, final Role role) {
+		
+		return
+				jdbcTemplate
+				.update(
+					"insert into user_roles (role_id, user_id) values (?, ?)",
+					role.getId(),
+					user.getId()) == 1;
 	}
 
 }

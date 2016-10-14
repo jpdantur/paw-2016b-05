@@ -1,0 +1,37 @@
+extends layout
+
+block scripts
+
+block styles
+	link(href="#{context.url('/resources/css/admin.css')}", rel="stylesheet")
+
+block content
+	+navbar(false)
+	div.container-fluid
+		div.row
+			div.col-sm-3
+				include partials/admin_sidebar
+			div.col-sm-9
+				h1 Roles&nbsp;
+					a.pull-right(href="#{context.url('/admin/roles/create')}")
+						i.fa.fa-plus
+						span &nbsp;Agregar
+				div.row
+					table.table.table-striped
+						thead
+							tr
+								th Nombre
+								th Slug
+								th Por defecto
+						tbody
+							each role in roles
+								tr
+									td #{role.roleName}
+									td #{role.slug}
+									td
+										if role.isDefault()
+											i.text-success.fa.fa-check
+										else
+											a.text-muted(href="#", title="Hacer por defecto")
+												i.fa.fa-minus
+

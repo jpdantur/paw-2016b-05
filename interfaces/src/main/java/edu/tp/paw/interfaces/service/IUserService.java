@@ -3,6 +3,7 @@ package edu.tp.paw.interfaces.service;
 import java.util.List;
 
 import edu.tp.paw.model.Comment;
+import edu.tp.paw.model.Role;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
@@ -29,6 +30,8 @@ public interface IUserService {
 	 */
 	public User registerUser(final UserBuilder builder);
 	
+	public User createUser(final UserBuilder builder, final Role role);
+	
 	public boolean changePassword(final User user, final String password);
 	
 	public boolean isUsersPassword(final User user, final String password);
@@ -41,5 +44,10 @@ public interface IUserService {
 	public Comment commentOn(final User user, final StoreItem item, final String string);
 	
 	public int getNumberOfUsers();
+	
+	public List<Role> getRoles(final User user);
+	public boolean addRole(final User user, final Role role);
+	
+	public List<User> getAllUsers();
 	
 }

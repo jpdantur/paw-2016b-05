@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import edu.tp.paw.interfaces.dao.ICommentDao;
 import edu.tp.paw.interfaces.service.ICommentService;
 import edu.tp.paw.model.Comment;
+import edu.tp.paw.model.CommentBuilder;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.User;
 
@@ -21,6 +22,12 @@ public class CommentService implements ICommentService {
 		return commentDao.createComment(user, item, comment);
 	}
 
+	@Override
+	public Comment createComment(final CommentBuilder builder) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+	
 	@Override
 	public List<Comment> commentsForItem(final StoreItem item) {
 		return commentDao.commentsForItem(item);

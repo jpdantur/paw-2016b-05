@@ -77,12 +77,18 @@ create table if not exists roles (
 	role_id serial primary key,
 	role_name varchar(100),
 	role_slug varchar(100),
+	default_role boolean default false,
 	constraint unique_role_slug unique(role_slug)
 );
 
-insert into roles (role_id, role_name, role_slug)
-	select 0, 'root', 'ROOT' where not exists (
+insert into roles (role_id, role_name, role_slug, default_role)
+	select 0, 'root', 'ROOT', false where not exists (
 		select * from roles where role_slug = 'ROOT'
+	);
+
+insert into roles (role_id, role_name, role_slug, default_role)
+	select 1, 'Store User', 'USER', true where not exists (
+		select * from roles where role_slug = 'USER'
 	);
 
 
@@ -93,7 +99,7 @@ create table if not exists user_roles (
 	constraint user_fk foreign key (user_id) references users,
 	constraint role_fk foreign key (role_id) references roles
 );
-
+-- user with id=0  has role ROOT
 insert into user_roles (user_id, role_id)
 	select 0, 0 where not exists (
 		select * from user_roles where user_id = 0 and role_id = 0

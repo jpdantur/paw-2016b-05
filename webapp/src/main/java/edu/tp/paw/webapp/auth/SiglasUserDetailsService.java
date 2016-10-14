@@ -2,6 +2,7 @@ package edu.tp.paw.webapp.auth;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,10 +38,10 @@ public class SiglasUserDetailsService implements UserDetailsService {
 		
 		logger.debug("found {}", user);
 		
-		final Collection<? extends GrantedAuthority> authorities = Arrays.asList(
-				new SimpleGrantedAuthority("ROLE_USER"),
-				new SimpleGrantedAuthority("ROLE_ADMIN")
-		);
+		final Collection<? extends GrantedAuthority> authorities = 
+				userService.getRoles(user).stream().map( v -> {
+					return new SimpleGrantedAuthority(String.format("ROLE_%s", v.getSlug()));
+				}).collect(Collectors.toList());
 		
 		return new org.springframework.security.core.userdetails.User(username, user.getPassword(), authorities);
 	}

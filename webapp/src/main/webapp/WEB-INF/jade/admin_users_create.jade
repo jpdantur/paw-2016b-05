@@ -1,0 +1,58 @@
+extends layout
+
+block scripts
+
+block styles
+	link(href="#{context.url('/resources/css/admin.css')}", rel="stylesheet")
+
+block content
+	+navbar(false)
+	div.container-fluid
+		div.row
+			div.col-sm-3
+				include partials/admin_sidebar
+			div.col-sm-9
+				h1 Crear Usuario
+				div.row
+					div.col-sm-11
+						form.form-horizontal(action="#{context.url('/admin/users/create')}", method="POST")
+							div.form-group(class="#{result.hasFieldErrors('firstName')?'has-error':''}")
+								label.control-label.col-sm-2(for="firstName") Nombre
+								div.col-sm-10
+									input.form-control#firstName(type="text", placeholder="Nombre", name="firstName", value="#{user.firstName?user.firstName:''}")
+									+errors(result, 'firstName')
+							div.form-group(class="#{result.hasFieldErrors('lastName')?'has-error':''}")
+								label.control-label.col-sm-2(for="lastName") Apellido
+								div.col-sm-10
+									input.form-control#lastName(type="text", placeholder="Apellido", name="lastName", value="#{user.lastName?user.lastName:''}")
+									+errors(result, 'lastName')
+							div.form-group(class="#{result.hasFieldErrors('email')?'has-error':''}")
+								label.control-label.col-sm-2(for="email") Email
+								div.col-sm-10
+									input.form-control#email(type="text", placeholder="Email", name="email", value="#{user.email?user.email:''}")
+									+errors(result, 'email')
+							div.form-group(class="#{result.hasFieldErrors('username')?'has-error':''}")
+								label.control-label.col-sm-2(for="username") Usuario
+								div.col-sm-10
+									input.form-control#username(type="text", placeholder="Usuario", name="username", value="#{user.username?user.username:''}")
+									+errors(result, 'username')
+							div.form-group(class="#{result.hasFieldErrors('password')?'has-error':''}")
+								label.control-label.col-sm-2(for="password") Password
+								div.col-sm-10
+									input.form-control#password(type="password", placeholder="Password", name="password", value="#{user.password?user.password:''}")
+									+errors(result, 'password')
+							div.form-group(class="#{result.hasFieldErrors('repeatPassword')?'has-error':''}")
+								label.control-label.col-sm-2(for="repeatPassword") Repeat Password
+								div.col-sm-10
+									input.form-control#repeatPassword(type="password", placeholder="Repeat Password", name="repeatPassword", value="#{user.repeatPassword?user.repeatPassword:''}")
+									+errors(result, 'repeatPassword')
+							div.form-group(class="#{result.hasFieldErrors('role')?'has-error':''}")
+								label.control-label.col-sm-2(for="role") Rol Principal
+								div.col-sm-10
+									select.form-control#role(name="role")
+										each role in roles
+											option(value="#{role.id}") #{role.roleName}
+									+errors(result, 'role')
+							div.form-group
+									div.col-sm-12
+										button.btn.btn-success.btn-block(type="submit") Crear Usuario

@@ -77,6 +77,12 @@ public class CommentJdbcDao implements ICommentDao {
 				.id(commentId.longValue())
 				.build();
 	}
+	
+	@Override
+	public Comment createComment(CommentBuilder builder) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 	@Override
 	public List<Comment> commentsForItem(final StoreItem item) {

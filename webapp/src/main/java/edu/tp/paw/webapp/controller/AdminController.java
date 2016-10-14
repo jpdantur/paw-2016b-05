@@ -1,5 +1,7 @@
 package edu.tp.paw.webapp.controller;
 
+import java.util.List;
+
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -15,11 +17,19 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import edu.tp.paw.interfaces.service.ICategoryService;
+import edu.tp.paw.interfaces.service.IRoleService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.CategoryBuilder;
+import edu.tp.paw.model.Role;
+import edu.tp.paw.model.RoleBuilder;
+import edu.tp.paw.model.User;
+import edu.tp.paw.model.UserBuilder;
+import edu.tp.paw.webapp.exceptions.StoreItemNotFoundException;
 import edu.tp.paw.webapp.form.CategoryForm;
+import edu.tp.paw.webapp.form.CreateUserForm;
+import edu.tp.paw.webapp.form.RoleForm;
 
 @Controller
 @RequestMapping("/admin")
@@ -30,9 +40,10 @@ public class AdminController extends BaseController {
 	@Autowired private IStoreItemService storeItemService;
 	@Autowired private ICategoryService categoryService;
 	@Autowired private IUserService userService;
+	@Autowired private IRoleService roleService;
 	
 	
-	@RequestMapping("/dashboard")
+	@RequestMapping({"","/dashboard"})
 	public String index(final Model model) {
 		
 		model.addAttribute("numberOfItems", storeItemService.getNumberOfItems());
@@ -145,5 +156,161 @@ public class AdminController extends BaseController {
 		
 		return "edit_category";
 	}
+	
+	@RequestMapping("/users")
+	public String users(final Model model) {
+		
+		model.addAttribute("users", userService.getAllUsers());
+		
+		
+		return "admin_users";
+	}
+	
+	@RequestMapping( value = "/users/create", method = RequestMethod.GET)
+	public String usersCreate(
+			@ModelAttribute("createRoleForm") final CreateUserForm form,
+			final BindingResult result,
+			final Model model) {
+		
+		model.addAttribute("user", form);
+		model.addAttribute("result", result);
+		model.addAttribute("roles", roleService.getRoles());
+		
+		return "admin_users_create";
+	}
+	
+	@RequestMapping( value = "/users/create", method = RequestMethod.POST)
+	public String usersCreateSubmit(
+			@Valid @ModelAttribute("createRoleForm") final CreateUserForm form,
+			final BindingResult result,
+			final Model model) {
+		
+		if (!result.hasErrors()) {
+			
+			final UserBuilder builder = new UserBuilder(
+					form.getUsername()
+				)
+				.firstName(form.getFirstName())
+				.lastName(form.getLastName())
+				.email(form.getEmail())
+				.password(form.getPassword());
+			
+			final Role role = roleService.findRoleById(form.getRole());
+			
+			if (role == null) {
+				// ups
+			}
+			
+			final User user = userService.createUser(builder, role);
+			
+			if (role == null) {
+				//ups
+			}
+			
+			return "redirect:/admin/users";
+		}
+		
+		model.addAttribute("user", form);
+		model.addAttribute("result", result);
+		model.addAttribute("roles", roleService.getRoles());
+		
+		return "admin_users_create";
+	}
+	
+	@RequestMapping( value = "/users/{userId}/roles", method = RequestMethod.GET)
+	public String userRoles(
+			@PathVariable("userId") final long id,
+			@RequestParam( value = "s", required = false) final boolean success,
+			@RequestParam( value = "e", required = false) final boolean error,
+			final Model model) {
+		
+		final User user = userService.findById(id);
+		
+		if (user == null) {
+			throw new StoreItemNotFoundException();
+		}
+		
+		final List<Role> roles = userService.getRoles(user);
+		
+		model.addAttribute("user", user);
+		model.addAttribute("roles", roles);
+		model.addAttribute("allRoles", roleService.getRoles());
+		model.addAttribute("success", success);
+		model.addAttribute("error", error);
+		
+		return "admin_users_roles";
+	}
+	
+	@RequestMapping( value = "/users/{userId}/roles", method = RequestMethod.POST)
+	public String userRolesAdd(
+			@PathVariable("userId") final long id,
+			@RequestParam("role") final long roleId, 
+			final Model model) {
+		
+		final User user = userService.findById(id);
+		
+		if (user == null) {
+			throw new StoreItemNotFoundException();
+		}
+		
+		final Role role = roleService.findRoleById(roleId);
+		
+		if (userService.addRole(user, role)) {
+			
+			return "redirect:/admin/users/"+user.getId()+"/roles?s=1";
+			
+		} else {
+			// ups
+			
+			return "redirect:/admin/users/"+user.getId()+"/roles?e=1";
+		}
+	}
+	
+	@RequestMapping("/roles")
+	public String roles(final Model model) {
+		
+		model.addAttribute("roles", roleService.getRoles());
+		
+		
+		return "admin_roles";
+	}
+	
+	@RequestMapping( value = "/roles/create", method = RequestMethod.GET)
+	public String roles(
+			@ModelAttribute("createRoleForm") final RoleForm form,
+			final BindingResult result,
+			final Model model) {
+		
+		model.addAttribute("role", form);
+		model.addAttribute("result", result);
+		
+		return "admin_roles_create";
+	}
+	
+	@RequestMapping( value = "/roles/create", method = RequestMethod.POST)
+	public String rolesSubmit(
+			@Valid @ModelAttribute("createRoleForm") final RoleForm form,
+			final BindingResult result,
+			final Model model) {
+		
+		if (!result.hasErrors()) {
+			
+			final RoleBuilder roleBuilder = new RoleBuilder(form.getName(), form.getSlug());
+			final Role role = roleService.createRole(roleBuilder);
+			
+			if (role == null) {
+				//ups
+			}
+			
+			return "redirect:/admin/roles";
+		}
+		
+		model.addAttribute("role", form);
+		model.addAttribute("result", result);
+		
+		return "admin_roles_create";
+	}
+	
+	
 
 }

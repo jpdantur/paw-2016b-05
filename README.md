@@ -28,7 +28,12 @@
 	|   |___ /upload/{itemId}
 	|
 	|___+ /admin                         #(AdminController)
-	    |____/dashboard
-	    |____/categories
-	    |____/categories/create
-	    |____/categories/{categoryId}/edit
+	    |____ /dashboard
+	    |____ /categories
+	    |    |__ /create
+	    |    |__ /{categoryId}/edit
+	    |____ /users
+	    |    |__ /{userId}/roles
+	    |
+	    |____ /roles
+	         |__ /create

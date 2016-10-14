@@ -5,12 +5,15 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import edu.tp.paw.interfaces.dao.IUserDao;
 import edu.tp.paw.interfaces.service.ICommentService;
+import edu.tp.paw.interfaces.service.IRoleService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.Comment;
+import edu.tp.paw.model.Role;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
@@ -22,6 +25,7 @@ public class UserService implements IUserService {
 	@Autowired private IUserDao userDao;
 	@Autowired private IStoreItemService itemService;
 	@Autowired private ICommentService commentService;
+	@Autowired private IRoleService roleService;
 	
 	@Autowired private PasswordEncoder passwordEncoder;
 	
@@ -114,6 +118,39 @@ public class UserService implements IUserService {
 	@Override
 	public int getNumberOfUsers() {
 		return userDao.getNumberOfUsers();
+	}
+
+	@Override
+	@Transactional
+	public User createUser(final UserBuilder builder, final Role role) {
+		
+		final User user = userDao.create(builder);
+		
+		if (user == null) {
+			// ups
+		}
+		
+		if (userDao.addRole(user, role)) {
+			return user;
+		}
+		
+		return null;
+	}
+
+	@Override
+	public List<Role> getRoles(final User user) {
+		return roleService.getRolesForUser(user);
+	}
+
+	@Override
+	public boolean addRole(final User user, final Role role) {
+		return userDao.addRole(user, role);
+	}
+
+	@Override
+	public List<User> getAllUsers() {
+		
+		return userDao.getAll();
 	}
 
 	
