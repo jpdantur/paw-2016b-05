@@ -8,39 +8,39 @@ block content
 				div.well
 					form.form-horizontal(action="#{context.url('/auth/register')}", method="POST")
 						div.form-group(class="#{result.hasFieldErrors('firstName')?'has-error':''}")
-							label.control-label.col-sm-3(for="firstName") Nombre
+							label.control-label.col-sm-3(for="firstName") #{messageSource.getMessage('register.form.name', [], locale)}
 							div.col-sm-9
-								input.form-control#firstName(type="text", placeholder="Nombre", name="firstName", value="#{user.firstName?user.firstName:''}")
+								input.form-control#firstName(type="text", placeholder="#{messageSource.getMessage('register.form.name', [], locale)}", name="firstName", value="#{user.firstName?user.firstName:''}")
 								+errors(result, 'firstName')
 						div.form-group(class="#{result.hasFieldErrors('lastName')?'has-error':''}")
-							label.control-label.col-sm-3(for="lastName") Apellido
+							label.control-label.col-sm-3(for="lastName") #{messageSource.getMessage('register.form.surname', [], locale)}
 							div.col-sm-9
-								input.form-control#lastName(type="text", placeholder="Apellido", name="lastName", value="#{user.lastName?user.lastName:''}")
+								input.form-control#lastName(type="text", placeholder="#{messageSource.getMessage('register.form.surname', [], locale)}", name="lastName", value="#{user.lastName?user.lastName:''}")
 								+errors(result, 'lastName')
 						div.form-group(class="#{result.hasFieldErrors('email')?'has-error':''}")
-							label.control-label.col-sm-3(for="email") Email
+							label.control-label.col-sm-3(for="email") #{messageSource.getMessage('register.form.mail', [], locale)}
 							div.col-sm-9
-								input.form-control#email(type="text", placeholder="Email", name="email", value="#{user.email?user.email:''}")
+								input.form-control#email(type="text", placeholder="#{messageSource.getMessage('register.form.mail', [], locale)}", name="email", value="#{user.email?user.email:''}")
 								+errors(result, 'email')
 						div.form-group(class="#{result.hasFieldErrors('username')?'has-error':''}")
-							label.control-label.col-sm-3(for="username") Usuario
+							label.control-label.col-sm-3(for="username") #{messageSource.getMessage('login.field.user', [], locale)}
 							div.col-sm-9
-								input.form-control#username(type="text", placeholder="Usuario", name="username", value="#{user.username?user.username:''}")
+								input.form-control#username(type="text", placeholder="#{messageSource.getMessage('login.field.user', [], locale)}", name="username", value="#{user.username?user.username:''}")
 								+errors(result, 'username')
 						div.form-group(class="#{result.hasFieldErrors('password')?'has-error':''}")
-							label.control-label.col-sm-3(for="password") Password
+							label.control-label.col-sm-3(for="password") #{messageSource.getMessage('login.field.password', [], locale)}
 							div.col-sm-9
-								input.form-control#password(type="password", placeholder="Password", name="password", value="#{user.password?user.password:''}")
+								input.form-control#password(type="password", placeholder="#{messageSource.getMessage('login.field.password', [], locale)}", name="password", value="#{user.password?user.password:''}")
 								+errors(result, 'password')
 						div.form-group(class="#{result.hasFieldErrors('repeatPassword')?'has-error':''}")
-							label.control-label.col-sm-3(for="repeatPassword") Repeat Password
+							label.control-label.col-sm-3(for="repeatPassword") #{messageSource.getMessage('register.form.repeatPassword', [], locale)}
 							div.col-sm-9
-								input.form-control#repeatPassword(type="password", placeholder="Repeat Password", name="repeatPassword", value="#{user.repeatPassword?user.repeatPassword:''}")
+								input.form-control#repeatPassword(type="password", placeholder="#{messageSource.getMessage('register.form.repeatPassword', [], locale)}", name="repeatPassword", value="#{user.repeatPassword?user.repeatPassword:''}")
 								+errors(result, 'repeatPassword')
 						div.form-group
 								div.col-sm-12
-									button.btn.btn-success.btn-block(type="submit") Crear Cuenta
+									button.btn.btn-success.btn-block(type="submit") #{messageSource.getMessage('register.form.createAccount', [], locale)}
 						div.form-group
 							div.col-sm-12
-								span Ya tiene una cuenta?&nbsp;
-								a(href="#{context.url('/auth/login')}") Ingrese Aqui
+								span #{messageSource.getMessage('register.form.hasAccount', [], locale)}&nbsp;
+								a(href="#{context.url('/auth/login')}") #{messageSource.getMessage('register.form.login', [], locale)}
