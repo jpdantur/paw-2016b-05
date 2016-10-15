@@ -80,18 +80,21 @@ public class CommentJdbcDaoTest {
 	}
 	
 	@Test
-	public void testCreate() {		
-		final Comment comment = commentDao.createComment(user, storeItem, COMMENT);
+	public void testCreate() {
+		CommentBuilder commentBuilder = new CommentBuilder(user, COMMENT).item(storeItem);
+		final Comment comment = commentDao.createComment(commentBuilder);
 		
 		assertNotNull(comment);
-		assertEquals(new CommentBuilder(user,COMMENT).item(storeItem).id(comment.getId()).build(),comment);
+		assertEquals(commentBuilder.build(),comment);
 		
 	}
 	
 	@Test
 	public void testCommentsForItem() {
-		final Comment comment = commentDao.createComment(user, storeItem, COMMENT);
-		final Comment otherComment = commentDao.createComment(user, storeItem, OTHER_COMMENT);
+		CommentBuilder commentBuilder = new CommentBuilder(user,COMMENT).item(storeItem);
+		CommentBuilder otherBuilder = new CommentBuilder(user,OTHER_COMMENT).item(storeItem);
+		final Comment comment = commentDao.createComment(commentBuilder);
+		final Comment otherComment = commentDao.createComment(otherBuilder);
 		List<Comment> commentList = commentDao.commentsForItem(storeItem);
 		assertEquals(2,commentList.size());
 		assertTrue(commentList.contains(comment));
