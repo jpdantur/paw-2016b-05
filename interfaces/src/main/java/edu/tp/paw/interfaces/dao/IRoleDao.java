@@ -19,4 +19,6 @@ public interface IRoleDao {
 	public List<Role> getAll();
 	public List<Role> getForUser(final User user);
 	
+	public Role getDefaultRole();
+	
 }

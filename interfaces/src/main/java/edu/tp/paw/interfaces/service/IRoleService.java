@@ -21,4 +21,6 @@ public interface IRoleService {
 	public Role findRoleById(final long id);
 	public Role findRoleBySlug(final String slug);
 	
+	public Role getDefaultRole();
+	
 }

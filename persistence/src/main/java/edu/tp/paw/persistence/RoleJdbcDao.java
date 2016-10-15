@@ -132,4 +132,18 @@ public class RoleJdbcDao implements IRoleDao {
 		return roleExists(role.getId());
 	}
 
+	@Override
+	public Role getDefaultRole() {
+		
+		List<Role> roleList =
+				jdbcTemplate
+				.query(
+						"select * from roles "
+						+ "where default_role=true",
+						rowMapper);
+		
+		return roleList.isEmpty() ? null : roleList.get(0);
+		
+	}
+
 }

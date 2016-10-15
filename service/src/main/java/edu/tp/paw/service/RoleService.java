@@ -74,6 +74,11 @@ public class RoleService implements IRoleService {
 		return roleExists(role.getId());
 	}
 
+	@Override
+	public Role getDefaultRole() {
+		return roleDao.getDefaultRole();
+	}
+
 	
 
 }

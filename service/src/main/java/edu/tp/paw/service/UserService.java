@@ -62,7 +62,7 @@ public class UserService implements IUserService {
 		}
 		
 		builder.password(passwordEncoder.encode(builder.getPassword()));
-		return userDao.create(builder);
+		return createUser(builder, roleService.getDefaultRole());
 	}
 
 	@Override
