@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.servlet.ModelAndView;
 
+import edu.tp.paw.webapp.exceptions.CategoryNotFoundException;
 import edu.tp.paw.webapp.exceptions.StoreItemNotFoundException;
 
 @ControllerAdvice
@@ -22,6 +23,19 @@ public class ExceptionHandlingController extends BaseController {
 	@ExceptionHandler(StoreItemNotFoundException.class)
 	@ResponseStatus(value = HttpStatus.NOT_FOUND) // 404
 	public ModelAndView noSuchItem() {
+		
+		ModelAndView mav = new ModelAndView("404");
+		
+		mav.addObject("locale", currentLocale());
+		mav.addObject("messageSource", messageSource());
+		
+		return mav;
+		
+	}
+	
+	@ExceptionHandler(CategoryNotFoundException.class)
+	@ResponseStatus(value = HttpStatus.NOT_FOUND) // 404
+	public ModelAndView noSuchCategory() {
 		
 		ModelAndView mav = new ModelAndView("404");
 		

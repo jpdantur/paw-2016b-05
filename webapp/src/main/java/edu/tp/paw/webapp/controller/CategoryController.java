@@ -2,6 +2,8 @@ package edu.tp.paw.webapp.controller;
 
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -16,24 +18,9 @@ import edu.tp.paw.model.CategoryBuilder;
 @Controller
 public class CategoryController {
 
-	@Autowired
-	private ICategoryService categoryService;
+	private final static Logger logger = LoggerFactory.getLogger(CategoryController.class);
 	
-	/**
-	 * Shows Category tree
-	 * @return
-	 */
-	@RequestMapping("/categories")
-	public ModelAndView itemBrowser() {
-		
-		List<Category> category = categoryService.getCategoryTree();
-		
-		final ModelAndView modelAndView = new ModelAndView("dummy");
-		
-		modelAndView.addObject("category", category);
-		
-		return modelAndView;
-	}
+	@Autowired private ICategoryService categoryService;
 	
 	/**
 	 * Add a new category
@@ -46,10 +33,10 @@ public class CategoryController {
 			@RequestParam(value = "name", required = true) final String name,
 			@RequestParam(value = "parent", required = true, defaultValue = "0") final long parent) {
 		
-		System.out.println("controller received request to create category with name = " + name + " parent = " + parent);
+		logger.debug("controller received request to create category with name = {} parent = {}", name, parent);
 		
-		CategoryBuilder builder = new CategoryBuilder(name, parent);
-		Category category = categoryService.create(builder);
+		final CategoryBuilder builder = new CategoryBuilder(name, parent);
+		final Category category = categoryService.create(builder);
 		
 		final ModelAndView modelAndView = new ModelAndView("dummy");
 		
@@ -57,20 +44,5 @@ public class CategoryController {
 		
 		return modelAndView;
 	}
-	
-	
-	
-//	@RequestMapping("/item/{itemId}")
-//	public ModelAndView individualItem(
-//			@PathVariable("itemId") final int id,
-//			@RequestParam(value = "s", defaultValue = "false") final boolean published) {
-//		
-//		final ModelAndView modelAndView = new ModelAndView("product");
-//		
-//		modelAndView.addObject("storeItem", storeItemService.fetchById(id));
-//		modelAndView.addObject("published", published);
-//		
-//		return modelAndView;
-//	}
 
 }

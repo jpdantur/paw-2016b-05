@@ -26,6 +26,7 @@ import edu.tp.paw.model.Role;
 import edu.tp.paw.model.RoleBuilder;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
+import edu.tp.paw.webapp.exceptions.CategoryNotFoundException;
 import edu.tp.paw.webapp.exceptions.StoreItemNotFoundException;
 import edu.tp.paw.webapp.form.CategoryForm;
 import edu.tp.paw.webapp.form.CreateUserForm;
@@ -87,18 +88,11 @@ public class AdminController extends BaseController {
 		if (!result.hasErrors()) {
 		
 			final CategoryBuilder builder = new CategoryBuilder(form.getName(), form.getParent());
-			
 			final Category category = categoryService.create(builder);
-			
-			if (category == null) {
-				//TODO something wrong
-			}
 			
 			model.addAttribute("success", true);	
 			return "create_category";
 		}
-		
-		//TODO check if parent exists
 		
 		model.addAttribute("category", form);
 		model.addAttribute("result", result);
@@ -117,7 +111,7 @@ public class AdminController extends BaseController {
 		final Category category = categoryService.findById(id);
 		
 		if (category == null) {
-			//TODO problem here
+			throw new CategoryNotFoundException();
 		}
 		
 		model.addAttribute("category", category);
@@ -196,16 +190,7 @@ public class AdminController extends BaseController {
 				.password(form.getPassword());
 			
 			final Role role = roleService.findRoleById(form.getRole());
-			
-			if (role == null) {
-				// ups
-			}
-			
-			final User user = userService.createUser(builder, role);
-			
-			if (role == null) {
-				//ups
-			}
+			userService.createUser(builder, role);
 			
 			return "redirect:/admin/users";
 		}
@@ -260,7 +245,6 @@ public class AdminController extends BaseController {
 			return "redirect:/admin/users/"+user.getId()+"/roles?s=1";
 			
 		} else {
-			// ups
 			
 			return "redirect:/admin/users/"+user.getId()+"/roles?e=1";
 		}
@@ -296,11 +280,7 @@ public class AdminController extends BaseController {
 		if (!result.hasErrors()) {
 			
 			final RoleBuilder roleBuilder = new RoleBuilder(form.getName(), form.getSlug());
-			final Role role = roleService.createRole(roleBuilder);
-			
-			if (role == null) {
-				//ups
-			}
+			roleService.createRole(roleBuilder);
 			
 			return "redirect:/admin/roles";
 		}

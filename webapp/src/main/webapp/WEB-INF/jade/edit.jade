@@ -42,15 +42,15 @@ block content
 								+categories(categories)
 							+errors(bindingResult, 'category')
 					div.form-group(class="#{bindingResult.hasFieldErrors('used')?'has-error':''}")
-						label.col-sm-2.control-label(for="used") #{messageSource.getMessage('sell.field.status',[],locale)}
+						label.col-sm-2.control-label(for="used") #{messageSource.getMessage('sell.field.status.title',[],locale)}
 						div.col-sm-10
 							div.btn-group(data-toggle="buttons")
 								label.btn.btn-primary(class="#{item.used?'active':''}")
 									input(type="radio", name="used", id="used", value="1", checked=item.used)
-									span Usado
+									span #{messageSource.getMessage('sell.field.status.used',[],locale)}
 								label.btn.btn-primary(class="#{item.used?'':'active'}")
 									input(type="radio", name="used", value="0", checked=!item.used)
-									span Nuevo
+									span #{messageSource.getMessage('sell.field.status.new',[],locale)}
 							+errors(bindingResult, 'used')
 					div.form-group
 						div.col-sm-2.col-sm-offset-2
@@ -58,6 +58,6 @@ block content
 								i.fa.fa-chevron-left
 								| &nbsp;#{messageSource.getMessage('sell.back',[],locale)}
 						div.col-sm-4.col-sm-offset-4
-							button.btn.btn-success.btn-block(type="submit") #{messageSource.getMessage('sell.ok',[],locale)}
+							button.btn.btn-success.btn-block(type="submit") #{messageSource.getMessage('edit.action',[],locale)}
 					
 					

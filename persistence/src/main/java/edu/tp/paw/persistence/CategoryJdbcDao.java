@@ -7,6 +7,8 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -20,6 +22,8 @@ import edu.tp.paw.model.CategoryBuilder;
 @Repository
 public class CategoryJdbcDao implements ICategoryDao {
 
+	private final static Logger logger = LoggerFactory.getLogger(CategoryJdbcDao.class);
+	
 	private static final String SQL_DESCENDANTS_OF =
 			"with recursive tree as "
 			+ "( "
@@ -155,7 +159,7 @@ public class CategoryJdbcDao implements ICategoryDao {
 		args.put("category_name", builder.getName());
 		args.put("parent", builder.getParent());
 		
-		System.out.println("dao:: creating new category");
+		logger.debug("Creating new category with args: {}", args);
 		
 		final Number categoryId = jdbcInsert.executeAndReturnKey(args);
 		
@@ -183,8 +187,6 @@ public class CategoryJdbcDao implements ICategoryDao {
 	 */
 	@Override
 	public List<Category> getChildren(long categoryId) {
-		
-		System.out.println("querying getChildren with: " + categoryId);
 		
 		return
 				jdbcTemplate

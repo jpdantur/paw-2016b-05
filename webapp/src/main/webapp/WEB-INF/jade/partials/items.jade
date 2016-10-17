@@ -1,12 +1,12 @@
 table.table.table-striped
 	thead
 		tr
-			th Foto
-			th Nombre
-			th Precio
-			th Vendidos
-			th Publicado
-			th Ultima Modificación
+			th #{messageSource.getMessage('profile.items.table.picture',[],locale)}
+			th #{messageSource.getMessage('profile.items.table.name',[],locale)}
+			th.text-right #{messageSource.getMessage('profile.items.table.price',[],locale)}
+			//-th #{messageSource.getMessage('profile.items.table.sold',[],locale)}
+			//-th Publicado
+			//-th Ultima Modificación
 			th
 	tbody
 		each item in items
@@ -15,9 +15,9 @@ table.table.table-striped
 					if !item.images.isEmpty()
 						img.table-img(style="width:40px;height:40px" src="#{context.url('/images/get/'+item.images.get(0).id)}")
 				td #{item.name}
-				td $#{item.price}
-				td #{item.sold} Vendidos
-				td #{item.created}
-				td #{item.lastUpdated}
+				td.text-right $#{item.price}
+				//-td #{item.sold} #{messageSource.getMessage('profile.items.table.sold',[],locale)}
+				//-td #{item.created}
+				//-td #{item.lastUpdated}
 				td
-					a(href="#{context.url('/store/item/'+item.id+'/details')}") Editar
+					a(href="#{context.url('/store/item/'+item.id+'/details')}", title="#{messageSource.getMessage('profile.items.table.edit',[],locale)}") #{messageSource.getMessage('profile.items.table.edit',[],locale)}

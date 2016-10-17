@@ -11,8 +11,23 @@
             <pattern>${defaultPattern:-}</pattern>
         </encoder>
     </appender>
+    
+    <appender name="paw-appender" class="ch.qos.logback.core.ConsoleAppender">
+    	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+    		<maxHistory>5</maxHistory>
+    		<filenamePattern>logs/siglas.paw.%d{yyyy-MM-dd}</filenamePattern>
+    	</rollingPolicy>
+        <encoder>
+            <pattern>${defaultPattern:-}</pattern>
+        </encoder>
+    </appender>
 
     <root level="WARN">
         <appender-ref ref="root-appender" />
     </root>
+    
+    <!-- additivity prevents logs from bubbling up to parent loggers -->
+    <logger name="ar.edu.itba.webapp" level="DEBUG" additivity="false">
+    	<appender-ref ref="paw-appender"/>
+    </logger>
 </configuration>

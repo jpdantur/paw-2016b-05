@@ -21,16 +21,16 @@ mixin navbar(search)
 						a(href="#{context.url('/store/sell/details')}") #{messageSource.getMessage('index.sell', [], locale)}
 					if loggedUser
 							li#favourite-dropdown
-								a.dropdown-toggle(href="#", data-toggle="dropdown", title="Favoritos")
+								a.dropdown-toggle(href="#", data-toggle="dropdown", title="#{messageSource.getMessage('index.favourite.title',[],locale)}")
 									i.fa.fa-heart
 									span.caret
 								ul.dropdown-menu.dropdown-favourite
 									if !userFavourites.isEmpty()
 										li
-											span.fav-title Favoritos
+											span.fav-title #{messageSource.getMessage('index.favourite.title',[],locale)}
 									else
 										li
-											a No tiene favoritos, agregue favoritos para verlos
+											a #{messageSource.getMessage('index.favourite.empty',[],locale)}
 									each favourite in userFavourites
 										li
 											span.item
@@ -41,7 +41,7 @@ mixin navbar(search)
 														a(href="#{context.url('/store/items/'+favourite.id)}")
 															span #{favourite.name}
 														span.price $#{favourite.price}
-												span.item-right
+												span.item-right(title="#{messageSource.getMessage('index.favourite.remove',[],locale)}")
 													button.btn.btn-xs.btn-danger.pull-right.remove-fav(data-id="#{favourite.id}") x
 							li
 								a.dropdown-toggle(href="#", data-toggle="dropdown")
@@ -49,12 +49,12 @@ mixin navbar(search)
 									span.caret
 								ul.dropdown-menu
 									li
-										a(href="#{context.url('/profile/details')}") Mi Perfil
+										a(href="#{context.url('/profile/details')}") #{messageSource.getMessage('index.user.profile',[],locale)}
 									li
-										a(href="#{context.url('/profile/details#items')}") Mis Articulos
+										a(href="#{context.url('/profile/details#items')}") #{messageSource.getMessage('index.user.items',[],locale)}
 									li.separator
 									li
-										a(href="#{context.url('/auth/logout')}") Cerrar Sesión
+										a(href="#{context.url('/auth/logout')}") #{messageSource.getMessage('index.user.logout',[],locale)}
 				if search
 					form.navbar-form#navbar-search(action="#{context.url('/store/items/all')}")
 						div.form-group(style="width:50%")

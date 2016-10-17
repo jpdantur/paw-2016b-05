@@ -54,7 +54,7 @@ public class StoreSellController extends BaseController {
 	
 	@RequestMapping( value = "/details", method = RequestMethod.POST)
 	public String sell(
-			@Valid @ModelAttribute("sellForm") SellForm form,
+			@Valid @ModelAttribute("sellForm") final SellForm form,
 			final BindingResult bindingResult,
 			final Model model,
 			@ModelAttribute("loggedUser") final User user) {
@@ -63,16 +63,10 @@ public class StoreSellController extends BaseController {
 		
 		if (!bindingResult.hasErrors()) {
 			
-			System.out.println(user);
-			
-			Category category = categoryService.findById(form.getCategoryId());
-			StoreItemBuilder storeItemBuilder = new StoreItemBuilder(form.getName(), form.getDescription(), form.getPrice(), category, form.isUsed()).owner(user);
+			final Category category = categoryService.findById(form.getCategoryId());
+			final StoreItemBuilder storeItemBuilder = new StoreItemBuilder(form.getName(), form.getDescription(), form.getPrice(), category, form.isUsed()).owner(user);
 			
 			final StoreItem storeItem = storeService.sell(storeItemBuilder);
-			
-			if (storeItem == null) {
-				//something wrong happened
-			}
 			
 			
 			return "redirect:/store/sell/images/"+storeItem.getId()+"?s=1";
@@ -83,15 +77,13 @@ public class StoreSellController extends BaseController {
 		model.addAttribute("item", form);
 		
 		return "sell";
-		
-//		return modelAndView;
 	}
 	
 	@RequestMapping( value = "/images/{itemId}", method = RequestMethod.GET )
 	public String sellStage2(
-			@RequestParam( value = "s", required = false) boolean s,
-			@PathVariable("itemId") long itemId,
-			Model model) {
+			@RequestParam( value = "s", required = false) final boolean s,
+			@PathVariable("itemId") final long itemId,
+			final Model model) {
 		
 		final StoreItem item = storeItemService.findById(itemId);
 		

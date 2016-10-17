@@ -1,10 +1,11 @@
 extends layout
 
 block content
-	h1 #{hola}
 	+navbar(true)
 	div.container
 		div.col-sm-12.text-center
-			h1 Producto no encontrado
-			a.btn.btn-primary.btn-lg(href="#{context.url('/')}") Ir al inicio
+			h1 404 - #{messageSource.getMessage('404.headline', [], locale)}
+			a.btn.btn-primary.btn-lg(href="#{context.url('/')}")
+				i.fa.fa-home
+				span &nbsp;#{messageSource.getMessage('404.home', [], locale)}
 	

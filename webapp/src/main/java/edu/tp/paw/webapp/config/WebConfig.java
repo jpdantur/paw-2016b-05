@@ -8,6 +8,8 @@ import java.util.Map;
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
@@ -47,6 +49,8 @@ import edu.tp.paw.webapp.form.validator.RegisterFormValidator;
 @Configuration
 public class WebConfig extends WebMvcConfigurerAdapter {
 
+	private final static Logger logger = LoggerFactory.getLogger(WebConfig.class);
+	
 	@Autowired
   private RequestMappingHandlerAdapter requestMappingHandlerAdapter;
 	
@@ -92,10 +96,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 		final Map<String, Object> sharedVariables = new HashMap<String, Object>();
 		final ContextHelper context = new ContextHelper(appContext.getApplicationName());
 		sharedVariables.put("context", context);
-		System.out.println("-----------------");
-		System.out.println(appContext.getApplicationName());
-		System.out.println("-----------------");
-
+		logger.debug("app name is : {}", appContext.getApplicationName());
 		configuration.setSharedVariables(sharedVariables);
 		return configuration;
 	}

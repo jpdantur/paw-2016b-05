@@ -54,8 +54,8 @@ create table if not exists favourites (
 
 create table if not exists comments (
 	comment_id serial primary key,
-	user_id integer REFERENCES users,
-	item_id integer REFERENCES store_items,
+	user_id integer references users on delete cascade,
+	item_id integer references store_items on delete cascade,
 	comment_content varchar(300),
 	created timestamp default current_timestamp
 );

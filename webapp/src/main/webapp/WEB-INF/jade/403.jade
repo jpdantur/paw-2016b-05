@@ -3,6 +3,9 @@ extends layout
 block content
 	+navbar(true)
 	div.container
-		div.col-sm-12
-			h1.text-center 403 - Access Denied
+		div.col-sm-12.text-center
+			h1 403 - #{messageSource.getMessage('403.headline', [], locale)}
+			a.btn.btn-primary.btn-lg(href="#{context.url('/')}")
+				i.fa.fa-home
+				span &nbsp;#{messageSource.getMessage('403.home', [], locale)}
 	

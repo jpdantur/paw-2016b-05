@@ -25,7 +25,7 @@ block content
 				div.row#product-container
 					div.col-sm-4
 						if storeItem.images.isEmpty()
-							img(src="http://lorempixel.com/400/400/fashion", style="width:100%;height:auto")
+							img(src="http://placehold.it/400?text=Sin+Imagen", style="width:100%;height:auto")
 						else
 							div.carousel.slide#carousel(data-ride="carousel")
 								ol.carousel-indicators
@@ -52,39 +52,39 @@ block content
 								else
 									a.text-muted.add-favourite(href="#", data-item="#{storeItem.id}")
 										i.fa.fa-heart
-						span #{storeItem.sold} vendidos
+						span #{storeItem.sold} #{messageSource.getMessage('item.sold', [], locale)}
 						br
 						br
-						span Articulo&nbsp;
+						span #{messageSource.getMessage('item.item', [], locale)}:&nbsp;
 							if storeItem.used
-								span usado
+								b #{messageSource.getMessage('item.used', [], locale)}
 							else
-								span nuevo
+								b #{messageSource.getMessage('item.new', [], locale)}
 						h3.price $#{storeItem.price}
 						a.btn.btn-success.btn-lg(href="#", data-buyer-email="#{storeItem.owner.email}") #{messageSource.getMessage('item.buy', [], locale)}
 					div.col-sm-12
-						h3 Descripcion
+						h3 #{messageSource.getMessage('item.description', [], locale)}
 						p #{storeItem.description}
 		div.row
 			div.col-sm-10.col-sm-offset-1
 				div.well
-					h3 Comentarios
+					h3 #{messageSource.getMessage('item.comments', [], locale)}
 					if loggedUser
 						form.form-horizontal(action="#{context.url('/store/item/'+storeItem.id+'/comment')}", method="POST")
 							div.form-group(class="#{commentError?'has-error':''}")
 								div.col-sm-12
-									textarea.form-control#content(name="content", placeholder="Comentario")
+									textarea.form-control#content(name="content", placeholder="#{messageSource.getMessage('item.comment', [], locale)}")
 							div.form-group
 								div.col-sm-offset-8.col-sm-4
 									button.btn.btn-block.btn-success(type="submit")
 										i.fa.fa-comment
-										span &nbsp;Comentar
+										span &nbsp;#{messageSource.getMessage('item.commentAction', [], locale)}
 					else
 						a.btn.btn-success(href="#{context.url('/auth/login?next='+currentURI)}")
 							i.fa.fa-comment
-							span &nbsp;Comentar
+							span &nbsp;#{messageSource.getMessage('item.commentAction', [], locale)}
 					if comments.isEmpty()
-						p.lead No hay comentarios aun
+						p.lead #{messageSource.getMessage('item.commentEmpty', [], locale)}
 					each comment in comments
 						div.comment
 							b.comment-author #{comment.user.firstName}

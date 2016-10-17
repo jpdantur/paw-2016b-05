@@ -22,11 +22,8 @@ import edu.tp.paw.model.CategoryBuilder;
 @ContextConfiguration(classes = TestConfig.class)
 public class CategoryJdbcDaoTest {
 	
-	@Autowired
-	private DataSource ds;
-	@Autowired
-	private CategoryJdbcDao categoryDao;
-	
+	@Autowired private DataSource ds;
+	@Autowired private CategoryJdbcDao categoryDao;
 	private JdbcTemplate jdbcTemplate;
 	
 	@Before
@@ -37,8 +34,7 @@ public class CategoryJdbcDaoTest {
 	
 	@Test
 	public void testCreate() {
-		System.out.println("Create");
-		CategoryBuilder categoryBuilder = new CategoryBuilder("FOO",0);
+		final CategoryBuilder categoryBuilder = new CategoryBuilder("FOO",0);
 		final Category category = categoryDao.create(categoryBuilder);
 		
 		assertNotNull(category);
@@ -48,57 +44,51 @@ public class CategoryJdbcDaoTest {
 	
 	@Test
 	public void testFindById() {
-		System.out.println("Find by id");
-		CategoryBuilder categoryBuilder = new CategoryBuilder("FOO",0);
+		final CategoryBuilder categoryBuilder = new CategoryBuilder("FOO",0);
 		categoryDao.create(categoryBuilder);
-		Category result = categoryDao.findById(categoryBuilder.getId());
+		final Category result = categoryDao.findById(categoryBuilder.getId());
 		assertEquals(categoryBuilder.build(),result);
 	}
 	
 	@Test
 	public void testCategoryExists() {
-		System.out.println("Category exists");
-		CategoryBuilder categoryBuilder = new CategoryBuilder("FOO",0);
+		final CategoryBuilder categoryBuilder = new CategoryBuilder("FOO",0);
 		categoryDao.create(categoryBuilder);
 		assertTrue(categoryDao.categoryExists(categoryBuilder.getId()));
 	}
 	
 	@Test
 	public void testGetSiblings() {
-		System.out.println("get siblings");
-		CategoryBuilder categoryBuilder = new CategoryBuilder("FOO",0);
-		Category category = categoryDao.create(categoryBuilder);
-		CategoryBuilder otherCategoryBuilder = new CategoryBuilder("BAR", categoryBuilder.getParent());
-		Category otherCategory = categoryDao.create(otherCategoryBuilder);
-		List<Category> siblings = categoryDao.getSiblings(category);
+		final CategoryBuilder categoryBuilder = new CategoryBuilder("FOO",0);
+		final Category category = categoryDao.create(categoryBuilder);
+		final CategoryBuilder otherCategoryBuilder = new CategoryBuilder("BAR", categoryBuilder.getParent());
+		final Category otherCategory = categoryDao.create(otherCategoryBuilder);
+		final List<Category> siblings = categoryDao.getSiblings(category);
 		assertEquals(2, siblings.size() - 1); //substract root
 		assertTrue(siblings.contains(otherCategory));
 	}
 	
 	@Test
 	public void testGetChildren() {
-		System.out.println("get children");
-		CategoryBuilder categoryBuilder = new CategoryBuilder("FOO",0);
-		Category category = categoryDao.create(categoryBuilder);
-		CategoryBuilder otherCategoryBuilder = new CategoryBuilder("BAR", categoryBuilder.getId());
-		Category otherCategory = categoryDao.create(otherCategoryBuilder);
-		List<Category> children = categoryDao.getChildren(category);
+		final CategoryBuilder categoryBuilder = new CategoryBuilder("FOO",0);
+		final Category category = categoryDao.create(categoryBuilder);
+		final CategoryBuilder otherCategoryBuilder = new CategoryBuilder("BAR", categoryBuilder.getId());
+		final Category otherCategory = categoryDao.create(otherCategoryBuilder);
+		final List<Category> children = categoryDao.getChildren(category);
 		assertEquals(1,children.size());
 		assertTrue(children.contains(otherCategory));
 	}
 	
 	@Test
 	public void testGetDescendants() {
-		System.out.println("get descendants");
-		CategoryBuilder categoryBuilder = new CategoryBuilder("FOO",0);
-		Category category = categoryDao.create(categoryBuilder);
-		CategoryBuilder sonCategoryBuilder = new CategoryBuilder("BAR", categoryBuilder.getId());
-		Category sonCategory = categoryDao.create(sonCategoryBuilder);
-		CategoryBuilder grandsonCategoryBuilder = new CategoryBuilder("TEST", sonCategoryBuilder.getId());
-		Category grandsonCategory = categoryDao.create(grandsonCategoryBuilder);
-		List<Category> descendants = categoryDao.getDescendants(category);
+		final CategoryBuilder categoryBuilder = new CategoryBuilder("FOO",0);
+		final Category category = categoryDao.create(categoryBuilder);
+		final CategoryBuilder sonCategoryBuilder = new CategoryBuilder("BAR", categoryBuilder.getId());
+		final Category sonCategory = categoryDao.create(sonCategoryBuilder);
+		final CategoryBuilder grandsonCategoryBuilder = new CategoryBuilder("TEST", sonCategoryBuilder.getId());
+		final Category grandsonCategory = categoryDao.create(grandsonCategoryBuilder);
+		final List<Category> descendants = categoryDao.getDescendants(category);
 		assertEquals(2,descendants.size());
-		//System.out.println(descendants.get(0) + " || " + descendants.get(1));
 		assertTrue(descendants.contains(sonCategory));
 		assertTrue(descendants.contains(grandsonCategory));
 	}

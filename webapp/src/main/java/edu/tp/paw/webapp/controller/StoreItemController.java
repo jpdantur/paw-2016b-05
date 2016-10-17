@@ -88,7 +88,7 @@ public class StoreItemController extends BaseController {
 		model.addAttribute("bindingResult", result);
 		model.addAttribute("item", form);
 		
-		return "sell";
+		return "edit";
 	}
 	
 	@RequestMapping( value = "/{itemId}/comment", method = RequestMethod.POST)

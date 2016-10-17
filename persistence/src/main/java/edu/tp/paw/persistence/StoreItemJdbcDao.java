@@ -294,8 +294,6 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 		final Set<Category> categories = categoryFilter.getCategories();
 
 		if (!categories.isEmpty()) {
-
-			System.out.println("logic: " + logicalOperator);
 			
 			if (logicalOperator) {
 				query.append(" and ");
@@ -335,8 +333,6 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 				query.append(String.format(" %s ", ORDER_DESCENDING));
 				break;
 		}
-		
-		System.out.println(params.getValues());
 		
 
 		final PageFilter pageFilter = filter.getPageFilter();
@@ -379,8 +375,6 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 	public boolean updateItem(final StoreItem item) {
 		
 		final MapSqlParameterSource params = new MapSqlParameterSource();
-		
-		System.out.println(item);
 		
 		params.addValue("name", item.getName());
 		params.addValue("description", item.getDescription());
