@@ -4,17 +4,17 @@ block content
 	div.container
 		div.col-sm-12
 			if success
-				h1.text-center.page-header Creacion Exitosa
-				p Esta ventana se cerrara automaticamente
+				h1.text-center.page-header #{messageSource.getMessage('admin.categories.create.success',[],locale)}
+				p #{messageSource.getMessage('admin.categories.create.successInfo',[],locale)}
 			else
-				h1.page-header Crear Categoria
+				h1.page-header #{messageSource.getMessage('admin.categories.create.headline',[],locale)}
 				form.form-horizontal(action="#{context.url('/admin/categories/create')}", method="POST")
 					input(type="hidden", name="parent", value="#{category.parent}")
 					div.form-group(class="#{result.hasFieldErrors('name')?'has-error':''}")
-						label.col-sm-2.control-label(for="name") Nombre
+						label.col-sm-2.control-label(for="name") #{messageSource.getMessage('admin.categories.create.name',[],locale)}
 						div.col-sm-10
-							input.form-control#name(name="name", placeholder="Nombre", value="#{category.name&&!category.name.trim().equals('-')?category.name:''}")
+							input.form-control#name(name="name", placeholder="#{messageSource.getMessage('admin.categories.create.name',[],locale)}", value="#{category.name&&!category.name.trim().equals('-')?category.name:''}")
 							+errors(result, 'name')
 					div.form-group
 						div.col-sm-4.col-sm-offset-8
-							button.btn.btn-success.btn-block(type="submit") Crear
+							button.btn.btn-success.btn-block(type="submit") #{messageSource.getMessage('admin.categories.create.action',[],locale)}

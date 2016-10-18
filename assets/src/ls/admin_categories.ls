@@ -28,7 +28,7 @@ $ document .ready !->
 			message: $iframe
 			buttons:
 				cancel:
-					label: 'Cancelar'
+					label: messages.cancel
 					callback: !->
 
 
@@ -58,5 +58,5 @@ $ document .ready !->
 			message: $iframe
 			buttons:
 				cancel:
-					label: 'Cancelar'
+					label: messages.cancel
 					callback: !->

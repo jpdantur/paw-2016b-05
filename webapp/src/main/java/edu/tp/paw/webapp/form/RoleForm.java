@@ -8,7 +8,7 @@ public class RoleForm {
 	@Size(min = 2, max = 100)
 	private String name;
 	@Size(min = 2, max = 100)
-	@Pattern(regexp = "[a-zA-Z0-9_-]+")
+	@Pattern(regexp = "[A-Z0-9_-]+")
 	private String slug;
 	
 	public String getName() {

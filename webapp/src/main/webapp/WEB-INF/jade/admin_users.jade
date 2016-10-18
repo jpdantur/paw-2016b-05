@@ -12,20 +12,20 @@ block content
 			div.col-sm-3
 				include partials/admin_sidebar
 			div.col-sm-9
-				h1 Usuarios
+				h1 #{messageSource.getMessage('admin.users.headline',[],locale)}
 					a.pull-right(href="#{context.url('/admin/users/create')}")
 						i.fa.fa-plus
-						span &nbsp;Agregar
+						span &nbsp;#{messageSource.getMessage('admin.users.add',[],locale)}
 				div.row
 					table.table.table-striped
 						thead
 							tr
 								th id
-								th Nombre
-								th Apellido
-								th Usuario
-								th Email
-								th Roles
+								th #{messageSource.getMessage('admin.users.name',[],locale)}
+								th #{messageSource.getMessage('admin.users.lastName',[],locale)}
+								th #{messageSource.getMessage('admin.users.username',[],locale)}
+								th #{messageSource.getMessage('admin.users.email',[],locale)}
+								th #{messageSource.getMessage('admin.users.roles',[],locale)}
 						tbody
 							each user in users
 								tr
@@ -35,4 +35,4 @@ block content
 									td #{user.username}
 									td #{user.email}
 									td
-										a(href="#{context.url('/admin/users/'+user.id+'/roles')}") Editar Roles
+										a(href="#{context.url('/admin/users/'+user.id+'/roles')}") #{messageSource.getMessage('admin.users.editRoles',[],locale)}

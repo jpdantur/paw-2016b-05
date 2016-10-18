@@ -1,7 +1,9 @@
 ul.nav.in#sidebar
 	li.sidebar-item
-		a(href="#{context.url('/admin/categories')}") Categorias
+		a(href="#{context.url('/admin')}") #{messageSource.getMessage('admin.index.headline',[],locale)}
 	li.sidebar-item
-		a(href="#{context.url('/admin/users')}") Usuarios
+		a(href="#{context.url('/admin/categories')}") #{messageSource.getMessage('admin.index.categories',[],locale)}
 	li.sidebar-item
-		a(href="#{context.url('/admin/roles')}") Roles
+		a(href="#{context.url('/admin/users')}") #{messageSource.getMessage('admin.index.users',[],locale)}
+	li.sidebar-item
+		a(href="#{context.url('/admin/roles')}") #{messageSource.getMessage('admin.sidebar.roles',[],locale)}

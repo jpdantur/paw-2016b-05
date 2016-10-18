@@ -12,7 +12,7 @@ block content
 			div.col-sm-3
 				include partials/admin_sidebar
 			div.col-sm-9
-				h1 Dashboard
+				h1 #{messageSource.getMessage('admin.index.headline',[],locale)}
 				div.row
 					div.col-sm-4
 						div.panel.panel-primary
@@ -23,7 +23,7 @@ block content
 									div.col-sm-8.text-right
 										span(style="font-size:30px") #{numberOfUsers}
 										br
-										span Usuarios
+										span #{messageSource.getMessage('admin.index.users',[],locale)}
 					div.col-sm-4
 						div.panel.panel-success
 							div.panel-heading
@@ -31,7 +31,7 @@ block content
 									div.col-sm-8
 										span(style="font-size:30px") #{numberOfItems}
 										br
-										span Articulos
+										span #{messageSource.getMessage('admin.index.items',[],locale)}
 									div.col-sm-4.text-right
 										i.fa.fa-shopping-bag.fa-5x
 					div.col-sm-4
@@ -41,7 +41,7 @@ block content
 									div.col-sm-8
 										span(style="font-size:30px") #{numberOfCategories}
 										br
-										span Categorias
+										span #{messageSource.getMessage('admin.index.categories',[],locale)}
 									div.col-sm-4.text-right
 										i.fa.fa-list.fa-5x
 									

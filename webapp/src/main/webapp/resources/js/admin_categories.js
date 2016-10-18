@@ -25,7 +25,7 @@ $(document).ready(function(){
       message: $iframe,
       buttons: {
         cancel: {
-          label: 'Cancelar',
+          label: messages.cancel,
           callback: function(){}
         }
       }
@@ -54,7 +54,7 @@ $(document).ready(function(){
       message: $iframe,
       buttons: {
         cancel: {
-          label: 'Cancelar',
+          label: messages.cancel,
           callback: function(){}
         }
       }

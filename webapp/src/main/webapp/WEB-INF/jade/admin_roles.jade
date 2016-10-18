@@ -12,17 +12,17 @@ block content
 			div.col-sm-3
 				include partials/admin_sidebar
 			div.col-sm-9
-				h1 Roles&nbsp;
+				h1 #{messageSource.getMessage('admin.roles.headline',[],locale)}&nbsp;
 					a.pull-right(href="#{context.url('/admin/roles/create')}")
 						i.fa.fa-plus
-						span &nbsp;Agregar
+						span &nbsp;#{messageSource.getMessage('admin.roles.add',[],locale)}
 				div.row
 					table.table.table-striped
 						thead
 							tr
-								th Nombre
+								th #{messageSource.getMessage('admin.roles.name',[],locale)}
 								th Slug
-								th Por defecto
+								th #{messageSource.getMessage('admin.roles.default',[],locale)}
 						tbody
 							each role in roles
 								tr
@@ -30,8 +30,8 @@ block content
 									td #{role.slug}
 									td
 										if role.isDefault()
-											i.text-success.fa.fa-check
+											i.text-success.fa.fa-check(title="#{messageSource.getMessage('admin.roles.isDefault',[],locale)}")
 										else
-											a.text-muted(href="#", title="Hacer por defecto")
+											a.text-muted(href="#", title="#{messageSource.getMessage('admin.roles.makeDefault',[],locale)}")
 												i.fa.fa-minus
 
