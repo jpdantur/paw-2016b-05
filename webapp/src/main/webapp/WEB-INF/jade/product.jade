@@ -74,6 +74,9 @@ block content
 							div.form-group(class="#{commentError?'has-error':''}")
 								div.col-sm-12
 									textarea.form-control#content(name="content", placeholder="#{messageSource.getMessage('item.comment', [], locale)}")
+									if commentError
+										span.help-block #{messageSource.getMessage('NotEmpty.CommentForm.content',[],locale)}
+										span.help-block #{messageSource.getMessage('Size.CommentForm.contentFixed',[],locale)}
 							div.form-group
 								div.col-sm-offset-8.col-sm-4
 									button.btn.btn-block.btn-success(type="submit")

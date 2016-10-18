@@ -25,15 +25,15 @@ public class RegisterFormValidator implements Validator {
 		final RegisterForm form = (RegisterForm)target;
 		
 		if (!form.getPassword().equals(form.getRepeatPassword())) {
-			errors.rejectValue("repeatPassword", "repeatPassword", "Passwords should match");;
+			errors.rejectValue("repeatPassword", "PasswordMatch.RegisterForm.repeatPassword", "Passwords should match");;
 		}
 		
 		if (userService.usernameExists(form.getUsername())) {
-			errors.rejectValue("username", "username", "Username already exists");;
+			errors.rejectValue("username", "UsernameExists.RegisterForm.username", "Username already exists");;
 		}
 		
 		if (userService.emailExists(form.getEmail())) {
-			errors.rejectValue("email", "email", "Email already exists");;
+			errors.rejectValue("email", "EmailExists.RegisterForm.email", "Email already exists");;
 		}
 		
 	}

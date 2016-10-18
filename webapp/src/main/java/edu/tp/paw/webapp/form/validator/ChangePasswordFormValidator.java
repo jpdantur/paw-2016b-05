@@ -34,11 +34,11 @@ public class ChangePasswordFormValidator implements Validator {
 		}
 		
 		if (!userService.isUsersPassword(user, form.getOldPassword())) {
-			errors.rejectValue("oldPassword", "error.oldPassword", "Not your password");
+			errors.rejectValue("oldPassword", "WrongPassword.ChangePasswordForm.oldPassword", "Not your password");
 		}
 		
 		if (!form.getPassword().equals(form.getRepeatPassword())) {
-			errors.rejectValue("repeatPassword", "error.match", "Passwords do not match");
+			errors.rejectValue("repeatPassword", "PasswordMatch.ChangePasswordForm.repeatPassword", "Passwords do not match");
 		}
 		
 	}

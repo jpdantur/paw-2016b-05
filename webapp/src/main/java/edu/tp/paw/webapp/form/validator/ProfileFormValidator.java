@@ -26,7 +26,7 @@ public class ProfileFormValidator implements Validator {
 		final ProfileForm form = (ProfileForm)target;
 		
 		if (userService.emailExists(form.getEmail())) {
-			errors.rejectValue("email", "email", "Email already exists");;
+			errors.rejectValue("email", "EmailExists.ProfileForm.email", "Email already exists");;
 		}
 		
 	}

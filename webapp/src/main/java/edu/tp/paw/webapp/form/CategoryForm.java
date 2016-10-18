@@ -1,15 +1,17 @@
 package edu.tp.paw.webapp.form;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
 import org.hibernate.validator.constraints.NotEmpty;
 
 public class CategoryForm {
 	
+	@Min(0)
 	private int parent;
 	
-	@NotEmpty
-	@Size(max=100)
+	//@NotEmpty(message = "NotEmpty.CategoryForm.name")
+	@Size(min=4, max=100, message = "{Size.CategoryForm.name}")
 	private String name;
 
 	public int getParent() {

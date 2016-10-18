@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.validation.constraints.Digits;
+import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
@@ -15,13 +16,15 @@ import org.springframework.web.multipart.MultipartFile;
 
 public class SellForm {
 
-	@Size(min = 2, max = 100, message = "{Size.SellForm.name}")
+	@Size(min = 4, max = 100, message = "{Size.SellForm.name}")
 	private String name;
 	
 	private String description;
 	
-	@NotNull
-	@Digits(integer=20, fraction=2)
+	@NotNull(message = "{NotNull.SellForm.price}")
+	@Digits(integer=20, fraction=2, message = "{Digits.SellForm.price}")
+	@Min(value = 1, message = "{Digits.SellForm.price}")
+	@Max(value = 1000000000, message = "{Digits.SellForm.price}")
 	private BigDecimal price;
 	
 	@Min(0)

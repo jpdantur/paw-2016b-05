@@ -53,10 +53,12 @@ public class ProfileController extends BaseController {
 	public String profileSubmit(
 			@Valid @ModelAttribute("profileForm") final ProfileForm form,
 			final BindingResult result,
-			final Model model) {
+			final Model model,
+			@ModelAttribute("loggedUser") final User user) {
 		
 		validator.validate(form, result);
 		
+		model.addAttribute("items", itemService.getUserItems(user));
 		model.addAttribute("success", !result.hasErrors());
 		model.addAttribute("result", result);
 		
@@ -77,12 +79,14 @@ public class ProfileController extends BaseController {
 	public String changePassword(
 			@Valid @ModelAttribute("changePassword") final ChangePasswordForm form,
 			final BindingResult result,
-			final Model model) {
+			final Model model,
+			@ModelAttribute("loggedUser") final User user) {
 		
 		logger.debug("form: {}", form);
 		
 		passwordValidator.validate(form, result);
 		
+		model.addAttribute("items", itemService.getUserItems(user));
 		model.addAttribute("passSuccess", !result.hasErrors());
 		model.addAttribute("result", result);
 		

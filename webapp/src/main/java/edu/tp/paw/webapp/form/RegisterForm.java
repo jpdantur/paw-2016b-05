@@ -10,17 +10,17 @@ public class RegisterForm {
 
 	@Size(min = 2, max = 100, message = "{Size.RegisterForm.firstName}")
 	private String firstName;
-	@Size(min = 2, max = 100)
+	@Size(min = 2, max = 100, message = "{Size.RegisterForm.lastName}")
 	private String lastName;
-	@Size(min = 6, max = 100)
-	@Pattern(regexp = "[a-zA-Z0-9_-]+")
+	@Size(min = 6, max = 100, message = "{Size.RegisterForm.username}")
+	@Pattern(regexp = "[a-zA-Z0-9_-]+", message = "{Pattern.RegisterForm.username}")
 	private String username;
-	@Size(min = 4, max = 100)
+	@Size(min = 4, max = 100, message = "{Size.RegisterForm.password}")
 	private String password;
-	@Size(min = 4, max = 100)
+	//@Size(min = 4, max = 100, message = "{Size.RegisterForm.repeatPassword}")
 	private String repeatPassword;
-	@NotEmpty
-	@Email
+	@NotEmpty(message = "{NotEmpty.RegisterForm.email}")
+	@Email(message = "{Email.RegisterForm.email}")
 	private String email;
 	
 	public String getEmail() {
@@ -59,12 +59,14 @@ public class RegisterForm {
 	public void setRepeatPassword(String repeatPassword) {
 		this.repeatPassword = repeatPassword;
 	}
+	
 	@Override
 	public String toString() {
 		return "RegisterForm [firstName=" + firstName + ", lastName=" + lastName
-				+ ", username=" + username + ", password=" + password
-				+ ", repeatPassword=" + repeatPassword + ", email=" + email + "]";
+				+ ", username=" + username + ", email=" + email + "]";
 	}
+	
+	
 	
 	
 	

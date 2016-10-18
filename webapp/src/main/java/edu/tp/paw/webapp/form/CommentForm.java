@@ -6,8 +6,8 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 public class CommentForm {
 
-	@NotEmpty
-	@Size(max = 300)
+	@NotEmpty(message = "{NotEmpty.CommentForm.content}")
+	@Size(max = 300, message = "{Size.CommentForm.content}")
 	private String content;
 
 	public String getContent() {

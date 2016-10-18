@@ -1,16 +1,18 @@
 package edu.tp.paw.webapp.form;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
 public class ChangePasswordForm {
 
+	@Min(0)
 	private long userId;
 	
-	@Size(min = 4, max = 100)
+	
 	private String oldPassword;
-	@Size(min = 4, max = 100)
+	@Size(min = 4, max = 100, message = "{Size.RegisterForm.password}")
 	private String password;
-	@Size(min = 4, max = 100)
+	//@Size(min = 4, max = 100)
 	private String repeatPassword;
 	public String getOldPassword() {
 		return oldPassword;

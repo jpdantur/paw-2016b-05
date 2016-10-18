@@ -7,9 +7,8 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 public class ProfileForm {
 
-	@NotEmpty
-	@NotNull
-	@Email
+	@NotEmpty(message = "{NotEmpty.ProfileForm.email}")
+	@Email(message="{Email.ProfileForm.email}")
 	private String email;
 
 	public String getEmail() {

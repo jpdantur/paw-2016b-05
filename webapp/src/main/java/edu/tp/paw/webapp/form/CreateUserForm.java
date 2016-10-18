@@ -1,5 +1,6 @@
 package edu.tp.paw.webapp.form;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Pattern;
 import javax.validation.constraints.Size;
 
@@ -10,19 +11,20 @@ public class CreateUserForm {
 
 	@Size(min = 2, max = 100, message = "{Size.RegisterForm.firstName}")
 	private String firstName;
-	@Size(min = 2, max = 100)
+	@Size(min = 2, max = 100, message = "{Size.RegisterForm.lastName}")
 	private String lastName;
-	@Size(min = 6, max = 100)
-	@Pattern(regexp = "[a-zA-Z0-9_-]+")
+	@Size(min = 6, max = 100, message = "{Size.RegisterForm.username}")
+	@Pattern(regexp = "[a-zA-Z0-9_-]+", message = "{Pattern.RegisterForm.username}")
 	private String username;
-	@Size(min = 4, max = 100)
+	@Size(min = 4, max = 100, message = "{Size.RegisterForm.password}")
 	private String password;
-	@Size(min = 4, max = 100)
+	//@Size(min = 4, max = 100, message = "{Size.RegisterForm.firstName}")
 	private String repeatPassword;
-	@NotEmpty
-	@Email
+	@NotEmpty(message = "{NotEmpty.RegisterForm.email}")
+	@Email(message = "{Email.RegisterForm.email}")
 	private String email;
 	
+	@Min(0)
 	private long role;
 	
 	public String getEmail() {

@@ -19,10 +19,12 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.core.io.Resource;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.multipart.MultipartResolver;
@@ -154,6 +156,11 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 		dataSourceInitializer.setDatabasePopulator(databasePopulator());
 
 		return dataSourceInitializer;
+	}
+	
+	@Bean
+	public PlatformTransactionManager txManager() {
+		return new DataSourceTransactionManager(dataSource());
 	}
 	
 	@Bean

@@ -104,13 +104,10 @@ public class StoreItemController extends BaseController {
 			final StoreItem item = itemService.findById(id);
 			
 			if (item == null) {
-				//algo salio mal
+				throw new StoreItemNotFoundException();
 			}
-			final Comment comment = itemService.addCommentBy(user, item, form.getContent());
+			itemService.addCommentBy(user, item, form.getContent());
 			
-			if (comment == null) {
-				// algo salio mal
-			}
 			
 			return "redirect:/store/items/"+id;
 			
