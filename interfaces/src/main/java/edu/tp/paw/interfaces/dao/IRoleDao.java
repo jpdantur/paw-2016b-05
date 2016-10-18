@@ -20,5 +20,6 @@ public interface IRoleDao {
 	public List<Role> getForUser(final User user);
 	
 	public Role getDefaultRole();
+	public boolean setDefault(final Role role, final boolean def);
 	
 }

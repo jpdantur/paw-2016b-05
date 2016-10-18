@@ -28,7 +28,11 @@ block scripts
 				
 				dropzone.processQueue();
 
-			})
+			});
+
+			dropzone.on('queuecomplete', function () {
+				window.location.href = "#{context.url('/store/items/'+item.id)}";
+			});
 			
 		});
 
@@ -72,6 +76,6 @@ block content
 								i.fa.fa-chevron-left
 								| &nbsp;#{messageSource.getMessage('sell.back',[],locale)}
 						div.col-sm-4.col-sm-offset-4
-							button.btn.btn-success.btn-block#uploadImages(type="submit") #{messageSource.getMessage('sell.ok',[],locale)}
+							button.btn.btn-success.btn-block#uploadImages(type="submit") #{messageSource.getMessage('sell.okImages',[],locale)}
 					
 					

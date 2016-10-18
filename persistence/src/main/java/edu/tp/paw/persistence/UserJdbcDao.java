@@ -219,9 +219,9 @@ public class UserJdbcDao implements IUserDao {
 		return
 			jdbcTemplate
 			.update(
-				"update users where user_id = ? set password=?",
-				user.getId(),
-				user.getPassword()) == 1;
+				"update users set password=? where user_id = ?",
+				user.getPassword(),
+				user.getId()) == 1;
 	}
 
 	@Override

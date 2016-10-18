@@ -1,6 +1,11 @@
 extends layout
 
 block scripts
+	script.
+		var messages = {
+			fail: "#{messageSource.getMessage('admin.roles.defaultFail',[],locale)}"
+		};
+	script(type="text/javascript", src="#{context.url('/resources/js/admin_roles.js')}")
 
 block styles
 	link(href="#{context.url('/resources/css/admin.css')}", rel="stylesheet")
@@ -25,13 +30,14 @@ block content
 								th #{messageSource.getMessage('admin.roles.default',[],locale)}
 						tbody
 							each role in roles
-								tr
+								tr(data-id="#{role.id}", class="#{role.isDefault() ? 'default-role' : ''}")
 									td #{role.roleName}
 									td #{role.slug}
 									td
 										if role.isDefault()
-											i.text-success.fa.fa-check(title="#{messageSource.getMessage('admin.roles.isDefault',[],locale)}")
+											a.text-success.toggle-default(href="#", title="#{messageSource.getMessage('admin.roles.isDefault',[],locale)}")
+												i.fa.fa-check
 										else
-											a.text-muted(href="#", title="#{messageSource.getMessage('admin.roles.makeDefault',[],locale)}")
+											a.text-muted.toggle-default(href="#", title="#{messageSource.getMessage('admin.roles.makeDefault',[],locale)}")
 												i.fa.fa-minus
 

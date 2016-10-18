@@ -22,5 +22,6 @@ public interface IRoleService {
 	public Role findRoleBySlug(final String slug);
 	
 	public Role getDefaultRole();
+	public boolean makeDefault(final Role role);
 	
 }

@@ -12,9 +12,11 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
 
 import edu.tp.paw.interfaces.service.ICategoryService;
 import edu.tp.paw.interfaces.service.IRoleService;
@@ -289,6 +291,24 @@ public class AdminController extends BaseController {
 		model.addAttribute("result", result);
 		
 		return "admin_roles_create";
+	}
+	
+	@RequestMapping( value =  "/roles/default/{roleId}", method = RequestMethod.POST)
+	@ResponseBody
+	public String makeDefault(
+			@PathVariable("roleId") final long id
+			) {
+		
+		final Role role = roleService.findRoleById(id);
+		
+		logger.trace("role {} will be made default", role);
+		
+		if ( roleService.makeDefault(role) ) {
+			return "{\"err\":0}";
+		}
+		
+		return "{\"err\":1}";
+		
 	}
 	
 	

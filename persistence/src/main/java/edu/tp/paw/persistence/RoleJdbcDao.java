@@ -96,7 +96,7 @@ public class RoleJdbcDao implements IRoleDao {
 		return 
 			jdbcTemplate
 			.query(
-					"select * from roles ",
+					"select * from roles order by role_name asc",
 					rowMapper);
 	}
 
@@ -143,6 +143,18 @@ public class RoleJdbcDao implements IRoleDao {
 						rowMapper);
 		
 		return roleList.isEmpty() ? null : roleList.get(0);
+		
+	}
+
+	@Override
+	public boolean setDefault(final Role role, final boolean def) {
+		
+		return
+				jdbcTemplate
+				.update(
+					"update roles set default_role=? where role_id=? ",
+					def,
+					role.getId()) == 1;
 		
 	}
 

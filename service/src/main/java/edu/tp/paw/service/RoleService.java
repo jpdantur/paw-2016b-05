@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import edu.tp.paw.interfaces.dao.IRoleDao;
 import edu.tp.paw.interfaces.service.IRoleService;
@@ -77,6 +78,30 @@ public class RoleService implements IRoleService {
 	@Override
 	public Role getDefaultRole() {
 		return roleDao.getDefaultRole();
+	}
+
+	@Transactional
+	@Override
+	public boolean makeDefault(final Role role) {
+		
+		if (role == null) {
+			throw new IllegalArgumentException("role cant be null");
+		}
+		
+		if (!roleExists(role)) {
+			throw new IllegalArgumentException("role must exist");
+		}
+		
+		final Role defaultRole = getDefaultRole();
+		
+		if (defaultRole.equals(role)) {
+			return true;
+		}
+		
+		roleDao.setDefault(defaultRole, false);
+		roleDao.setDefault(role, true);
+		
+		return true;
 	}
 
 	
