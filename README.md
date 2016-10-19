@@ -1,3 +1,7 @@
+# Usuario Administrador
+
+El usuario administrador inicial es `system.admin:root`
+
 # Routes
 
 	+ /
