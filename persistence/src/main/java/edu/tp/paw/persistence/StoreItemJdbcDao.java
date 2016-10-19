@@ -241,7 +241,7 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 					+ ")"
 			);
 			
-			params.addValue("term", termFilter.getTerm().get().replace("%", "\\%"));
+			params.addValue("term", termFilter.getTerm().get().toLowerCase().replace("%", "\\%"));
 			
 		}
 		

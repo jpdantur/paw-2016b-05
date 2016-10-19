@@ -41,9 +41,9 @@ header#top-navbar {
     position: relative; }
     #busqueda-simple #promociones .promotion-image-container {
       width: 100%;
-      height: auto;
       max-height: 160px;
-      overflow: hidden; }
+      overflow: hidden;
+      height: 160px; }
     #busqueda-simple #promociones .carousel-control {
       width: 5%;
       background-image: none; }
