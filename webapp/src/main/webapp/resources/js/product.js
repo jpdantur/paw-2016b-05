@@ -49,13 +49,13 @@ $(document).ready(function(){
       success: function(data){
         if (data.err) {
           $.notify({
-            message: 'No se pudo comprar el producto'
+            message: messages.buyError
           }, {
             type: 'danger'
           });
         } else {
           $.notify({
-            message: 'Enhorabuena! La compra se ha realizado con exito'
+            message: messages.buySuccess
           }, {
             type: 'success'
           });

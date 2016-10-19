@@ -17,7 +17,7 @@ div#filters
 				else if max.isPresent()
 					div.applied-filter(data-target="maxPrice")
 						button.close &times;
-						span #{messageSource.getMessage('search.filters.price.from', [max.get()], locale)}
+						span #{messageSource.getMessage('search.filters.price.to', [max.get()], locale)}
 				each category in selectedCategories
 					div.applied-filter(data-target-complex="categories", data-category-id="#{category.id}")
 						button.close &times;

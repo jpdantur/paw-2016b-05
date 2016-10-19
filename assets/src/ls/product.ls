@@ -49,12 +49,12 @@ $ document .ready !->
 			success: (data) !->
 				if data.err
 					$.notify {
-						message: 'No se pudo comprar el producto'
+						message: messages.buyError
 					} , do
 						type: 'danger'
 				else
 					$.notify {
-						message: 'Enhorabuena! La compra se ha realizado con exito'
+						message: messages.buySuccess
 					} , do
 						type: 'success'
 

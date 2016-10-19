@@ -69,6 +69,7 @@ $(document).ready(function(){
   $('#filter-price-set').click(function(e){
     e.preventDefault();
     buildFilters();
+    resetPageNumber();
     window.location.search = $.param(filters, true);
   });
   $('#filter-price-min, #filter-price-max').keydown(function(e){
