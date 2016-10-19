@@ -36,7 +36,10 @@ mixin navbar(search)
 											span.item
 												span.item-left
 													a(href="#{context.url('/store/items/'+favourite.id)}")
-														img(src="http://placehold.it/80x80")
+														if favourite.images.isEmpty()
+															img(src="http://placehold.it/80x80")
+														else
+															img(src="#{context.url('/images/get/'+favourite.images.get(0).id)}")
 													span.item-info
 														a(href="#{context.url('/store/items/'+favourite.id)}")
 															span #{favourite.name}

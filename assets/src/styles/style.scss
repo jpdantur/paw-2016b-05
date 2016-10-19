@@ -66,7 +66,7 @@ header#top-navbar {
 		margin-top: 20px;
 	}
 
-	$thumbnail-size: 220px;
+	$thumbnail-size: 250px;
 
 	#promociones {
 		// position: absolute;
@@ -78,50 +78,11 @@ header#top-navbar {
 		margin-top: 50px;
 		position: relative;
 
-		#loading-promociones {
-			// position: absolute;
+		.promotion-image-container {
 			width: 100%;
-			text-align: center;
-		}
-
-		.thumbnail {
-			width: $thumbnail-size;
-			height: $thumbnail-size;
-			position: relative;
-
-			img {
-				position: absolute;
-				width: $thumbnail-size - 10;
-				height: $thumbnail-size - 10;
-			}
-
-			span {
-				position: absolute;
-				text-align: center;
-				width: $thumbnail-size;
-				color: white;
-				text-decoration: none;
-				text-shadow: 2px 2px #222;
-				left: 0;
-
-				&.promotion-city {
-					font-size: 24px;
-					top: 20px;
-				}
-
-
-
-				&.promotion-price {
-					font-size: 32px;
-					line-height: $thumbnail-size;
-					color: $app-main-color;
-
-					.promotion-currency {
-						font-size: 16px;
-					}
-				}
-			}
-
+			height: auto;
+			max-height: 160px;
+			overflow: hidden;
 		}
 
 		.carousel-control {

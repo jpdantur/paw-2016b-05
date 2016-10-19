@@ -4,9 +4,11 @@ import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
@@ -47,7 +49,7 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 
 	private static final ResultSetExtractor<List<StoreItem>> extractor = (ResultSet resultSet) -> {
 		
-		final Map<Long, StoreItemBuilder> items = new HashMap<>();
+		final Map<Long, StoreItemBuilder> items = new LinkedHashMap<>();
 		
 		while (resultSet.next()) {
 			
@@ -145,11 +147,7 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 	 * @see edu.tp.paw.interfaces.dao.IStoreItemDao#findMostSold(int)
 	 */
 	@Override
-	public List<StoreItem> findMostSold(int n) {
-
-		if (n < 1) {
-			return new ArrayList<StoreItem>();
-		}
+	public List<StoreItem> findMostSold(final int n) {
 
 		return
 
@@ -162,7 +160,7 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 								+ "left outer join images on store_items.item_id=images.item_id "
 								+ "order by sold desc limit ?",
 						extractor,
-						n);
+						n+1);
 	}	
 
 	@Override

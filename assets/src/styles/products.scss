@@ -51,7 +51,7 @@
 
 .product-container {
 	background-color: white;
-	height: 250px;
+	height: 260px;
 	padding: 10px;
 	margin: 5px;
 	border: 1px solid #eee;
@@ -146,4 +146,11 @@
 
 	}
 
+}
+
+.image-container {
+	width: 100%;
+	height: auto;
+	max-height: 182px;
+	overflow: hidden;
 }

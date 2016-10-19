@@ -88,9 +88,9 @@ public class StoreItem {
 	 */
 	@Override
 	public String toString() {
-		return "StoreItem [id=" + id + ", description=" + description
-				+ ", name=" + name + ", sold=" + sold + ", created=" + created
-				+ ", lastUpdated=" + lastUpdated + ", price=" + price + "]";
+		return "StoreItem [id=" + id + ", name=" + name + ", sold="
+				+ sold + ", created=" + created + ", lastUpdated="
+				+ lastUpdated + ", price=" + price + "]";
 	}
 	
 	

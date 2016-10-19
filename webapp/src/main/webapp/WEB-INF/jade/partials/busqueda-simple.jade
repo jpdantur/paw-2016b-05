@@ -21,21 +21,23 @@ div.row
 div.row#promociones
 	h4(style="position:absolute;top:-35px;left:16px") #{messageSource.getMessage("index.promoted", [], locale)}
 	div.carousel.slide(data-ride="carousel")#promotion-carousel
-		
 		div.carousel-inner#carousel-content
-			div.item.active
-				each item in mostSoldItems
-					div.col-sm-2
-						a(href="#{context.url('/store/items/'+item.id)}")
-							if item.images.isEmpty()
-								img(src="http://placehold.it/200?text=Sin+Imagen", style="width:100%;height:auto")
-							else
-								img(src="#{context.url('/images/get/'+item.images.get(0).id)}", style="width:100%;height:auto")
-						br
-						a(href="#{context.url('/store/items/'+item.id)}")
-							b #{item.name}
-						br
-						span $#{item.price}
+			each k, i in mostSoldItems
+				if i % 6 ==0
+					div.item(class="#{i/6==0?'active':''}")
+						each item, j in mostSoldItems
+							if i/6*6 <= j && j < (i/6+1)*6
+								div.col-sm-2
+									a(href="#{context.url('/store/items/'+item.id)}")
+										div.promotion-image-container
+											if item.images.isEmpty()
+												img(src="http://placehold.it/200?text=Sin+Imagen", style="width:100%;height:auto")
+											else
+												img(src="#{context.url('/images/get/'+item.images.get(0).id)}", style="width:100%;height:auto")
+									a(href="#{context.url('/store/items/'+item.id)}")
+										b #{item.name}
+									br
+									span $#{item.price}
 		a.left.carousel-control(href="#promotion-carousel", data-slide="prev", style='left:-30px')
 			span.glyphicon.glyphicon-chevron-left
 			span.sr-only Anterior

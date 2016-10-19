@@ -30,7 +30,7 @@
 
 .product-container {
   background-color: white;
-  height: 250px;
+  height: 260px;
   padding: 10px;
   margin: 5px;
   border: 1px solid #eee;
@@ -111,3 +111,9 @@
       -webkit-border-radius: 4px; }
       #filters .filter-content .filter-body .applied-filter .close {
         line-height: 75%; }
+
+.image-container {
+  width: 100%;
+  height: auto;
+  max-height: 182px;
+  overflow: hidden; }

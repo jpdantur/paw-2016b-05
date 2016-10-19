@@ -1,5 +1,7 @@
 package edu.tp.paw.webapp.controller;
 
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -9,13 +11,14 @@ import org.springframework.web.servlet.ModelAndView;
 
 import edu.tp.paw.interfaces.service.ICategoryService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
+import edu.tp.paw.model.StoreItem;
 
 @Controller
 public class IndexController extends BaseController {
 	
 	private static final Logger logger = LoggerFactory.getLogger(IndexController.class);
 	
-	private static final int MOST_SOLD_ITEMS = 6;
+	private static final int MOST_SOLD_ITEMS = 12;
 	
 	@Autowired
 	private IStoreItemService storeItemService;
@@ -29,7 +32,11 @@ public class IndexController extends BaseController {
 		
 		final ModelAndView modelAndView = new ModelAndView("index");
 		
-		modelAndView.addObject("mostSoldItems", storeItemService.getMostSold(MOST_SOLD_ITEMS));
+		List<StoreItem> l = storeItemService.getMostSold(MOST_SOLD_ITEMS);
+		
+		logger.debug("most sold items: {}", l);
+		
+		modelAndView.addObject("mostSoldItems", l);
 		modelAndView.addObject("categories", categoryService.getCategoryTree());
 		
 		return modelAndView;

@@ -35,38 +35,15 @@ header#top-navbar {
     margin-top: 20px; }
   #busqueda-simple #promociones {
     width: 100%;
-    height: 230px;
+    height: 260px;
     margin: 0;
     margin-top: 50px;
     position: relative; }
-    #busqueda-simple #promociones #loading-promociones {
+    #busqueda-simple #promociones .promotion-image-container {
       width: 100%;
-      text-align: center; }
-    #busqueda-simple #promociones .thumbnail {
-      width: 220px;
-      height: 220px;
-      position: relative; }
-      #busqueda-simple #promociones .thumbnail img {
-        position: absolute;
-        width: 210px;
-        height: 210px; }
-      #busqueda-simple #promociones .thumbnail span {
-        position: absolute;
-        text-align: center;
-        width: 220px;
-        color: white;
-        text-decoration: none;
-        text-shadow: 2px 2px #222;
-        left: 0; }
-        #busqueda-simple #promociones .thumbnail span.promotion-city {
-          font-size: 24px;
-          top: 20px; }
-        #busqueda-simple #promociones .thumbnail span.promotion-price {
-          font-size: 32px;
-          line-height: 220px;
-          color: #59ABE3; }
-          #busqueda-simple #promociones .thumbnail span.promotion-price .promotion-currency {
-            font-size: 16px; }
+      height: auto;
+      max-height: 160px;
+      overflow: hidden; }
     #busqueda-simple #promociones .carousel-control {
       width: 5%;
       background-image: none; }
