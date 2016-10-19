@@ -12,7 +12,6 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -90,7 +89,7 @@ public class AdminController extends BaseController {
 		if (!result.hasErrors()) {
 		
 			final CategoryBuilder builder = new CategoryBuilder(form.getName(), form.getParent());
-			final Category category = categoryService.create(builder);
+			categoryService.create(builder);
 			
 			model.addAttribute("success", true);	
 			return "create_category";
@@ -293,7 +292,7 @@ public class AdminController extends BaseController {
 		return "admin_roles_create";
 	}
 	
-	@RequestMapping( value =  "/roles/default/{roleId}", method = RequestMethod.POST)
+	@RequestMapping( value =  "/roles/default/{roleId}", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
 	@ResponseBody
 	public String makeDefault(
 			@PathVariable("roleId") final long id

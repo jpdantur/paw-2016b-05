@@ -16,7 +16,14 @@ $ document .ready !->
 			success: (data) !->
 
 				if data.err
-					bootbox.alert messages.fail
+					$.notify {
+						message: messages.fail
+					}, do
+						type: 'danger'
 				else
+					$.notify {
+						message: messages.success
+					}, do
+						type: 'success'
 					$row .closest(\table) .find(\.default-role) .find(\.text-success) .toggleClass('text-success text-muted') .find('i') .toggleClass 'fa-check fa-minus'
 					$self .toggleClass('text-success text-muted') .find('i') .toggleClass 'fa-check fa-minus'

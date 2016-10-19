@@ -18,8 +18,6 @@ import edu.tp.paw.interfaces.dao.IStoreItemDao;
 import edu.tp.paw.model.StoreImage;
 import edu.tp.paw.model.StoreImageBuilder;
 import edu.tp.paw.model.StoreItem;
-import edu.tp.paw.model.User;
-import edu.tp.paw.model.UserBuilder;
 
 @Repository
 public class StoreImageJdbcDao implements IImageDao {

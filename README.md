@@ -10,7 +10,7 @@
 	|   |    |__ /all
 	|   |    |__ /{id}
 	|   |
-	|   |____+ /sell                     #(StoreController)
+	|   |____+ /sell                     #(StoreSellController)
 	|   |    |__ /details
 	|   |    |__ /images
 	|   |

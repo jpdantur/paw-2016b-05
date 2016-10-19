@@ -19,7 +19,6 @@ import edu.tp.paw.interfaces.dao.ICommentDao;
 import edu.tp.paw.model.Comment;
 import edu.tp.paw.model.CommentBuilder;
 import edu.tp.paw.model.StoreItem;
-import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
 

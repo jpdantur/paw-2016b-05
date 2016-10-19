@@ -51,4 +51,6 @@ public interface IUserService {
 	
 	public List<User> getAllUsers();
 	
+	public boolean updateUser(final User user);
+	
 }

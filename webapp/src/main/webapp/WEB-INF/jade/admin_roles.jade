@@ -3,7 +3,8 @@ extends layout
 block scripts
 	script.
 		var messages = {
-			fail: "#{messageSource.getMessage('admin.roles.defaultFail',[],locale)}"
+			fail: "#{messageSource.getMessage('admin.roles.defaultFail',[],locale)}",
+			success: "#{messageSource.getMessage('admin.roles.defaultSuccess',[],locale)}"
 		};
 	script(type="text/javascript", src="#{context.url('/resources/js/admin_roles.js')}")
 

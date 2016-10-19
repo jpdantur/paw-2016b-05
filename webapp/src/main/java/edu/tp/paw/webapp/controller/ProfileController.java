@@ -5,7 +5,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import edu.tp.paw.interfaces.service.IStoreItemService;
+import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.User;
+import edu.tp.paw.model.UserBuilder;
+import edu.tp.paw.service.UserService;
 import edu.tp.paw.webapp.form.ChangePasswordForm;
 import edu.tp.paw.webapp.form.ProfileForm;
 import edu.tp.paw.webapp.form.validator.ChangePasswordFormValidator;
@@ -26,14 +29,12 @@ public class ProfileController extends BaseController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ProfileController.class);
 	
-	@Autowired
-	private IStoreItemService itemService;
+	@Autowired private IStoreItemService itemService;
+	@Autowired private IUserService userService;
 	
-	@Autowired
-	private ProfileFormValidator validator;
+	@Autowired private ProfileFormValidator validator;
 	
-	@Autowired
-	private ChangePasswordFormValidator passwordValidator;
+	@Autowired private ChangePasswordFormValidator passwordValidator;
 	
 	@RequestMapping( value = "/details", method = RequestMethod.GET)
 	public String profile(
@@ -58,8 +59,24 @@ public class ProfileController extends BaseController {
 		
 		validator.validate(form, result);
 		
+		if (!result.hasErrors()) {
+			
+			final User modifiedUser = new UserBuilder(user).email(form.getEmail()).build();
+			
+			logger.debug("modifying user from {} to {}", user, modifiedUser);
+			
+			if (userService.updateUser(modifiedUser)) {
+				
+				model.addAttribute("loggedUser", modifiedUser);
+				model.addAttribute("success", true);
+				
+			} else {
+				model.addAttribute("success", false);
+			}
+			
+		}
+		
 		model.addAttribute("items", itemService.getUserItems(user));
-		model.addAttribute("success", !result.hasErrors());
 		model.addAttribute("result", result);
 		
 		return "profile";
@@ -85,6 +102,18 @@ public class ProfileController extends BaseController {
 		logger.debug("form: {}", form);
 		
 		passwordValidator.validate(form, result);
+		
+		if (!result.hasErrors()) {
+			
+			if (userService.changePassword(user, form.getPassword())) {
+				
+				model.addAttribute("success", true);
+				
+			} else {
+				model.addAttribute("success", false);
+			}
+			
+		}
 		
 		model.addAttribute("items", itemService.getUserItems(user));
 		model.addAttribute("passSuccess", !result.hasErrors());

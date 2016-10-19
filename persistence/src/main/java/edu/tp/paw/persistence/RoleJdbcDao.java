@@ -1,8 +1,6 @@
 package edu.tp.paw.persistence;
 
 import java.sql.ResultSet;
-import java.sql.Timestamp;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,12 +14,9 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import edu.tp.paw.interfaces.dao.IRoleDao;
-import edu.tp.paw.model.Comment;
-import edu.tp.paw.model.CommentBuilder;
 import edu.tp.paw.model.Role;
 import edu.tp.paw.model.RoleBuilder;
 import edu.tp.paw.model.User;
-import edu.tp.paw.model.UserBuilder;
 
 @Repository
 public class RoleJdbcDao implements IRoleDao {

@@ -223,6 +223,17 @@ public class StoreItemService implements IStoreItemService {
 		}
 		return itemExists(item.getId());
 	}
+
+	@Override
+	public boolean increaseSellCount(final StoreItem item) {
+		if (item == null) {
+			throw new IllegalArgumentException("item cant be null");
+		}
+		if (!itemExists(item)) {
+			throw new IllegalArgumentException("item must exist");
+		}
+		return storeItemDao.increaseSellCount(item);
+	}
 	
 	
 

@@ -13,5 +13,5 @@ $ document .ready !->
 			type: 'POST'
 			success: (data) !->
 				console.log data
-				if !data.err
+				if data.err
 					$self .closest 'li' .remove!

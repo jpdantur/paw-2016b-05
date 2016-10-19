@@ -1,17 +1,12 @@
 package edu.tp.paw.service;
 
-import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import edu.tp.paw.interfaces.dao.IStoreDao;
-import edu.tp.paw.interfaces.service.ICategoryService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IStoreService;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
-import edu.tp.paw.model.User;
 import edu.tp.paw.model.filter.Filter;
 import edu.tp.paw.model.filter.FilterBuilder;
 import edu.tp.paw.model.filter.PagedResult;
@@ -35,6 +30,11 @@ public class StoreService implements IStoreService {
 	@Override
 	public PagedResult<StoreItem> search(final FilterBuilder filter) {
 		return storeItemService.findByFiltering(filter);
+	}
+
+	@Override
+	public boolean purchase(final StoreItem item) {
+		return storeItemService.increaseSellCount(item);
 	}
 
 }

@@ -53,4 +53,6 @@ public interface IStoreItemService {
 	
 	public int getNumberOfItems();
 	
+	public boolean increaseSellCount(final StoreItem item);
+	
 }

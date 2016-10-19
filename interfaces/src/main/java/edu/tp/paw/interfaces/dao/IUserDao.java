@@ -42,4 +42,6 @@ public interface IUserDao {
 	
 	public List<User> getAll();
 	
+	public boolean updateUser(final User user);
+	
 }

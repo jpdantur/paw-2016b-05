@@ -27,7 +27,7 @@
     </root>
     
     <!-- additivity prevents logs from bubbling up to parent loggers -->
-    <logger name="ar.edu.itba.webapp" level="DEBUG" additivity="false">
+    <logger name="edu.tp.paw" level="TRACE" additivity="false">
     	<appender-ref ref="paw-appender"/>
     </logger>
 </configuration>

@@ -1,10 +1,8 @@
 package edu.tp.paw.interfaces.dao;
 
-import java.math.BigDecimal;
 import java.util.List;
 
 import edu.tp.paw.model.Category;
-import edu.tp.paw.model.StoreImage;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.model.User;
@@ -57,5 +55,7 @@ public interface IStoreItemDao {
 	
 	public boolean itemExists(final long id);
 	public boolean itemExists(final StoreItem item);
+
+	public boolean increaseSellCount(final StoreItem item); 
 	
 }

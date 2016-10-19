@@ -4,6 +4,13 @@ block styles
 	link(href="#{context.url('/resources/css/product.css')}", rel="stylesheet")
 
 block scripts
+	script.
+		var messages = {
+			addError: "#{messageSource.getMessage('successMessages.toggleFavourite.addError',[],locale)}",
+			addSuccess: "#{messageSource.getMessage('successMessages.toggleFavourite.addSuccess',[],locale)}",
+			removeError: "#{messageSource.getMessage('successMessages.toggleFavourite.removeError',[],locale)}",
+			removeSuccess: "#{messageSource.getMessage('successMessages.toggleFavourite.removeSuccess',[],locale)}"
+		};
 	script(type="text/javascript", src="#{context.url('/resources/js/product.js')}")
 
 
@@ -18,10 +25,10 @@ block content
 							div.alert.alert-success.alert-dismissable
 								button.close(type="button", data-dismiss="alert")
 									span &times;
-								strong Enhorabuena!
-								span &nbsp; Su producto ha sido publicado con exito
+								strong #{messageSource.getMessage('successMessages.publishItem.title', [], locale)}!
+								span &nbsp; #{messageSource.getMessage('successMessages.publishItem.content', [], locale)}
 								br
-								a.btn.btn-success(href="#{context.url('/store/sell/details')}") Publicar otro
+								a.btn.btn-success(href="#{context.url('/store/sell/details')}") #{messageSource.getMessage('successMessages.publishItem.action', [], locale)}
 				div.row#product-container
 					div.col-sm-4
 						if storeItem.images.isEmpty()
@@ -61,7 +68,7 @@ block content
 							else
 								b #{messageSource.getMessage('item.new', [], locale)}
 						h3.price $#{storeItem.price}
-						a.btn.btn-success.btn-lg(href="#", data-buyer-email="#{storeItem.owner.email}") #{messageSource.getMessage('item.buy', [], locale)}
+						a.btn.btn-success.btn-lg#purchase(href="#", data-buyer-email="#{storeItem.owner.email}", data-item="#{storeItem.id}") #{messageSource.getMessage('item.buy', [], locale)}
 					div.col-sm-12
 						h3 #{messageSource.getMessage('item.description', [], locale)}
 						p #{storeItem.description}

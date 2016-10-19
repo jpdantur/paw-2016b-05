@@ -174,6 +174,13 @@ module.exports = function (grunt) {
 					src: ['*.css'],
 					dest: destinationDirectory+'css/'
 				}, {
+					// jquery-treegrid css
+					expand: true,
+					dot: true,
+					cwd: 'bower_components/remarkable-bootstrap-notify/dist',
+					src: ['bootstrap-notify.js'],
+					dest: destinationDirectory+'js/lib/'
+				}, {
 					// my js files
 					expand: true,
     			dot: true,

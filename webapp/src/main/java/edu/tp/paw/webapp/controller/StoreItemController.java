@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 import edu.tp.paw.interfaces.service.ICategoryService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
+import edu.tp.paw.interfaces.service.IStoreService;
 import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.Category;
-import edu.tp.paw.model.Comment;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.model.User;
@@ -32,6 +32,7 @@ public class StoreItemController extends BaseController {
 
 	private final static Logger logger = LoggerFactory.getLogger(StoreItemController.class);
 	
+	@Autowired private IStoreService storeService;
 	@Autowired private IStoreItemService itemService;
 	@Autowired private ICategoryService categoryService;
 	@Autowired private IUserService userService;
@@ -46,6 +47,7 @@ public class StoreItemController extends BaseController {
 		final StoreItem item = itemService.findById(id);
 		
 		if (item == null) {
+			logger.info("item with id {} was not found", id);
 			throw new StoreItemNotFoundException();
 		}
 		
@@ -158,6 +160,24 @@ public class StoreItemController extends BaseController {
 		return "{\"err\":2 }";
 	}
 	
-	
+	@RequestMapping( value = "/{itemId}/purchase", method = RequestMethod.POST, produces = "application/json; charset=utf-8" )
+	@ResponseBody
+	public String purchaseItem(
+			@PathVariable("itemId") final long id,
+			@ModelAttribute("loggedUser") final User user
+			) {
+		
+		final StoreItem item = itemService.findById(id);
+		
+		if (item == null) {
+			return "{\"err\":3 }";
+		}
+		
+		if (storeService.purchase(item)) {
+			return "{\"err\":0 }";
+		}
+		
+		return "{\"err\": 1}";
+	}
 
 }

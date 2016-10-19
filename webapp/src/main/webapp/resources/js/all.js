@@ -9,7 +9,7 @@ $(document).ready(function(){
       type: 'POST',
       success: function(data){
         console.log(data);
-        if (!data.err) {
+        if (data.err) {
           $self.closest('li').remove();
         }
       }

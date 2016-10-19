@@ -109,7 +109,7 @@ public class UserService implements IUserService {
 			throw new IllegalArgumentException("user must exist");
 		}
 		
-		return userDao.changePassword(user, password);
+		return userDao.changePassword(user, passwordEncoder.encode(password));
 	}
 
 	@Override
@@ -270,6 +270,20 @@ public class UserService implements IUserService {
 	public List<User> getAllUsers() {
 		
 		return userDao.getAll();
+	}
+
+	@Override
+	public boolean updateUser(final User user) {
+		
+		if (user == null) {
+			throw new IllegalArgumentException("user cant be null");
+		}
+		
+		if (!userExists(user)) {
+			throw new IllegalArgumentException("user must exist");
+		}
+		
+		return userDao.updateUser(user);
 	}
 
 	

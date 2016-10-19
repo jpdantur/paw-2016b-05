@@ -16,7 +16,7 @@ block scripts
 				paramName: function () {
 					return 'images';
 				},
-				dictDefaultMessage: "#{messageSource.getMessage('sell.image.upload.drag',[],locale)}" // <---- rellenar con messageSource.getMessage
+				dictDefaultMessage: "#{messageSource.getMessage('sell.image.upload.drag',[],locale)}"
 			});
 
 			$dropzone = $('#dropzone');
@@ -31,14 +31,11 @@ block scripts
 			});
 
 			dropzone.on('queuecomplete', function () {
-				window.location.href = "#{context.url('/store/items/'+item.id)}";
+				window.location.href = "#{context.url('/store/items/'+item.id+'?s=1')}";
 			});
 			
 		});
 
-		//- var dropzone = new Dropzone('div#dropzone', {
-		//- 	url: "#{context.url('/')}"
-		//- });
 	script(src="#{context.url('/resources/js/sell.js')}", type="text/javascript")
 
 block styles
@@ -57,15 +54,14 @@ block content
 							div.alert.alert-success.alert-dismissable
 								button.close(type="button", data-dismiss="alert")
 									span &times;
-								strong Enhorabuena!
-								span &nbsp; Su producto ha sido creado con exito
-								br
-								a.btn.btn-default(href="#{context.url('/store/item/'+item.id+'/details/')}") Editar Detalles
+								strong #{messageSource.getMessage('successMessages.publishItem.title', [], locale)}!
+								span &nbsp; #{messageSource.getMessage('successMessages.publishItem.content', [], locale)}
+								//-br
+								//-a.btn.btn-default(href="#{context.url('/store/item/'+item.id+'/details/')}") Editar Detalles
 				form.form-horizontal(method="POST",action="#{context.url('/images/upload/'+item.id)}", enctype="multipart/form-data")
 					div.form-group
 						label.col-sm-2.control-label #{messageSource.getMessage('sell.field.pictures',[],locale)}
 						div.col-sm-10
-							//-input(name="images", type="file")
 							div#dropzone
 								div.dz-message #{messageSource.getMessage('sell.image.upload.drag',[],locale)}
 								div.fallback

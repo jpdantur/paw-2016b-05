@@ -12,8 +12,17 @@ $(document).ready(function(){
       type: 'POST',
       success: function(data){
         if (data.err) {
-          bootbox.alert(messages.fail);
+          $.notify({
+            message: messages.fail
+          }, {
+            type: 'danger'
+          });
         } else {
+          $.notify({
+            message: messages.success
+          }, {
+            type: 'success'
+          });
           $row.closest('table').find('.default-role').find('.text-success').toggleClass('text-success text-muted').find('i').toggleClass('fa-check fa-minus');
           $self.toggleClass('text-success text-muted').find('i').toggleClass('fa-check fa-minus');
         }

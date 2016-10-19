@@ -16,6 +16,16 @@ public class UserBuilder implements IBuilder<User> {
 	private String password;
 	private Set<StoreItem> favourites = new HashSet<>();
 	
+	public UserBuilder(final User user) {
+		this.firstName = user.getFirstName();
+		this.lastName = user.getLastName();
+		this.username = user.getUsername();
+		this.email = user.getEmail();
+		this.favourites = user.getFavourites();
+		this.password = user.getPassword();
+		this.id = user.getId();
+	}
+	
 	public UserBuilder(final String username) {
 		this.username = username;
 	}

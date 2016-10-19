@@ -2,29 +2,23 @@ package edu.tp.paw.persistence;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
-import java.sql.Types;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.ResultSetExtractor;
-import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
-import edu.tp.paw.interfaces.dao.ICategoryDao;
 import edu.tp.paw.interfaces.dao.IStoreItemDao;
-import edu.tp.paw.interfaces.dao.IUserDao;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.CategoryBuilder;
 import edu.tp.paw.model.StoreImage;
@@ -415,7 +409,7 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 	}
 
 	@Override
-	public boolean itemExists(long id) {
+	public boolean itemExists(final long id) {
 		return
 				jdbcTemplate
 				.getJdbcOperations()
@@ -428,8 +422,24 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 	}
 
 	@Override
-	public boolean itemExists(StoreItem item) {
+	public boolean itemExists(final StoreItem item) {
 		return itemExists(item.getId());
+	}
+
+	@Override
+	public boolean increaseSellCount(final StoreItem item) {
+		
+		final MapSqlParameterSource params = new MapSqlParameterSource();
+		
+		params.addValue("sold", item.getSold()+1);
+		params.addValue("id", item.getId());
+		
+		return 
+				jdbcTemplate
+				.update(
+						"update store_items "
+						+ "set sold=:sold "
+						+ "where item_id = :id", params) == 1;
 	}
 
 

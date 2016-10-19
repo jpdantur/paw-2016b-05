@@ -2,11 +2,9 @@ package edu.tp.paw.interfaces.service;
 
 import java.util.List;
 
-import org.springframework.stereotype.Service;
-
 import edu.tp.paw.model.Role;
-import edu.tp.paw.model.User;
 import edu.tp.paw.model.RoleBuilder;
+import edu.tp.paw.model.User;
 
 public interface IRoleService {
 

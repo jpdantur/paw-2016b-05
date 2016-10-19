@@ -1,6 +1,7 @@
 extends layout
 
 block styles
+	link(href="#{context.url('/resources/css/profile.css')}", rel="stylesheet")
 
 block scripts
 	script(src="#{context.url('/resources/js/profile.js')}", type="text/javascript")

@@ -1,6 +1,5 @@
 package edu.tp.paw.webapp.auth;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.stream.Collectors;
 

@@ -36,7 +36,9 @@ public class BaseController {
 	
 	@ModelAttribute("locale")
 	public Locale currentLocale() {
-		return LocaleContextHolder.getLocale();
+		final Locale locale = LocaleContextHolder.getLocale();
+		logger.trace("request has locale: {}", locale);
+		return locale;
 	}
 	
 	@ModelAttribute("messageSource")
@@ -46,17 +48,22 @@ public class BaseController {
 	
 	@ModelAttribute("loggedUser")
 	public User user() {
+		
+		logger.trace("fetching logged user");
+		
 		final Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 		if (auth == null || !auth.isAuthenticated()) {
+			
+			logger.trace("user is not authenticated");
+			
 			return null;
 		}
 		
+		logger.trace("user is authenticated");
+		
 		Object principal = auth.getPrincipal();
 		
-		logger.debug("modelAttribute loggedUser");
-		
 		if (principal instanceof String) {
-			logger.debug("principal is of kind String[{}]", (String)principal);
 			return userService.findByUsername((String)principal);
 		} else if (principal instanceof UserDetails) {
 			return userService.findByUsername(((UserDetails)principal).getUsername());

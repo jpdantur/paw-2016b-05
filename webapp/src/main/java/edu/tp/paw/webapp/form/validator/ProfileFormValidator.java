@@ -7,7 +7,6 @@ import org.springframework.validation.Validator;
 
 import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.webapp.form.ProfileForm;
-import edu.tp.paw.webapp.form.RegisterForm;
 
 @Component
 public class ProfileFormValidator implements Validator {
