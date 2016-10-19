@@ -93,6 +93,6 @@ block content
 							b.comment-author #{comment.user.firstName}
 							span.pull-right
 								i.fa.fa-clock-o
-								span &nbsp;2016-06-06
+								span &nbsp;#{dateFormatter.format(comment.created)}
 							p #{comment.content}
 						

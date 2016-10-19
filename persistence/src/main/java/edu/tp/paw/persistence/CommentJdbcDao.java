@@ -43,7 +43,7 @@ public class CommentJdbcDao implements ICommentDao {
 					user,
 					resultSet.getString("comment_content")
 				)
-				.timestamp(resultSet.getTimestamp("created"))
+				.created(resultSet.getTimestamp("created"))
 				.id(resultSet.getLong("comment_id"))
 				.build();
 		
@@ -55,7 +55,8 @@ public class CommentJdbcDao implements ICommentDao {
 		jdbcTemplate = new JdbcTemplate(dataSource);
 		jdbcInsert = new SimpleJdbcInsert(jdbcTemplate)
 			.withTableName("comments")
-			.usingGeneratedKeyColumns("comment_id");
+			.usingGeneratedKeyColumns("comment_id")
+			.usingColumns("user_id", "item_id", "comment_content");
 	}
 	
 	@Override
@@ -71,7 +72,7 @@ public class CommentJdbcDao implements ICommentDao {
 			
 		return
 				builder
-				.timestamp(new Timestamp((new Date()).getTime()))
+				.created(new Timestamp((new Date()).getTime()))
 				.id(commentId.longValue())
 				.build();
 	}

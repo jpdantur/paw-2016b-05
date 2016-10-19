@@ -10,7 +10,7 @@ public class CommentBuilder implements IBuilder<Comment> {
 	
 	private long id;
 	private StoreItem item;
-	private Timestamp timestamp = new Timestamp( (new Date()).getTime() );
+	private Timestamp created = new Timestamp( (new Date()).getTime() );
 
 	public CommentBuilder(final User user, final String content) {
 		super();
@@ -18,8 +18,8 @@ public class CommentBuilder implements IBuilder<Comment> {
 		this.content = content;
 	}
 
-	public CommentBuilder timestamp(final Timestamp timestamp) {
-		this.timestamp = timestamp;
+	public CommentBuilder created(final Timestamp created) {
+		this.created = created;
 		return this;
 	}
 	
@@ -49,8 +49,8 @@ public class CommentBuilder implements IBuilder<Comment> {
 		return content;
 	}
 
-	public Timestamp getTimestamp() {
-		return timestamp;
+	public Timestamp getCreated() {
+		return created;
 	}
 
 	@Override

@@ -8,14 +8,14 @@ public class Comment {
 	private final User user;
 	private final StoreItem item;
 	private final String content;
-	private final Timestamp timestamp;
+	private final Timestamp created;
 	
 	public Comment(final CommentBuilder builder) {
 		this.id = builder.getId();
 		this.user = builder.getUser();
 		this.item = builder.getItem();
 		this.content = builder.getContent();
-		this.timestamp = builder.getTimestamp();
+		this.created = builder.getCreated();
 	}
 	
 	public User getUser() {
@@ -27,8 +27,8 @@ public class Comment {
 	public String getContent() {
 		return content;
 	}
-	public Timestamp getTimestamp() {
-		return timestamp;
+	public Timestamp getCreated() {
+		return created;
 	}
 	public long getId() {
 		return id;

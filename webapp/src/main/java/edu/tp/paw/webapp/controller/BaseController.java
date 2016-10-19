@@ -1,5 +1,6 @@
 package edu.tp.paw.webapp.controller;
 
+import java.text.SimpleDateFormat;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
@@ -78,6 +79,13 @@ public class BaseController {
 	public String currentUrl(HttpServletRequest request) {
 		
 		return String.format("%s?%s", request.getRequestURI().replace(appContext.getApplicationName(), ""), Optional.ofNullable(request.getQueryString()).orElse(""));
+	}
+	
+	@ModelAttribute("dateFormatter")
+	public SimpleDateFormat dateFormatter(
+			@ModelAttribute("locale") final Locale locale
+			) {
+		return new SimpleDateFormat("dd-MM-yyyy", locale);
 	}
 	
 }
