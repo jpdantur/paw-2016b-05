@@ -16,4 +16,9 @@ $(document).ready(function(){
   });
   hash = window.location.hash;
   $("#myTab a[href='" + hash + "']").tab('show');
+  $(window).on('hashchange', function(){
+    var hash;
+    hash = window.location.hash;
+    $("#myTab a[href='" + hash + "']").tab('show');
+  });
 });

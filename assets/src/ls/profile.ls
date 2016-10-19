@@ -15,5 +15,9 @@ $ document .ready !->
 
 		$ this .attr \action, action + window.location.hash
 
-	hash = window.location.hash;
+	hash = window.location.hash
 	$ "\#myTab a[href='#hash']" .tab \show
+
+	$ window .on \hashchange, !->
+		hash = window.location.hash;
+		$ "\#myTab a[href='#hash']" .tab \show
