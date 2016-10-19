@@ -154,13 +154,14 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 				jdbcTemplate
 				.getJdbcOperations()
 				.query(
-						"select * from store_items "
+						"select * "
+						+ "from "
+								+ "(select * from store_items order by sold desc limit ? ) as store_items "
 								+ "inner join users on store_items.owner=users.user_id "
 								+ "inner join store_categories on store_items.category=store_categories.category_id "
-								+ "left outer join images on store_items.item_id=images.item_id "
-								+ "order by sold desc limit ?",
+								+ "left outer join images on store_items.item_id=images.item_id ",
 						extractor,
-						n+1);
+						n);
 	}	
 
 	@Override
