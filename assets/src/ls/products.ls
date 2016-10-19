@@ -148,6 +148,7 @@ $ document .ready !->
 		e.preventDefault!
 
 		buildFilters!
+		resetPageNumber!
 
 		window.location.search = $ .param filters, true
 

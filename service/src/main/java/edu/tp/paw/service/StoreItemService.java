@@ -118,7 +118,7 @@ public class StoreItemService implements IStoreItemService {
 		
 		final PagedResult<StoreItem> pagedResult = storeItemDao.findByTerm(filter);
 		
-		pagedResult.setNumberOfTotalResults(storeItemDao.getNumberOfItems());
+//		pagedResult.setNumberOfTotalResults(storeItemDao.getNumberOfItems());
 		
 		return pagedResult;
 	}

@@ -211,12 +211,13 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 	public PagedResult<StoreItem> findByTerm(Filter filter) {
 		
 		final StringBuilder query = new StringBuilder(
-				"select * "
-				+ "from store_items "
-				+ "inner join users on store_items.owner=users.user_id "
-				+ "inner join store_categories on store_items.category=store_categories.category_id "
-				+ "left outer join images on store_items.item_id=images.item_id "
-				+ "where ");
+				"select #{token} "
+				+ "from ( "
+					+ "select * "
+					+ "from store_items "
+					+ "inner join users on store_items.owner=users.user_id "
+					+ "inner join store_categories on store_items.category=store_categories.category_id "
+					+ "where ");
 
 		final MapSqlParameterSource params = new MapSqlParameterSource();
 		
@@ -326,12 +327,18 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 				query.append(String.format(" %s ", ORDER_DESCENDING));
 				break;
 		}
+
+		final StringBuilder countQuery = new StringBuilder(query).replace(7, 15, "count(*)");
+		countQuery.append(") as store_items");
 		
+		query.append(" limit :limit offset :offset "
+				+ ") as store_items "
+				+ "left outer join images on store_items.item_id=images.item_id");
+		query.replace(7, 15, "*");
+		
+		//
 
 		final PageFilter pageFilter = filter.getPageFilter();
-
-		query.append(" limit :limit offset :offset");
-
 		final PagedResult<StoreItem> pagedResult = new PagedResult<>();
 
 		pagedResult.setCurrentPage(pageFilter.getPageNumber());
@@ -340,10 +347,15 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 		params.addValue("limit", pageFilter.getPageSize());
 		params.addValue("offset", pageFilter.getPageNumber()*pageFilter.getPageSize());
 		
-		List<StoreItem> results = jdbcTemplate.query(query.toString(), params, extractor);
-
+		System.out.println(query.toString());
+		System.out.println(countQuery);
+		
+		final List<StoreItem> results = jdbcTemplate.query(query.toString(), params, extractor);
+		final int count = jdbcTemplate.queryForObject(countQuery.toString(), params, Integer.class);
+		
 		pagedResult.setNumberOfAvailableResults(results.size());
 		pagedResult.setResults(results);
+		pagedResult.setNumberOfTotalResults(count);
 
 		return pagedResult;
 	}
