@@ -20,8 +20,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import edu.tp.paw.model.User;
+import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.StoreItem;
-import edu.tp.paw.service.UserService;
 
 @Controller
 public class BaseController {
@@ -30,7 +30,7 @@ public class BaseController {
 	
 	@Autowired private ApplicationContext appContext;
 	@Autowired private MessageSource messageSource;
-	@Autowired private UserService userService;
+	@Autowired private IUserService userService;
 	
 	
 	

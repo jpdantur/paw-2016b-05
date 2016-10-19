@@ -8,7 +8,6 @@ import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
-import edu.tp.paw.service.UserService;
 import edu.tp.paw.webapp.form.ChangePasswordForm;
 import edu.tp.paw.webapp.form.ProfileForm;
 import edu.tp.paw.webapp.form.validator.ChangePasswordFormValidator;
