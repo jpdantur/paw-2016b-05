@@ -116,11 +116,7 @@ public class StoreItemService implements IStoreItemService {
 			throw new IllegalArgumentException("term filter cant be null");
 		}
 		
-		final PagedResult<StoreItem> pagedResult = storeItemDao.findByTerm(filter);
-		
-//		pagedResult.setNumberOfTotalResults(storeItemDao.getNumberOfItems());
-		
-		return pagedResult;
+		return storeItemDao.findByTerm(filter);
 	}
 
 	@Override

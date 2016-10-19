@@ -336,7 +336,31 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 				+ "left outer join images on store_items.item_id=images.item_id");
 		query.replace(7, 15, "*");
 		
-		//
+		switch (orderFilter.getField()) {
+			case PRICE:
+				query.append(String.format(" order by %s ", "price"));
+				break;
+			case NAME:
+				query.append(String.format(" order by %s ", "name"));
+				break;
+	
+			default:
+				query.append(String.format(" order by %s ", "price"));
+				break;
+		}
+		
+		switch (orderFilter.getOrder()) {
+			case ASC:
+				query.append(String.format(" %s ", ORDER_ASCENDING));
+				break;
+			case DESC:
+				query.append(String.format(" %s ", ORDER_DESCENDING));
+				break;
+				
+			default:
+				query.append(String.format(" %s ", ORDER_DESCENDING));
+				break;
+		}
 
 		final PageFilter pageFilter = filter.getPageFilter();
 		final PagedResult<StoreItem> pagedResult = new PagedResult<>();
@@ -346,9 +370,6 @@ public class StoreItemJdbcDao implements IStoreItemDao {
 
 		params.addValue("limit", pageFilter.getPageSize());
 		params.addValue("offset", pageFilter.getPageNumber()*pageFilter.getPageSize());
-		
-		System.out.println(query.toString());
-		System.out.println(countQuery);
 		
 		final List<StoreItem> results = jdbcTemplate.query(query.toString(), params, extractor);
 		final int count = jdbcTemplate.queryForObject(countQuery.toString(), params, Integer.class);

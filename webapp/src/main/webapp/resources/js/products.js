@@ -120,6 +120,7 @@ $(document).ready(function(){
   $('#category-filter-button').click(function(e){
     e.preventDefault();
     buildFilters();
+    resetPageNumber();
     window.location.search = $.param(filters, true);
   });
   $('.applied-filter .close').click(function(e){
