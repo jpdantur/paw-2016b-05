@@ -3,6 +3,7 @@ package edu.tp.paw.webapp.config;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
@@ -23,6 +24,9 @@ import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import org.springframework.orm.jpa.JpaVendorAdapter;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
@@ -191,5 +195,24 @@ public class WebConfig extends WebMvcConfigurerAdapter {
   public void init() {
      requestMappingHandlerAdapter.setIgnoreDefaultModelOnRedirect(true);
   }
+	
+	@Bean
+	public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+		final LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
+		factoryBean.setPackagesToScan("edu.tp.paw.model");
+		factoryBean.setDataSource(dataSource());
+		final JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+		factoryBean.setJpaVendorAdapter(vendorAdapter);
+		final Properties properties = new Properties();
+		properties.setProperty("hibernate.hbm2ddl.auto", "update");
+		properties.setProperty("hibernate.dialect", "org. hibernate.dialect.PostgreSQL92Dialect");
+		
+		// sacar para prod
+		properties.setProperty("hibernate.show_sql", "true");
+		properties.setProperty("format_sql", "true");
+		
+		factoryBean.setJpaProperties(properties);
+		return factoryBean;
+	}
 	
 }
