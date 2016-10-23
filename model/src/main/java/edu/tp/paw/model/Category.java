@@ -3,16 +3,37 @@ package edu.tp.paw.model;
 import java.sql.Timestamp;
 import java.util.List;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="store_categories")
 public class Category {
 
+	@Id
+	@GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "store_categories_category_id_seq" )
+	@SequenceGenerator( sequenceName = "store_categories_category_id_seq", name = "store_categories_category_id_seq", allocationSize = 1 )
+	@Column( name =  "category_id")
 	private final long id;
+	@Column( name =  "category_name", length = 100)
 	private final String name;
 	private long parent;
 	
 	private String path;
+	@OneToMany( fetch = FetchType.LAZY, mappedBy = "id", targetEntity = Category.class )
 	private final List<Category> children;
 	
+	@Column( insertable = false, updatable = false )
 	private final Timestamp created;
+	@Column( name =  "last_updated", insertable = false, updatable = true )
 	private final Timestamp lastUpdated;
 	
 	/** Creates Category from #{builder}

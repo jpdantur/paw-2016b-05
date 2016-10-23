@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Properties;
 
 import javax.annotation.PostConstruct;
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.slf4j.Logger;
@@ -24,6 +25,7 @@ import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.init.DataSourceInitializer;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
@@ -134,34 +136,41 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
 	/**
 	 * @return Postgres Database Populator
+	 * @deprecated
 	 */
-	@Bean
-	public DatabasePopulator databasePopulator() {
-		final ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
-
-		databasePopulator.addScript(schemaSql);
-
-		return databasePopulator;
-	}
+//	@Bean
+//	public DatabasePopulator databasePopulator() {
+//		final ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
+//
+//		databasePopulator.addScript(schemaSql);
+//
+//		return databasePopulator;
+//	}
 
 	/**
 	 * @param dataSource
 	 * @return Postgres DataSource Initializer
+	 * @deprecated
 	 */
-	@Bean
-	public DataSourceInitializer dataSourceInitializer(final DataSource dataSource) {
-
-		final DataSourceInitializer dataSourceInitializer = new DataSourceInitializer();
-
-		dataSourceInitializer.setDataSource(dataSource);
-		dataSourceInitializer.setDatabasePopulator(databasePopulator());
-
-		return dataSourceInitializer;
-	}
+//	@Bean
+//	public DataSourceInitializer dataSourceInitializer(final DataSource dataSource) {
+//
+//		final DataSourceInitializer dataSourceInitializer = new DataSourceInitializer();
+//
+//		dataSourceInitializer.setDataSource(dataSource);
+//		dataSourceInitializer.setDatabasePopulator(databasePopulator());
+//
+//		return dataSourceInitializer;
+//	}
+	
+//	@Bean
+//	public PlatformTransactionManager transactionManager() {
+//		return new DataSourceTransactionManager(dataSource());
+//	}
 	
 	@Bean
-	public PlatformTransactionManager txManager() {
-		return new DataSourceTransactionManager(dataSource());
+	public PlatformTransactionManager transactionManager(final EntityManagerFactory entityManagerFactory) {
+		return new JpaTransactionManager(entityManagerFactory);
 	}
 	
 	@Bean
@@ -205,7 +214,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 		factoryBean.setJpaVendorAdapter(vendorAdapter);
 		final Properties properties = new Properties();
 		properties.setProperty("hibernate.hbm2ddl.auto", "update");
-		properties.setProperty("hibernate.dialect", "org. hibernate.dialect.PostgreSQL92Dialect");
+		properties.setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQL92Dialect");
 		
 		// sacar para prod
 		properties.setProperty("hibernate.show_sql", "true");

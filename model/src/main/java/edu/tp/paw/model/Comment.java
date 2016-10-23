@@ -2,13 +2,41 @@ package edu.tp.paw.model;
 
 import java.sql.Timestamp;
 
+import javax.annotation.Generated;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+@Entity
+@Table( name = "comments")
 public class Comment {
 
-	private final long id;
-	private final User user;
-	private final StoreItem item;
-	private final String content;
-	private final Timestamp created;
+	@Id
+	@GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "comments_comment_id_seq" )
+	@SequenceGenerator( sequenceName = "comments_comment_id_seq", name = "comments_comment_id_seq", allocationSize = 1 )
+	@Column( name =  "comment_id")
+	private long id;
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
+	@JoinColumn(name = "user_id")
+	private User user;
+	@JoinColumn(name = "item_id")
+	@ManyToOne(fetch = FetchType.EAGER, optional = false)
+	private StoreItem item;
+	@Column(length = 300, nullable = false, name = "comment_content")
+	private String content;
+	@Column(insertable = false, updatable = false, nullable = false)
+	private Timestamp created;
+	
+	/* package */ Comment() {
+		// hibernate, duh!
+	}
 	
 	public Comment(final CommentBuilder builder) {
 		this.id = builder.getId();

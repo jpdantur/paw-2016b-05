@@ -1,14 +1,35 @@
 package edu.tp.paw.model;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+@Entity
+@Table( name = "roles")
 public class Role {
 	
-	private final long id;
-	private final String roleName;
-	private final String slug;
+	@Id
+	@GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "roles_role_id_seq" )
+	@SequenceGenerator( sequenceName = "roles_role_id_seq", name = "roles_role_id_seq", allocationSize = 1 )
+	@Column( name =  "role_id")
+	private long id;
+	@Column( name = "role_name", length = 100 )
+	private String roleName;
+	@Column(length = 100 )
+	private String slug;
 	// default is a reserved word
-	private final boolean _default;
+	@Column( name = "default" )
+	private boolean _default;
 	
-	public Role(final RoleBuilder builder) {
+	/* package */ Role() {
+		// hibernate, duh
+	}
+	
+	/* package */ Role(final RoleBuilder builder) {
 		this.id = builder.getId();
 		this.roleName = builder.getRoleName();
 		this.slug = builder.getSlug();

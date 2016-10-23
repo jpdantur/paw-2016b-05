@@ -4,24 +4,50 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.OneToMany;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+@Entity
+@Table( name = "store_items")
 public class StoreItem {
 	
-	private final long id;
+	@Id
+	@GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "items_item_id_seq" )
+	@SequenceGenerator( sequenceName = "items_item_id_seq", name = "items_item_id_seq", allocationSize = 1 )
+	@Column( name =  "item_id")
+	private long id;
+	@Column( length = 100 )
+	private String name;
+	private String description;
+	private BigDecimal price;
+	@ManyToOne( fetch = FetchType.EAGER )
+	private User owner;
+	private boolean used;
 	
-	private final String name;
-	private final String description;
-	private final BigDecimal price;
-	private final User owner;
-	private final boolean used;
+	@ManyToOne( fetch = FetchType.EAGER )
+	private Category category;
 	
-	private final Category category;
+	private long sold;
 	
-	private final long sold;
+	@Column(insertable = false, updatable = false)
+	private Timestamp created;
+	@Column(name = "last_name", insertable = false, updatable = true)
+	private Timestamp lastUpdated;
 	
-	private final Timestamp created;
-	private final Timestamp lastUpdated;
+	@OneToMany( fetch = FetchType.LAZY )
+	private List<StoreImage> images;
 	
-	private final List<StoreImage> images;
+	/* package */ StoreItem() {
+		// hibernate, duh!
+	}
 	
 	/* package */ StoreItem(final StoreItemBuilder builder) {
 		this.id = builder.getId();

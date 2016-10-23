@@ -1,13 +1,35 @@
 package edu.tp.paw.model;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
+
+@Entity
+@Table(name="store_images")
 public class StoreImage {
 
-	private final long id;
-	private final StoreItem item;
-	private final byte[] content;
-	private final String mimeType;
+	@Id
+	@GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "images_image_id_seq" )
+	@SequenceGenerator( sequenceName = "images_image_id_seq", name = "images_image_id_seq", allocationSize = 1 )
+	@Column( name =  "image_id")
+	private long id;
+	@ManyToOne( fetch = FetchType.EAGER )
+	private StoreItem item;
+	private byte[] content;
+	@Column( name = "mime_type" )
+	private String mimeType;
 	
-	public StoreImage(StoreImageBuilder builder) {
+	/* package */ StoreImage() {
+		// hibernate, duh!
+	}
+	
+	/* package */ StoreImage(final StoreImageBuilder builder) {
 		this.id = builder.getId();
 		this.item = builder.getItem();
 		this.content = builder.getContent();
