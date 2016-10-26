@@ -41,13 +41,10 @@ public class SiglasUserDetailsService implements UserDetailsService {
 		
 		final Set<Role> roles = userService.getRoles(user);
 		
-		logger.debug("roles: {}", roles);
+		logger.debug("user {} has roles: {}", username, roles);
 		
 		final Collection<? extends GrantedAuthority> authorities = 
 				roles.stream().map( (final Role v) -> {
-					System.out.println();
-					logger.trace("here i am");
-					logger.debug("role with slug: {}", v.getSlug());
 					return new SimpleGrantedAuthority(String.format("ROLE_%s", v.getSlug()));
 				}).collect(Collectors.toList());
 		

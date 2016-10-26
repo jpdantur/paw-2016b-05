@@ -25,7 +25,7 @@ mixin navbar(search)
 									i.fa.fa-heart
 									span.caret
 								ul.dropdown-menu.dropdown-favourite
-									if !userFavourites.isEmpty()
+									if !loggedUser.favourites.isEmpty()
 										li
 											span.fav-title #{messageSource.getMessage('index.favourite.title',[],locale)}
 									else

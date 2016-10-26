@@ -55,7 +55,7 @@ block content
 					div.col-sm-8
 						h1 #{storeItem.name}&nbsp;
 							if loggedUser
-								if userFavourites.contains(storeItem)
+								if loggedUser.favourites.contains(storeItem)
 									a.text-danger.add-favourite(href="#", data-item="#{storeItem.id}")
 										i.fa.fa-heart
 								else
@@ -95,9 +95,9 @@ block content
 						a.btn.btn-success(href="#{context.url('/auth/login?next='+currentURI)}")
 							i.fa.fa-comment
 							span &nbsp;#{messageSource.getMessage('item.commentAction', [], locale)}
-					if comments.isEmpty()
+					if storeItem.comments.isEmpty()
 						p.lead #{messageSource.getMessage('item.commentEmpty', [], locale)}
-					each comment in comments
+					each comment in storeItem.comments
 						div.comment
 							b.comment-author #{comment.user.firstName}
 							span.pull-right

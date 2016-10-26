@@ -1,5 +1,6 @@
 package edu.tp.paw.service;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -248,12 +249,12 @@ public class UserService implements IUserService {
 			throw new IllegalArgumentException("user must exist");
 		}
 		
-//		final User userWithRoles = userDao.findById(user.getId());
+		final User u = userDao.findById(user.getId());
 		
+		// little hibernate trick
+		u.getRoles().iterator();
 		
-		user.getPublishedItems();
-		
-		return user.getRoles();
+		return u.getRoles();
 		
 //		return roleService.getRolesForUser(user);
 	}

@@ -17,6 +17,9 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+
 @Entity
 @Table( name = "store_items")
 public class StoreItem {
@@ -55,6 +58,7 @@ public class StoreItem {
 	private Timestamp lastUpdated;
 	
 	@OneToMany( fetch = FetchType.EAGER,  mappedBy = "item")
+	@Fetch(FetchMode.JOIN)
 	private List<StoreImage> images;
 	
 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "item" )
