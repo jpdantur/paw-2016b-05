@@ -1,6 +1,7 @@
 package edu.tp.paw.webapp.auth;
 
 import java.util.Collection;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
@@ -14,6 +15,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Component;
 
 import edu.tp.paw.interfaces.service.IUserService;
+import edu.tp.paw.model.Role;
 import edu.tp.paw.model.User;
 
 @Component
@@ -35,10 +37,17 @@ public class SiglasUserDetailsService implements UserDetailsService {
 			throw new UsernameNotFoundException("Username: " + username + " does not exist");
 		}
 		
-		logger.debug("found {}", user);
+		logger.debug("found user {} ({} {})", user.getUsername(), user.getFirstName(), user.getLastName());
+		
+		final Set<Role> roles = userService.getRoles(user);
+		
+		logger.debug("roles: {}", roles);
 		
 		final Collection<? extends GrantedAuthority> authorities = 
-				userService.getRoles(user).stream().map( v -> {
+				roles.stream().map( (final Role v) -> {
+					System.out.println();
+					logger.trace("here i am");
+					logger.debug("role with slug: {}", v.getSlug());
 					return new SimpleGrantedAuthority(String.format("ROLE_%s", v.getSlug()));
 				}).collect(Collectors.toList());
 		

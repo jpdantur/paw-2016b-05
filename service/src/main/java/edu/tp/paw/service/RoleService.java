@@ -1,6 +1,7 @@
 package edu.tp.paw.service;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -14,6 +15,7 @@ import edu.tp.paw.model.RoleBuilder;
 import edu.tp.paw.model.User;
 
 @Service
+@Transactional
 public class RoleService implements IRoleService {
 
 	@Autowired private IRoleDao roleDao;
@@ -25,7 +27,7 @@ public class RoleService implements IRoleService {
 	}
 	
 	@Override
-	public List<Role> getRolesForUser(final User user) {
+	public Set<Role> getRolesForUser(final User user) {
 		if (user == null) {
 			throw new IllegalArgumentException("user cant be null");
 		}

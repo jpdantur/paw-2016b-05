@@ -47,7 +47,7 @@ public interface IUserService {
 	
 	public int getNumberOfUsers();
 	
-	public List<Role> getRoles(final User user);
+	public Set<Role> getRoles(final User user);
 	public boolean addRole(final User user, final Role role);
 	
 	public List<User> getAllUsers();

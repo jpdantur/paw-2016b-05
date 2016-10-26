@@ -17,7 +17,7 @@ public interface IUserDao {
 	User findById(final long id);
 	
 	User findByUsername(final String username);
-	User findByEmail(final String username);
+	User findByEmail(final String email);
 	
 	boolean idExists(final long id);
 	boolean usernameExists(final String username);

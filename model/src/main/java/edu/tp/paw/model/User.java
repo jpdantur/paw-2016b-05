@@ -1,5 +1,6 @@
 package edu.tp.paw.model;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -17,6 +18,10 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import javax.persistence.UniqueConstraint;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.FetchProfile;
+
 @Entity
 @Table(name = "users", uniqueConstraints = {
 		@UniqueConstraint( name = "user_email_uniq", columnNames = { "username", "email" } )
@@ -27,7 +32,7 @@ public class User {
 	@GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "users_user_id_seq" )
 	@SequenceGenerator( sequenceName = "users_user_id_seq", name = "users_user_id_seq", allocationSize = 1 )
 	@Column( name =  "user_id")
-	private long id;
+	private Long id;
 	@Column( name = "first_name", length = 100)
 	private String firstName;
 	@Column( name = "last_name", length = 100)
@@ -39,7 +44,7 @@ public class User {
 	@Column(length = 100)
 	private String email;
 	
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(
 			name = "favourites",
 			joinColumns = @JoinColumn(name = "user_id"),
@@ -50,7 +55,8 @@ public class User {
 				@UniqueConstraint( name = "favourite_uniq", columnNames = { "user_id", "store_item_id" })
 			}
 	)
-	private Set<StoreItem> favourites;
+	@Fetch(FetchMode.SELECT)
+	private Set<StoreItem> favourites = new HashSet<>();
 	
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(
@@ -63,7 +69,12 @@ public class User {
 				@UniqueConstraint( name = "user_roles_uniq",  columnNames = { "user_id", "role_id" })
 			}
 	)
-	private Set<Role> roles;
+	@Fetch(FetchMode.SELECT)
+	private Set<Role> roles = new HashSet<>();
+	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "owner")
+	@Fetch(FetchMode.SELECT)
+	private Set<StoreItem> publishedItems = new HashSet<>();
 	
 	/* package */ User() {
 		// hibernate, duh!
@@ -111,13 +122,20 @@ public class User {
 	public Set<Role> getRoles() {
 		return roles;
 	}
+	
+	public Set<StoreItem> getPublishedItems() {
+		return publishedItems;
+	}
 
 	@Override
 	public String toString() {
 		return "User [id=" + id + ", firstName=" + firstName + ", lastName="
 				+ lastName + ", username=" + username + ", password=" + password
-				+ ", email=" + email + ", favourites=" + favourites + "]";
+				+ ", email=" + email + ", favourites=" + favourites + ", roles="
+				+ roles + "]";
 	}
+
+	
 	
 	
 

@@ -45,8 +45,8 @@ public class StoreItemJdbcDaoTest {
 	@Autowired
 	private CategoryJdbcDao categoryDao;
 	
-	@Autowired
-	private UserJdbcDao userDao;
+//	@Autowired
+//	private UserJdbcDao userDao;
 	
 //	@Autowired
 //	private StoreItemJdbcDao storeItemDao;
@@ -59,13 +59,13 @@ public class StoreItemJdbcDaoTest {
 	
 	@Before
 	public void setUp() {
-		jdbcTemplate = new JdbcTemplate(ds);
-		JdbcTestUtils.deleteFromTables(jdbcTemplate, "store_items");
-		JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
-		JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, "store_categories", "category_id != 0");
+//		jdbcTemplate = new JdbcTemplate(ds);
+//		JdbcTestUtils.deleteFromTables(jdbcTemplate, "store_items");
+//		JdbcTestUtils.deleteFromTables(jdbcTemplate, "users");
+//		JdbcTestUtils.deleteFromTableWhere(jdbcTemplate, "store_categories", "category_id != 0");
 
 //		category = categoryDao.create(new CategoryBuilder(CATEGORY,0));
-		user = userDao.create(new UserBuilder(USERNAME));
+//		user = userDao.create(new UserBuilder(USERNAME));
 	}
 	
 	@Test

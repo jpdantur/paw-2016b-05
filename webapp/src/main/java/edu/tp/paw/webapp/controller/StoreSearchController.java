@@ -110,7 +110,8 @@ public class StoreSearchController extends BaseController {
 		modelAndView.addObject("storeItem", storeItem);
 		modelAndView.addObject("published", published);
 		modelAndView.addObject("commentError", commentError);
-		modelAndView.addObject("comments", storeItemService.getComments(storeItem));
+//		modelAndView.addObject("comments", storeItemService.getComments(storeItem));
+		modelAndView.addObject("comments", new ArrayList<>());
 		
 		return modelAndView;
 	}

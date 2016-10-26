@@ -54,10 +54,10 @@ public class StoreItem {
 	@Column(name = "last_updated", insertable = false, updatable = true)
 	private Timestamp lastUpdated;
 	
-	@OneToMany( fetch = FetchType.EAGER,  mappedBy = "id")
+	@OneToMany( fetch = FetchType.EAGER,  mappedBy = "item")
 	private List<StoreImage> images;
 	
-	@OneToMany( fetch = FetchType.LAZY, mappedBy = "id" )
+	@OneToMany( fetch = FetchType.LAZY, mappedBy = "item" )
 	private List<Comment> comments;
 	
 	/* package */ StoreItem() {

@@ -6,6 +6,7 @@ import java.util.Set;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import edu.tp.paw.interfaces.dao.IUserDao;
@@ -41,7 +42,10 @@ public class UserService implements IUserService {
 	
 	@Override
 	public User findByUsername(final String username) {
-		return userDao.findByUsername(username);
+		
+		final User u = userDao.findByUsername(username); 
+		
+		return u;
 	}
 	
 	/* (non-Javadoc)
@@ -206,7 +210,6 @@ public class UserService implements IUserService {
 	}
 
 	@Override
-	@Transactional
 	public User createUser(final UserBuilder builder, final Role role) {
 		
 		if (builder == null) {
@@ -235,7 +238,7 @@ public class UserService implements IUserService {
 	}
 
 	@Override
-	public List<Role> getRoles(final User user) {
+	public Set<Role> getRoles(final User user) {
 		
 		if (user == null) {
 			throw new IllegalArgumentException("user cant be null");
@@ -245,7 +248,14 @@ public class UserService implements IUserService {
 			throw new IllegalArgumentException("user must exist");
 		}
 		
-		return roleService.getRolesForUser(user);
+//		final User userWithRoles = userDao.findById(user.getId());
+		
+		
+		user.getPublishedItems();
+		
+		return user.getRoles();
+		
+//		return roleService.getRolesForUser(user);
 	}
 
 	@Override

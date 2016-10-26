@@ -30,6 +30,7 @@ import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.multipart.MultipartResolver;
@@ -47,6 +48,7 @@ import de.neuland.jade4j.spring.view.JadeViewResolver;
 @EnableWebMvc
 @ComponentScan({"edu.tp.paw.webapp.controller", "edu.tp.paw.webapp.form.validator", "edu.tp.paw.service", "edu.tp.paw.persistence"})
 @Configuration
+@EnableTransactionManagement
 public class WebConfig extends WebMvcConfigurerAdapter {
 
 	private final static Logger logger = LoggerFactory.getLogger(WebConfig.class);
@@ -132,46 +134,6 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 
 		return dataSource;
 	}
-
-
-	/**
-	 * @return Postgres Database Populator
-	 * @deprecated
-	 */
-//	@Bean
-//	public DatabasePopulator databasePopulator() {
-//		final ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
-//
-//		databasePopulator.addScript(schemaSql);
-//
-//		return databasePopulator;
-//	}
-
-	/**
-	 * @param dataSource
-	 * @return Postgres DataSource Initializer
-	 * @deprecated
-	 */
-//	@Bean
-//	public DataSourceInitializer dataSourceInitializer(final DataSource dataSource) {
-//
-//		final DataSourceInitializer dataSourceInitializer = new DataSourceInitializer();
-//
-//		dataSourceInitializer.setDataSource(dataSource);
-//		dataSourceInitializer.setDatabasePopulator(databasePopulator());
-//
-//		return dataSourceInitializer;
-//	}
-	
-//	@Bean
-//	public PlatformTransactionManager transactionManager() {
-//		return new DataSourceTransactionManager(dataSource());
-//	}
-	
-	@Bean
-	public PlatformTransactionManager transactionManager(final EntityManagerFactory entityManagerFactory) {
-		return new JpaTransactionManager(entityManagerFactory);
-	}
 	
 	@Bean
 	public MessageSource messageSource() {
@@ -222,6 +184,13 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 		
 		factoryBean.setJpaProperties(properties);
 		return factoryBean;
+	}
+	
+	@Bean
+	public PlatformTransactionManager transactionManager() {
+		final JpaTransactionManager transactionManager = new JpaTransactionManager();
+		transactionManager.setEntityManagerFactory(entityManagerFactory().getObject());
+		return transactionManager;
 	}
 	
 }

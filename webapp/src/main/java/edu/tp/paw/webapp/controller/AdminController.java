@@ -1,6 +1,7 @@
 package edu.tp.paw.webapp.controller;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.validation.Valid;
 
@@ -216,7 +217,7 @@ public class AdminController extends BaseController {
 			throw new StoreItemNotFoundException();
 		}
 		
-		final List<Role> roles = userService.getRoles(user);
+		final Set<Role> roles = userService.getRoles(user);
 		
 		model.addAttribute("user", user);
 		model.addAttribute("roles", roles);
