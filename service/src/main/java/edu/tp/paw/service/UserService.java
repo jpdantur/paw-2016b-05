@@ -1,6 +1,7 @@
 package edu.tp.paw.service;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -20,6 +21,7 @@ import edu.tp.paw.model.UserBuilder;
 
 
 @Service
+@Transactional
 public class UserService implements IUserService {
 	
 	@Autowired private IUserDao userDao;
@@ -132,7 +134,7 @@ public class UserService implements IUserService {
 	}
 
 	@Override
-	public List<StoreItem> getFavourites(final User user) {
+	public Set<StoreItem> getFavourites(final User user) {
 		
 		if (user == null) {
 			throw new IllegalArgumentException("user cant be null");
@@ -142,7 +144,9 @@ public class UserService implements IUserService {
 			throw new IllegalArgumentException("user must exist");
 		}
 		
-		return itemService.getFavourites(user);
+		return user.getFavourites();
+		
+//		return itemService.getFavourites(user);
 		
 	}
 

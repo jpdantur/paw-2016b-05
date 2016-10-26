@@ -15,6 +15,7 @@ public class UserBuilder implements IBuilder<User> {
 	private long id;
 	private String password;
 	private Set<StoreItem> favourites = new HashSet<>();
+	private Set<Role> roles = new HashSet<>();
 	
 	public UserBuilder(final User user) {
 		this.firstName = user.getFirstName();
@@ -55,6 +56,16 @@ public class UserBuilder implements IBuilder<User> {
 		return this;
 	}
 	
+	public UserBuilder role(final Role role) {
+		this.roles.add(role);
+		return this;
+	}
+	
+	public UserBuilder roles(final Collection<Role> roles) {
+		this.roles.addAll(roles);
+		return this;
+	}
+	
 	public UserBuilder id(final long id) {
 		this.id = id;
 		return this;
@@ -83,6 +94,10 @@ public class UserBuilder implements IBuilder<User> {
 
 	public Set<StoreItem> getFavourites() {
 		return favourites;
+	}
+	
+	public Set<Role> getRoles() {
+		return roles;
 	}
 	
 	public long getId() {

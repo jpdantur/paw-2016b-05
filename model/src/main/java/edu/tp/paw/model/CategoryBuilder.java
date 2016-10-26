@@ -9,7 +9,7 @@ public class CategoryBuilder implements IBuilder<Category> {
 
 	// Required parameters
 	private final String name;
-	private final long parent;
+	private final Category parent;
 	
 	
 	// Optional paramenters
@@ -26,7 +26,7 @@ public class CategoryBuilder implements IBuilder<Category> {
 	 * @param name the new Category name
 	 * @param parent The new Category parent id
 	 */
-	public CategoryBuilder(String name, long parent) {
+	public CategoryBuilder(final String name, final Category parent) {
 		
 		this.name = name;
 		this.parent = parent;
@@ -38,7 +38,7 @@ public class CategoryBuilder implements IBuilder<Category> {
 	 * @param created Timestamp when #{this} was created
 	 * @return #{this}
 	 */
-	public CategoryBuilder created(Timestamp created) {
+	public CategoryBuilder created(final Timestamp created) {
 		this.created = created;
 		return this;
 	}
@@ -48,7 +48,7 @@ public class CategoryBuilder implements IBuilder<Category> {
 	 * @param lastUpdated Timestamp when #{this} was last updated
 	 * @return #{this}
 	 */
-	public CategoryBuilder lastUpdated(Timestamp lastUpdated) {
+	public CategoryBuilder lastUpdated(final Timestamp lastUpdated) {
 		this.lastUpdated = lastUpdated;
 		return this;
 	}
@@ -58,12 +58,12 @@ public class CategoryBuilder implements IBuilder<Category> {
 	 * @param path #{this} new path
 	 * @return #{this}
 	 */
-	public CategoryBuilder path(String path) {
+	public CategoryBuilder path(final String path) {
 		this.path = path;
 		return this;
 	}
 	
-	public CategoryBuilder id(long id) {
+	public CategoryBuilder id(final long id) {
 		this.id = id;
 		return this;
 	}
@@ -86,7 +86,7 @@ public class CategoryBuilder implements IBuilder<Category> {
 		return name;
 	}
 
-	public long getParent() {
+	public Category getParent() {
 		return parent;
 	}
 

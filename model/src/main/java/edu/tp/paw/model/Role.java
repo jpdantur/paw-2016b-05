@@ -19,10 +19,10 @@ public class Role {
 	private long id;
 	@Column( name = "role_name", length = 100 )
 	private String roleName;
-	@Column(length = 100 )
+	@Column( name = "role_slug", length = 100 )
 	private String slug;
 	// default is a reserved word
-	@Column( name = "default" )
+	@Column( name = "default_role" )
 	private boolean _default;
 	
 	/* package */ Role() {

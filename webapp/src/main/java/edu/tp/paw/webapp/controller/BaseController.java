@@ -1,9 +1,11 @@
 package edu.tp.paw.webapp.controller;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -73,7 +75,7 @@ public class BaseController {
 	}
 	
 	@ModelAttribute("userFavourites")
-	public List<StoreItem> favourites(
+	public Set<StoreItem> favourites(
 			@ModelAttribute("loggedUser") final User user
 			) {
 		if (user == null) {

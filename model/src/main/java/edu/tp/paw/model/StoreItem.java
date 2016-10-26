@@ -7,9 +7,11 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
@@ -20,30 +22,43 @@ import javax.persistence.Table;
 public class StoreItem {
 	
 	@Id
-	@GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "items_item_id_seq" )
-	@SequenceGenerator( sequenceName = "items_item_id_seq", name = "items_item_id_seq", allocationSize = 1 )
+	@GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "store_items_item_id_seq" )
+	@SequenceGenerator( sequenceName = "store_items_item_id_seq", name = "store_items_item_id_seq", allocationSize = 1 )
 	@Column( name =  "item_id")
 	private long id;
+	
 	@Column( length = 100 )
 	private String name;
+	
 	private String description;
+	
+	@Column( precision = 20, scale = 2, name = "price" )
 	private BigDecimal price;
+	
 	@ManyToOne( fetch = FetchType.EAGER )
+	@JoinColumn( name = "owner", foreignKey = @ForeignKey( name = "owner_fk") )
 	private User owner;
+	
+	@Column( name = "used" )
 	private boolean used;
 	
 	@ManyToOne( fetch = FetchType.EAGER )
+	@JoinColumn( name = "category", foreignKey = @ForeignKey( name = "category_fk"))
 	private Category category;
 	
+	@Column(name = "sold")
 	private long sold;
 	
 	@Column(insertable = false, updatable = false)
 	private Timestamp created;
-	@Column(name = "last_name", insertable = false, updatable = true)
+	@Column(name = "last_updated", insertable = false, updatable = true)
 	private Timestamp lastUpdated;
 	
-	@OneToMany( fetch = FetchType.LAZY )
+	@OneToMany( fetch = FetchType.EAGER,  mappedBy = "id")
 	private List<StoreImage> images;
+	
+	@OneToMany( fetch = FetchType.LAZY, mappedBy = "id" )
+	private List<Comment> comments;
 	
 	/* package */ StoreItem() {
 		// hibernate, duh!

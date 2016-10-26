@@ -5,15 +5,22 @@ import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.JoinTable;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 
 @Entity
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = {
+		@UniqueConstraint( name = "user_email_uniq", columnNames = { "username", "email" } )
+})
 public class User {
 
 	@Id
@@ -32,14 +39,37 @@ public class User {
 	@Column(length = 100)
 	private String email;
 	
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "id")
+	@ManyToMany(fetch = FetchType.EAGER)
+	@JoinTable(
+			name = "favourites",
+			joinColumns = @JoinColumn(name = "user_id"),
+			inverseJoinColumns = @JoinColumn( name = "store_item_id"),
+			foreignKey = @ForeignKey( name = "user_fk" ),
+			inverseForeignKey = @ForeignKey( name = "store_item_fk" ),
+			uniqueConstraints = {
+				@UniqueConstraint( name = "favourite_uniq", columnNames = { "user_id", "store_item_id" })
+			}
+	)
 	private Set<StoreItem> favourites;
+	
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(
+			name = "user_roles",
+			joinColumns = @JoinColumn(name = "user_id"),
+			inverseJoinColumns = @JoinColumn( name = "role_id"),
+			foreignKey = @ForeignKey( name = "user_fk" ),
+			inverseForeignKey = @ForeignKey( name = "role_fk" ),
+			uniqueConstraints = {
+				@UniqueConstraint( name = "user_roles_uniq",  columnNames = { "user_id", "role_id" })
+			}
+	)
+	private Set<Role> roles;
 	
 	/* package */ User() {
 		// hibernate, duh!
 	}
 	
-	public User(UserBuilder builder) {
+	public User(final UserBuilder builder) {
 		this.id = builder.getId();
 		this.firstName = builder.getFirstName();
 		this.lastName = builder.getLastName();
@@ -47,6 +77,7 @@ public class User {
 		this.password = builder.getPassword();
 		this.email = builder.getEmail();
 		this.favourites = builder.getFavourites();
+		this.roles = builder.getRoles();
 	}
 
 	public long getId() {
@@ -75,6 +106,10 @@ public class User {
 
 	public Set<StoreItem> getFavourites() {
 		return favourites;
+	}
+	
+	public Set<Role> getRoles() {
+		return roles;
 	}
 
 	@Override

@@ -1,27 +1,31 @@
 <?xml version="1.0"?>
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
-  <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>edu.tp.paw</groupId>
-    <artifactId>tp-paw-2016-q2</artifactId>
-    <version>1.0-SNAPSHOT</version>
-  </parent>
-  <groupId>edu.tp.paw</groupId>
-  <artifactId>model</artifactId>
-  <version>1.0-SNAPSHOT</version>
-  <name>model</name>
-  <url>http://maven.apache.org</url>
-  <properties>
-    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-  </properties>
+		xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>edu.tp.paw</groupId>
+		<artifactId>tp-paw-2016-q2</artifactId>
+		<version>1.0-SNAPSHOT</version>
+	</parent>
+	<groupId>edu.tp.paw</groupId>
+	<artifactId>model</artifactId>
+	<version>1.0-SNAPSHOT</version>
+	<name>model</name>
+	<url>http://maven.apache.org</url>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
 
 
-  <dependencies>
-    <dependency>
-      <groupId>org.hibernate.javax.persistence</groupId>
-      <artifactId>hibernate-jpa-2.1-api</artifactId>
-    </dependency>
-  </dependencies>
+	<dependencies>
+		<dependency>
+			<groupId>org.hibernate.javax.persistence</groupId>
+			<artifactId>hibernate-jpa-2.1-api</artifactId>
+		</dependency>
+		<!-- <dependency> -->
+			<!-- <groupId>org.hibernate</groupId> -->
+			<!-- <artifactId>hibernate-annotations</artifactId> -->
+		<!-- </dependency> -->
+	</dependencies>
 
 </project>

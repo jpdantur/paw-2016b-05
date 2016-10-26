@@ -47,7 +47,7 @@ public class CategoryJdbcDao implements ICategoryDao {
 		
 		return new CategoryBuilder(
 					resultSet.getString("category_name"),
-					resultSet.getLong("parent")
+					null // FIXME: change this now
 				)
 				.id(resultSet.getLong("category_id"))
 				.created(resultSet.getTimestamp("created"))
@@ -60,7 +60,7 @@ public class CategoryJdbcDao implements ICategoryDao {
 		
 		return new CategoryBuilder(
 					resultSet.getString("category_name"),
-					resultSet.getLong("parent")
+					null // FIXME: change this now
 				)
 				.id(resultSet.getLong("category_id"))
 				.created(resultSet.getTimestamp("created"))

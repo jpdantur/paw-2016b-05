@@ -108,7 +108,7 @@ public class CategoryService implements ICategoryService {
 		if (isChildOf(parentCategory, newCategory)) {
 			
 			parentCategory.addChild(newCategory);
-			newCategory.setParent(parentCategory.getId());
+//			newCategory.setParent(parentCategory.getId());
 			
 			return true;
 		}

@@ -3,25 +3,32 @@ package edu.tp.paw.model;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
 @Entity
-@Table(name="store_images")
+@Table(name="images")
 public class StoreImage {
 
-	@Id
 	@GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "images_image_id_seq" )
 	@SequenceGenerator( sequenceName = "images_image_id_seq", name = "images_image_id_seq", allocationSize = 1 )
 	@Column( name =  "image_id")
-	private long id;
-	@ManyToOne( fetch = FetchType.EAGER )
+	@Id
+	private Long id;
+	
+	@ManyToOne( fetch = FetchType.EAGER)
+	@JoinColumn( name = "item_id", foreignKey = @ForeignKey( name = "item_fk" ) )
 	private StoreItem item;
+	
+	@Column( name = "content" )
 	private byte[] content;
+	
 	@Column( name = "mime_type" )
 	private String mimeType;
 	

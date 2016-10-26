@@ -6,6 +6,7 @@ import javax.annotation.Generated;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -22,15 +23,20 @@ public class Comment {
 	@GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "comments_comment_id_seq" )
 	@SequenceGenerator( sequenceName = "comments_comment_id_seq", name = "comments_comment_id_seq", allocationSize = 1 )
 	@Column( name =  "comment_id")
-	private long id;
+	private Long id;
+	
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
-	@JoinColumn(name = "user_id")
+	@JoinColumn(name = "user_id", foreignKey = @ForeignKey( name = "user_fk" ))
 	private User user;
-	@JoinColumn(name = "item_id")
+	
+	
 	@ManyToOne(fetch = FetchType.EAGER, optional = false)
+	@JoinColumn(name = "item_id", foreignKey = @ForeignKey( name = "item_fk" ))
 	private StoreItem item;
+	
 	@Column(length = 300, nullable = false, name = "comment_content")
 	private String content;
+	
 	@Column(insertable = false, updatable = false, nullable = false)
 	private Timestamp created;
 	

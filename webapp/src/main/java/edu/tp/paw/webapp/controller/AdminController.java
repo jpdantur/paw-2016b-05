@@ -88,7 +88,7 @@ public class AdminController extends BaseController {
 		
 		if (!result.hasErrors()) {
 		
-			final CategoryBuilder builder = new CategoryBuilder(form.getName(), form.getParent());
+			final CategoryBuilder builder = new CategoryBuilder(form.getName(), categoryService.findById(form.getParent()));
 			categoryService.create(builder);
 			
 			model.addAttribute("success", true);	
@@ -134,7 +134,7 @@ public class AdminController extends BaseController {
 		
 		if (!result.hasErrors()) {
 		
-			final Category category = new CategoryBuilder(form.getName(), form.getParent()).id(id).build();
+			final Category category = new CategoryBuilder(form.getName(), categoryService.findById(form.getParent())).id(id).build();
 			
 			if (categoryService.updateCategory(category)) {
 				model.addAttribute("success", true);	

@@ -6,6 +6,7 @@ import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import edu.tp.paw.interfaces.dao.ICategoryDao;
 import edu.tp.paw.interfaces.dao.IStoreItemDao;
@@ -24,6 +25,7 @@ import edu.tp.paw.model.filter.PagedResult;
 
 
 @Service
+@Transactional
 public class StoreItemService implements IStoreItemService {
 
 	@Autowired private IStoreItemDao storeItemDao;

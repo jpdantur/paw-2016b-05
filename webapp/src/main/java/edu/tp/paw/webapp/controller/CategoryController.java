@@ -33,7 +33,7 @@ public class CategoryController {
 		
 		logger.debug("controller received request to create category with name = {} parent = {}", name, parent);
 		
-		final CategoryBuilder builder = new CategoryBuilder(name, parent);
+		final CategoryBuilder builder = new CategoryBuilder(name, categoryService.findById(parent));
 		final Category category = categoryService.create(builder);
 		
 		final ModelAndView modelAndView = new ModelAndView("dummy");

@@ -31,7 +31,7 @@ mixin navbar(search)
 									else
 										li
 											a #{messageSource.getMessage('index.favourite.empty',[],locale)}
-									each favourite in userFavourites
+									each favourite in loggedUser.favourites
 										li
 											span.item
 												span.item-left

@@ -6,10 +6,12 @@ import java.util.List;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
@@ -22,24 +24,32 @@ public class Category {
 	@GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "store_categories_category_id_seq" )
 	@SequenceGenerator( sequenceName = "store_categories_category_id_seq", name = "store_categories_category_id_seq", allocationSize = 1 )
 	@Column( name =  "category_id")
-	private final long id;
+	private long id;
 	@Column( name =  "category_name", length = 100)
-	private final String name;
-	private long parent;
+	private String name;
+	@ManyToOne( fetch = FetchType.EAGER, optional = false )
+	@JoinColumn( name = "parent", foreignKey = @ForeignKey(name = "parent_fk"))
+	private Category parent;
 	
 	private String path;
-	@OneToMany( fetch = FetchType.LAZY, mappedBy = "id", targetEntity = Category.class )
-	private final List<Category> children;
+	
+	
+	@OneToMany( fetch = FetchType.LAZY, mappedBy = "parent", targetEntity = Category.class )
+	private List<Category> children;
 	
 	@Column( insertable = false, updatable = false )
-	private final Timestamp created;
+	private Timestamp created;
 	@Column( name =  "last_updated", insertable = false, updatable = true )
-	private final Timestamp lastUpdated;
+	private Timestamp lastUpdated;
+	
+	/* package */ Category() {
+		
+	}
 	
 	/** Creates Category from #{builder}
 	 * @param builder The builder with the category
 	 */
-	/*package*/ Category(CategoryBuilder builder) {
+	/*package*/ Category(final CategoryBuilder builder) {
 		this.id = builder.getId();
 		this.name = builder.getName();
 		this.parent = builder.getParent();
@@ -50,12 +60,12 @@ public class Category {
 	}
 	
 
-	public void setParent(long parent) {
+	public void setParent(final Category parent) {
 		this.parent = parent;
 	}
 	
 
-	public void setPath(String path) {
+	public void setPath(final String path) {
 		this.path = path;
 	}
 	
@@ -72,7 +82,7 @@ public class Category {
 	 * gets Category parent id
 	 * @return Category parent id
 	 */
-	public long getParent() {
+	public Category getParent() {
 		return parent;
 	}
 	
@@ -98,7 +108,7 @@ public class Category {
 	 * Adds #{category} to #{this} children
 	 * @param category The child category
 	 */
-	public void addChild(Category category) {
+	public void addChild(final Category category) {
 		children.add(category);
 	}
 
@@ -115,7 +125,7 @@ public class Category {
 		final int prime = 31;
 		int result = 1;
 		result = prime * result + (int) (id ^ (id >>> 32));
-		result = prime * result + (int) (parent ^ (parent >>> 32));
+		result = prime * result + (int) (parent.hashCode() ^ (parent.hashCode() >>> 32));
 		return result;
 	}
 
