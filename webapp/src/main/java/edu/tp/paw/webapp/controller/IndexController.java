@@ -32,11 +32,7 @@ public class IndexController extends BaseController {
 		
 		final ModelAndView modelAndView = new ModelAndView("index");
 		
-		List<StoreItem> l = storeItemService.getMostSold(MOST_SOLD_ITEMS);
-		
-		logger.debug("most sold items: {}", l);
-		
-		modelAndView.addObject("mostSoldItems", l);
+		modelAndView.addObject("mostSoldItems", storeItemService.getMostSold(MOST_SOLD_ITEMS));
 		modelAndView.addObject("categories", categoryService.getCategoryTree());
 		
 		return modelAndView;

@@ -4,7 +4,9 @@ import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 public class StoreItemBuilder implements IBuilder<StoreItem> {
@@ -23,6 +25,7 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 	private long id;
 	private User owner;
 	private List<StoreImage> images = new ArrayList<>();
+	private Set<Comment> comments = new HashSet<>();
 	
 	public StoreItemBuilder(String name, String description, BigDecimal price, Category category, boolean used) {
 		this.name = name;
@@ -33,18 +36,28 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 	}
 	
 	
-	public StoreItemBuilder owner(User owner) {
+	public StoreItemBuilder owner(final User owner) {
 		this.owner = owner;
 		return this;
 	}
 	
-	public StoreItemBuilder images(List<StoreImage> images) {
-		this.images = images;
+	public StoreItemBuilder images(final List<StoreImage> images) {
+		this.images.addAll(images);
 		return this;
 	}
 	
-	public StoreItemBuilder images(StoreImage images) {
+	public StoreItemBuilder images(final StoreImage images) {
 		this.images.add(images);
+		return this;
+	}
+	
+	public StoreItemBuilder comments(final List<Comment> comments) {
+		this.comments.addAll(comments);
+		return this;
+	}
+	
+	public StoreItemBuilder comment(final Comment comment) {
+		this.comments.add(comment);
 		return this;
 	}
 	
@@ -136,6 +149,10 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 	
 	public List<StoreImage> getImages() {
 		return images;
+	}
+	
+	public Set<Comment> getComments() {
+		return comments;
 	}
 	
 }

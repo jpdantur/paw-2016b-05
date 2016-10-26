@@ -2,7 +2,9 @@ package edu.tp.paw.model;
 
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -27,15 +29,15 @@ public class Category {
 	private long id;
 	@Column( name =  "category_name", length = 100)
 	private String name;
-	@ManyToOne( fetch = FetchType.EAGER, optional = false )
+	@ManyToOne( fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL )
 	@JoinColumn( name = "parent", foreignKey = @ForeignKey(name = "parent_fk"))
 	private Category parent;
 	
 	private String path;
 	
 	
-	@OneToMany( fetch = FetchType.LAZY, mappedBy = "parent", targetEntity = Category.class )
-	private List<Category> children;
+	@OneToMany( fetch = FetchType.EAGER, mappedBy = "parent", targetEntity = Category.class, cascade = CascadeType.ALL )
+	private Set<Category> children;
 	
 	@Column( insertable = false, updatable = false )
 	private Timestamp created;
@@ -86,7 +88,7 @@ public class Category {
 		return parent;
 	}
 	
-	public List<Category> getChildren() {
+	public Set<Category> getChildren() {
 		return children;
 	}
 
@@ -115,8 +117,8 @@ public class Category {
 
 	@Override
 	public String toString() {
-		return "Category [id=" + id + ", name=" + name + ", parent=" + parent
-				+ ", path=" + path + ", children=" + children + "]";
+		return "Category [id=" + id + ", name=" + name + ", parent=" + parent.id
+				+ ", path=" + path + ", children=" + children.size() + "]";
 	}
 
 

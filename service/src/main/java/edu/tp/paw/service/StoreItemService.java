@@ -198,7 +198,7 @@ public class StoreItemService implements IStoreItemService {
 	}
 
 	@Override
-	public List<Comment> getComments(final StoreItem item) {
+	public Set<Comment> getComments(final StoreItem item) {
 		if (item == null) {
 			throw new IllegalArgumentException("item cant be null");
 		}

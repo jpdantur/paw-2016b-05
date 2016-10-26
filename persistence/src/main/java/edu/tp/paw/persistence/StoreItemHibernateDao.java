@@ -146,8 +146,6 @@ public class StoreItemHibernateDao implements IStoreItemDao {
 		
 		final String query = buildQueryFromFilter(filter);
 		
-		System.out.println(query);
-		
 		final TypedQuery<StoreItem> typedQuery = entityManager.createQuery(query, StoreItem.class);
 		
 		final PriceFilter priceFilter = filter.getPriceFilter();
@@ -206,9 +204,11 @@ public class StoreItemHibernateDao implements IStoreItemDao {
 	}
 
 	@Override
-	public StoreItem create(StoreItemBuilder builder) {
-		// TODO Auto-generated method stub
-		return null;
+	public StoreItem create(final StoreItemBuilder builder) {
+		final StoreItem item = builder.build();
+		entityManager.merge(item);
+		entityManager.persist(item);
+		return item;
 	}
 
 	@Override

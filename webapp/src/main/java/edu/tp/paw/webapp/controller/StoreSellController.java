@@ -67,6 +67,7 @@ public class StoreSellController extends BaseController {
 			
 			final StoreItem storeItem = storeService.sell(storeItemBuilder);
 			
+			logger.debug("created item: {}", storeItem);
 			
 			return "redirect:/store/sell/images/"+storeItem.getId()+"?s=1";
 		}

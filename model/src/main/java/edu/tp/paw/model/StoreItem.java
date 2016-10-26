@@ -3,6 +3,7 @@ package edu.tp.paw.model;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -28,7 +29,7 @@ public class StoreItem {
 	@GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "store_items_item_id_seq" )
 	@SequenceGenerator( sequenceName = "store_items_item_id_seq", name = "store_items_item_id_seq", allocationSize = 1 )
 	@Column( name =  "item_id")
-	private long id;
+	private Long id;
 	
 	@Column( length = 100 )
 	private String name;
@@ -62,7 +63,7 @@ public class StoreItem {
 	private List<StoreImage> images;
 	
 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "item" )
-	private List<Comment> comments;
+	private Set<Comment> comments;
 	
 	/* package */ StoreItem() {
 		// hibernate, duh!
@@ -80,6 +81,7 @@ public class StoreItem {
 		this.owner = builder.getOwner();
 		this.used = builder.isUsed();
 		this.images = builder.getImages();
+		this.comments = builder.getComments();
 	}
 	
 	
@@ -128,18 +130,18 @@ public class StoreItem {
 		return category;
 	}
 
-	/* (non-Javadoc)
-	 * @see java.lang.Object#toString()
-	 */
+	
+	
+	
+	
 	@Override
 	public String toString() {
-		return "StoreItem [id=" + id + ", name=" + name + ", sold="
-				+ sold + ", created=" + created + ", lastUpdated="
-				+ lastUpdated + ", price=" + price + "]";
+		return "StoreItem [id=" + id + ", name=" + name + ", description="
+				+ description + ", price=" + price + ", owner=" + owner.getUsername() + ", used="
+				+ used + ", category=" + category.getId() + ", sold=" + sold + ", created="
+				+ created + ", lastUpdated=" + lastUpdated + ", images=" + images.size();
 	}
-	
-	
-	
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -178,7 +180,7 @@ public class StoreItem {
 		return images;
 	}
 	
-	public List<Comment> getComments() {
+	public Set<Comment> getComments() {
 		return comments;
 	}
 	

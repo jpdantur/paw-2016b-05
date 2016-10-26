@@ -145,7 +145,7 @@ public class CategoryService implements ICategoryService {
 	 * @see edu.tp.paw.interfaces.service.ICategoryService#getCategoryTree()
 	 */
 	@Override
-	public List<Category> getCategoryTree() {
+	public Set<Category> getCategoryTree() {
 		
 		final Category rootCategory = categoryDao.findById(ROOT_CATEGORY_ID);
 		
@@ -153,9 +153,13 @@ public class CategoryService implements ICategoryService {
 			throw new IllegalArgumentException("root category cant be null");
 		}
 		
-		List<Category> descendants = categoryDao.getDescendants(rootCategory);
+		rootCategory.getChildren().remove(rootCategory);
 		
-		assembleCategoryTree(rootCategory, descendants);
+//		System.out.println(rootCategory);
+		
+		final List<Category> descendants = categoryDao.getDescendants(rootCategory);
+		
+//		assembleCategoryTree(rootCategory, descendants);
 		
 		return rootCategory.getChildren();
 		
@@ -166,6 +170,22 @@ public class CategoryService implements ICategoryService {
 	 */
 	@Override
 	public List<Category> getMainCategories() {
+		
+//		final Category rootCategory = categoryDao.findById(ROOT_CATEGORY_ID);
+//		
+//		if (rootCategory == null) {
+//			throw new IllegalArgumentException("root category cant be null");
+//		}
+//		
+//		rootCategory.getChildren().remove(rootCategory);
+		
+//		System.out.println(rootCategory);
+		
+//		final List<Category> descendants = categoryDao.getDescendants(rootCategory);
+		
+//		assembleCategoryTree(rootCategory, descendants);
+		
+//		return rootCategory.getChildren();
 		
 		return categoryDao.getChildren(ROOT_CATEGORY_ID);
 	}

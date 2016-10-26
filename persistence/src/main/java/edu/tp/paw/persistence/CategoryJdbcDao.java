@@ -19,7 +19,6 @@ import edu.tp.paw.interfaces.dao.ICategoryDao;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.CategoryBuilder;
 
-@Repository
 public class CategoryJdbcDao implements ICategoryDao {
 
 	private final static Logger logger = LoggerFactory.getLogger(CategoryJdbcDao.class);

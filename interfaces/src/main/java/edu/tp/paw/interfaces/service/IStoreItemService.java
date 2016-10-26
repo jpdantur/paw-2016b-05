@@ -50,7 +50,7 @@ public interface IStoreItemService {
 
 	public Comment addCommentBy(final User user, final StoreItem item, final String comment);
 	
-	public List<Comment> getComments(final StoreItem item);
+	public Set<Comment> getComments(final StoreItem item);
 	
 	public int getNumberOfItems();
 	

@@ -40,7 +40,7 @@ public interface ICategoryService {
 	/**
 	 * @return List with Category Trees
 	 */
-	public List<Category> getCategoryTree();
+	public Set<Category> getCategoryTree();
 	
 	/**
 	 * @return List with all Categories

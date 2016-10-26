@@ -2,8 +2,10 @@ package edu.tp.paw.model;
 
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 public class CategoryBuilder implements IBuilder<Category> {
 
@@ -15,7 +17,7 @@ public class CategoryBuilder implements IBuilder<Category> {
 	// Optional paramenters
 	private Timestamp created = new Timestamp( (new Date()).getTime() );
 	private Timestamp lastUpdated = new Timestamp( (new Date()).getTime() );
-	private List<Category> children = new LinkedList<>();
+	private Set<Category> children = new HashSet<>();
 	private String path = "";
 	private long id = -1;
 	
@@ -98,7 +100,7 @@ public class CategoryBuilder implements IBuilder<Category> {
 		return lastUpdated;
 	}
 
-	public List<Category> getChildren() {
+	public Set<Category> getChildren() {
 		return children;
 	}
 
