@@ -50,6 +50,7 @@ public interface IStoreItemDao {
 	public boolean updateItem(final StoreItem item);
 	
 	public int getNumberOfItems();
+	public int getNumberOfItems(final Filter filter);
 	
 	public List<StoreItem> getFavourites(final User user);
 	

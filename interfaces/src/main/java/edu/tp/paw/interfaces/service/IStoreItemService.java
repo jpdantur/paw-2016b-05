@@ -1,6 +1,7 @@
 package edu.tp.paw.interfaces.service;
 
 import java.util.List;
+import java.util.Set;
 
 import edu.tp.paw.model.Comment;
 import edu.tp.paw.model.StoreItem;
@@ -41,7 +42,7 @@ public interface IStoreItemService {
 	public PagedResult<StoreItem> findByFiltering(final Filter filter);
 	public PagedResult<StoreItem> findByFiltering(final FilterBuilder filter);
 
-	public List<StoreItem> getUserItems(final User user);
+	public Set<StoreItem> getUserItems(final User user);
 	
 	public boolean updateItem(final StoreItem item);
 	

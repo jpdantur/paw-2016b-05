@@ -55,7 +55,7 @@ public class User {
 				@UniqueConstraint( name = "favourite_uniq", columnNames = { "user_id", "store_item_id" })
 			}
 	)
-	@Fetch(FetchMode.SELECT)
+//	@Fetch(FetchMode.SELECT)
 	private Set<StoreItem> favourites = new HashSet<>();
 	
 	@ManyToMany(fetch = FetchType.LAZY)

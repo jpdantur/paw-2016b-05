@@ -178,4 +178,8 @@ public class StoreItem {
 		return images;
 	}
 	
+	public List<Comment> getComments() {
+		return comments;
+	}
+	
 }

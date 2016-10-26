@@ -182,7 +182,7 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 		
 		// sacar para prod
 		properties.setProperty("hibernate.show_sql", "true");
-		properties.setProperty("format_sql", "true");
+		properties.setProperty("hibernate.format_sql", "true");
 		
 		factoryBean.setJpaProperties(properties);
 		return factoryBean;

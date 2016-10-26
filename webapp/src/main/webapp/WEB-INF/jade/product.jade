@@ -95,9 +95,9 @@ block content
 						a.btn.btn-success(href="#{context.url('/auth/login?next='+currentURI)}")
 							i.fa.fa-comment
 							span &nbsp;#{messageSource.getMessage('item.commentAction', [], locale)}
-					if storeItem.comments.isEmpty()
+					if comments.isEmpty()
 						p.lead #{messageSource.getMessage('item.commentEmpty', [], locale)}
-					each comment in storeItem.comments
+					each comment in comments
 						div.comment
 							b.comment-author #{comment.user.firstName}
 							span.pull-right

@@ -146,7 +146,7 @@ public class StoreItemService implements IStoreItemService {
 	}
 
 	@Override
-	public List<StoreItem> getUserItems(final User user) {
+	public Set<StoreItem> getUserItems(final User user) {
 		
 		if (user == null) {
 			throw new IllegalStateException("user cant be null");
@@ -156,7 +156,12 @@ public class StoreItemService implements IStoreItemService {
 			throw new IllegalStateException("user must exist");
 		}
 		
-		return storeItemDao.getUserItems(user);
+		final User u = userService.findById(user.getId());
+		
+		// hibernate trick
+		u.getPublishedItems().iterator();
+		
+		return u.getPublishedItems();
 	}
 
 	@Override
@@ -201,7 +206,13 @@ public class StoreItemService implements IStoreItemService {
 		if (!itemExists(item)) {
 			throw new IllegalArgumentException("item must exist");
 		}
-		return commentService.commentsForItem(item);
+		
+		final StoreItem i = storeItemDao.findById(item.getId());
+		
+		// hibernate trick
+		i.getComments().iterator();
+		
+		return i.getComments();
 	}
 
 	@Override
