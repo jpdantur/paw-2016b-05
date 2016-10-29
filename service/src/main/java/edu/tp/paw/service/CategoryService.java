@@ -1,11 +1,16 @@
 package edu.tp.paw.service;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import edu.tp.paw.interfaces.dao.ICategoryDao;
@@ -14,7 +19,10 @@ import edu.tp.paw.model.Category;
 import edu.tp.paw.model.CategoryBuilder;
 
 @Service
+@Transactional
 public class CategoryService implements ICategoryService {
+	
+	private final static Logger logger = LoggerFactory.getLogger(CategoryService.class);
 	
 	private static final long ROOT_CATEGORY_ID = 0;
 	
@@ -38,7 +46,7 @@ public class CategoryService implements ICategoryService {
 			throw new IllegalArgumentException("invalid category, parent does not exist");
 		}
 		
-		Category category = categoryDao.create(builder);
+		final Category category = categoryDao.create(builder);
 		
 		return category;
 	}
@@ -60,7 +68,7 @@ public class CategoryService implements ICategoryService {
 	 *
 	 */
 	@Override
-	public Category findById(long id) {
+	public Category findById(final long id) {
 		
 		return categoryDao.findById(id);
 	}
@@ -69,78 +77,25 @@ public class CategoryService implements ICategoryService {
 	 * @see edu.tp.paw.interfaces.service.ICategoryService#findByIdWithTree(long)
 	 */
 	@Override
-	public Category findByIdWithTree(long id) {
+	public Category findByIdWithTree(final long id) {
 		
-		final Category category = categoryDao.findById(id);
-		
-		if (category == null) {
-			return null;
+		if (!exists(id)) {
+			throw new IllegalArgumentException("category must exist");
 		}
 		
-		List<Category> descendants = categoryDao.getDescendants(category);
+		final Category parentCategory = categoryDao.findById(id);
 		
-		return assembleCategoryTree(category, descendants);
+		final List<Category> allDescendants = categoryDao.getDescendants(parentCategory);
+		
+		// hibernate magic
+		allDescendants.stream().forEach(v -> v.getChildren().iterator());
+		parentCategory.getChildren().iterator();
+		
+		logger.trace("parent category is {}", parentCategory);
+		
+		return parentCategory;
 	}
 	
-	/**
-	 * Checks if #{child} is a subcategory of #{assumedParent}
-	 * @param assumedParent The assumed parent category
-	 * @param child The assumed child category
-	 * @return true if #{child} is a subcategory of #{assumedParent}, false otherwise
-	 */
-	private static boolean isChildOf(final Category assumedParent, final Category child) {
-		
-		if ( StringUtils.countOccurrencesOf(child.getPath().replace(assumedParent.getPath(), ""), "#") == 1) {
-			return true;
-		}
-		return false;
-	}
-	
-		
-	/**
-	 * Adds #{newCategory} to #{parentCategory} descendants
-	 * @param parentCategory The parent category
-	 * @param newCategory The descendant category
-	 * @return true if #{newCategory} was added to #{parentCategory} descendants, false otherwise
-	 */
-	private boolean buildDescendantsTree(Category parentCategory, Category newCategory) {
-		
-		if (isChildOf(parentCategory, newCategory)) {
-			
-			parentCategory.addChild(newCategory);
-//			newCategory.setParent(parentCategory.getId());
-			
-			return true;
-		}
-		
-		for (Category child : parentCategory.getChildren()) {
-			
-			if (buildDescendantsTree(child, newCategory)) {
-				return true;
-			}
-		
-		}
-		
-		return false;
-		
-	}
-	
-	/** Adds #{descendants} to {category} descendant tree
-	 * @param category the parent category
-	 * @param descendants the descendants categories
-	 * @return the parent category
-	 */
-	private Category assembleCategoryTree(final Category category, final List<Category> descendants) {
-		
-		for (final Category currentCategory : descendants) {
-			
-			buildDescendantsTree(category, currentCategory);
-			
-		}
-		
-		return category;
-	}
-
 	/* (non-Javadoc)
 	 * @see edu.tp.paw.interfaces.service.ICategoryService#getCategoryTree()
 	 */
@@ -153,13 +108,15 @@ public class CategoryService implements ICategoryService {
 			throw new IllegalArgumentException("root category cant be null");
 		}
 		
+		final List<Category> allDescendants = categoryDao.getDescendants(rootCategory);
+		
+		// hibernate magic
+		allDescendants.stream().forEach(v -> v.getChildren().iterator());
+		rootCategory.getChildren().iterator();
+		
 		rootCategory.getChildren().remove(rootCategory);
 		
-//		System.out.println(rootCategory);
-		
-		final List<Category> descendants = categoryDao.getDescendants(rootCategory);
-		
-//		assembleCategoryTree(rootCategory, descendants);
+		logger.trace("root category is: {}", rootCategory);
 		
 		return rootCategory.getChildren();
 		
@@ -169,25 +126,16 @@ public class CategoryService implements ICategoryService {
 	 * @see edu.tp.paw.interfaces.service.ICategoryService#getCategories()
 	 */
 	@Override
-	public List<Category> getMainCategories() {
+	public Set<Category> getMainCategories() {
 		
-//		final Category rootCategory = categoryDao.findById(ROOT_CATEGORY_ID);
-//		
-//		if (rootCategory == null) {
-//			throw new IllegalArgumentException("root category cant be null");
-//		}
-//		
-//		rootCategory.getChildren().remove(rootCategory);
+		final Category rootCategory = categoryDao.findById(ROOT_CATEGORY_ID);
+//		final List<Category> children = categoryDao.getChildren(rootCategory); 
 		
-//		System.out.println(rootCategory);
+		// hibernate magic
+		rootCategory.getChildren().iterator();
+		rootCategory.getChildren().remove(rootCategory);
 		
-//		final List<Category> descendants = categoryDao.getDescendants(rootCategory);
-		
-//		assembleCategoryTree(rootCategory, descendants);
-		
-//		return rootCategory.getChildren();
-		
-		return categoryDao.getChildren(ROOT_CATEGORY_ID);
+		return rootCategory.getChildren();
 	}
 
 	@Override
@@ -197,7 +145,7 @@ public class CategoryService implements ICategoryService {
 			throw new IllegalArgumentException("category cant be null");
 		}
 		
-		if (!exists(category.getId())) {
+		if (!exists(category)) {
 			throw new IllegalArgumentException("category must exists");
 		}
 		
@@ -206,13 +154,13 @@ public class CategoryService implements ICategoryService {
 	}
 	
 	@Override
-	public List<Category> getChildren(final Set<Category> categories) {
+	public Set<Category> getChildren(final Set<Category> categories) {
 		
 		if (categories == null) {
 			throw new IllegalArgumentException("categories cant be null");
 		}
 		
-		final List<Category> _categories = new LinkedList<>();
+		final Set<Category> _categories = new HashSet<>();
 		
 		for (final Category category : categories) {
 			_categories.addAll(categoryDao.getChildren(category));

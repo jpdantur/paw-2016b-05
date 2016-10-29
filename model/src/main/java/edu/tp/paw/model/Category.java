@@ -18,6 +18,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Formula;
+
 @Entity
 @Table(name="store_categories")
 public class Category {
@@ -33,10 +35,11 @@ public class Category {
 	@JoinColumn( name = "parent", foreignKey = @ForeignKey(name = "parent_fk"))
 	private Category parent;
 	
+	@Column( name = "category_path" )
 	private String path;
 	
 	
-	@OneToMany( fetch = FetchType.EAGER, mappedBy = "parent", targetEntity = Category.class, cascade = CascadeType.ALL )
+	@OneToMany( fetch = FetchType.LAZY, mappedBy = "parent", targetEntity = Category.class, cascade = CascadeType.ALL )
 	private Set<Category> children;
 	
 	@Column( insertable = false, updatable = false )
@@ -118,9 +121,8 @@ public class Category {
 	@Override
 	public String toString() {
 		return "Category [id=" + id + ", name=" + name + ", parent=" + parent.id
-				+ ", path=" + path + ", children=" + children.size() + "]";
+				+ ", path=" + path + ", children="+ (getChildren()!=null?getChildren().size():0) +"]";
 	}
-
 
 	@Override
 	public int hashCode() {
@@ -130,26 +132,23 @@ public class Category {
 		return result;
 	}
 
-
 	@Override
 	public boolean equals(Object obj) {
-		if (this == obj)
+		if (this == obj) {
 			return true;
-		if (obj == null)
+		}
+		if (obj == null) {
 			return false;
-		if (getClass() != obj.getClass())
+		}
+		if (!(obj instanceof Category)) {
 			return false;
+		}
 		Category other = (Category) obj;
-		if (id != other.id)
+		if (id != other.id) {
 			return false;
-		if (parent != other.parent)
-			return false;
+		}
 		return true;
 	}
-	
-	
-	
-	
 	
 	
 }

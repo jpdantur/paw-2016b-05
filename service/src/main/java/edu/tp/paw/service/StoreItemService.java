@@ -136,11 +136,9 @@ public class StoreItemService implements IStoreItemService {
 			throw new IllegalArgumentException("category filter builder categories cant be null");
 		}
 		
-		Set<Category> categories = new HashSet<>(filterBuilder.category().getCategories());
+		final Set<Category> categories = new HashSet<>(filterBuilder.category().getCategories());
 		
-		for (Category category : categories) {
-			filterBuilder.category().in(categoryDao.getDescendants(category));
-		}
+		categories.forEach(c -> filterBuilder.category().in(categoryDao.getDescendants(c)));
 		
 		return findByFiltering(filterBuilder.build());
 	}

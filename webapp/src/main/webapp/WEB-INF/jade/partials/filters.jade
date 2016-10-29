@@ -45,10 +45,10 @@ div#filters
 					- i = 0
 					- currentParent = -1
 					each category in similarCategories
-						if currentParent != category.parent
+						if currentParent != category.parent.id
 							label.parent-label(data-id="#{selectedCategories.get(i).id}") #{selectedCategories.get(i).name}
 							- i = i+1
-							- currentParent = category.parent
+							- currentParent = category.parent.id
 						div.checkbox.padding
 							label
 								input(type="checkbox", value="#{category.id}")

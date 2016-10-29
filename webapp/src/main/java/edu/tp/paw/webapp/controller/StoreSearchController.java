@@ -54,13 +54,10 @@ public class StoreSearchController extends BaseController {
 		List<Category> selectedCategories = new ArrayList<>();
 		
 		if (form.getCategories() != null) {
-			selectedCategories = form.getCategories().stream().map((Long id) -> {
-				return categoryService.findById(id.longValue());
-			}).collect(Collectors.toList());
-			filter
-				.category()
-					.in(selectedCategories)
-				.end();
+			// map values
+			selectedCategories = form.getCategories().stream().map( id -> categoryService.findById(id.longValue())).collect(Collectors.toList());
+			// add values to filter
+			filter.category().in(selectedCategories).end();
 		}
 		
 		final PagedResult<StoreItem> pagedResults = storeService.search(filter);
@@ -71,13 +68,11 @@ public class StoreSearchController extends BaseController {
 			return "redirect:/store/items/"+pagedResults.getResults().get(0).getId();
 		}
 		
-		final List<Category> similarCategories;
-		
-		if (!filter.getCategoryFilter().getCategories().isEmpty()) {
-			similarCategories = categoryService.getChildren(filter.getCategoryFilter().getCategories());
-		} else {
-			similarCategories = categoryService.getMainCategories();
-		}
+		final Set<Category> similarCategories = storeService
+				.getCategoriesForResultsInHigherDepthCategories(
+						filter.getCategoryFilter().getCategories(),
+						pagedResults.getResults()
+		);
 		
 		model.addAttribute("storeItems", pagedResults.getResults());
 		model.addAttribute("query", form.getQuery());

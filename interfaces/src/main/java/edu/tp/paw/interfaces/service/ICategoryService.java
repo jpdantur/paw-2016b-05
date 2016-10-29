@@ -33,7 +33,7 @@ public interface ICategoryService {
 	public Category create(final CategoryBuilder builder);
 	
 	public List<Category> getChildren(final Category category);
-	public List<Category> getChildren(final Set<Category> categories);
+	public Set<Category> getChildren(final Set<Category> categories);
 	
 	
 	
@@ -47,7 +47,7 @@ public interface ICategoryService {
 	 */
 	public List<Category> getCategories();
 	
-	public List<Category> getMainCategories();
+	public Set<Category> getMainCategories();
 	
 	public int getNumberOfCategories();
 	

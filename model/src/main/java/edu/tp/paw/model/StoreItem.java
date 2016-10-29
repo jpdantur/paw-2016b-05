@@ -47,6 +47,7 @@ public class StoreItem {
 	private boolean used;
 	
 	@ManyToOne( fetch = FetchType.EAGER )
+	@Fetch(FetchMode.JOIN)
 	@JoinColumn( name = "category", foreignKey = @ForeignKey( name = "category_fk"))
 	private Category category;
 	

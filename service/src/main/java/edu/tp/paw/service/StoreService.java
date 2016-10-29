@@ -1,10 +1,18 @@
 package edu.tp.paw.service;
 
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import edu.tp.paw.interfaces.service.ICategoryService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IStoreService;
+import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.model.filter.Filter;
@@ -14,8 +22,10 @@ import edu.tp.paw.model.filter.PagedResult;
 @Service
 public class StoreService implements IStoreService {
 
-	@Autowired
-	private IStoreItemService storeItemService;
+	private final static Logger logger = LoggerFactory.getLogger(StoreService.class);
+	
+	@Autowired private IStoreItemService storeItemService;
+	@Autowired private ICategoryService categoryService;
 
 	@Override
 	public StoreItem sell(final StoreItemBuilder builder) {
@@ -35,6 +45,44 @@ public class StoreService implements IStoreService {
 	@Override
 	public boolean purchase(final StoreItem item) {
 		return storeItemService.increaseSellCount(item);
+	}
+
+	@Override
+	public Set<Category> getCategoriesForResultsInHigherDepthCategories(final Set<Category> categories, final List<StoreItem> items) {
+		
+		Set<Category> similarCategories;
+		
+		if (!categories.isEmpty()) {
+			similarCategories = categoryService.getChildren(categories);
+		} else {
+			similarCategories = categoryService.getMainCategories();
+		}
+		
+		logger.trace("similar categories {}", similarCategories);
+		
+		return similarCategories.stream().filter(c -> {
+			logger.trace("checking if category {} has any items", c.getName());
+			final boolean b = items.stream().anyMatch(item -> {
+				logger.trace("checking if item {} has category {}", item.getName(), c.getName());
+				if (item.getCategory().equals(c)) {
+					logger.trace("it does");
+					return true;
+				}
+				Category prev = item.getCategory();
+				Category category = item.getCategory().getParent();
+				while (category != prev) {
+					if (category.equals(c)) {
+						logger.trace("it does");
+						return true;
+					}
+					prev = category;
+					category = category.getParent();
+				}
+				logger.trace("it does not");
+				return false;
+			});
+			return b;
+		}).collect(Collectors.toSet());
 	}
 
 }

@@ -1,12 +1,16 @@
 package edu.tp.paw.persistence;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import edu.tp.paw.interfaces.dao.ICategoryDao;
@@ -16,6 +20,8 @@ import edu.tp.paw.model.CategoryBuilder;
 @Repository
 public class CategoryHibernateDao implements ICategoryDao {
 
+	private static final Logger logger = LoggerFactory.getLogger(CategoryHibernateDao.class);
+	
 	private static final String SQL_DESCENDANTS_OF =
 			"with recursive tree as "
 			+ "( "
@@ -26,7 +32,7 @@ public class CategoryHibernateDao implements ICategoryDao {
 				+ "select c.category_id, c.category_name, c.created, c.last_updated, c.parent, (c2.category_path || '#' || cast (c.category_id as text)) as category_path "
 				+ "from store_categories as c "
 				+ "inner join tree as c2 on (c.parent=c2.category_id) where c.category_id <> 0 "
-			+ ") select * from tree order by category_name";
+			+ ") select category_id from tree order by category_name";
 	
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -52,14 +58,14 @@ public class CategoryHibernateDao implements ICategoryDao {
 
 	@Override
 	public List<Category> getSiblings(final Category category) {
-		final TypedQuery<Category> query = entityManager.createQuery("from Category c where c.parent=:parent", Category.class);
+		final TypedQuery<Category> query = entityManager.createQuery("from Category c where c.parent=:parent order by c.name", Category.class);
 		query.setParameter("parent", category.getParent());
 		return query.getResultList();
 	}
 
 	@Override
 	public List<Category> getChildren(final long categoryId) {
-		final TypedQuery<Category> query = entityManager.createQuery("from Category c where c.parent.id=:id", Category.class);
+		final TypedQuery<Category> query = entityManager.createQuery("from Category c where c.parent.id=:id order by c.name", Category.class);
 		query.setParameter("id", categoryId);
 		return query.getResultList();
 	}
@@ -72,20 +78,29 @@ public class CategoryHibernateDao implements ICategoryDao {
 	@Override
 	public List<Category> getDescendants(final Category category) {
 		
-		final Query query = entityManager.createNativeQuery(SQL_DESCENDANTS_OF, Category.class);
+		logger.trace("fetching descendants");
+		
+		final Query query = entityManager.createNativeQuery(SQL_DESCENDANTS_OF);
+		
+		logger.trace("running {}", SQL_DESCENDANTS_OF);
 		
 		query.setParameter("id1", category.getId());
 		query.setParameter("id2", category.getId());
 		
 		@SuppressWarnings("unchecked")
-		final List<Category> categories = query.getResultList();
+		final List<Integer> categoriesIds = query.getResultList();
 		
-		System.out.println(categories);
+		logger.trace("native query returned {}", categoriesIds);
 		
-//		System.out.println(category);
-//		final TypedQuery<Category> query = entityManager.createQuery("from Category c where c.parent=:id", Category.class);
-//		query.setParameter("id", category);
-		return categories;
+		if (categoriesIds.isEmpty()) {
+			return new ArrayList<Category>();
+		}
+		
+		final TypedQuery<Category> typedQuery = entityManager.createQuery("from Category c where c.id in (:ids) order by c.name", Category.class);
+		
+		typedQuery.setParameter("ids", categoriesIds.stream().map(Integer::longValue).collect(Collectors.toList()));
+		
+		return typedQuery.getResultList();
 	}
 
 	@Override
@@ -101,7 +116,7 @@ public class CategoryHibernateDao implements ICategoryDao {
 	}
 
 	@Override
-	public boolean updateCategory(Category category) {
+	public boolean updateCategory(final Category category) {
 		// TODO Auto-generated method stub
 		return false;
 	}
