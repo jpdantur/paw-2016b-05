@@ -177,7 +177,7 @@ public class StoreItemService implements IStoreItemService {
 	}
 
 	@Override
-	public List<StoreItem> getFavourites(final User user) {
+	public Set<StoreItem> getFavourites(final User user) {
 		
 		if (user == null) {
 			throw new IllegalArgumentException("user cant be null");
@@ -205,12 +205,14 @@ public class StoreItemService implements IStoreItemService {
 			throw new IllegalArgumentException("item must exist");
 		}
 		
-		final StoreItem i = storeItemDao.findById(item.getId());
+		return commentService.commentsForItem(item);
+		
+//		final StoreItem i = storeItemDao.findById(item.getId());
 		
 		// hibernate trick
-		i.getComments().iterator();
+//		i.getComments().iterator();
 		
-		return i.getComments();
+//		return i.getComments();
 	}
 
 	@Override

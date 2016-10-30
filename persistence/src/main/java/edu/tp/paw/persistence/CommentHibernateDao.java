@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -42,11 +43,18 @@ public class CommentHibernateDao implements ICommentDao {
 	}
 
 	@Override
-	public List<Comment> commentsForItem(final StoreItem item) {
+	public Set<Comment> commentsForItem(final StoreItem item) {
+		
+		final StoreItem i = entityManager.getReference(StoreItem.class, item.getId());
+		
+		// hibernate trick
+		i.getComments().iterator();
+		
+		return i.getComments();
 
-		final TypedQuery<Comment> query = entityManager.createQuery("from Comment as c where c.item_id = :id", Comment.class);
-		query.setParameter("id", item.getId());
-		return query.getResultList();
+//		final TypedQuery<Comment> query = entityManager.createQuery("from Comment as c where c.item_id = :id", Comment.class);
+//		query.setParameter("id", item.getId());
+//		return query.getResultList();
 		
 	}
 

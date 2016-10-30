@@ -63,7 +63,7 @@ public class StoreSellController extends BaseController {
 		if (!bindingResult.hasErrors()) {
 			
 			final Category category = categoryService.findById(form.getCategoryId());
-			final StoreItemBuilder storeItemBuilder = new StoreItemBuilder(form.getName(), form.getDescription(), form.getPrice(), category, form.isUsed()).owner(user);
+			final StoreItemBuilder storeItemBuilder = new StoreItemBuilder(form.getName(), form.getDescription(), form.getPrice(), form.isUsed()).category(category).owner(user);
 			
 			final StoreItem storeItem = storeService.sell(storeItemBuilder);
 			

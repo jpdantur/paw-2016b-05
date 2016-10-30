@@ -19,7 +19,7 @@ public class CategoryBuilder implements IBuilder<Category> {
 	private Timestamp lastUpdated = new Timestamp( (new Date()).getTime() );
 	private Set<Category> children = new HashSet<>();
 	private String path = "";
-	private long id = -1;
+	private Long id;
 	
 	
 	/**
@@ -80,7 +80,7 @@ public class CategoryBuilder implements IBuilder<Category> {
 	}
 
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 

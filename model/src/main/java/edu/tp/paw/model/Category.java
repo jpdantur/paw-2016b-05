@@ -28,15 +28,15 @@ public class Category {
 	@GeneratedValue( strategy = GenerationType.SEQUENCE, generator = "store_categories_category_id_seq" )
 	@SequenceGenerator( sequenceName = "store_categories_category_id_seq", name = "store_categories_category_id_seq", allocationSize = 1 )
 	@Column( name =  "category_id")
-	private long id;
+	private Long id;
 	@Column( name =  "category_name", length = 100)
 	private String name;
 	@ManyToOne( fetch = FetchType.EAGER, optional = false, cascade = CascadeType.ALL )
 	@JoinColumn( name = "parent", foreignKey = @ForeignKey(name = "parent_fk"))
 	private Category parent;
 	
-	@Column( name = "category_path" )
-	private String path;
+//	@Column( name = "category_path" )
+//	private String path;
 	
 	
 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "parent", targetEntity = Category.class, cascade = CascadeType.ALL )
@@ -58,7 +58,7 @@ public class Category {
 		this.id = builder.getId();
 		this.name = builder.getName();
 		this.parent = builder.getParent();
-		this.path = builder.getPath();
+//		this.path = builder.getPath();
 		this.children = builder.getChildren();
 		this.created = builder.getCreated();
 		this.lastUpdated = builder.getLastUpdated();
@@ -70,9 +70,9 @@ public class Category {
 	}
 	
 
-	public void setPath(final String path) {
-		this.path = path;
-	}
+//	public void setPath(final String path) {
+//		this.path = path;
+//	}
 	
 	// getters
 
@@ -105,9 +105,9 @@ public class Category {
 	}
 
 
-	public String getPath() {
-		return path;
-	}
+//	public String getPath() {
+//		return path;
+//	}
 	
 	/**
 	 * Adds #{category} to #{this} children
@@ -121,7 +121,7 @@ public class Category {
 	@Override
 	public String toString() {
 		return "Category [id=" + id + ", name=" + name + ", parent=" + parent.id
-				+ ", path=" + path + ", children="+ (getChildren()!=null?getChildren().size():0) +"]";
+				+ ", children="+ (getChildren()!=null?getChildren().size():0) +"]";
 	}
 
 	@Override

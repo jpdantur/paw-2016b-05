@@ -1,6 +1,7 @@
 package edu.tp.paw.interfaces.service;
 
 import java.util.List;
+import java.util.Set;
 
 import edu.tp.paw.model.StoreImage;
 import edu.tp.paw.model.StoreImageBuilder;
@@ -10,7 +11,7 @@ public interface IImageService {
 
 	public StoreImage findById(final long id);
 	
-	public List<StoreImage> imagesForItem(final StoreItem item);
+	public Set<StoreImage> imagesForItem(final StoreItem item);
 	
 	public StoreImage uploadImage(final StoreImageBuilder builder);
 	

@@ -54,16 +54,18 @@ public class RoleHibernateDao implements IRoleDao {
 
 	@Override
 	public List<Role> getAll() {
-		// TODO Auto-generated method stub
-		return null;
+		final TypedQuery<Role> query = entityManager.createQuery("from Role r", Role.class);
+		return query.getResultList();
 	}
 
 	@Override
 	public Set<Role> getForUser(final User user) {
 		
-		final User userWithRoles = entityManager.find(User.class, user.getId());
+		final User u = entityManager.getReference(User.class, user.getId());
 		
-		return userWithRoles.getRoles();
+		u.getRoles().iterator();
+		
+		return u.getRoles();
 		
 //		final TypedQuery<Role> query = entityManager.createQuery("from Role r where r.u=:", resultClass) 
 //		return user.getRoles();
@@ -71,13 +73,16 @@ public class RoleHibernateDao implements IRoleDao {
 
 	@Override
 	public Role getDefaultRole() {
-		// TODO Auto-generated method stub
-		return null;
+		final TypedQuery<Role> query = entityManager.createQuery("from Role r where r._default=true", Role.class);
+		final List<Role> roles = query.getResultList(); 
+		return roles.isEmpty() ? null : roles.get(0);
 	}
 
 	@Override
-	public boolean setDefault(Role role, boolean def) {
-		// TODO Auto-generated method stub
+	public boolean setDefault(final Role role, final boolean def) {
+		
+		
+		
 		return false;
 	}
 

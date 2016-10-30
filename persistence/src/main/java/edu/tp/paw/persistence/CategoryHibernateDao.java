@@ -40,6 +40,7 @@ public class CategoryHibernateDao implements ICategoryDao {
 	@Override
 	public Category create(final CategoryBuilder builder) {
 		final Category category = builder.build();
+		logger.debug("persisting {}", category);
 		entityManager.persist(category);
 		return category;
 	}
@@ -117,7 +118,9 @@ public class CategoryHibernateDao implements ICategoryDao {
 
 	@Override
 	public boolean updateCategory(final Category category) {
-		// TODO Auto-generated method stub
+		
+		entityManager.persist(category);
+		
 		return false;
 	}
 

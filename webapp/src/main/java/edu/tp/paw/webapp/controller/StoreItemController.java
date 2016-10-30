@@ -73,9 +73,9 @@ public class StoreItemController extends BaseController {
 						form.getName(),
 						form.getDescription(),
 						form.getPrice(),
-						category,
 						form.isUsed()
 					)
+					.category(category)
 					.owner(user)
 					.id(id)
 					.build();

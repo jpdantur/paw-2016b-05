@@ -44,7 +44,7 @@ public class User {
 	@Column(length = 100)
 	private String email;
 	
-	@ManyToMany(fetch = FetchType.EAGER)
+	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(
 			name = "favourites",
 			joinColumns = @JoinColumn(name = "user_id"),

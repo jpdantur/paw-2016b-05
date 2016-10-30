@@ -82,7 +82,6 @@ public class RoleService implements IRoleService {
 		return roleDao.getDefaultRole();
 	}
 
-	@Transactional
 	@Override
 	public boolean makeDefault(final Role role) {
 		

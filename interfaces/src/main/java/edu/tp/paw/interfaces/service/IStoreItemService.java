@@ -46,7 +46,7 @@ public interface IStoreItemService {
 	
 	public boolean updateItem(final StoreItem item);
 	
-	public List<StoreItem> getFavourites(final User user);
+	public Set<StoreItem> getFavourites(final User user);
 
 	public Comment addCommentBy(final User user, final StoreItem item, final String comment);
 	

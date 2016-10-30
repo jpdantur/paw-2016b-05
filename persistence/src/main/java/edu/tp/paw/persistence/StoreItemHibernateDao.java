@@ -10,6 +10,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import com.sun.xml.internal.stream.Entity;
@@ -31,6 +33,8 @@ import edu.tp.paw.model.filter.TermFilter;
 @Repository
 public class StoreItemHibernateDao implements IStoreItemDao {
 
+	private final static Logger logger = LoggerFactory.getLogger(StoreItemHibernateDao.class);
+	
 	private static final String ORDER_DESCENDING = "DESC";	
 	private static final String ORDER_ASCENDING = "ASC";
 	
@@ -49,7 +53,7 @@ public class StoreItemHibernateDao implements IStoreItemDao {
 		return query.getResultList();
 	}
 
-	private String buildQueryFromFilter(final Filter filter) {
+	private static String buildQueryFromFilter(final Filter filter) {
 		
 		final StringBuilder query = new StringBuilder();
 		
@@ -198,35 +202,41 @@ public class StoreItemHibernateDao implements IStoreItemDao {
 	}
 
 	@Override
-	public List<StoreItem> findInCategories(List<Category> categories) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public StoreItem create(final StoreItemBuilder builder) {
+		
 		final StoreItem item = builder.build();
-		entityManager.merge(item);
+		
+		logger.debug("persisting {}", item);
+		
 		entityManager.persist(item);
+		
 		return item;
 	}
 
 	@Override
-	public List<StoreItem> getUserItems(User user) {
-		// TODO Auto-generated method stub
-		return null;
+	public Set<StoreItem> getUserItems(final User user) {
+		
+		final User u = entityManager.getReference(User.class, user.getId());
+		
+		// hibernate trick
+		u.getPublishedItems().iterator();
+		
+		return u.getPublishedItems();
 	}
 
 	@Override
-	public boolean updateItem(StoreItem item) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean updateItem(final StoreItem item) {
+		
+		entityManager.persist(item);
+		
+		return true;
+		
 	}
 
 	@Override
 	public int getNumberOfItems() {
-		// TODO Auto-generated method stub
-		return 0;
+		final TypedQuery<Long> query = entityManager.createQuery("select count(*) from StoreItem i", Long.class);
+		return query.getSingleResult().intValue();
 	}
 	
 	@Override
@@ -271,9 +281,14 @@ public class StoreItemHibernateDao implements IStoreItemDao {
 	}
 
 	@Override
-	public List<StoreItem> getFavourites(User user) {
-		// TODO Auto-generated method stub
-		return null;
+	public Set<StoreItem> getFavourites(final User user) {
+		
+		final User u = entityManager.getReference(User.class, user.getId());
+		
+		// hibernate trick
+		u.getFavourites().iterator();
+		
+		return u.getFavourites();
 	}
 
 	@Override
@@ -289,9 +304,11 @@ public class StoreItemHibernateDao implements IStoreItemDao {
 	}
 
 	@Override
-	public boolean increaseSellCount(StoreItem item) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean increaseSellCount(final StoreItem item) {
+		final Query query = entityManager.createQuery("update StoreItem set sold=:sold where item_id=:id");
+		query.setParameter("sold", item.getSold()+1);
+		query.setParameter("id", item.getId());
+		return query.executeUpdate() == 1;
 	}
 
 }

@@ -12,7 +12,7 @@ public class UserBuilder implements IBuilder<User> {
 	private String lastName;
 	private String email;
 	
-	private long id;
+	private Long id;
 	private String password;
 	private Set<StoreItem> favourites = new HashSet<>();
 	private Set<Role> roles = new HashSet<>();
@@ -100,7 +100,7 @@ public class UserBuilder implements IBuilder<User> {
 		return roles;
 	}
 	
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 

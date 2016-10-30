@@ -1,6 +1,7 @@
 package edu.tp.paw.interfaces.dao;
 
 import java.util.List;
+import java.util.Set;
 
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
@@ -27,13 +28,6 @@ public interface IStoreItemDao {
 	
 	public PagedResult<StoreItem> findByTerm(final Filter filter);
 	
-	/**
-	 * Retrieves a list of the store items with category in #{categories}
-	 * @param categories The categories to find
-	 * @return A list of the store items with category in #{categories}
-	 */
-	public List<StoreItem> findInCategories(List<Category> categories);
-	
 	
 	/**
 	 * Create a new StoreItem
@@ -45,14 +39,14 @@ public interface IStoreItemDao {
 	 */
 	public StoreItem create(final StoreItemBuilder builder);
 	
-	public List<StoreItem> getUserItems(final User user);
+	public Set<StoreItem> getUserItems(final User user);
 	
 	public boolean updateItem(final StoreItem item);
 	
 	public int getNumberOfItems();
 	public int getNumberOfItems(final Filter filter);
 	
-	public List<StoreItem> getFavourites(final User user);
+	public Set<StoreItem> getFavourites(final User user);
 	
 	public boolean itemExists(final long id);
 	public boolean itemExists(final StoreItem item);

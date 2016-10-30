@@ -40,7 +40,7 @@ public class StoreItem {
 	private BigDecimal price;
 	
 	@ManyToOne( fetch = FetchType.EAGER )
-	@JoinColumn( name = "owner", foreignKey = @ForeignKey( name = "owner_fk") )
+	@JoinColumn( name = "owner", foreignKey = @ForeignKey( name = "owner_fk"), nullable = false )
 	private User owner;
 	
 	@Column( name = "used" )
@@ -48,7 +48,7 @@ public class StoreItem {
 	
 	@ManyToOne( fetch = FetchType.EAGER )
 	@Fetch(FetchMode.JOIN)
-	@JoinColumn( name = "category", foreignKey = @ForeignKey( name = "category_fk"))
+	@JoinColumn( name = "category", foreignKey = @ForeignKey( name = "category_fk"), nullable = false)
 	private Category category;
 	
 	@Column(name = "sold")
@@ -61,7 +61,7 @@ public class StoreItem {
 	
 	@OneToMany( fetch = FetchType.EAGER,  mappedBy = "item")
 	@Fetch(FetchMode.JOIN)
-	private List<StoreImage> images;
+	private Set<StoreImage> images;
 	
 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "item" )
 	private Set<Comment> comments;
@@ -177,7 +177,7 @@ public class StoreItem {
 		return used;
 	}
 
-	public List<StoreImage> getImages() {
+	public Set<StoreImage> getImages() {
 		return images;
 	}
 	

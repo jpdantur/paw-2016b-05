@@ -1,9 +1,11 @@
 package edu.tp.paw.persistence;
 
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import org.springframework.stereotype.Repository;
@@ -22,8 +24,7 @@ public class UserHibernateDao implements IUserDao {
 	
 	@Override
 	public User findById(final long id) {
-		final User user = entityManager.find(User.class, id);
-		return user;
+		return entityManager.find(User.class, id);
 	}
 
 	@Override
@@ -72,44 +73,80 @@ public class UserHibernateDao implements IUserDao {
 
 	@Override
 	public boolean changePassword(final User user, final String password) {
-		// TODO Auto-generated method stub
+		final Query query = entityManager.createQuery("update User set password = :password where id = :id");
+		query.setParameter("id", user.getId());
+		query.setParameter("password", password);
+		query.executeUpdate();
 		return false;
 	}
 
 	@Override
 	public boolean addFavourite(final User user, final StoreItem item) {
-		// TODO Auto-generated method stub
-		return false;
+		
+		final User u = entityManager.getReference(User.class, user.getId());
+		
+		// hibernate trick
+		u.getFavourites().iterator();
+		
+		u.getFavourites().add(item);
+		
+		return true;
+	}
+	
+	@Override
+	public Set<StoreItem> getFavourites(final User user) {
+		
+		final User u = entityManager.getReference(User.class, user.getId());
+		
+		u.getFavourites().iterator();
+		
+		return u.getFavourites();
+		
 	}
 
 	@Override
 	public boolean removeFavourite(final User user, final StoreItem item) {
-		// TODO Auto-generated method stub
-		return false;
+		
+		final User u = entityManager.getReference(User.class, user.getId());
+		
+		// hibernate trick
+		u.getFavourites().iterator();
+		
+		u.getFavourites().remove(item);
+		
+		return true;
 	}
 
 	@Override
 	public int getNumberOfUsers() {
-		// TODO Auto-generated method stub
-		return 0;
+		final TypedQuery<Long> query = entityManager.createQuery("select count(*) from User c", Long.class);
+		return query.getSingleResult().intValue();
 	}
 
 	@Override
 	public boolean addRole(final User user, final Role role) {
-		// TODO Auto-generated method stub
-		return false;
+		
+		final User u = entityManager.getReference(User.class, user.getId());
+		
+		// hibernate trick
+		u.getRoles().iterator();
+		
+		u.getRoles().add(role);
+		
+		return true;
 	}
 
 	@Override
 	public List<User> getAll() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
 	public boolean updateUser(final User user) {
-		// TODO Auto-generated method stub
-		return false;
+		
+		entityManager.persist(user);
+		
+		return true;
 	}
 
 }

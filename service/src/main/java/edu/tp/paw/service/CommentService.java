@@ -1,9 +1,11 @@
 package edu.tp.paw.service;
 
 import java.util.List;
+import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import edu.tp.paw.interfaces.dao.ICommentDao;
 import edu.tp.paw.interfaces.service.ICommentService;
@@ -15,6 +17,7 @@ import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.User;
 
 @Service
+@Transactional
 public class CommentService implements ICommentService {
 
 	@Autowired private ICommentDao commentDao;
@@ -54,7 +57,7 @@ public class CommentService implements ICommentService {
 	}
 	
 	@Override
-	public List<Comment> commentsForItem(final StoreItem item) {
+	public Set<Comment> commentsForItem(final StoreItem item) {
 		return commentDao.commentsForItem(item);
 	}
 

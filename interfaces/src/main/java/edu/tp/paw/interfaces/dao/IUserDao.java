@@ -1,6 +1,7 @@
 package edu.tp.paw.interfaces.dao;
 
 import java.util.List;
+import java.util.Set;
 
 import edu.tp.paw.model.Role;
 import edu.tp.paw.model.StoreItem;
@@ -34,6 +35,7 @@ public interface IUserDao {
 	boolean changePassword(final User user, final String password);
 	
 	boolean addFavourite(final User user, final StoreItem item);
+	Set<StoreItem> getFavourites(final User user);
 	boolean removeFavourite(final User user, final StoreItem item);
 	
 	int getNumberOfUsers();

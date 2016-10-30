@@ -43,10 +43,8 @@ public class UserService implements IUserService {
 	
 	@Override
 	public User findByUsername(final String username) {
-		
-		final User u = userDao.findByUsername(username); 
-		
-		return u;
+	
+		return userDao.findByUsername(username); 
 	}
 	
 	/* (non-Javadoc)
@@ -149,9 +147,7 @@ public class UserService implements IUserService {
 			throw new IllegalArgumentException("user must exist");
 		}
 		
-		return user.getFavourites();
-		
-//		return itemService.getFavourites(user);
+		return userDao.getFavourites(user);
 		
 	}
 
@@ -221,8 +217,16 @@ public class UserService implements IUserService {
 			throw new IllegalArgumentException("role cant be null");
 		}
 		
-		if (!userExists(builder.getId())) {
-			throw new IllegalArgumentException("user must exist");
+		if (builder.getId() != null) {
+			throw new IllegalArgumentException("user must not exist");
+		}
+		
+		if (usernameExists(builder.getUsername())) {
+			throw new IllegalArgumentException("username must not exist");
+		}
+		
+		if (emailExists(builder.getUsername())) {
+			throw new IllegalArgumentException("email must not exist");
 		}
 		
 		if (!roleService.roleExists(role)) {
@@ -252,9 +256,11 @@ public class UserService implements IUserService {
 		final User u = userDao.findById(user.getId());
 		
 		// little hibernate trick
-		u.getRoles().iterator();
+//		u.getRoles().iterator();
 		
-		return u.getRoles();
+//		return u.getRoles();
+		
+		return roleService.getRolesForUser(user);
 		
 //		return roleService.getRolesForUser(user);
 	}

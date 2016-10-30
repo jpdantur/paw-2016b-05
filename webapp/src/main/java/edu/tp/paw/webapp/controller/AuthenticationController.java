@@ -1,10 +1,17 @@
 package edu.tp.paw.webapp.controller;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.web.authentication.WebAuthenticationDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -14,7 +21,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import edu.tp.paw.interfaces.service.IUserService;
+import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
+import edu.tp.paw.webapp.auth.SiglasUserDetailsService;
 import edu.tp.paw.webapp.form.RegisterForm;
 import edu.tp.paw.webapp.form.validator.RegisterFormValidator;
 
@@ -26,6 +35,8 @@ public class AuthenticationController extends BaseController {
 	
 	@Autowired private IUserService userService;
 	@Autowired private RegisterFormValidator validator;
+	@Autowired private SiglasUserDetailsService userDetailsService;
+	@Autowired private AuthenticationManager authenticationManager;
 	
 	@RequestMapping("/login")
 	public String login(
@@ -53,9 +64,9 @@ public class AuthenticationController extends BaseController {
 	
 	@RequestMapping( value = "/register", method = RequestMethod.GET)
 	public String registerUser(
-			@ModelAttribute("registerForm") RegisterForm form,
-			BindingResult result,
-			Model model
+			@ModelAttribute("registerForm") final RegisterForm form,
+			final BindingResult result,
+			final Model model
 			) {
 		model.addAttribute("result", result);
 		model.addAttribute("user", form);
@@ -65,9 +76,10 @@ public class AuthenticationController extends BaseController {
 	
 	@RequestMapping( value = "/register", method = RequestMethod.POST)
 	public String register(
-			@Valid @ModelAttribute("registerForm") RegisterForm form,
-			BindingResult result,
-			Model model) {
+			@Valid @ModelAttribute("registerForm") final RegisterForm form,
+			final BindingResult result,
+			final Model model,
+			final HttpServletRequest request) {
 		
 		validator.validate(form, result);
 		
@@ -81,9 +93,11 @@ public class AuthenticationController extends BaseController {
 				.email(form.getEmail())
 				.password(form.getPassword());
 			
-			userService.registerUser(userBuiler);
+			final User u = userService.registerUser(userBuiler);
 			
-			return "redirect:/auth/login?r=1";
+			authenticateUserAndSetSession(u, request);
+			
+			return "redirect:/";
 			
 		}
 		
@@ -92,6 +106,17 @@ public class AuthenticationController extends BaseController {
 		
 		return "register";
 		
+	}
+	
+	private void authenticateUserAndSetSession(User user, HttpServletRequest request) {
+		
+		final UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
+		final UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, user.getPassword(), userDetails.getAuthorities());
+		authenticationManager.authenticate(auth);
+		
+		if (auth.isAuthenticated()) {
+		    SecurityContextHolder.getContext().setAuthentication(auth);
+		}
 	}
 	
 }

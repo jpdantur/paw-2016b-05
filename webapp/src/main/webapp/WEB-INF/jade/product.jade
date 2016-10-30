@@ -55,7 +55,7 @@ block content
 					div.col-sm-8
 						h1 #{storeItem.name}&nbsp;
 							if loggedUser
-								if loggedUser.favourites.contains(storeItem)
+								if userFavourites.contains(storeItem)
 									a.text-danger.add-favourite(href="#", data-item="#{storeItem.id}")
 										i.fa.fa-heart
 								else

@@ -3,6 +3,7 @@ package edu.tp.paw.model;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -15,33 +16,36 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 	private final String name;
 	private final String description;
 	private final BigDecimal price;
-	private final Category category;
 	private final boolean used;
 	
 	// Optional parameters
 	private Timestamp created = new Timestamp( (new Date()).getTime() );
 	private Timestamp lastUpdated = new Timestamp( (new Date()).getTime() );
 	private int sold = 0;
-	private long id;
+	private Long id;
 	private User owner;
-	private List<StoreImage> images = new ArrayList<>();
+	private Set<StoreImage> images = new HashSet<>();
 	private Set<Comment> comments = new HashSet<>();
+	private Category category;
 	
-	public StoreItemBuilder(String name, String description, BigDecimal price, Category category, boolean used) {
+	public StoreItemBuilder(String name, String description, BigDecimal price, boolean used) {
 		this.name = name;
 		this.description = description;
 		this.price = price;
-		this.category = category;
 		this.used = used;
 	}
 	
+	public StoreItemBuilder category(final Category category) {
+		this.category = category;
+		return this;
+	}
 	
 	public StoreItemBuilder owner(final User owner) {
 		this.owner = owner;
 		return this;
 	}
 	
-	public StoreItemBuilder images(final List<StoreImage> images) {
+	public StoreItemBuilder images(final Collection<StoreImage> images) {
 		this.images.addAll(images);
 		return this;
 	}
@@ -51,7 +55,7 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 		return this;
 	}
 	
-	public StoreItemBuilder comments(final List<Comment> comments) {
+	public StoreItemBuilder comments(final Collection<Comment> comments) {
 		this.comments.addAll(comments);
 		return this;
 	}
@@ -107,7 +111,7 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 	
 	// getters
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 
@@ -147,7 +151,7 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 		return used;
 	}
 	
-	public List<StoreImage> getImages() {
+	public Set<StoreImage> getImages() {
 		return images;
 	}
 	

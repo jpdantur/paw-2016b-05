@@ -2,7 +2,7 @@ package edu.tp.paw.model;
 
 public class RoleBuilder implements IBuilder<Role> {
 
-	private long id;
+	private Long id;
 	
 	private final String roleName;
 	private final String slug;
@@ -24,7 +24,7 @@ public class RoleBuilder implements IBuilder<Role> {
 		return this;
 	}
 	
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 	public String getRoleName() {

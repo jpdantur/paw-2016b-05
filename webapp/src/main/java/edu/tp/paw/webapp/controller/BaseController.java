@@ -74,15 +74,15 @@ public class BaseController {
 		}
 	}
 	
-//	@ModelAttribute("userFavourites")
-//	public Set<StoreItem> favourites(
-//			@ModelAttribute("loggedUser") final User user
-//			) {
-//		if (user == null) {
-//			return null;
-//		}
-//		return userService.getFavourites(user);
-//	}
+	@ModelAttribute("userFavourites")
+	public Set<StoreItem> favourites(
+			@ModelAttribute("loggedUser") final User user
+			) {
+		if (user == null) {
+			return null;
+		}
+		return userService.getFavourites(user);
+	}
 	
 	@ModelAttribute("currentURI")
 	public String currentUrl(HttpServletRequest request) {

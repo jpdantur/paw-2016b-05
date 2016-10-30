@@ -25,13 +25,13 @@ mixin navbar(search)
 									i.fa.fa-heart
 									span.caret
 								ul.dropdown-menu.dropdown-favourite
-									if !loggedUser.favourites.isEmpty()
+									if !userFavourites.isEmpty()
 										li
 											span.fav-title #{messageSource.getMessage('index.favourite.title',[],locale)}
 									else
 										li
 											a #{messageSource.getMessage('index.favourite.empty',[],locale)}
-									each favourite in loggedUser.favourites
+									each favourite in userFavourites
 										li
 											span.item
 												span.item-left
@@ -39,7 +39,7 @@ mixin navbar(search)
 														if favourite.images.isEmpty()
 															img(src="http://placehold.it/80x80")
 														else
-															img(src="#{context.url('/images/get/'+favourite.images.get(0).id)}")
+															img(src="#{context.url('/images/get/'+favourite.images.iterator().next().id)}")
 													span.item-info
 														a(href="#{context.url('/store/items/'+favourite.id)}")
 															span #{favourite.name}
