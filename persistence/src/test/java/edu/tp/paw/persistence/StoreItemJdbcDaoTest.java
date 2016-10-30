@@ -42,8 +42,8 @@ public class StoreItemJdbcDaoTest {
 	@Autowired
 	private DataSource ds;
 	
-	@Autowired
-	private CategoryJdbcDao categoryDao;
+//	@Autowired
+//	private CategoryJdbcDao categoryDao;
 	
 //	@Autowired
 //	private UserJdbcDao userDao;

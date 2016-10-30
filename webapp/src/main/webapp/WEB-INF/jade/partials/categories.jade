@@ -1,13 +1,14 @@
 div.row
 	div.col-sm-12
-		h2.category-heading #{messageSource.getMessage('index.categories',[],locale)}
+		h2.category-heading.text-center #{messageSource.getMessage('index.categories',[],locale)}
 		mixin children(categories, depth)
 			if depth <= 1
 				if depth == 0
 					div.row
 						each category in categories
-							div.col-sm-3
-								div.panel.panel-default
+							div.col-sm-4.category-link-container
+								a.category-link(href="#{context.url('/store/items/all?categories='+category.id)}") #{category.name}
+								//-div.panel.panel-default
 									div.panel-heading
 										h3.panel-title
 											a(href="#{context.url('/store/items/all?categories='+category.id)}") #{category.name}

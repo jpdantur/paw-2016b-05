@@ -6,19 +6,19 @@ public class StoreImageBuilder implements IBuilder<StoreImage> {
 	private final String mimeType;
 	
 	private StoreItem item;
-	private long id;
+	private Long id;
 	
-	public StoreImageBuilder(String mimeType, byte[] content) {
+	public StoreImageBuilder(final String mimeType, final byte[] content) {
 		this.mimeType = mimeType;
 		this.content = content;
 	}
 	
-	public StoreImageBuilder item(StoreItem item) {
+	public StoreImageBuilder item(final StoreItem item) {
 		this.item = item;
 		return this;
 	}
 	
-	public StoreImageBuilder id(long id) {
+	public StoreImageBuilder id(final long id) {
 		this.id = id;
 		return this;
 	}
@@ -36,7 +36,7 @@ public class StoreImageBuilder implements IBuilder<StoreImage> {
 		return item;
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 

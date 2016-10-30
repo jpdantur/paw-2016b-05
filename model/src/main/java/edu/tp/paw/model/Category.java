@@ -18,6 +18,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 import org.hibernate.annotations.Formula;
 
 @Entity
@@ -35,11 +37,8 @@ public class Category {
 	@JoinColumn( name = "parent", foreignKey = @ForeignKey(name = "parent_fk"))
 	private Category parent;
 	
-//	@Column( name = "category_path" )
-//	private String path;
-	
-	
 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "parent", targetEntity = Category.class, cascade = CascadeType.ALL )
+	@Fetch(FetchMode.SELECT)
 	private Set<Category> children;
 	
 	@Column( insertable = false, updatable = false )
@@ -76,7 +75,7 @@ public class Category {
 	
 	// getters
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 	
@@ -118,10 +117,13 @@ public class Category {
 	}
 
 
+	
+
 	@Override
 	public String toString() {
 		return "Category [id=" + id + ", name=" + name + ", parent=" + parent.id
-				+ ", children="+ (getChildren()!=null?getChildren().size():0) +"]";
+				+ ", children=" + (getChildren()!=null?getChildren().size():-1) + ", created=" + created + ", lastUpdated="
+				+ lastUpdated + "]";
 	}
 
 	@Override

@@ -8,7 +8,7 @@ public class CommentBuilder implements IBuilder<Comment> {
 	private final User user;
 	private final String content;
 	
-	private long id;
+	private Long id;
 	private StoreItem item;
 	private Timestamp created = new Timestamp( (new Date()).getTime() );
 
@@ -33,7 +33,7 @@ public class CommentBuilder implements IBuilder<Comment> {
 		return this;
 	}
 	
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 

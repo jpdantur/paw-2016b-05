@@ -13,7 +13,7 @@ table.table.table-striped
 			tr
 				td
 					if !item.images.isEmpty()
-						img.table-img(style="width:40px;height:40px" src="#{context.url('/images/get/'+item.images.get(0).id)}")
+						img.table-img(style="width:40px;height:40px" src="#{context.url('/images/get/'+item.images.iterator().next().id)}")
 				td #{item.name}
 				td.text-right $#{item.price}
 				//-td #{item.sold} #{messageSource.getMessage('profile.items.table.sold',[],locale)}

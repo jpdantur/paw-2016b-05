@@ -9,7 +9,7 @@ block content
 			else
 				h1.page-header #{messageSource.getMessage('admin.categories.rename.headline',[],locale)}
 				form.form-horizontal(action="#{context.url('/admin/categories/'+category.id+'/edit')}", method="POST")
-					input(type="hidden", name="parent", value="#{category.parent}")
+					input(type="hidden", name="parent", value="#{category.parent.id}")
 					div.form-group(class="#{result.hasFieldErrors('name')?'has-error':''}")
 						label.col-sm-2.control-label(for="name") #{messageSource.getMessage('admin.categories.rename.name',[],locale)}
 						div.col-sm-10

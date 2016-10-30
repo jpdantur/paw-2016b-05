@@ -18,7 +18,6 @@ public class CategoryBuilder implements IBuilder<Category> {
 	private Timestamp created = new Timestamp( (new Date()).getTime() );
 	private Timestamp lastUpdated = new Timestamp( (new Date()).getTime() );
 	private Set<Category> children = new HashSet<>();
-	private String path = "";
 	private Long id;
 	
 	
@@ -52,16 +51,6 @@ public class CategoryBuilder implements IBuilder<Category> {
 	 */
 	public CategoryBuilder lastUpdated(final Timestamp lastUpdated) {
 		this.lastUpdated = lastUpdated;
-		return this;
-	}
-	
-	/**
-	 * Sets #{this} path
-	 * @param path #{this} new path
-	 * @return #{this}
-	 */
-	public CategoryBuilder path(final String path) {
-		this.path = path;
 		return this;
 	}
 	
@@ -102,10 +91,6 @@ public class CategoryBuilder implements IBuilder<Category> {
 
 	public Set<Category> getChildren() {
 		return children;
-	}
-
-	public String getPath() {
-		return path;
 	}
 	
 	

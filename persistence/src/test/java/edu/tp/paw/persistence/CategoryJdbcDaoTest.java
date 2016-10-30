@@ -23,7 +23,7 @@ import edu.tp.paw.model.CategoryBuilder;
 public class CategoryJdbcDaoTest {
 	
 	@Autowired private DataSource ds;
-	@Autowired private CategoryJdbcDao categoryDao;
+//	@Autowired private CategoryJdbcDao categoryDao;
 	private JdbcTemplate jdbcTemplate;
 	
 	@Before

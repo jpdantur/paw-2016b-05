@@ -119,9 +119,9 @@ public class CategoryHibernateDao implements ICategoryDao {
 	@Override
 	public boolean updateCategory(final Category category) {
 		
-		entityManager.persist(category);
+		entityManager.merge(category);
 		
-		return false;
+		return true;
 	}
 
 }

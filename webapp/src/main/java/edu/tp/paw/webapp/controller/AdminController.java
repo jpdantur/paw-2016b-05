@@ -134,8 +134,11 @@ public class AdminController extends BaseController {
 		logger.debug("form is {}", form);
 		
 		if (!result.hasErrors()) {
+			
+			logger.debug("form had no errors");
 		
-			final Category category = new CategoryBuilder(form.getName(), categoryService.findById(form.getParent())).id(id).build();
+			final Category parentCategory = categoryService.findById(form.getParent());
+			final Category category = new CategoryBuilder(form.getName(), parentCategory).id(id).build();
 			
 			if (categoryService.updateCategory(category)) {
 				model.addAttribute("success", true);	

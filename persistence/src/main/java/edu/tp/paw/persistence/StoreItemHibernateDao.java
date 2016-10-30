@@ -227,7 +227,9 @@ public class StoreItemHibernateDao implements IStoreItemDao {
 	@Override
 	public boolean updateItem(final StoreItem item) {
 		
-		entityManager.persist(item);
+		logger.debug("merging {}", item);
+		
+		entityManager.merge(item);
 		
 		return true;
 		

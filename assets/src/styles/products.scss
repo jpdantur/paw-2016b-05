@@ -5,6 +5,11 @@
 	-webkit-border-radius: $property;
 }
 
+html body {
+	background-color: white;
+	// color: white;
+}
+
 .input-xs {
 	height: 22px;
 	padding: 5px 5px;

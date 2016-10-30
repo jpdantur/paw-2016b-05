@@ -27,17 +27,25 @@ header#top-navbar {
   position: relative;
   padding-top: 6%;
   background-color: #59ABE3;
+  background-image: url("../images/bg.jpeg");
+  background-position: 50% 0px;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
   height: auto;
   min-height: auto; }
   #busqueda-simple .btn {
     border: 1px solid #adadad; }
   #busqueda-simple #tarjetas {
     margin-top: 20px; }
+  #busqueda-simple .main-headline {
+    color: white;
+    font-size: 50px; }
   #busqueda-simple #promociones {
     width: 100%;
-    height: 260px;
+    height: 300px;
     margin: 0;
-    margin-top: 50px;
+    margin-top: 150px;
     position: relative; }
     #busqueda-simple #promociones .promotion-image-container {
       width: 100%;
@@ -50,9 +58,19 @@ header#top-navbar {
 
 #busqueda-compleja {
   padding-top: 20px;
-  padding-bottom: 50px; }
+  padding-bottom: 50px;
+  background-color: #222;
+  color: white; }
   #busqueda-compleja .category-heading {
-    margin-bottom: 60px; }
+    margin-bottom: 60px;
+    font-size: 42px; }
+  #busqueda-compleja .category-link-container {
+    text-align: center;
+    font-size: 24px;
+    line-height: 3em; }
+    #busqueda-compleja .category-link-container .category-link {
+      color: #aaa;
+      text-transform: uppercase; }
 
 #navbar-content {
   text-align: center; }

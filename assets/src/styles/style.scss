@@ -54,6 +54,11 @@ header#top-navbar {
 	// background-position: center
 
 	background-color: $app-main-color;
+	background-image: url('../images/bg.jpeg');
+	background-position: 50% 0px;
+	background-attachment: fixed;
+	background-repeat: no-repeat;
+	background-size: cover;
 
 	height: auto;
 	min-height: auto;
@@ -66,6 +71,11 @@ header#top-navbar {
 		margin-top: 20px;
 	}
 
+	.main-headline {
+		color: white;
+		font-size: 50px;
+	}
+
 	$thumbnail-size: 250px;
 
 	#promociones {
@@ -73,9 +83,9 @@ header#top-navbar {
 		// bottom: 0;
 		// left: 0;
 		width: 100%;
-		height: $thumbnail-size+10;
+		height: $thumbnail-size+50;
 		margin: 0;
-		margin-top: 50px;
+		margin-top: 150px;
 		position: relative;
 
 		.promotion-image-container {
@@ -96,10 +106,25 @@ header#top-navbar {
 
 	padding-top: 20px;
 	padding-bottom: 50px;
+	background-color: #222;
+	color: white;
 	
 
 	.category-heading {
-		margin-bottom: 60px
+		margin-bottom: 60px;
+		font-size: 42px;
+	}
+
+	.category-link-container {
+
+		text-align: center;
+		font-size: 24px;
+		line-height: 3em;
+
+		.category-link {
+			color: #aaa;
+			text-transform: uppercase;
+		}
 	}
 }
 

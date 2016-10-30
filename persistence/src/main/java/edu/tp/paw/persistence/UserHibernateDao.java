@@ -144,7 +144,7 @@ public class UserHibernateDao implements IUserDao {
 	@Override
 	public boolean updateUser(final User user) {
 		
-		entityManager.persist(user);
+		entityManager.merge(user);
 		
 		return true;
 	}
