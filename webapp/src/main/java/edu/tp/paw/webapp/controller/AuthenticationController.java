@@ -7,7 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -36,7 +38,7 @@ public class AuthenticationController extends BaseController {
 	@Autowired private IUserService userService;
 	@Autowired private RegisterFormValidator validator;
 	@Autowired private SiglasUserDetailsService userDetailsService;
-	@Autowired private AuthenticationManager authenticationManager;
+	@Autowired private AuthenticationProvider authenticationProvider;
 	
 	@RequestMapping("/login")
 	public String login(
@@ -78,8 +80,7 @@ public class AuthenticationController extends BaseController {
 	public String register(
 			@Valid @ModelAttribute("registerForm") final RegisterForm form,
 			final BindingResult result,
-			final Model model,
-			final HttpServletRequest request) {
+			final Model model) {
 		
 		validator.validate(form, result);
 		
@@ -95,7 +96,7 @@ public class AuthenticationController extends BaseController {
 			
 			final User u = userService.registerUser(userBuiler);
 			
-			authenticateUserAndSetSession(u, request);
+			authenticateUserAndSetSession(u, form.getPassword());
 			
 			return "redirect:/";
 			
@@ -108,11 +109,14 @@ public class AuthenticationController extends BaseController {
 		
 	}
 	
-	private void authenticateUserAndSetSession(User user, HttpServletRequest request) {
+	private void authenticateUserAndSetSession(final User user, final String password) {
+		
+		logger.trace("user pass is: {}", user.getPassword());
 		
 		final UserDetails userDetails = userDetailsService.loadUserByUsername(user.getUsername());
-		final UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userDetails, user.getPassword(), userDetails.getAuthorities());
-		authenticationManager.authenticate(auth);
+		final Authentication auth = new UsernamePasswordAuthenticationToken(userDetails, password, userDetails.getAuthorities());
+		
+		authenticationProvider.authenticate(auth);
 		
 		if (auth.isAuthenticated()) {
 		    SecurityContextHolder.getContext().setAuthentication(auth);

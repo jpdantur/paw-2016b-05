@@ -27,7 +27,7 @@ public class SiglasUserDetailsService implements UserDetailsService {
 	private IUserService userService;
 	
 	@Override
-	public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+	public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
 		
 		logger.debug("username: {} is trying to login", username);
 		

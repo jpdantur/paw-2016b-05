@@ -81,9 +81,10 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 	
 	@Bean
 	public DaoAuthenticationProvider authenticationProvider() {
-		DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
+		final DaoAuthenticationProvider authenticationProvider = new DaoAuthenticationProvider();
 		authenticationProvider.setUserDetailsService(userDetailsService);
 		authenticationProvider.setPasswordEncoder(passwordEncoder());
+		
 		return authenticationProvider;
 	}
 	
@@ -92,11 +93,11 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 		return new BCryptPasswordEncoder(BCRYPT_ROUNDS);  
 	}
 	
-	@Bean
-	@Override
-	public AuthenticationManager authenticationManager()  throws Exception {
-		return super.authenticationManagerBean();
-	}
+//	@Bean
+//	@Override
+//	public AuthenticationManager authenticationManager()  throws Exception {
+//		return super.authenticationManagerBean();
+//	}
 	
 	@Bean
 	public AuthenticationSuccessHandler successHandler() {
