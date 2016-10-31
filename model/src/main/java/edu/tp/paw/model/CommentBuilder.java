@@ -7,15 +7,17 @@ public class CommentBuilder implements IBuilder<Comment> {
 	
 	private final User user;
 	private final String content;
+	private final float rating;
 	
 	private Long id;
 	private StoreItem item;
 	private Timestamp created = new Timestamp( (new Date()).getTime() );
 
-	public CommentBuilder(final User user, final String content) {
+	public CommentBuilder(final User user, final String content, final float rating) {
 		super();
 		this.user = user;
 		this.content = content;
+		this.rating = rating;
 	}
 
 	public CommentBuilder created(final Timestamp created) {
@@ -51,6 +53,10 @@ public class CommentBuilder implements IBuilder<Comment> {
 
 	public Timestamp getCreated() {
 		return created;
+	}
+	
+	public float getRating() {
+		return rating;
 	}
 
 	@Override

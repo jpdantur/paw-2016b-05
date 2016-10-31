@@ -23,12 +23,6 @@ public class CommentService implements ICommentService {
 	@Autowired private ICommentDao commentDao;
 	@Autowired private IStoreItemService storeItemService;
 	@Autowired private IUserService userService;
-	
-	@Override
-	public Comment createComment(final User user, final StoreItem item, final String comment) {
-		
-		return createComment(new CommentBuilder(user, comment).item(item));
-	}
 
 	@Override
 	public Comment createComment(final CommentBuilder builder) {

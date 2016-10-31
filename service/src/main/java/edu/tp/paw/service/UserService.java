@@ -16,6 +16,7 @@ import edu.tp.paw.interfaces.service.IRoleService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.Comment;
+import edu.tp.paw.model.CommentBuilder;
 import edu.tp.paw.model.Role;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.User;
@@ -196,9 +197,9 @@ public class UserService implements IUserService {
 	}
 
 	@Override
-	public Comment commentOn(final User user, final StoreItem item, final String string) {
+	public Comment issueComment(final CommentBuilder builder) {
 		
-		return commentService.createComment(user, item, string);
+		return commentService.createComment(builder);
 	}
 
 	@Override

@@ -1,0 +1,6 @@
+html body {
+  background-image: url("../images/bg.jpeg");
+  background-size: cover; }
+
+.login-box {
+  margin-top: 20%; }

@@ -40,6 +40,8 @@ public class Comment {
 	@Column(insertable = false, updatable = false, nullable = false)
 	private Timestamp created;
 	
+	private float rating;
+	
 	/* package */ Comment() {
 		// hibernate, duh!
 	}
@@ -50,6 +52,7 @@ public class Comment {
 		this.item = builder.getItem();
 		this.content = builder.getContent();
 		this.created = builder.getCreated();
+		this.rating = builder.getRating();
 	}
 	
 	public User getUser() {
@@ -66,6 +69,9 @@ public class Comment {
 	}
 	public long getId() {
 		return id;
+	}
+	public float getRating() {
+		return rating;
 	}
 
 	@Override

@@ -16,6 +16,7 @@ import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.Comment;
+import edu.tp.paw.model.CommentBuilder;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.model.User;
@@ -191,8 +192,8 @@ public class StoreItemService implements IStoreItemService {
 	}
 
 	@Override
-	public Comment addCommentBy(final User user, final StoreItem item, final String comment) {
-		return commentService.createComment(user, item, comment);
+	public Comment addComment(final CommentBuilder builder) {
+		return commentService.createComment(builder);
 	}
 
 	@Override

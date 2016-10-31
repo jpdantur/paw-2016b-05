@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import edu.tp.paw.model.Comment;
+import edu.tp.paw.model.CommentBuilder;
 import edu.tp.paw.model.Role;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.User;
@@ -43,7 +44,7 @@ public interface IUserService {
 	public boolean addFavourite(final User user, final StoreItem item);
 	public boolean removeFavourite(final User user, final StoreItem item);
 	
-	public Comment commentOn(final User user, final StoreItem item, final String string);
+	public Comment issueComment(final CommentBuilder builder);
 	
 	public int getNumberOfUsers();
 	

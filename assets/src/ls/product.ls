@@ -1,5 +1,17 @@
 $ document .ready !->
 
+	$ \.rating.static .rate do
+		max_value: 5,
+		step_size: 0.5,
+		readonly: true
+
+	console.log(document.getElementById('score-input'))
+
+	$ \#score .rate do
+		max_value: 5,
+		step_size: 0.5,
+		update_input_field_name: $('#score-input')
+
 	$ \.add-favourite .click (e) !->
 
 		$self = $ this

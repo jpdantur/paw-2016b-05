@@ -1,4 +1,15 @@
 $(document).ready(function(){
+  $('.rating.static').rate({
+    max_value: 5,
+    step_size: 0.5,
+    readonly: true
+  });
+  console.log(document.getElementById('score-input'));
+  $('#score').rate({
+    max_value: 5,
+    step_size: 0.5,
+    update_input_field_name: $('#score-input')
+  });
   $('.add-favourite').click(function(e){
     var $self, item, remove, isRemoving;
     $self = $(this);

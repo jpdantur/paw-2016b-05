@@ -31,35 +31,45 @@ html body {
     width: auto;
     display: inline-block; }
 
-.product-container {
-  background-color: white;
-  height: 260px;
-  padding: 10px;
-  margin: 5px;
-  border: 1px solid #eee;
-  border-radius: 7px;
-  -o-border-radius: 7px;
-  -moz-border-radius: 7px;
-  -webkit-border-radius: 7px; }
-  .product-container:hover {
-    background-color: #fafafa;
-    border-width: 7px; }
-  .product-container .product-title {
-    height: 18px;
-    line-height: 18px;
-    display: block;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis; }
-  .product-container .product-description {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    max-height: 25px;
-    font-size: 12px;
-    margin: 0; }
-  .product-container .product-price {
-    color: #900; }
+.store-item {
+  padding: 0; }
+  .store-item .product-container {
+    background-color: white;
+    height: 300px;
+    padding: 10px;
+    margin: 5px;
+    border: 1px solid #eee;
+    border-radius: 7px;
+    -o-border-radius: 7px;
+    -moz-border-radius: 7px;
+    -webkit-border-radius: 7px; }
+    .store-item .product-container:hover {
+      background-color: #fafafa;
+      border-width: 7px; }
+    .store-item .product-container .image-container {
+      width: 100%;
+      height: auto;
+      max-height: 200px;
+      overflow: hidden; }
+    .store-item .product-container .product-title {
+      height: 18px;
+      line-height: 18px;
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis; }
+    .store-item .product-container .product-description {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      max-height: 25px;
+      font-size: 12px;
+      margin: 0; }
+    .store-item .product-container .product-price {
+      color: #900;
+      font-size: 18px;
+      font-weight: 500;
+      line-height: 3em; }
 
 #filters .filter-content {
   margin-bottom: 12px; }
@@ -114,9 +124,3 @@ html body {
       -webkit-border-radius: 4px; }
       #filters .filter-content .filter-body .applied-filter .close {
         line-height: 75%; }
-
-.image-container {
-  width: 100%;
-  height: auto;
-  max-height: 182px;
-  overflow: hidden; }

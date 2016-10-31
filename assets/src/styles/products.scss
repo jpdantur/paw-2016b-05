@@ -54,39 +54,54 @@ html body {
 
 }
 
-.product-container {
-	background-color: white;
-	height: 260px;
-	padding: 10px;
-	margin: 5px;
-	border: 1px solid #eee;
-	@include border-radius(7px);
-	
-	&:hover {
-		background-color: #fafafa;
-		border-width: 7px;
-	}
+.store-item {
 
-	.product-title {
-		height: 18px;
-		line-height: 18px;
-		display: block;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
+	padding: 0;
 
-	.product-description {
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-		max-height: 25px;
-		font-size: 12px;
-		margin: 0
-	}
+	.product-container {
+		background-color: white;
+		height: 300px;
+		padding: 10px;
+		margin: 5px;
+		border: 1px solid #eee;
+		@include border-radius(7px);
+		
+		&:hover {
+			background-color: #fafafa;
+			border-width: 7px;
+		}
 
-	.product-price {
-		color: #900
+		.image-container {
+			width: 100%;
+			height: auto;
+			max-height: 200px;
+			overflow: hidden;
+		}
+
+		.product-title {
+			height: 18px;
+			line-height: 18px;
+			display: block;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+
+		.product-description {
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+			max-height: 25px;
+			font-size: 12px;
+			margin: 0
+		}
+
+		.product-price {
+			color: #900;
+			font-size: 18px;
+			font-weight: 500;
+			line-height: 3em;
+		}
 	}
 }
 
@@ -151,11 +166,4 @@ html body {
 
 	}
 
-}
-
-.image-container {
-	width: 100%;
-	height: auto;
-	max-height: 182px;
-	overflow: hidden;
 }

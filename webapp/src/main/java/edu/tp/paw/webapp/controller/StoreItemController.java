@@ -19,6 +19,7 @@ import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IStoreService;
 import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.Category;
+import edu.tp.paw.model.CommentBuilder;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.model.User;
@@ -108,7 +109,8 @@ public class StoreItemController extends BaseController {
 			if (item == null) {
 				throw new StoreItemNotFoundException();
 			}
-			itemService.addCommentBy(user, item, form.getContent());
+			final CommentBuilder builder = new CommentBuilder(user, form.getContent(), form.getRating()).item(item);
+			itemService.addComment(builder);
 			
 			
 			return "redirect:/store/items/"+id;

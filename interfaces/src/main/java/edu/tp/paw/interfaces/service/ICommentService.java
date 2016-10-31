@@ -10,7 +10,7 @@ import edu.tp.paw.model.User;
 
 public interface ICommentService {
 	
-	public Comment createComment(final User user, final StoreItem item, final String comment);
+//	public Comment createComment(final User user, final StoreItem item, final String comment);
 	
 	public Comment createComment(final CommentBuilder builder);
 	

@@ -1,11 +1,14 @@
 extends layout
 
+block styles
+	link(href=context.url('/resources/css/login.css'), rel="stylesheet")
+
 block content
 	+navbar(true)
 	div.container
 		div.row
 			div.col-sm-6.col-sm-offset-3
-				div.well
+				div.well.login-box
 					if error
 						div.alert.alert-danger
 							b #{messageSource.getMessage('login.error.error', [], locale)}&nbsp;

@@ -1,5 +1,5 @@
 mixin product(item)
-	div.col-sm-3
+	div.col-sm-3.store-item
 		div.product-container
 			a(href="#{context.url('/store/items/'+item.id)}")
 				div.image-container
@@ -10,4 +10,4 @@ mixin product(item)
 			a.product-title(href="#{context.url('/store/items/'+item.id)}", title="#{item.name}")
 				b #{item.name}
 			p.product-description(title="#{item.description}") #{item.description}
-			span.product-price $#{item.price}
+			span.product-price $ #{item.price}

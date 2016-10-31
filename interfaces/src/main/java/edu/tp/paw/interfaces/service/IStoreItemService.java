@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import edu.tp.paw.model.Comment;
+import edu.tp.paw.model.CommentBuilder;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.model.User;
@@ -48,7 +49,7 @@ public interface IStoreItemService {
 	
 	public Set<StoreItem> getFavourites(final User user);
 
-	public Comment addCommentBy(final User user, final StoreItem item, final String comment);
+	public Comment addComment(final CommentBuilder builder);
 	
 	public Set<Comment> getComments(final StoreItem item);
 	

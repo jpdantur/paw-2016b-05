@@ -1,11 +1,14 @@
 extends layout
 
+block styles
+	link(href=context.url('/resources/css/register.css'), rel="stylesheet")
+
 block content
 	+navbar(true)
 	div.container
 		div.row
 			div.col-sm-6.col-sm-offset-3
-				div.well
+				div.well.register-box
 					form.form-horizontal(action="#{context.url('/auth/register')}", method="POST")
 						div.form-group(class="#{result.hasFieldErrors('firstName')?'has-error':''}")
 							label.control-label.col-sm-3(for="firstName") #{messageSource.getMessage('register.form.name', [], locale)}

@@ -4,6 +4,7 @@ block styles
 	link(href="#{context.url('/resources/css/product.css')}", rel="stylesheet")
 
 block scripts
+	script(type="text/javascript", src="#{context.url('/resources/js/lib/rater.js')}")
 	script.
 		var messages = {
 			addError: "#{messageSource.getMessage('successMessages.toggleFavourite.addError',[],locale)}",
@@ -61,6 +62,7 @@ block content
 								else
 									a.text-muted.add-favourite(href="#", data-item="#{storeItem.id}")
 										i.fa.fa-heart
+						div.rating.static(style="font-size:32px", data-rate-value=storeItem.rating)
 						span #{storeItem.sold} #{messageSource.getMessage('item.sold', [], locale)}
 						br
 						br
@@ -80,8 +82,16 @@ block content
 					h3 #{messageSource.getMessage('item.comments', [], locale)}
 					if loggedUser
 						form.form-horizontal(action="#{context.url('/store/item/'+storeItem.id+'/comment')}", method="POST")
-							div.form-group(class="#{commentError?'has-error':''}")
+							div.form-group
 								div.col-sm-12
+									label.col-sm-2.control-label(for="score") Puntaje
+									div.col-sm-10
+										input#score-input(type="hidden", value="2.5", name="rating")
+										div#score.rating(style="font-size:1.5em", data-rate-value="2.5")
+										p.help-block
+							div.form-group(class="#{commentError?'has-error':''}")
+								label.col-sm-2.control-label(for="content") #{messageSource.getMessage('item.comment', [], locale)}
+								div.col-sm-10
 									textarea.form-control#content(name="content", placeholder="#{messageSource.getMessage('item.comment', [], locale)}")
 									if commentError
 										span.help-block #{messageSource.getMessage('NotEmpty.CommentForm.content',[],locale)}
@@ -103,5 +113,10 @@ block content
 							span.pull-right
 								i.fa.fa-clock-o
 								span &nbsp;#{dateFormatter.format(comment.created)}
-							p #{comment.content}
+							div.row
+								div.col-sm-2.text-center
+									span.user-score #{comment.rating}
+									div.rating.static(style="font-size:1.5em" data-rate-value=comment.rating)
+								div.col-sm-10
+									p #{comment.content}
 						

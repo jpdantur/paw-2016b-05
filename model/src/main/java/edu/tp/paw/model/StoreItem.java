@@ -20,6 +20,7 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.Formula;
 
 @Entity
 @Table( name = "store_items")
@@ -65,6 +66,9 @@ public class StoreItem {
 	
 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "item" )
 	private Set<Comment> comments;
+	
+	@Formula("(select round(coalesce(avg(sr.rating),0)::numeric,1) from comments sr where sr.item_id=item_id)")
+	private float rating;
 	
 	/* package */ StoreItem() {
 		// hibernate, duh!
@@ -140,7 +144,8 @@ public class StoreItem {
 		return "StoreItem [id=" + id + ", name=" + name + ", description="
 				+ description + ", price=" + price + ", owner=" + owner.getUsername() + ", used="
 				+ used + ", category=" + category.getId() + ", sold=" + sold + ", created="
-				+ created + ", lastUpdated=" + lastUpdated + ", images=" + images.size();
+				+ created + ", lastUpdated=" + lastUpdated + ", images=" + images.size()
+				+ ", rating="+ rating;
 	}
 
 	@Override
@@ -183,6 +188,10 @@ public class StoreItem {
 	
 	public Set<Comment> getComments() {
 		return comments;
+	}
+	
+	public float getRating() {
+		return rating;
 	}
 	
 }
