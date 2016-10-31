@@ -57,4 +57,7 @@ public interface IStoreItemService {
 	
 	public boolean increaseSellCount(final StoreItem item);
 	
+	public boolean pauseStoreItem(final StoreItem item);
+	public boolean resumeStoreItem(final StoreItem item);
+	
 }

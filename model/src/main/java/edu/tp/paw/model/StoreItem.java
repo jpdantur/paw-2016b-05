@@ -7,6 +7,8 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
@@ -70,6 +72,9 @@ public class StoreItem {
 	@Formula("(select round(coalesce(avg(sr.rating),0)::numeric,1) from comments sr where sr.item_id=item_id)")
 	private float rating;
 	
+	@Enumerated(EnumType.STRING)
+	private StoreItemStatus status;
+	
 	/* package */ StoreItem() {
 		// hibernate, duh!
 	}
@@ -87,6 +92,7 @@ public class StoreItem {
 		this.used = builder.isUsed();
 		this.images = builder.getImages();
 		this.comments = builder.getComments();
+		this.status = builder.getStatus();
 	}
 	
 	
@@ -196,6 +202,10 @@ public class StoreItem {
 	
 	public float getRating() {
 		return rating;
+	}
+	
+	public StoreItemStatus getStatus() {
+		return status;
 	}
 	
 }

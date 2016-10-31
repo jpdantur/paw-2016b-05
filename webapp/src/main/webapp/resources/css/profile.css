@@ -1,6 +1,26 @@
 .tab-pane-content {
-  position: relative;
-  margin-top: 50px; }
+  position: relative; }
 
 #profile-container {
   margin-top: 30px; }
+
+h1 {
+  border-bottom: 1px solid #ddd; }
+
+.tabs-left {
+  border-bottom: none;
+  padding-top: 2px;
+  border-right: 1px solid #ddd; }
+  .tabs-left > li {
+    float: none;
+    margin-bottom: 2px;
+    margin-right: -1px; }
+    .tabs-left > li > a {
+      border-radius: 4px 0 0 4px;
+      margin-right: 0;
+      display: block; }
+    .tabs-left > li.active > a,
+    .tabs-left > li.active > a:hover,
+    .tabs-left > li.active > a:focus {
+      border-bottom-color: #ddd;
+      border-right-color: transparent; }

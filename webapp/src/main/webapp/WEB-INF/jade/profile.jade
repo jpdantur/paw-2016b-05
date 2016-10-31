@@ -9,16 +9,19 @@ block content
 	+navbar(true)
 	div.container#profile-container
 		div.row
-			div.col-sm-10.col-sm-offset-1
-				ul.nav.nav-tabs#myTab
+			div.col-sm-3
+				ul.nav.nav-tabs.tabs-left#myTab
 					li.active
 						a(href="#account", data-toggle="tab") #{messageSource.getMessage('profile.account.title',[],locale)}
 					li
 						a(href="#password", data-toggle="tab") #{messageSource.getMessage('profile.password.title',[],locale)}
 					li
 						a(href="#items", data-toggle="tab") #{messageSource.getMessage('profile.items.title',[],locale)}
-					//-li
+					li
 						a(href="#sales", data-toggle="tab") Ventas
+					li
+						a(href="#purchases", data-toggle="tab") Compras
+			div.col-sm-9
 				div.tab-content
 					div.tab-pane.fade.in.active#account
 						include partials/account
@@ -26,5 +29,7 @@ block content
 						include partials/password
 					div.tab-pane.fade#items
 						include partials/items
-					//-div.tab-pane.fade#sales
-						p Sales
+					div.tab-pane.fade#sales
+						include partials/sales
+					div.tab-pane.fade#purchases
+						include partials/purchases

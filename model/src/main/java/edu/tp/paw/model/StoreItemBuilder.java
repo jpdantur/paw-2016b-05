@@ -28,6 +28,8 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 	private Set<Comment> comments = new HashSet<>();
 	private Category category;
 	
+	private StoreItemStatus status = StoreItemStatus.ACTIVE;
+	
 	public StoreItemBuilder(String name, String description, BigDecimal price, boolean used) {
 		this.name = name;
 		this.description = description;
@@ -62,6 +64,11 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 	
 	public StoreItemBuilder comment(final Comment comment) {
 		this.comments.add(comment);
+		return this;
+	}
+	
+	public StoreItemBuilder status(final StoreItemStatus status) {
+		this.status = status;
 		return this;
 	}
 	
@@ -157,6 +164,10 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 	
 	public Set<Comment> getComments() {
 		return comments;
+	}
+
+	public StoreItemStatus getStatus() {
+		return status;
 	}
 	
 }

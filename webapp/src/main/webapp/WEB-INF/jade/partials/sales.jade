@@ -1,0 +1,45 @@
+div.tab-pane-content
+	h1.page-header Ventas
+	ul.nav.nav-tabs#salesTab
+		li.active
+			a(href="#sales-pending", data-toggle="tab") Ventas Abiertas
+		li
+			a(href="#sales-approved", data-toggle="tab") Ventas Aprovadas
+		li
+			a(href="#sales-declined", data-toggle="tab") Ventas Denegadas
+	div.tab-content
+		each status, i in transactions.keySet()
+			div.tab-pane.fade(class=(status.toString()=='PENDING'?'in active':''), id='sales-'+status.toString().toLowerCase())
+				if transactions.get(status).isEmpty()
+					div.alert.alert-info No hay nada
+				else
+					table.table.table-striped
+						thead
+							tr
+								th #{messageSource.getMessage('profile.items.table.picture',[],locale)}
+								th #{messageSource.getMessage('profile.items.table.name',[],locale)}
+								th.text-right #{messageSource.getMessage('profile.items.table.price',[],locale)}
+								//-th #{messageSource.getMessage('profile.items.table.sold',[],locale)}
+								//-th Publicado
+								//-th Ultima Modificación
+								th
+								th
+						tbody
+							each purchase in transactions.get(status)
+								tr
+									td
+										if purchase.item.images.isEmpty()
+											img.table-img(style="width:40px;height:40px" src="http://placehold.it/40?text=Sin+Imagen")
+										else
+											img.table-img(style="width:40px;height:40px" src="#{context.url('/images/get/'+purchase.item.images.iterator().next().id)}")
+									td #{purchase.item.name}
+									td.text-right $#{item.price}
+									td
+										a.btn.btn-success(href="#") Aprobar
+									td
+										a.btn.btn-danger(href="#") Rechazar
+									//-td #{item.sold} #{messageSource.getMessage('profile.items.table.sold',[],locale)}
+									//-td #{item.created}
+									//-td #{item.lastUpdated}
+									//-td
+										a(href="#{context.url('/store/item/'+item.id+'/details')}", title="#{messageSource.getMessage('profile.items.table.edit',[],locale)}") #{messageSource.getMessage('profile.items.table.edit',[],locale)}

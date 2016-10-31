@@ -6,6 +6,7 @@ import java.util.Set;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
+import edu.tp.paw.model.StoreItemStatus;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.filter.Filter;
 import edu.tp.paw.model.filter.PagedResult;
@@ -52,5 +53,7 @@ public interface IStoreItemDao {
 	public boolean itemExists(final StoreItem item);
 
 	public boolean increaseSellCount(final StoreItem item); 
+	
+	public boolean updateItemStatus(final StoreItem item, final StoreItemStatus status);
 	
 }

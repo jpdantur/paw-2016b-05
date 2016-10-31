@@ -1,8 +1,13 @@
 package edu.tp.paw.service;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -17,8 +22,12 @@ import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.Comment;
 import edu.tp.paw.model.CommentBuilder;
+import edu.tp.paw.model.Purchase;
+import edu.tp.paw.model.PurchaseBuilder;
+import edu.tp.paw.model.PurchaseStatus;
 import edu.tp.paw.model.Role;
 import edu.tp.paw.model.StoreItem;
+import edu.tp.paw.model.StoreItemStatus;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
 
@@ -309,10 +318,85 @@ public class UserService implements IUserService {
 	}
 
 	@Override
-	public boolean purchase(final User user, final StoreItem item) {
-		return false;
+	public boolean purchase(final PurchaseBuilder builder) {
+		return userDao.purchase(builder);
+	}
+	
+	@Override
+	public List<Purchase> getAllTransactions(final User user) {
+		return userDao.getTransactions(user);
+	}
+	
+	@Override
+	public Map<PurchaseStatus, Set<Purchase>> getGroupedTransactions(final User user) {
+		
+		final Map<PurchaseStatus, Set<Purchase>> result = new HashMap<>();
+		
+		for (final PurchaseStatus status : PurchaseStatus.values()) {
+			result.put(status, new HashSet<>());
+		}
+		
+		final List<Purchase> purchases = getAllTransactions(user);
+		
+		for (final Purchase purchase : purchases) {
+			result
+			.get(purchase.getStatus()).add(purchase);
+		}
+		
+		return result;
 	}
 
+	@Override
+	public List<Purchase> getPendingTransactions(final User user) {
+		
+		return userDao.getTransactions(user, PurchaseStatus.PENDING);
+	}
 	
+	@Override
+	public List<Purchase> getDeclinedTransactions(final User user) {
+		
+		return userDao.getTransactions(user, PurchaseStatus.DECLINED);
+	}
+	
+	@Override
+	public List<Purchase> getApprovedTransactions(final User user) {
+		
+		return userDao.getTransactions(user, PurchaseStatus.APPROVED);
+	}
 
+	@Override
+	public Set<Purchase> getPurchases(final User user) {
+		
+		return userDao.getPurchases(user);
+	}
+
+	@Override
+	public Set<StoreItem> getAllPublishedItems(final User user) {
+		return itemService.getUserItems(user);
+	}
+
+	@Override
+	public Set<StoreItem> getPublishedItemsWithStatus(final User user, final StoreItemStatus status) {
+		
+		return getAllPublishedItems(user).stream().filter(i -> i.getStatus().equals(status)).collect(Collectors.toSet());
+	}
+	
+	@Override
+	public Map<StoreItemStatus, Set<StoreItem>> getPublishedItemsGroupedByStatus(final User user) {
+		
+		final Map<StoreItemStatus, Set<StoreItem>> result = new HashMap<>();
+		
+		for (final StoreItemStatus status : StoreItemStatus.values()) {
+			result.put(status, new HashSet<>());
+		}
+		
+		final Set<StoreItem> publishedItems = getAllPublishedItems(user);
+		
+		for (final StoreItem item : publishedItems) {
+			result.get(item.getStatus()).add(item);
+		}
+		
+		return result;
+		
+	}
 }

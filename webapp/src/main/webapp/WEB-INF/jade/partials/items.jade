@@ -1,23 +1,41 @@
-table.table.table-striped
-	thead
-		tr
-			th #{messageSource.getMessage('profile.items.table.picture',[],locale)}
-			th #{messageSource.getMessage('profile.items.table.name',[],locale)}
-			th.text-right #{messageSource.getMessage('profile.items.table.price',[],locale)}
-			//-th #{messageSource.getMessage('profile.items.table.sold',[],locale)}
-			//-th Publicado
-			//-th Ultima Modificación
-			th
-	tbody
-		each item in items
-			tr
-				td
-					if !item.images.isEmpty()
-						img.table-img(style="width:40px;height:40px" src="#{context.url('/images/get/'+item.images.iterator().next().id)}")
-				td #{item.name}
-				td.text-right $#{item.price}
-				//-td #{item.sold} #{messageSource.getMessage('profile.items.table.sold',[],locale)}
-				//-td #{item.created}
-				//-td #{item.lastUpdated}
-				td
-					a(href="#{context.url('/store/item/'+item.id+'/details')}", title="#{messageSource.getMessage('profile.items.table.edit',[],locale)}") #{messageSource.getMessage('profile.items.table.edit',[],locale)}
+div.tab-pane-content
+	h1.page-header Articulos Publicados
+	ul.nav.nav-tabs#itemsTab
+		li.active
+			a(href="#items-active", data-toggle="tab") Publicaciones Activas
+		li
+			a(href="#items-paused", data-toggle="tab") Publicaciones Pausadas
+	div.tab-content
+		each status, i in items.keySet()
+			div.tab-pane.fade(class=(i==0?'in active':''), id='items-'+status.toString().toLowerCase())
+				table.table.table-striped
+					thead
+						tr
+							th #{messageSource.getMessage('profile.items.table.picture',[],locale)}
+							th #{messageSource.getMessage('profile.items.table.name',[],locale)}
+							th.text-right #{messageSource.getMessage('profile.items.table.price',[],locale)}
+							th #{messageSource.getMessage('profile.items.table.sold',[],locale)}
+							//-th Publicado
+							//-th Ultima Modificación
+							th
+							th
+					tbody
+						each item in items.get(status)
+							tr
+								td
+									if item.images.isEmpty()
+										img.table-img(style="width:40px;height:40px" src="http://placehold.it/40?text=Sin+Imagen")
+									else
+										img.table-img(style="width:40px;height:40px" src="#{context.url('/images/get/'+item.images.iterator().next().id)}")
+								td #{item.name}
+								td.text-right $#{item.price}
+								td #{item.sold} #{messageSource.getMessage('profile.items.table.sold',[],locale)}
+								//-td #{item.created}
+								//-td #{item.lastUpdated}
+								td
+									a(href="#{context.url('/store/item/'+item.id+'/details')}", title="#{messageSource.getMessage('profile.items.table.edit',[],locale)}") #{messageSource.getMessage('profile.items.table.edit',[],locale)}
+								td
+									if status.toString() == 'PAUSED'
+										a(href="#") Reanudar Publicacion
+									else
+										a(href="#") Pausar Publicacion

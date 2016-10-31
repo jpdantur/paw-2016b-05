@@ -9,7 +9,8 @@ div.tab-pane-content
 				div.alert.alert-danger
 					b #{messageSource.getMessage('successMessages.changePassword.titleFail', [], locale)}!&nbsp;
 					span #{messageSource.getMessage('successMessages.changePassword.contentFail', [], locale)}
-	div.col-sm-10.col-sm-offset-1
+	div.col-sm-12
+		h1.page-header Mi Cuenta
 		form.form-horizontal(action="#{context.url('/profile/details')}", method="POST")
 			div.form-group
 				label.col-sm-2.control-label #{messageSource.getMessage('profile.account.form.name',[],locale)}

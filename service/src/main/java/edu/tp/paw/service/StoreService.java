@@ -15,6 +15,7 @@ import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IStoreService;
 import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.Category;
+import edu.tp.paw.model.PurchaseBuilder;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.model.User;
@@ -48,14 +49,19 @@ public class StoreService implements IStoreService {
 	}
 
 	@Override
-	public boolean purchase(final User user, final StoreItem item) {
-		return userService.purchase(user, item);
+	public boolean purchase(final PurchaseBuilder builder) {
+		
+		if (!userService.purchase(builder)) {
+			return false;
+		}
+		
+		return storeItemService.increaseSellCount(builder.getItem());
 	}
 
 	@Override
 	public Set<Category> getCategoriesForResultsInHigherDepthCategories(final Set<Category> categories, final List<StoreItem> items) {
 		
-		Set<Category> similarCategories;
+		final Set<Category> similarCategories;
 		
 		if (!categories.isEmpty()) {
 			similarCategories = categoryService.getChildren(categories);

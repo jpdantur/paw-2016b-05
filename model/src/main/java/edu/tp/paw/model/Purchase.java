@@ -1,7 +1,11 @@
 package edu.tp.paw.model;
 
+import java.sql.Timestamp;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.ForeignKey;
 import javax.persistence.GeneratedValue;
@@ -30,10 +34,21 @@ public class Purchase {
 	@JoinColumn( name =  "item_id", foreignKey = @ForeignKey( name = "item_fk" ))
 	private StoreItem item;
 	
-	private boolean approved;
+	@Enumerated(EnumType.STRING)
+	private PurchaseStatus status;
 
+	@Column( name = "created", insertable = false, updatable = false )
+	private Timestamp created;
+	
 	/* protected */ Purchase() {
 		// hibernate, duh!
+	}
+	
+	/* protected */ Purchase(final PurchaseBuilder builder) {
+		this.id = builder.getId();
+		this.buyer = builder.getBuyer();
+		this.item = builder.getItem();
+		this.status = builder.getStatus();
 	}
 	
 	public Long getId() {
@@ -48,12 +63,8 @@ public class Purchase {
 		return item;
 	}
 
-	public boolean isApproved() {
-		return approved;
-	}
-	
-	public boolean getApproved() {
-		return approved;
+	public PurchaseStatus getStatus() {
+		return status;
 	}
 
 	@Override
@@ -84,6 +95,11 @@ public class Purchase {
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public String toString() {
+		return "Purchase [id=" + id + ", buyer=" + buyer.getId() + ", item=" + item.getId() + ", status=" + status + "]";
 	}
 	
 }

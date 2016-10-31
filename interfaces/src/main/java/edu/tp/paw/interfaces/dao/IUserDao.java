@@ -3,6 +3,9 @@ package edu.tp.paw.interfaces.dao;
 import java.util.List;
 import java.util.Set;
 
+import edu.tp.paw.model.Purchase;
+import edu.tp.paw.model.PurchaseBuilder;
+import edu.tp.paw.model.PurchaseStatus;
 import edu.tp.paw.model.Role;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.User;
@@ -46,6 +49,10 @@ public interface IUserDao {
 	
 	public boolean updateUser(final User user);
 	
-	public boolean purchase(final User user, final StoreItem item);
+	public boolean purchase(final PurchaseBuilder builder);
+	
+	public List<Purchase> getTransactions(final User user);
+	public List<Purchase> getTransactions(final User user, final PurchaseStatus status);
+	public Set<Purchase> getPurchases(final User user);
 	
 }

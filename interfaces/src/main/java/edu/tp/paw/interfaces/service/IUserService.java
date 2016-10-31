@@ -2,11 +2,16 @@ package edu.tp.paw.interfaces.service;
 
 import java.util.List;
 import java.util.Set;
+import java.util.Map;
 
 import edu.tp.paw.model.Comment;
 import edu.tp.paw.model.CommentBuilder;
+import edu.tp.paw.model.Purchase;
+import edu.tp.paw.model.PurchaseBuilder;
+import edu.tp.paw.model.PurchaseStatus;
 import edu.tp.paw.model.Role;
 import edu.tp.paw.model.StoreItem;
+import edu.tp.paw.model.StoreItemStatus;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
 
@@ -55,6 +60,17 @@ public interface IUserService {
 	
 	public boolean updateUser(final User user);
 	
-	public boolean purchase(final User user, final StoreItem item);
+	public boolean purchase(final PurchaseBuilder builder);
+	public Set<Purchase> getPurchases(final User user);
+	
+	public List<Purchase> getAllTransactions(final User user);
+	public Map<PurchaseStatus, Set<Purchase>> getGroupedTransactions(final User user);
+	public List<Purchase> getPendingTransactions(final User user);
+	public List<Purchase> getApprovedTransactions(final User user);
+	public List<Purchase> getDeclinedTransactions(final User user);
+	
+	public Set<StoreItem> getAllPublishedItems(final User user);
+	public Set<StoreItem> getPublishedItemsWithStatus(final User user, final StoreItemStatus status);
+	public Map<StoreItemStatus, Set<StoreItem>> getPublishedItemsGroupedByStatus(final User user);
 	
 }

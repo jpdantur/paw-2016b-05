@@ -11,6 +11,9 @@ import javax.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 
 import edu.tp.paw.interfaces.dao.IUserDao;
+import edu.tp.paw.model.Purchase;
+import edu.tp.paw.model.PurchaseBuilder;
+import edu.tp.paw.model.PurchaseStatus;
 import edu.tp.paw.model.Role;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.User;
@@ -138,7 +141,9 @@ public class UserHibernateDao implements IUserDao {
 
 	@Override
 	public List<User> getAll() {
-		return null;
+		final TypedQuery<User> query = entityManager.createQuery("from User u", User.class);
+		
+		return query.getResultList();
 	}
 
 	@Override
@@ -150,16 +155,42 @@ public class UserHibernateDao implements IUserDao {
 	}
 
 	@Override
-	public boolean purchase(final User user, final StoreItem item) {
+	public boolean purchase(final PurchaseBuilder builder) {
 		
-		final User u = entityManager.getReference(User.class, item);
-		
-		// hibernate trick
-		u.getPurchases().iterator();
-		
-		
+		entityManager.persist(builder.build());
 		
 		return true;
+	}
+
+	@Override
+	public List<Purchase> getTransactions(final User user) {
+		
+		final TypedQuery<Purchase> query = entityManager.createQuery("from Purchase p where p.item.owner=:owner", Purchase.class);
+		
+		query.setParameter("owner", user);
+		
+		return query.getResultList();
+	}
+	
+	@Override
+	public List<Purchase> getTransactions(final User user, final PurchaseStatus status) {
+		
+		final TypedQuery<Purchase> query = entityManager.createQuery("from Purchase p where p.status=:status and p.item.owner=:owner", Purchase.class);
+		
+		query.setParameter("owner", user);
+		query.setParameter("status", status);
+		
+		return query.getResultList();
+	}
+
+	@Override
+	public Set<Purchase> getPurchases(final User user) {
+		
+		final User u = entityManager.getReference(User.class, user.getId());
+		
+		u.getPurchases().iterator();
+		
+		return u.getPurchases();
 	}
 
 }

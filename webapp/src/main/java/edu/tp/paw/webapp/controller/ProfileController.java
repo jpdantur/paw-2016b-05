@@ -6,12 +6,17 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IUserService;
+import edu.tp.paw.model.StoreItem;
+import edu.tp.paw.model.StoreItemStatus;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
 import edu.tp.paw.webapp.form.ChangePasswordForm;
 import edu.tp.paw.webapp.form.ProfileForm;
 import edu.tp.paw.webapp.form.validator.ChangePasswordFormValidator;
 import edu.tp.paw.webapp.form.validator.ProfileFormValidator;
+
+import java.util.Map;
+import java.util.Set;
 
 import javax.validation.Valid;
 
@@ -32,7 +37,6 @@ public class ProfileController extends BaseController {
 	@Autowired private IUserService userService;
 	
 	@Autowired private ProfileFormValidator validator;
-	
 	@Autowired private ChangePasswordFormValidator passwordValidator;
 	
 	@RequestMapping( value = "/details", method = RequestMethod.GET)
@@ -42,8 +46,9 @@ public class ProfileController extends BaseController {
 			final Model model,
 			@ModelAttribute("loggedUser") final User user) {
 		
-		
-		model.addAttribute("items", itemService.getUserItems(user));
+		model.addAttribute("purchases", userService.getPurchases(user));
+		model.addAttribute("transactions", userService.getGroupedTransactions(user));
+		model.addAttribute("items", userService.getPublishedItemsGroupedByStatus(user));
 		model.addAttribute("result", result);
 		
 		return "profile";
@@ -75,7 +80,9 @@ public class ProfileController extends BaseController {
 			
 		}
 		
-		model.addAttribute("items", itemService.getUserItems(user));
+		model.addAttribute("purchases", userService.getPurchases(user));
+		model.addAttribute("transactions", userService.getGroupedTransactions(user));
+		model.addAttribute("items", userService.getPublishedItemsGroupedByStatus(user));
 		model.addAttribute("result", result);
 		
 		return "profile";
@@ -114,7 +121,9 @@ public class ProfileController extends BaseController {
 			
 		}
 		
-		model.addAttribute("items", itemService.getUserItems(user));
+		model.addAttribute("purchases", userService.getPurchases(user));
+		model.addAttribute("transactions", userService.getGroupedTransactions(user));
+		model.addAttribute("items", userService.getPublishedItemsGroupedByStatus(user));
 		model.addAttribute("passSuccess", !result.hasErrors());
 		model.addAttribute("result", result);
 		

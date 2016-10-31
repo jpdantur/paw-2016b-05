@@ -19,6 +19,7 @@ import edu.tp.paw.model.Comment;
 import edu.tp.paw.model.CommentBuilder;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
+import edu.tp.paw.model.StoreItemStatus;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.filter.Filter;
 import edu.tp.paw.model.filter.FilterBuilder;
@@ -243,6 +244,17 @@ public class StoreItemService implements IStoreItemService {
 			throw new IllegalArgumentException("item must exist");
 		}
 		return storeItemDao.increaseSellCount(item);
+	}
+
+	@Override
+	public boolean pauseStoreItem(final StoreItem item) {
+		
+		return storeItemDao.updateItemStatus(item, StoreItemStatus.PAUSED);
+	}
+
+	@Override
+	public boolean resumeStoreItem(final StoreItem item) {
+		return storeItemDao.updateItemStatus(item, StoreItemStatus.ACTIVE);
 	}
 	
 	

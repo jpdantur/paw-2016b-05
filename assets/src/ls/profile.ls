@@ -1,6 +1,6 @@
 $ document .ready !->
 
-	$ '#myTab a' .click (e) !->
+	$ '#myTab a, #itemsTab a, #salesTab a' .click (e) !->
 		e.preventDefault!
 
 		$ this .tab \show
@@ -15,9 +15,20 @@ $ document .ready !->
 
 		$ this .attr \action, action + window.location.hash
 
-	hash = window.location.hash
-	$ "\#myTab a[href='#hash']" .tab \show
+	onHashChange = (hash) !->
+
+		parts = hash.split \-
+		mainHash = parts[0]
+
+		$ "\#myTab a[href='#mainHash']" .tab \show
+
+		if parts.length > 1
+			$ "\#itemsTab a[href='#hash']" .tab \show
+			$ "\#salesTab a[href='#hash']" .tab \show
+
+		
+
+	onHashChange window.location.hash
 
 	$ window .on \hashchange, !->
-		hash = window.location.hash;
-		$ "\#myTab a[href='#hash']" .tab \show
+		onHashChange window.location.hash

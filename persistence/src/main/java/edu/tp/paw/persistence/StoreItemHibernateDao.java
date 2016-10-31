@@ -20,6 +20,7 @@ import edu.tp.paw.interfaces.dao.IStoreItemDao;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
+import edu.tp.paw.model.StoreItemStatus;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.filter.CategoryFilter;
 import edu.tp.paw.model.filter.Filter;
@@ -57,16 +58,14 @@ public class StoreItemHibernateDao implements IStoreItemDao {
 		
 		final StringBuilder query = new StringBuilder();
 		
-		query.append("from StoreItem item where ");
-		
-		boolean logicalOperator = false;
+		query.append("from StoreItem item where status=:status ");
 		
 		final TermFilter termFilter = filter.getTermFilter();
 		
 		if (termFilter.getTerm().isPresent()) {
 
 			query.append(
-				"("
+				"and ("
 					+ "lower(item.name) like concat('%', lower(:term), '%') "
 					+ "or "
 					+ "lower(item.description) like concat('%', lower(:term), '%') "
@@ -75,43 +74,28 @@ public class StoreItemHibernateDao implements IStoreItemDao {
 						+ "select c.id from Category c "
 						+ "where lower(c.name) like concat('%', lower(:term), '%') "
 					+ ")"
-				+")");
-			
-			logicalOperator = true;
+				+") ");
 		}
 		
 		final PriceFilter priceFilter = filter.getPriceFilter();
 		final Range<BigDecimal> priceRange = priceFilter.getPriceRange();
 		
 		if (priceRange.hasLowerBound() || priceRange.hasUpperBound()) {
-			if (logicalOperator) {
-				query.append(" and ");
-			}
 			
 			if (priceRange.hasLowerBound() && priceRange.hasUpperBound()) {
-				query.append(" price <= :upperBound and :lowerBound <= price");
+				query.append("and price <= :upperBound and :lowerBound <= price");
 			} else if (priceRange.hasLowerBound()) {
-				query.append(":lowerBound <= price");
+				query.append("and :lowerBound <= price");
 			} else {
-				query.append("price <= :upperBound");
+				query.append("and price <= :upperBound");
 			}
-			
-			logicalOperator = true;
 		}
 		
 		final CategoryFilter categoryFilter = filter.getCategoryFilter();
 		final Set<Category> categories = categoryFilter.getCategories();
 
 		if (!categories.isEmpty()) {
-			
-			if (logicalOperator) {
-				query.append(" and ");
-			}
-			
-			query.append(" item.category in (:categories) ");
-
-			logicalOperator = true;
-			
+			query.append(" and item.category in (:categories) ");			
 		}
 		
 		final OrderFilter orderFilter = filter.getOrderFilter();
@@ -151,6 +135,8 @@ public class StoreItemHibernateDao implements IStoreItemDao {
 		final String query = buildQueryFromFilter(filter);
 		
 		final TypedQuery<StoreItem> typedQuery = entityManager.createQuery(query, StoreItem.class);
+		
+		typedQuery.setParameter("status", StoreItemStatus.ACTIVE);
 		
 		final PriceFilter priceFilter = filter.getPriceFilter();
 		final Range<BigDecimal> priceRange = priceFilter.getPriceRange();
@@ -244,8 +230,8 @@ public class StoreItemHibernateDao implements IStoreItemDao {
 	@Override
 	public int getNumberOfItems(final Filter filter) {
 		
-	final TypedQuery<StoreItem> typedQuery = entityManager.createQuery(buildQueryFromFilter(filter), StoreItem.class);
-		
+		final TypedQuery<StoreItem> typedQuery = entityManager.createQuery(buildQueryFromFilter(filter), StoreItem.class);
+		typedQuery.setParameter("status", StoreItemStatus.ACTIVE);
 		final PriceFilter priceFilter = filter.getPriceFilter();
 		final Range<BigDecimal> priceRange = priceFilter.getPriceRange();
 		if (filter.getTermFilter().getTerm().isPresent()) {
@@ -309,6 +295,15 @@ public class StoreItemHibernateDao implements IStoreItemDao {
 	public boolean increaseSellCount(final StoreItem item) {
 		final Query query = entityManager.createQuery("update StoreItem set sold=:sold where item_id=:id");
 		query.setParameter("sold", item.getSold()+1);
+		query.setParameter("id", item.getId());
+		return query.executeUpdate() == 1;
+	}
+
+	@Override
+	public boolean updateItemStatus(final StoreItem item, final StoreItemStatus status) {
+		
+		final Query query = entityManager.createQuery("update StoreItem set status=:status where item_id=:id");
+		query.setParameter("status", item.getStatus());
 		query.setParameter("id", item.getId());
 		return query.executeUpdate() == 1;
 	}
