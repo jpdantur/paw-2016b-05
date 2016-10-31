@@ -10,6 +10,17 @@ $(document).ready(function(){
       success: function(data){
         console.log(data);
         if (data.err) {
+          $.notify({
+            message: globalMessages.removeError
+          }, {
+            type: 'danger'
+          });
+        } else {
+          $.notify({
+            message: globalMessages.removeSuccess
+          }, {
+            type: 'success'
+          });
           $self.closest('li').remove();
         }
       }

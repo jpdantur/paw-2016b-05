@@ -76,6 +76,10 @@ public class User {
 	@Fetch(FetchMode.SELECT)
 	private Set<StoreItem> publishedItems = new HashSet<>();
 	
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "buyer")
+	@Fetch(FetchMode.SELECT)
+	private Set<Purchase> purchases = new HashSet<>();
+	
 	/* package */ User() {
 		// hibernate, duh!
 	}
@@ -125,6 +129,10 @@ public class User {
 	
 	public Set<StoreItem> getPublishedItems() {
 		return publishedItems;
+	}
+	
+	public Set<Purchase> getPurchases() {
+		return purchases;
 	}
 
 	@Override

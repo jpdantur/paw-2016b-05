@@ -6,6 +6,7 @@ import java.util.Set;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
+import edu.tp.paw.model.User;
 import edu.tp.paw.model.filter.Filter;
 import edu.tp.paw.model.filter.FilterBuilder;
 import edu.tp.paw.model.filter.PagedResult;
@@ -19,5 +20,5 @@ public interface IStoreService {
 	
 	public Set<Category> getCategoriesForResultsInHigherDepthCategories(final Set<Category> categories, final List<StoreItem> items);
 	
-	public boolean purchase(final StoreItem item);
+	public boolean purchase(final User user, final StoreItem item);
 }

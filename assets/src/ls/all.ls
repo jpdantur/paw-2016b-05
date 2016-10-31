@@ -14,4 +14,14 @@ $ document .ready !->
 			success: (data) !->
 				console.log data
 				if data.err
+					$.notify {
+						message: globalMessages.removeError
+					} , do
+						type: 'danger'
+				else
+					$.notify {
+						message: globalMessages.removeSuccess
+					} , do
+						type: 'success'
 					$self .closest 'li' .remove!
+					

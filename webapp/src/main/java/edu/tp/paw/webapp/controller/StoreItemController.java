@@ -175,7 +175,7 @@ public class StoreItemController extends BaseController {
 			return "{\"err\":3 }";
 		}
 		
-		if (storeService.purchase(item)) {
+		if (storeService.purchase(user, item)) {
 			return "{\"err\":0 }";
 		}
 		

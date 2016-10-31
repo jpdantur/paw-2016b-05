@@ -13,9 +13,11 @@ import org.springframework.transaction.annotation.Transactional;
 import edu.tp.paw.interfaces.service.ICategoryService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IStoreService;
+import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
+import edu.tp.paw.model.User;
 import edu.tp.paw.model.filter.Filter;
 import edu.tp.paw.model.filter.FilterBuilder;
 import edu.tp.paw.model.filter.PagedResult;
@@ -28,6 +30,7 @@ public class StoreService implements IStoreService {
 	
 	@Autowired private IStoreItemService storeItemService;
 	@Autowired private ICategoryService categoryService;
+	@Autowired private IUserService userService;
 
 	@Override
 	public StoreItem sell(final StoreItemBuilder builder) {
@@ -45,8 +48,8 @@ public class StoreService implements IStoreService {
 	}
 
 	@Override
-	public boolean purchase(final StoreItem item) {
-		return storeItemService.increaseSellCount(item);
+	public boolean purchase(final User user, final StoreItem item) {
+		return userService.purchase(user, item);
 	}
 
 	@Override

@@ -308,6 +308,11 @@ public class UserService implements IUserService {
 		return userDao.updateUser(user);
 	}
 
+	@Override
+	public boolean purchase(final User user, final StoreItem item) {
+		return false;
+	}
+
 	
 
 }

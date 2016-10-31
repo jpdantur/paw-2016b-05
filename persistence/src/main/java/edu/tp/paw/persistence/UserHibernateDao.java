@@ -149,4 +149,17 @@ public class UserHibernateDao implements IUserDao {
 		return true;
 	}
 
+	@Override
+	public boolean purchase(final User user, final StoreItem item) {
+		
+		final User u = entityManager.getReference(User.class, item);
+		
+		// hibernate trick
+		u.getPurchases().iterator();
+		
+		
+		
+		return true;
+	}
+
 }

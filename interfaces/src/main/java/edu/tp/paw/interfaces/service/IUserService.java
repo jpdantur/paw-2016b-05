@@ -55,4 +55,6 @@ public interface IUserService {
 	
 	public boolean updateUser(final User user);
 	
+	public boolean purchase(final User user, final StoreItem item);
+	
 }

@@ -26,5 +26,9 @@ html(lang="es")
 		script(src="#{context.url('/resources/js/lib/bootstrap-notify.js')}", type="text/javascript")
 		script.
 			var baseUrl = "#{context.url('')}";
+			var globalMessages = {
+				removeError: "#{messageSource.getMessage('successMessages.toggleFavourite.removeError',[],locale)}",
+				removeSuccess: "#{messageSource.getMessage('successMessages.toggleFavourite.removeSuccess',[],locale)}",
+			};
 		script(src="#{context.url('/resources/js/all.js')}", type="text/javascript")
 		block scripts
