@@ -32,3 +32,34 @@ $ document .ready !->
 
 	$ window .on \hashchange, !->
 		onHashChange window.location.hash
+
+	$ \.toggle-item-state .click (e) !->
+		e.preventDefault!
+
+		$self = $ this
+		$row = $self .closest \tr
+
+		isActive = $self .hasClass \btn-default
+
+		bootbox.confirm "Esta seguro que desea #{if isActive then 'pausar' else 'reanudar' } esta publicación", (r) !->
+			if r
+				$ .ajax do
+					url: "#{baseUrl}/store/item/#{$row.data('id')}/#{if isActive then 'pause' else 'resume'}"
+					type: 'POST'
+					success: (data) !->
+						if data.err
+							$.notify {
+								message: 'Mensaje de error que le falta i18n'
+							} , do
+								type: 'danger'
+						else
+							$.notify {
+								message: 'Mensaje de exito que le falta i18n'
+							} , do
+								type: 'success'
+							$self .toggleClass 'btn-success btn-default'
+
+							$self .text if isActive then 'Reanudar Publicación' else 'Pausar Publicación'
+
+
+

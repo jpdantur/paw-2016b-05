@@ -184,5 +184,46 @@ public class StoreItemController extends BaseController {
 		
 		return "{\"err\": 1}";
 	}
+	
+	@RequestMapping( value = "/{itemId}/resume", method = RequestMethod.POST, produces = "application/json; charset=utf-8" )
+	@ResponseBody
+	public String resumeItem(
+			@PathVariable("itemId") final long id,
+			@ModelAttribute("loggedUser") final User user
+			) {
+		
+		final StoreItem item = itemService.findById(id);
+		
+		if (item == null) {
+			return "{\"err\":3 }";
+		}
+		
+		if (itemService.resumeStoreItem(item)) {
+			return "{\"err\":0 }";
+		}
+		
+		return "{\"err\": 1}";
+	}
+	
+	@RequestMapping( value = "/{itemId}/pause", method = RequestMethod.POST, produces = "application/json; charset=utf-8" )
+	@ResponseBody
+	public String pauseItem(
+			@PathVariable("itemId") final long id,
+			@ModelAttribute("loggedUser") final User user
+			) {
+		
+		final StoreItem item = itemService.findById(id);
+		
+		if (item == null) {
+			return "{\"err\":3 }";
+		}
+		
+		if (itemService.pauseStoreItem(item)) {
+			return "{\"err\":0 }";
+		}
+		
+		
+		return "{\"err\": 1}";
+	}
 
 }

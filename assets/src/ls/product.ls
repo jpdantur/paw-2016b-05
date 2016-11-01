@@ -5,8 +5,6 @@ $ document .ready !->
 		step_size: 0.5,
 		readonly: true
 
-	console.log(document.getElementById('score-input'))
-
 	$ \#score .rate do
 		max_value: 5,
 		step_size: 0.5,
@@ -41,13 +39,7 @@ $ document .ready !->
 						type: 'success'
 					$self .toggleClass 'text-muted text-danger'
 
-	$('[data-buyer-email]') .click (e) !->
-
-		e.preventDefault!
-
-		
-
-	$ \#purchase .click (e) !->
+	$ '#purchase[data-buyer-email]' .click (e) !->
 
 		e.preventDefault!
 

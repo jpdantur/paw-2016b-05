@@ -21,13 +21,15 @@ div.tab-pane-content
 							th
 					tbody
 						each item in items.get(status)
-							tr
+							tr(data-id=item.id)
 								td
-									if item.images.isEmpty()
-										img.table-img(style="width:40px;height:40px" src="http://placehold.it/40?text=Sin+Imagen")
-									else
-										img.table-img(style="width:40px;height:40px" src="#{context.url('/images/get/'+item.images.iterator().next().id)}")
-								td #{item.name}
+									a(href=context.url('/store/items/'+item.id))
+										if item.images.isEmpty()
+											img.table-img(style="width:40px;height:40px" src="http://placehold.it/40?text=Sin+Imagen")
+										else
+											img.table-img(style="width:40px;height:40px" src="#{context.url('/images/get/'+item.images.iterator().next().id)}")
+								td
+									a(href=context.url('/store/items/'+item.id)) #{item.name}
 								td.text-right $#{item.price}
 								td #{item.sold} #{messageSource.getMessage('profile.items.table.sold',[],locale)}
 								//-td #{item.created}
@@ -36,6 +38,6 @@ div.tab-pane-content
 									a(href="#{context.url('/store/item/'+item.id+'/details')}", title="#{messageSource.getMessage('profile.items.table.edit',[],locale)}") #{messageSource.getMessage('profile.items.table.edit',[],locale)}
 								td
 									if status.toString() == 'PAUSED'
-										a(href="#") Reanudar Publicacion
+										button.btn.btn-success.btn-xs.toggle-item-state Reanudar Publicacion
 									else
-										a(href="#") Pausar Publicacion
+										button.btn.btn-default.btn-xs.toggle-item-state Pausar Publicacion

@@ -28,4 +28,36 @@ $(document).ready(function(){
   $(window).on('hashchange', function(){
     onHashChange(window.location.hash);
   });
+  $('.toggle-item-state').click(function(e){
+    var $self, $row, isActive;
+    e.preventDefault();
+    $self = $(this);
+    $row = $self.closest('tr');
+    isActive = $self.hasClass('btn-default');
+    bootbox.confirm("Esta seguro que desea " + (isActive ? 'pausar' : 'reanudar') + " esta publicación", function(r){
+      if (r) {
+        $.ajax({
+          url: baseUrl + "/store/item/" + $row.data('id') + "/" + (isActive ? 'pause' : 'resume'),
+          type: 'POST',
+          success: function(data){
+            if (data.err) {
+              $.notify({
+                message: 'Mensaje de error que le falta i18n'
+              }, {
+                type: 'danger'
+              });
+            } else {
+              $.notify({
+                message: 'Mensaje de exito que le falta i18n'
+              }, {
+                type: 'success'
+              });
+              $self.toggleClass('btn-success btn-default');
+              $self.text(isActive ? 'Reanudar Publicación' : 'Pausar Publicación');
+            }
+          }
+        });
+      }
+    });
+  });
 });

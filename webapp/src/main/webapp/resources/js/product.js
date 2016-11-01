@@ -4,7 +4,6 @@ $(document).ready(function(){
     step_size: 0.5,
     readonly: true
   });
-  console.log(document.getElementById('score-input'));
   $('#score').rate({
     max_value: 5,
     step_size: 0.5,
@@ -46,10 +45,7 @@ $(document).ready(function(){
       }
     });
   });
-  $('[data-buyer-email]').click(function(e){
-    e.preventDefault();
-  });
-  $('#purchase').click(function(e){
+  $('#purchase[data-buyer-email]').click(function(e){
     var $self, item;
     e.preventDefault();
     $self = $(this);

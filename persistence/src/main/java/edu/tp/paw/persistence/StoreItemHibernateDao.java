@@ -303,7 +303,7 @@ public class StoreItemHibernateDao implements IStoreItemDao {
 	public boolean updateItemStatus(final StoreItem item, final StoreItemStatus status) {
 		
 		final Query query = entityManager.createQuery("update StoreItem set status=:status where item_id=:id");
-		query.setParameter("status", item.getStatus());
+		query.setParameter("status", status);
 		query.setParameter("id", item.getId());
 		return query.executeUpdate() == 1;
 	}
