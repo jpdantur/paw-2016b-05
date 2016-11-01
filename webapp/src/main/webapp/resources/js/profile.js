@@ -1,6 +1,6 @@
 $(document).ready(function(){
   var onHashChange;
-  $('#myTab a, #itemsTab a, #salesTab a').click(function(e){
+  $('#myTab a, #itemsTab a, #salesTab a, #purchaseTab a').click(function(e){
     e.preventDefault();
     $(this).tab('show');
   });
@@ -22,11 +22,50 @@ $(document).ready(function(){
     if (parts.length > 1) {
       $("#itemsTab a[href='" + hash + "']").tab('show');
       $("#salesTab a[href='" + hash + "']").tab('show');
+      $("#purchaseTab a[href='" + hash + "']").tab('show');
     }
   };
   onHashChange(window.location.hash);
   $(window).on('hashchange', function(){
     onHashChange(window.location.hash);
+  });
+  $('.decide-transaction').click(function(e){
+    var $self, $row, isApproving;
+    e.preventDefault();
+    $self = $(this);
+    $row = $self.closest('tr');
+    isApproving = $self.hasClass('btn-success');
+    bootbox.confirm("Esta seguro que desea " + (isApproving ? 'aprobar' : 'rechazar') + " esta venta", function(r){
+      if (r) {
+        $.ajax({
+          url: baseUrl + "/store/sales/" + $row.data('id') + "/" + (isApproving ? 'approve' : 'decline'),
+          type: 'POST',
+          success: function(data){
+            if (data.err) {
+              $.notify({
+                message: 'Mensaje de error que le falta i18n'
+              }, {
+                type: 'danger'
+              });
+            } else {
+              $.notify({
+                message: 'Mensaje de exito que le falta i18n'
+              }, {
+                type: 'success'
+              });
+              if (isApproving) {
+                $self.next().remove();
+                $self.text('Venta Aprobada');
+              } else {
+                $self.prev().remove();
+                $self.text('Venta Rechazada');
+              }
+              $self.removeClass('decide-transaction');
+            }
+          }
+        });
+      }
+    });
   });
   $('.toggle-item-state').click(function(e){
     var $self, $row, isActive;

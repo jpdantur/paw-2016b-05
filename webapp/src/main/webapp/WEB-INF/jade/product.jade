@@ -72,9 +72,18 @@ block content
 							else
 								b #{messageSource.getMessage('item.new', [], locale)}
 						h3.price $#{storeItem.price}
+						- var publishedItem = false
+						- var purchasedItem = false
 						if loggedUser
+							if publishedItems.contains(storeItem)
+								- publishedItem = true
+							if purchasedItems.contains(storeItem)
+								- purchasedItem = true
+								div Tiene una compra pendiente para este articulo
+								a.btn.btn-success(href=context.url('/profile/details#purchases')) Ver Aqui
+						if !publishedItem && !purchasedItem
 							button.btn.btn-success.btn-lg#purchase(data-buyer-email="#{storeItem.owner.email}", data-item="#{storeItem.id}") #{messageSource.getMessage('item.buy', [], locale)}
-						else
+						if !loggedUser
 							a.btn.btn-success.btn-lg#purchase(href=context.url('/auth/login?next='+currentURI)) #{messageSource.getMessage('item.buy', [], locale)}
 					div.col-sm-12
 						h3 #{messageSource.getMessage('item.description', [], locale)}
@@ -84,26 +93,28 @@ block content
 				div.well
 					h3 #{messageSource.getMessage('item.comments', [], locale)}
 					if loggedUser
-						form.form-horizontal(action="#{context.url('/store/item/'+storeItem.id+'/comment')}", method="POST")
-							div.form-group
-								div.col-sm-12
-									label.col-sm-2.control-label(for="score") Puntaje
-									div.col-sm-10
-										input#score-input(type="hidden", value="2.5", name="rating")
-										div#score.rating(style="font-size:1.5em", data-rate-value="2.5")
-										p.help-block
-							div.form-group(class="#{commentError?'has-error':''}")
-								label.col-sm-2.control-label(for="content") #{messageSource.getMessage('item.comment', [], locale)}
-								div.col-sm-10
-									textarea.form-control#content(name="content", placeholder="#{messageSource.getMessage('item.comment', [], locale)}")
-									if commentError
-										span.help-block #{messageSource.getMessage('NotEmpty.CommentForm.content',[],locale)}
-										span.help-block #{messageSource.getMessage('Size.CommentForm.contentFixed',[],locale)}
-							div.form-group
-								div.col-sm-offset-8.col-sm-4
-									button.btn.btn-block.btn-success(type="submit")
-										i.fa.fa-comment
-										span &nbsp;#{messageSource.getMessage('item.commentAction', [], locale)}
+						if publishedItems
+							if !publishedItems.contains(storeItem)
+								form.form-horizontal(action="#{context.url('/store/item/'+storeItem.id+'/comment')}", method="POST")
+									div.form-group
+										div.col-sm-12
+											label.col-sm-2.control-label(for="score") Puntaje
+											div.col-sm-10
+												input#score-input(type="hidden", value="2.5", name="rating")
+												div#score.rating(style="font-size:1.5em", data-rate-value="2.5")
+												p.help-block
+									div.form-group(class="#{commentError?'has-error':''}")
+										label.col-sm-2.control-label(for="content") #{messageSource.getMessage('item.comment', [], locale)}
+										div.col-sm-10
+											textarea.form-control#content(name="content", placeholder="#{messageSource.getMessage('item.comment', [], locale)}")
+											if commentError
+												span.help-block #{messageSource.getMessage('NotEmpty.CommentForm.content',[],locale)}
+												span.help-block #{messageSource.getMessage('Size.CommentForm.contentFixed',[],locale)}
+									div.form-group
+										div.col-sm-offset-8.col-sm-4
+											button.btn.btn-block.btn-success(type="submit")
+												i.fa.fa-comment
+												span &nbsp;#{messageSource.getMessage('item.commentAction', [], locale)}
 					else
 						a.btn.btn-success(href="#{context.url('/auth/login?next='+currentURI)}")
 							i.fa.fa-comment

@@ -80,7 +80,7 @@ public class UserHibernateDao implements IUserDao {
 		query.setParameter("id", user.getId());
 		query.setParameter("password", password);
 		query.executeUpdate();
-		return false;
+		return true;
 	}
 
 	@Override
@@ -191,6 +191,17 @@ public class UserHibernateDao implements IUserDao {
 		u.getPurchases().iterator();
 		
 		return u.getPurchases();
+	}
+	
+	@Override
+	public List<Purchase> getPurchases(final User user, final PurchaseStatus status) {
+		
+		final TypedQuery<Purchase> query = entityManager.createQuery("from Purchase p where p.status=:status and p.buyer=:user", Purchase.class);
+		
+		query.setParameter("user", user);
+		query.setParameter("status", status);
+		
+		return query.getResultList();
 	}
 
 }

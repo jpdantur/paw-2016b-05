@@ -1,23 +1,34 @@
-table.table.table-striped
-	thead
-		tr
-			th #{messageSource.getMessage('profile.items.table.picture',[],locale)}
-			th #{messageSource.getMessage('profile.items.table.name',[],locale)}
-			th.text-right #{messageSource.getMessage('profile.items.table.price',[],locale)}
-			//-th #{messageSource.getMessage('profile.items.table.sold',[],locale)}
-			//-th Publicado
-			//-th Ultima Modificación
-			th
-	tbody
-		//-each item in items
-			tr
-				td
-					if !item.images.isEmpty()
-						img.table-img(style="width:40px;height:40px" src="#{context.url('/images/get/'+item.images.iterator().next().id)}")
-				td #{item.name}
-				td.text-right $#{item.price}
-				//-td #{item.sold} #{messageSource.getMessage('profile.items.table.sold',[],locale)}
-				//-td #{item.created}
-				//-td #{item.lastUpdated}
-				td
-					a(href="#{context.url('/store/item/'+item.id+'/details')}", title="#{messageSource.getMessage('profile.items.table.edit',[],locale)}") #{messageSource.getMessage('profile.items.table.edit',[],locale)}
+div.tab-pane-content
+	h1.page-header Compras
+	ul.nav.nav-tabs#purchaseTab
+		li.active
+			a(href="#purchases-pending", data-toggle="tab") Compras Abiertas
+		li
+			a(href="#purchases-approved", data-toggle="tab") Compras Aprobadas
+		li
+			a(href="#purchases-declined", data-toggle="tab") Compras Denegadas
+	div.tab-content
+		each status, i in purchases.keySet()
+			div.tab-pane.fade(class=(status.toString()=='PENDING'?'in active':''), id='purchases-'+status.toString().toLowerCase())
+				if purchases.get(status).isEmpty()
+					div.alert.alert-info No hay nada
+				else
+					table.table.table-striped
+						thead
+							tr
+								th #{messageSource.getMessage('profile.items.table.picture',[],locale)}
+								th #{messageSource.getMessage('profile.items.table.name',[],locale)}
+								th Vendedor
+								th.text-right #{messageSource.getMessage('profile.items.table.price',[],locale)}
+						tbody
+							each purchase in purchases.get(status)
+								tr
+									td
+										if purchase.item.images.isEmpty()
+											img.table-img(style="width:40px;height:40px" src="http://placehold.it/40?text=Sin+Imagen")
+										else
+											img.table-img(style="width:40px;height:40px" src="#{context.url('/images/get/'+purchase.item.images.iterator().next().id)}")
+									td #{purchase.item.name}
+									td #{purchase.item.owner.username}
+									td.text-right $#{purchase.item.price}
+									

@@ -17,8 +17,11 @@ import org.springframework.web.servlet.ModelAndView;
 import edu.tp.paw.interfaces.service.ICategoryService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IStoreService;
+import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.Category;
+import edu.tp.paw.model.Purchase;
 import edu.tp.paw.model.StoreItem;
+import edu.tp.paw.model.User;
 import edu.tp.paw.model.filter.FilterBuilder;
 import edu.tp.paw.model.filter.PagedResult;
 import edu.tp.paw.webapp.exceptions.StoreItemNotFoundException;
@@ -31,6 +34,7 @@ public class StoreSearchController extends BaseController {
 	@Autowired private IStoreItemService storeItemService;
 	@Autowired private ICategoryService categoryService;
 	@Autowired private IStoreService storeService;
+	@Autowired private IUserService userService;
 	
 	@RequestMapping(value = "/all")
 	public String itemBrowser(
@@ -93,7 +97,8 @@ public class StoreSearchController extends BaseController {
 	public ModelAndView individualItem(
 			@PathVariable("itemId") final int id,
 			@RequestParam(value = "s", defaultValue = "false") final boolean published,
-			@RequestParam(value = "e", defaultValue = "false") final boolean commentError) {
+			@RequestParam(value = "e", defaultValue = "false") final boolean commentError,
+			@ModelAttribute("loggedUser") final User user) {
 		
 		final ModelAndView modelAndView = new ModelAndView("product");
 		
@@ -107,7 +112,10 @@ public class StoreSearchController extends BaseController {
 		modelAndView.addObject("published", published);
 		modelAndView.addObject("commentError", commentError);
 		modelAndView.addObject("comments", storeItemService.getComments(storeItem));
-//		modelAndView.addObject("comments", new ArrayList<>());
+		if (user != null) {
+			modelAndView.addObject("publishedItems", userService.getAllPublishedItems(user));
+			modelAndView.addObject("purchasedItems", userService.getPendingPurchases(user).stream().map(Purchase::getItem).collect(Collectors.toSet()));
+		}
 		
 		return modelAndView;
 	}

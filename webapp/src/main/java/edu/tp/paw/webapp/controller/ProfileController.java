@@ -46,7 +46,7 @@ public class ProfileController extends BaseController {
 			final Model model,
 			@ModelAttribute("loggedUser") final User user) {
 		
-		model.addAttribute("purchases", userService.getPurchases(user));
+		model.addAttribute("purchases", userService.getGroupedPurchases(user));
 		model.addAttribute("transactions", userService.getGroupedTransactions(user));
 		model.addAttribute("items", userService.getPublishedItemsGroupedByStatus(user));
 		model.addAttribute("result", result);
@@ -80,7 +80,7 @@ public class ProfileController extends BaseController {
 			
 		}
 		
-		model.addAttribute("purchases", userService.getPurchases(user));
+		model.addAttribute("purchases", userService.getAllPurchases(user));
 		model.addAttribute("transactions", userService.getGroupedTransactions(user));
 		model.addAttribute("items", userService.getPublishedItemsGroupedByStatus(user));
 		model.addAttribute("result", result);
@@ -121,7 +121,7 @@ public class ProfileController extends BaseController {
 			
 		}
 		
-		model.addAttribute("purchases", userService.getPurchases(user));
+		model.addAttribute("purchases", userService.getAllPurchases(user));
 		model.addAttribute("transactions", userService.getGroupedTransactions(user));
 		model.addAttribute("items", userService.getPublishedItemsGroupedByStatus(user));
 		model.addAttribute("passSuccess", !result.hasErrors());

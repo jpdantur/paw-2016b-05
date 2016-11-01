@@ -18,14 +18,14 @@ public interface IUserDao {
 	 * @param id The id of the user to retrieve
 	 * @return The requested user, or null if not found
 	 */
-	User findById(final long id);
+	public User findById(final long id);
 	
-	User findByUsername(final String username);
-	User findByEmail(final String email);
+	public User findByUsername(final String username);
+	public User findByEmail(final String email);
 	
-	boolean idExists(final long id);
-	boolean usernameExists(final String username);
-	boolean emailExists(final String email);
+	public boolean idExists(final long id);
+	public boolean usernameExists(final String username);
+	public boolean emailExists(final String email);
 	
 	/**
 	 * Create a new user
@@ -33,15 +33,15 @@ public interface IUserDao {
 	 * @param username The name of the user
 	 * @return The created user
 	 */
-	User create(final UserBuilder builder);
+	public User create(final UserBuilder builder);
 	
-	boolean changePassword(final User user, final String password);
+	public boolean changePassword(final User user, final String password);
 	
-	boolean addFavourite(final User user, final StoreItem item);
-	Set<StoreItem> getFavourites(final User user);
-	boolean removeFavourite(final User user, final StoreItem item);
+	public boolean addFavourite(final User user, final StoreItem item);
+	public Set<StoreItem> getFavourites(final User user);
+	public boolean removeFavourite(final User user, final StoreItem item);
 	
-	int getNumberOfUsers();
+	public int getNumberOfUsers();
 	
 	public boolean addRole(final User user, final Role role);
 	
@@ -54,5 +54,6 @@ public interface IUserDao {
 	public List<Purchase> getTransactions(final User user);
 	public List<Purchase> getTransactions(final User user, final PurchaseStatus status);
 	public Set<Purchase> getPurchases(final User user);
+	public List<Purchase> getPurchases(final User user, final PurchaseStatus status);
 	
 }

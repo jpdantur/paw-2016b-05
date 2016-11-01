@@ -61,7 +61,11 @@ public interface IUserService {
 	public boolean updateUser(final User user);
 	
 	public boolean purchase(final PurchaseBuilder builder);
-	public Set<Purchase> getPurchases(final User user);
+	public Set<Purchase> getAllPurchases(final User user);
+	public Map<PurchaseStatus, Set<Purchase>> getGroupedPurchases(final User user);
+	public List<Purchase> getPendingPurchases(final User user);
+	public List<Purchase> getApprovedPurchases(final User user);
+	public List<Purchase> getDeclinedPurchases(final User user);
 	
 	public List<Purchase> getAllTransactions(final User user);
 	public Map<PurchaseStatus, Set<Purchase>> getGroupedTransactions(final User user);
@@ -72,5 +76,8 @@ public interface IUserService {
 	public Set<StoreItem> getAllPublishedItems(final User user);
 	public Set<StoreItem> getPublishedItemsWithStatus(final User user, final StoreItemStatus status);
 	public Map<StoreItemStatus, Set<StoreItem>> getPublishedItemsGroupedByStatus(final User user);
+	
+	public boolean approvePurchase(final User user, final Purchase purchase);
+	public boolean declinePurchase(final User user, final Purchase purchase);
 	
 }

@@ -179,6 +179,7 @@ public class StoreItemController extends BaseController {
 		final PurchaseBuilder builder = new PurchaseBuilder(user, item);
 		
 		if (storeService.purchase(builder)) {
+			logger.trace("user {} purchased item {}", user.getUsername(), item.getId());
 			return "{\"err\":0 }";
 		}
 		

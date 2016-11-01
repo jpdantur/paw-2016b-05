@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import edu.tp.paw.interfaces.dao.IUserDao;
 import edu.tp.paw.interfaces.service.ICommentService;
+import edu.tp.paw.interfaces.service.IPurchaseService;
 import edu.tp.paw.interfaces.service.IRoleService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IUserService;
@@ -40,6 +41,7 @@ public class UserService implements IUserService {
 	@Autowired private IStoreItemService itemService;
 	@Autowired private ICommentService commentService;
 	@Autowired private IRoleService roleService;
+	@Autowired private IPurchaseService purchaseService;
 	
 	@Autowired private PasswordEncoder passwordEncoder;
 	
@@ -365,9 +367,45 @@ public class UserService implements IUserService {
 	}
 
 	@Override
-	public Set<Purchase> getPurchases(final User user) {
+	public Set<Purchase> getAllPurchases(final User user) {
 		
 		return userDao.getPurchases(user);
+	}
+	
+	@Override
+	public Map<PurchaseStatus, Set<Purchase>> getGroupedPurchases(final User user) {
+		
+		final Map<PurchaseStatus, Set<Purchase>> result = new HashMap<>();
+		
+		for (final PurchaseStatus status : PurchaseStatus.values()) {
+			result.put(status, new HashSet<>());
+		}
+		
+		final Set<Purchase> purchases = getAllPurchases(user);
+		
+		for (final Purchase purchase : purchases) {
+			result.get(purchase.getStatus()).add(purchase);
+		}
+		
+		return result;
+	}
+
+	@Override
+	public List<Purchase> getPendingPurchases(final User user) {
+		
+		return userDao.getPurchases(user, PurchaseStatus.PENDING);
+	}
+	
+	@Override
+	public List<Purchase> getDeclinedPurchases(final User user) {
+		
+		return userDao.getPurchases(user, PurchaseStatus.DECLINED);
+	}
+	
+	@Override
+	public List<Purchase> getApprovedPurchases(final User user) {
+		
+		return userDao.getPurchases(user, PurchaseStatus.APPROVED);
 	}
 
 	@Override
@@ -398,5 +436,33 @@ public class UserService implements IUserService {
 		
 		return result;
 		
+	}
+
+	@Override
+	public boolean approvePurchase(final User user, final Purchase purchase) {
+		
+		if (user == null) {
+			throw new IllegalStateException("user cant be null");
+		}
+		
+		if (purchase == null) {
+			throw new IllegalStateException("purchase cant be null");
+		}
+		
+		if (!userExists(user)) {
+			throw new IllegalStateException("user must exist");
+		}
+		
+		// purchase exist
+		
+		// item owner is user
+		
+		return purchaseService.approvePurchase(purchase);
+	}
+
+	@Override
+	public boolean declinePurchase(final User user, final Purchase purchase) {
+		
+		return purchaseService.declinePurchase(purchase);
 	}
 }
