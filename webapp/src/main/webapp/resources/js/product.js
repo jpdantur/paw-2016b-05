@@ -68,7 +68,7 @@ $(document).ready(function(){
           });
           $self.fadeOut("slow", function(){
             var $p;
-            $p = $("<pre><p class='lead' id='contact-email'>" + $self.data('buyer-email') + "</p></pre>").hide();
+            $p = $('<div class="alert alert-info"><p>Su compra se encuentra bajo revision del vendedor</p><a href="/webapp/profile/details#purchases" class="btn btn-success btn-sm">Vea el estado aqui</a></div>').hide();
             $self.replaceWith($p);
             return $p.fadeIn("slow");
           });

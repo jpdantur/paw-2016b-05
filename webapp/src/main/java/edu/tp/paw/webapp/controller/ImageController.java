@@ -47,10 +47,10 @@ public class ImageController extends BaseController {
 		}
 
 		// Generate the http headers with the file properties
-		HttpHeaders headers = new HttpHeaders();
+		final HttpHeaders headers = new HttpHeaders();
 
 		// Split the mimeType into primary and sub types
-		String primaryType, subType;
+		final String primaryType, subType;
 		try {
 			primaryType = image.getMimeType().split("/")[0];
 			subType = image.getMimeType().split("/")[1];
@@ -77,7 +77,7 @@ public class ImageController extends BaseController {
 		
 		try {
 
-			for (MultipartFile file : form.getImages()) {
+			for (final MultipartFile file : form.getImages()) {
 				
 				final String mimeType = file.getContentType();
 				final byte[] bytes = file.getBytes();

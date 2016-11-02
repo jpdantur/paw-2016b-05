@@ -80,8 +80,9 @@ block content
 								- publishedItem = true
 							if purchasedItems.contains(storeItem)
 								- purchasedItem = true
-								div Tiene una compra pendiente para este articulo
-								a.btn.btn-success(href=context.url('/profile/details#purchases')) Ver Aqui
+								div.alert.alert-info
+									p Su compra se encuentra bajo revision del vendedor
+									a.btn.btn-success.btn-sm(href=context.url('/profile/details#purchases')) Vea el estado aqui
 						if !publishedItem && !purchasedItem
 							button.btn.btn-success.btn-lg#purchase(data-buyer-email="#{storeItem.owner.email}", data-item="#{storeItem.id}") #{messageSource.getMessage('item.buy', [], locale)}
 						if !loggedUser

@@ -35,7 +35,13 @@ div.tab-pane-content
 								//-td #{item.created}
 								//-td #{item.lastUpdated}
 								td
-									a(href="#{context.url('/store/item/'+item.id+'/details')}", title="#{messageSource.getMessage('profile.items.table.edit',[],locale)}") #{messageSource.getMessage('profile.items.table.edit',[],locale)}
+									a(href="#{context.url('/store/item/'+item.id+'/details')}", title="#{messageSource.getMessage('profile.items.table.edit',[],locale)}")
+										i.fa.fa-pencil
+										span &nbsp;#{messageSource.getMessage('profile.items.table.edit',[],locale)}
+									br
+									a(href="#{context.url('/store/sell/images/'+item.id)}")
+										i.fa.fa-file-image-o
+										span &nbsp;Editar Imagenes
 								td
 									if status.toString() == 'PAUSED'
 										button.btn.btn-success.btn-xs.toggle-item-state Reanudar Publicacion

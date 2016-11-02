@@ -9,7 +9,7 @@ div.tab-pane-content
 			a(href="#sales-declined", data-toggle="tab") Ventas Denegadas
 	div.tab-content
 		each status, i in transactions.keySet()
-			div.tab-pane.fade(class=(status.toString()=='PENDING'?'in active':''), id='sales-'+status.toString().toLowerCase())
+			div.tab-pane.fade(class=(status.toString().equals('PENDING')?'in active':''), id='sales-'+status.toString().toLowerCase())
 				if transactions.get(status).isEmpty()
 					div.alert.alert-info No hay nada
 				else
@@ -34,9 +34,10 @@ div.tab-pane-content
 											img.table-img(style="width:40px;height:40px" src="#{context.url('/images/get/'+transaction.item.images.iterator().next().id)}")
 									td #{transaction.item.name}
 									td.text-right $#{transaction.item.price}
-									td
-										button.btn.btn-success.decide-transaction Aprobar
-										button.btn.btn-danger.decide-transaction Rechazar
+									if status.toString().equals('PENDING')
+										td
+											button.btn.btn-success.decide-transaction Aprobar
+											button.btn.btn-danger.decide-transaction Rechazar
 									//-td #{item.sold} #{messageSource.getMessage('profile.items.table.sold',[],locale)}
 									//-td #{item.created}
 									//-td #{item.lastUpdated}

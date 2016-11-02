@@ -3,6 +3,14 @@ extends layout
 block scripts
 	script(src="#{context.url('/resources/js/lib/dropzone.js')}", type="text/javascript")
 	script.
+		var images = !{item.images.toString()}.map(function (i) {
+			i.name = '#{item.name}'+i.id;
+			i.url = baseUrl+'/images/get/'+i.id;
+			i.fileId = #{item.id};
+			return i;
+		});
+
+
 		Dropzone.options.autoDiscover = false;
 		Dropzone.autoDiscover = false;
 
@@ -19,9 +27,16 @@ block scripts
 				dictDefaultMessage: "#{messageSource.getMessage('sell.image.upload.drag',[],locale)}"
 			});
 
-			$dropzone = $('#dropzone');
+			_.each(images, function (i) {
 
-			$dropzone.addClass('dropzone')
+				dropzone.emit("addedfile", i);
+				dropzone.createThumbnailFromUrl(i, i.url);
+				//- dropzone.emit("thumbnail", i, i.url);
+				dropzone.emit("complete", i);
+
+			});
+
+			$dropzone = $('#dropzone').addClass('dropzone');
 
 			$('#uploadImages').click(function (e) {
 				e.preventDefault();
@@ -30,8 +45,16 @@ block scripts
 
 			});
 
+			var i = images.length;
 			dropzone.on('queuecomplete', function () {
-				window.location.href = "#{context.url('/store/items/'+item.id+'?s=1')}";
+
+				if (i-- <= 0) {
+					window.location.href = "#{context.url('/store/items/'+item.id+'?s=1')}";
+				}
+			});
+
+			dropzone.on('removedfile', function (file) {
+				console.log(file);
 			});
 			
 		});
@@ -58,7 +81,7 @@ block content
 								span &nbsp; #{messageSource.getMessage('successMessages.publishItem.content', [], locale)}
 								//-br
 								//-a.btn.btn-default(href="#{context.url('/store/item/'+item.id+'/details/')}") Editar Detalles
-				form.form-horizontal(method="POST",action="#{context.url('/images/upload/'+item.id)}", enctype="multipart/form-data")
+				form.form-horizontal(method="POST", action="#{context.url('/images/upload/'+item.id)}", enctype="multipart/form-data")
 					div.form-group
 						label.col-sm-2.control-label #{messageSource.getMessage('sell.field.pictures',[],locale)}
 						div.col-sm-10
