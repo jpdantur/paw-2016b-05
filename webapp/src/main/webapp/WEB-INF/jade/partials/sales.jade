@@ -1,17 +1,17 @@
 div.tab-pane-content
-	h1.page-header Ventas
+	h1.page-header #{messageSource.getMessage('profile.sales.title',[],locale)}
 	ul.nav.nav-tabs#salesTab
 		li.active
-			a(href="#sales-pending", data-toggle="tab") Ventas Abiertas
+			a(href="#sales-pending", data-toggle="tab") #{messageSource.getMessage('profile.sales.pending',[],locale)}
 		li
-			a(href="#sales-approved", data-toggle="tab") Ventas Aprobadas
+			a(href="#sales-approved", data-toggle="tab") #{messageSource.getMessage('profile.sales.approved',[],locale)}
 		li
-			a(href="#sales-declined", data-toggle="tab") Ventas Denegadas
+			a(href="#sales-declined", data-toggle="tab") #{messageSource.getMessage('profile.sales.declined',[],locale)}
 	div.tab-content
 		each status, i in transactions.keySet()
 			div.tab-pane.fade(class=(status.toString().equals('PENDING')?'in active':''), id='sales-'+status.toString().toLowerCase())
 				if transactions.get(status).isEmpty()
-					div.alert.alert-info No hay nada
+					div.alert.alert-info #{messageSource.getMessage('profile.sales.nothing',[],locale)}
 				else
 					table.table.table-striped
 						thead
@@ -36,8 +36,8 @@ div.tab-pane-content
 									td.text-right $#{transaction.item.price}
 									if status.toString().equals('PENDING')
 										td
-											button.btn.btn-success.decide-transaction Aprobar
-											button.btn.btn-danger.decide-transaction Rechazar
+											button.btn.btn-success.decide-transaction #{messageSource.getMessage('profile.sales.success',[],locale)}
+											button.btn.btn-danger.decide-transaction #{messageSource.getMessage('profile.sales.danger',[],locale)}
 									//-td #{item.sold} #{messageSource.getMessage('profile.items.table.sold',[],locale)}
 									//-td #{item.created}
 									//-td #{item.lastUpdated}

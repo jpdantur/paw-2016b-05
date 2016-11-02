@@ -1,10 +1,10 @@
 div.tab-pane-content
-	h1.page-header Articulos Publicados
+	h1.page-header #{messageSource.getMessage('profile.items.title',[],locale)}
 	ul.nav.nav-tabs#itemsTab
 		li.active
-			a(href="#items-active", data-toggle="tab") Publicaciones Activas
+			a(href="#items-active", data-toggle="tab") #{messageSource.getMessage('profile.items.active',[],locale)}
 		li
-			a(href="#items-paused", data-toggle="tab") Publicaciones Pausadas
+			a(href="#items-paused", data-toggle="tab") #{messageSource.getMessage('profile.items.paused',[],locale)}
 	div.tab-content
 		each status, i in items.keySet()
 			div.tab-pane.fade(class=(status.toString()=='ACTIVE'?'in active':''), id='items-'+status.toString().toLowerCase())
@@ -41,9 +41,9 @@ div.tab-pane-content
 									br
 									a(href="#{context.url('/store/sell/images/'+item.id)}")
 										i.fa.fa-file-image-o
-										span &nbsp;Editar Imagenes
+										span &nbsp;#{messageSource.getMessage('profile.items.table.edit_images',[],locale)}
 								td
 									if status.toString() == 'PAUSED'
-										button.btn.btn-success.btn-xs.toggle-item-state Reanudar Publicacion
+										button.btn.btn-success.btn-xs.toggle-item-state #{messageSource.getMessage('profile.items.table.resume',[],locale)}
 									else
-										button.btn.btn-default.btn-xs.toggle-item-state Pausar Publicacion
+										button.btn.btn-default.btn-xs.toggle-item-state #{messageSource.getMessage('profile.items.table.pause',[],locale)}

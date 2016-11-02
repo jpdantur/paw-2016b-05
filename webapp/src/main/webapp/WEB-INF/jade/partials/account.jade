@@ -10,7 +10,7 @@ div.tab-pane-content
 					b #{messageSource.getMessage('successMessages.changePassword.titleFail', [], locale)}!&nbsp;
 					span #{messageSource.getMessage('successMessages.changePassword.contentFail', [], locale)}
 	div.col-sm-12
-		h1.page-header Mi Cuenta
+		h1.page-header #{messageSource.getMessage('profile.account.title', [], locale)}
 		form.form-horizontal(action="#{context.url('/profile/details')}", method="POST")
 			div.form-group
 				label.col-sm-2.control-label #{messageSource.getMessage('profile.account.form.name',[],locale)}
