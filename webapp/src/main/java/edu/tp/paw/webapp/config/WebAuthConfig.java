@@ -1,11 +1,18 @@
 package edu.tp.paw.webapp.config;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.access.AccessDecisionManager;
+import org.springframework.security.access.AccessDecisionVoter;
+import org.springframework.security.access.vote.AuthenticatedVoter;
+import org.springframework.security.access.vote.RoleVoter;
+import org.springframework.security.access.vote.UnanimousBased;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
@@ -16,8 +23,10 @@ import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.authentication.AuthenticationManagerFactoryBean;
+import org.springframework.security.web.access.expression.WebExpressionVoter;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
 
+import edu.tp.paw.webapp.auth.ItemOwnerBasedVoter;
 import edu.tp.paw.webapp.auth.SiglasUserDetailsService;
 @Configuration
 @EnableWebSecurity
@@ -28,8 +37,8 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 
 	private static final String SECRET_KEY = "X6S3prqje9ynXxEs7F+BpvaBb1i8/1Ijz2OZVXVhfrc=";
 	
-	@Autowired
-	private SiglasUserDetailsService userDetailsService;
+	@Autowired private SiglasUserDetailsService userDetailsService;
+	@Autowired private ItemOwnerBasedVoter itemOwnerVoter;
 	
 	
 	@Override
@@ -43,7 +52,8 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 			.authorizeRequests()
 				.antMatchers("/", "/store/items/**").permitAll()
 				.antMatchers("/auth/login", "/auth/register").anonymous()
-				.antMatchers("/store/sell/**", "/store/item/**", "/images/upload/**", "/profile/**").hasRole("USER")
+				.antMatchers("/store/sell/**", "/store/item/**", "/images/upload/**", "/profile/**")
+					.hasRole("USER").accessDecisionManager(accessDecisionManager())
 				.antMatchers("/admin/**").hasAnyRole("ROOT", "ADMIN")
 				.antMatchers("/**").authenticated()
 			.and().formLogin()
@@ -71,6 +81,19 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	public void configure(final WebSecurity web) throws Exception {
 		web.ignoring().antMatchers("/resources/**", "/favicon.ico", "/403", "/404", "/500", "/images/get/**");
+	}
+	
+	@Bean
+	public AccessDecisionManager accessDecisionManager() {
+		final List<AccessDecisionVoter<? extends Object>> decisionVoters  = Arrays.asList(
+				new WebExpressionVoter(),
+				new RoleVoter(),
+				new AuthenticatedVoter(),
+				itemOwnerVoter
+//				new ItemOwnerBasedVoter()
+//	        new MinuteBasedVoter()
+		);
+		return new UnanimousBased(decisionVoters);
 	}
 	
 	@Autowired

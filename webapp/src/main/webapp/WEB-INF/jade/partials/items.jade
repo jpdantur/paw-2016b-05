@@ -7,7 +7,7 @@ div.tab-pane-content
 			a(href="#items-paused", data-toggle="tab") Publicaciones Pausadas
 	div.tab-content
 		each status, i in items.keySet()
-			div.tab-pane.fade(class=(i==0?'in active':''), id='items-'+status.toString().toLowerCase())
+			div.tab-pane.fade(class=(status.toString()=='ACTIVE'?'in active':''), id='items-'+status.toString().toLowerCase())
 				table.table.table-striped
 					thead
 						tr

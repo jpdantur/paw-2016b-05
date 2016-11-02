@@ -5,7 +5,7 @@ $mid-gray: #e9eaeb;
 $dark-gray: #555964;
 
 $app-main-color: #59ABE3;
-$app-secondary-color: rgba(255, 255, 255, .8);
+$app-secondary-color: rgba(30, 30, 30, .8);
 
 html {
 	width: 100%;
@@ -23,6 +23,18 @@ html {
 
 header#top-navbar {
 	background-color: $app-secondary-color;
+	
+	a {
+		color: white;
+	}
+
+	li a:hover {
+		color: #222;
+	}
+
+	.dropdown-menu a {
+		color: black;
+	}
 }
 
 .with-divider {

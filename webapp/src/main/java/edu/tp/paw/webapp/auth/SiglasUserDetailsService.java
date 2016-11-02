@@ -23,8 +23,7 @@ public class SiglasUserDetailsService implements UserDetailsService {
 
 	private static final Logger logger = LoggerFactory.getLogger(SiglasUserDetailsService.class);
 	
-	@Autowired
-	private IUserService userService;
+	@Autowired private IUserService userService;
 	
 	@Override
 	public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {

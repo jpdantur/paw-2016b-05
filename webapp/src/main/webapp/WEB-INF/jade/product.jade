@@ -56,12 +56,13 @@ block content
 					div.col-sm-8
 						h1 #{storeItem.name}&nbsp;
 							if loggedUser
-								if userFavourites.contains(storeItem)
-									a.text-danger.add-favourite(href="#", data-item=storeItem.id)
-										i.fa.fa-heart
-								else
-									a.text-muted.add-favourite(href="#", data-item=storeItem.id)
-										i.fa.fa-heart
+								if !publishedItems.contains(storeItem)
+									if userFavourites.contains(storeItem)
+										a.text-danger.add-favourite(href="#", data-item=storeItem.id)
+											i.fa.fa-heart
+									else
+										a.text-muted.add-favourite(href="#", data-item=storeItem.id)
+											i.fa.fa-heart
 						div.rating.static(style="font-size:32px", data-rate-value=storeItem.rating)
 						span #{storeItem.sold} #{messageSource.getMessage('item.sold', [], locale)}
 						br

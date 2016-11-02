@@ -11,7 +11,13 @@ html {
     background-color: #fafafa; }
 
 header#top-navbar {
-  background-color: rgba(255, 255, 255, 0.8); }
+  background-color: rgba(30, 30, 30, 0.8); }
+  header#top-navbar a {
+    color: white; }
+  header#top-navbar li a:hover {
+    color: #222; }
+  header#top-navbar .dropdown-menu a {
+    color: black; }
 
 .with-divider {
   border-bottom: 1px solid #e9eaeb; }

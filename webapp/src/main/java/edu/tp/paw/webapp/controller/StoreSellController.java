@@ -31,12 +31,9 @@ public class StoreSellController extends BaseController {
 	
 	private final static Logger logger = LoggerFactory.getLogger(StoreSellController.class);
 	
-	@Autowired
-	private IStoreItemService storeItemService;
-	@Autowired
-	private ICategoryService categoryService;
-	@Autowired
-	private IStoreService storeService;
+	@Autowired private IStoreItemService storeItemService;
+	@Autowired private ICategoryService categoryService;
+	@Autowired private IStoreService storeService;
 	
 	@RequestMapping( value = "/details", method = RequestMethod.GET)
 	public String sellItem(
