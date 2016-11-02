@@ -83,7 +83,7 @@ block content
 								div.alert.alert-info
 									p Su compra se encuentra bajo revision del vendedor
 									a.btn.btn-success.btn-sm(href=context.url('/profile/details#purchases')) Vea el estado aqui
-						if !publishedItem && !purchasedItem
+						if loggedUser && !publishedItem && !purchasedItem
 							button.btn.btn-success.btn-lg#purchase(data-buyer-email="#{storeItem.owner.email}", data-item="#{storeItem.id}") #{messageSource.getMessage('item.buy', [], locale)}
 						if !loggedUser
 							a.btn.btn-success.btn-lg#purchase(href=context.url('/auth/login?next='+currentURI)) #{messageSource.getMessage('item.buy', [], locale)}
