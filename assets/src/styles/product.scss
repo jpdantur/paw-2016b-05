@@ -1,5 +1,42 @@
+@mixin border-radius($property) {
+	border-radius: $property;
+	-o-border-radius: $property;
+	-moz-border-radius: $property;
+	-webkit-border-radius: $property;
+}
+
+@mixin box-shadow($top, $left, $blur, $color, $inset: false) {
+	@if $inset {
+		-webkit-box-shadow:inset $top $left $blur $color;
+		-moz-box-shadow:inset $top $left $blur $color;
+		box-shadow:inset $top $left $blur $color;
+	} @else {
+		-webkit-box-shadow: $top $left $blur $color;
+		-moz-box-shadow: $top $left $blur $color;
+		box-shadow: $top $left $blur $color;
+	}
+}
+
+#item-container {
+	background-color: white;
+	@include box-shadow(2px, 1px, 1px, #ccc);
+}
+
+#product-title {
+	padding: {
+		top: 20px;
+		bottom: 20px;
+	}
+	color: white;
+	background-color: #222;
+}
+
 #product-container {
-	margin-top: 50px;
+	padding-top: 50px;
+
+	
+	// @include border-radius(5px);
+
 }
 
 .price {

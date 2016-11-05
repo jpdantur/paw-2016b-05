@@ -40,10 +40,8 @@ public class ProfileController extends BaseController {
 			final Model model,
 			@ModelAttribute("loggedUser") final User user) {
 		
-		model.addAttribute("purchases", userService.getGroupedPurchases(user));
-		model.addAttribute("transactions", userService.getGroupedTransactions(user));
-		model.addAttribute("items", userService.getPublishedItemsGroupedByStatus(user));
 		model.addAttribute("result", result);
+		model.addAttribute("show", "account");
 		
 		return "profile";
 	}
@@ -74,22 +72,22 @@ public class ProfileController extends BaseController {
 			
 		}
 		
-		model.addAttribute("purchases", userService.getAllPurchases(user));
-		model.addAttribute("transactions", userService.getGroupedTransactions(user));
-		model.addAttribute("items", userService.getPublishedItemsGroupedByStatus(user));
 		model.addAttribute("result", result);
 		
 		return "profile";
 	}
 	
 	@RequestMapping( value = "/password", method = RequestMethod.GET )
-	public String password() {
-		return "redirect:/profile/details#password";
-	}
-	
-	@RequestMapping( value = "/items", method = RequestMethod.GET )
-	public String items() {
-		return "redirect:/profile/details#items";
+	public String password(
+			@ModelAttribute("changePassword") final ChangePasswordForm form,
+			final BindingResult result,
+			final Model model
+			) {
+		
+		model.addAttribute("show", "password");
+		model.addAttribute("result", result);
+		
+		return "profile";
 	}
 	
 	@RequestMapping( value = "/password", method = RequestMethod.POST )
@@ -115,11 +113,35 @@ public class ProfileController extends BaseController {
 			
 		}
 		
-		model.addAttribute("purchases", userService.getAllPurchases(user));
-		model.addAttribute("transactions", userService.getGroupedTransactions(user));
-		model.addAttribute("items", userService.getPublishedItemsGroupedByStatus(user));
 		model.addAttribute("passSuccess", !result.hasErrors());
 		model.addAttribute("result", result);
+		
+		return "profile";
+	}
+	
+	@RequestMapping( value = "/items", method = RequestMethod.GET )
+	public String items(final Model model, @ModelAttribute("loggedUser") final User user) {
+		
+		model.addAttribute("items", userService.getPublishedItemsGroupedByStatus(user));
+		model.addAttribute("show", "items");
+		
+		return "profile";
+	}
+	
+	@RequestMapping( value = "/sales", method = RequestMethod.GET )
+	public String sales(final Model model, @ModelAttribute("loggedUser") final User user) {
+		
+		model.addAttribute("transactions", userService.getGroupedTransactions(user));
+		model.addAttribute("show", "sales");
+		
+		return "profile";
+	}
+	
+	@RequestMapping( value = "/purchases", method = RequestMethod.GET )
+	public String purchases(final Model model, @ModelAttribute("loggedUser") final User user) {
+		
+		model.addAttribute("purchases", userService.getGroupedPurchases(user));
+		model.addAttribute("show", "purchases");
 		
 		return "profile";
 	}

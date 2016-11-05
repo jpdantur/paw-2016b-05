@@ -1,9 +1,6 @@
 $(document).ready(function(){
   var onHashChange;
-  $('#myTab a, #itemsTab a, #salesTab a, #purchaseTab a').click(function(e){
-    e.preventDefault();
-    $(this).tab('show');
-  });
+  $('#myTab a, #itemsTab a, #salesTab a, #purchaseTab a').click(function(e){});
   $('ul.nav-tabs > li > a').on('shown.bs.tab', function(e){
     var id;
     id = $(e.target).attr('href').substr(1);

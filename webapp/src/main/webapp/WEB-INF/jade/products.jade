@@ -9,16 +9,16 @@ block content
 	include mixins/product
 	+navbar(true)
 	div.container
-		div.row
-			div.col-sm-12
+		div.row#search-container
+			div.col-sm-12#search-title
 				h1 #{messageSource.getMessage('search.searchResults', [], locale)}&nbsp;
 					i #{query}
-		div.row
-			div.col-sm-2
+			div.col-sm-12
+				include partials/modifiers
+			div.col-sm-2(style="padding:5px")
 				include partials/filters
 			div.col-sm-10
-				include partials/modifiers
-				div.row
+				div.row#product-grid
 					if storeItems.size() == 0
 						h3.text-warning #{messageSource.getMessage('search.none',[],locale)}
 					each item in storeItems

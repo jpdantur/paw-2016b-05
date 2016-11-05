@@ -21,7 +21,10 @@ block content
 	+navbar(true)
 	div.container
 		div.row
-			div.col-sm-10.col-sm-offset-1
+			div.col-sm-10.col-sm-offset-1#item-container
+				div.row#product-title
+					div.col-sm-12
+						h1 #{storeItem.name}
 				if published
 					div.row
 						div.col-sm-12
@@ -95,8 +98,6 @@ block content
 					div.col-sm-12
 						h3 #{messageSource.getMessage('item.description', [], locale)}
 						p #{storeItem.description}
-		div.row
-			div.col-sm-10.col-sm-offset-1
 				div.well
 					h3 #{messageSource.getMessage('item.comments', [], locale)}
 					if loggedUser

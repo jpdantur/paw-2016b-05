@@ -1,5 +1,17 @@
+#item-container {
+  background-color: white;
+  -webkit-box-shadow: 2px 1px 1px #ccc;
+  -moz-box-shadow: 2px 1px 1px #ccc;
+  box-shadow: 2px 1px 1px #ccc; }
+
+#product-title {
+  padding-top: 20px;
+  padding-bottom: 20px;
+  color: white;
+  background-color: #222; }
+
 #product-container {
-  margin-top: 50px; }
+  padding-top: 50px; }
 
 .price {
   color: #900; }

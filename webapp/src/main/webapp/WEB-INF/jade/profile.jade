@@ -11,25 +11,30 @@ block content
 		div.row
 			div.col-sm-3
 				ul.nav.nav-tabs.tabs-left#myTab
-					li.active
-						a(href="#account", data-toggle="tab") #{messageSource.getMessage('profile.account.title',[],locale)}
-					li
-						a(href="#password", data-toggle="tab") #{messageSource.getMessage('profile.password.title',[],locale)}
-					li
-						a(href="#items", data-toggle="tab") #{messageSource.getMessage('profile.items.title',[],locale)}
-					li
-						a(href="#sales", data-toggle="tab") #{messageSource.getMessage('profile.sales.title',[],locale)}
-					li
-						a(href="#purchases", data-toggle="tab") #{messageSource.getMessage('profile.purchases.title',[],locale)}
+					li(class=show.equals("account")?'active':'')
+						a(href=context.url('/profile/details')) #{messageSource.getMessage('profile.account.title',[],locale)}
+					li(class=show.equals("password")?'active':'')
+						a(href=context.url('/profile/password')) #{messageSource.getMessage('profile.password.title',[],locale)}
+					li(class=show.equals("items")?'active':'')
+						a(href=context.url('/profile/items')) #{messageSource.getMessage('profile.items.title',[],locale)}
+					li(class=show.equals("sales")?'active':'')
+						a(href=context.url('/profile/sales')) #{messageSource.getMessage('profile.sales.title',[],locale)}
+					li(class=show.equals("purchases")?'active':'')
+						a(href=context.url('/profile/purchases')) #{messageSource.getMessage('profile.purchases.title',[],locale)}
 			div.col-sm-9
 				div.tab-content
-					div.tab-pane.fade.in.active#account
-						include partials/account
-					div.tab-pane.fade#password
-						include partials/password
-					div.tab-pane.fade#items
-						include partials/items
-					div.tab-pane.fade#sales
-						include partials/sales
-					div.tab-pane.fade#purchases
-						include partials/purchases
+					div.tab-pane.fade(class=show.equals("account")?'in active':'')#account
+						if show.equals('account')
+							include partials/account
+					div.tab-pane.fade(class=show.equals("password")?'in active':'')#password
+						if show.equals('password')
+							include partials/password
+					div.tab-pane.fade(class=show.equals("items")?'in active':'')#items
+						if show.equals('items')
+							include partials/items
+					div.tab-pane.fade(class=show.equals("sales")?'in active':'')#sales
+						if show.equals('sales')
+							include partials/sales
+					div.tab-pane.fade(class=show.equals("purchases")?'in active':'')#purchases
+						if show.equals('purchases')
+							include partials/purchases
