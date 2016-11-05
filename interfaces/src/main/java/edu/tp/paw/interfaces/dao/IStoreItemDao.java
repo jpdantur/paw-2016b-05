@@ -1,7 +1,6 @@
 package edu.tp.paw.interfaces.dao;
 
 import java.util.List;
-import java.util.Set;
 
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
@@ -39,7 +38,8 @@ public interface IStoreItemDao {
 	 */
 	public StoreItem create(final StoreItemBuilder builder);
 	
-	public Set<StoreItem> getUserItems(final User user);
+	public List<StoreItem> getUserItems(final User user);
+	public List<StoreItem> getUserItems(final User user, final StoreItemStatus status);
 	
 	public boolean updateItem(final StoreItem item);
 	

@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IUserService;
+import edu.tp.paw.model.StoreItemStatus;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
 import edu.tp.paw.webapp.form.ChangePasswordForm;
@@ -121,8 +122,24 @@ public class ProfileController extends BaseController {
 	
 	@RequestMapping( value = "/items", method = RequestMethod.GET )
 	public String items(final Model model, @ModelAttribute("loggedUser") final User user) {
+		return "redirect:/profile/items/active";
+	}
+	
+	@RequestMapping( value = "/items/active", method = RequestMethod.GET )
+	public String activeItems(final Model model, @ModelAttribute("loggedUser") final User user) {
 		
-		model.addAttribute("items", userService.getPublishedItemsGroupedByStatus(user));
+		model.addAttribute("items", userService.getActivePublishedItems(user));
+		model.addAttribute("status", StoreItemStatus.ACTIVE);
+		model.addAttribute("show", "items");
+		
+		return "profile";
+	}
+	
+	@RequestMapping( value = "/items/paused", method = RequestMethod.GET )
+	public String pausedItems(final Model model, @ModelAttribute("loggedUser") final User user) {
+		
+		model.addAttribute("items", userService.getPausedPublishedItems(user));
+		model.addAttribute("status", StoreItemStatus.PAUSED);
 		model.addAttribute("show", "items");
 		
 		return "profile";

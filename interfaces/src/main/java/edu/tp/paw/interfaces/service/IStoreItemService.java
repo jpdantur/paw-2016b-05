@@ -7,6 +7,7 @@ import edu.tp.paw.model.Comment;
 import edu.tp.paw.model.CommentBuilder;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
+import edu.tp.paw.model.StoreItemStatus;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.filter.Filter;
 import edu.tp.paw.model.filter.FilterBuilder;
@@ -44,6 +45,7 @@ public interface IStoreItemService {
 	public PagedResult<StoreItem> findByFiltering(final FilterBuilder filter);
 
 	public Set<StoreItem> getUserItems(final User user);
+	public Set<StoreItem> getUserItems(final User user, final StoreItemStatus status);
 	
 	public boolean updateItem(final StoreItem item);
 

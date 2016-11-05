@@ -21,7 +21,7 @@ block content
 						a(href=context.url('/profile/sales')) #{messageSource.getMessage('profile.sales.title',[],locale)}
 					li(class=show.equals("purchases")?'active':'')
 						a(href=context.url('/profile/purchases')) #{messageSource.getMessage('profile.purchases.title',[],locale)}
-			div.col-sm-9
+			div.col-sm-9(style="padding: 0")
 				div.tab-content
 					div.tab-pane.fade(class=show.equals("account")?'in active':'')#account
 						if show.equals('account')

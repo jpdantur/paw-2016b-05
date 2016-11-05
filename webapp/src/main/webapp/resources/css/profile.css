@@ -8,7 +8,11 @@ table {
   position: relative; }
 
 #profile-container {
-  margin-top: 30px; }
+  background-color: white;
+  -webkit-box-shadow: 2px 1px 1px #ccc;
+  -moz-box-shadow: 2px 1px 1px #ccc;
+  box-shadow: 2px 1px 1px #ccc;
+  padding-top: 30px; }
 
 h1 {
   border-bottom: 1px solid #ddd; }
@@ -32,3 +36,7 @@ h1 {
     .tabs-left > li.active > a:focus {
       border-bottom-color: #ddd;
       border-right-color: transparent; }
+
+th span {
+  height: 30px;
+  line-height: 30px; }

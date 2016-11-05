@@ -1,49 +1,55 @@
 div.tab-pane-content
 	h1.page-header #{messageSource.getMessage('profile.items.title',[],locale)}
 	ul.nav.nav-tabs#itemsTab
-		li.active
-			a(href="#items-active", data-toggle="tab") #{messageSource.getMessage('profile.items.active',[],locale)}
-		li
-			a(href="#items-paused", data-toggle="tab") #{messageSource.getMessage('profile.items.paused',[],locale)}
+		li(class=status.toString().equals('ACTIVE')?'active':'')
+			a(href=context.url('/profile/items/active')) #{messageSource.getMessage('profile.items.active',[],locale)}
+		li(class=status.toString().equals('PAUSED')?'active':'')
+			a(href=context.url('/profile/items/paused')) #{messageSource.getMessage('profile.items.paused',[],locale)}
 	div.tab-content
-		each status, i in items.keySet()
-			div.tab-pane.fade(class=(status.toString()=='ACTIVE'?'in active':''), id='items-'+status.toString().toLowerCase())
-				table.table.table-striped
-					thead
-						tr
-							th #{messageSource.getMessage('profile.items.table.picture',[],locale)}
-							th #{messageSource.getMessage('profile.items.table.name',[],locale)}
-							th.text-right #{messageSource.getMessage('profile.items.table.price',[],locale)}
-							th #{messageSource.getMessage('profile.items.table.sold',[],locale)}
-							//-th Publicado
-							//-th Ultima Modificación
-							th
-							th
-					tbody
-						each item in items.get(status)
-							tr(data-id=item.id)
-								td
-									a(href=context.url('/store/items/'+item.id))
-										if item.images.isEmpty()
-											img.table-img(style="width:40px;height:40px" src="http://placehold.it/40?text=Sin+Imagen")
-										else
-											img.table-img(style="width:40px;height:40px" src="#{context.url('/images/get/'+item.images.iterator().next().id)}")
-								td
-									a(href=context.url('/store/items/'+item.id)) #{item.name}
-								td.text-right $#{item.price}
-								td #{item.sold} #{messageSource.getMessage('profile.items.table.sold',[],locale)}
-								//-td #{item.created}
-								//-td #{item.lastUpdated}
-								td
-									a(href="#{context.url('/store/item/'+item.id+'/details')}", title="#{messageSource.getMessage('profile.items.table.edit',[],locale)}")
-										i.fa.fa-pencil
-										span &nbsp;#{messageSource.getMessage('profile.items.table.edit',[],locale)}
-									br
-									a(href="#{context.url('/store/sell/images/'+item.id)}")
-										i.fa.fa-file-image-o
-										span &nbsp;#{messageSource.getMessage('profile.items.table.edit_images',[],locale)}
-								td
-									if status.toString() == 'PAUSED'
-										button.btn.btn-success.btn-xs.toggle-item-state #{messageSource.getMessage('profile.items.table.resume',[],locale)}
+		div.tab-pane.fade.in.active(id='items-'+status.toString().toLowerCase())
+			table.table.table-striped.table-condensed
+				thead
+					tr
+						th
+							span #{messageSource.getMessage('profile.items.table.picture',[],locale)}
+						th
+							span #{messageSource.getMessage('profile.items.table.name',[],locale)}
+						th.text-right
+							span #{messageSource.getMessage('profile.items.table.price',[],locale)}
+						th
+							span #{messageSource.getMessage('profile.items.table.sold',[],locale)}
+						//-th Publicado
+						//-th Ultima Modificación
+						th(colspan=2)
+							div.input-group.input-group-sm(style="width:100%")
+								span.input-group-addon
+									i.fa.fa-search
+								input.form-control(type="text", placeholder="Search")
+				tbody
+					each item in items
+						tr(data-id=item.id)
+							td
+								a(href=context.url('/store/items/'+item.id))
+									if item.images.isEmpty()
+										img.table-img(style="width:40px;height:40px" src="http://placehold.it/40?text=Sin+Imagen")
 									else
-										button.btn.btn-default.btn-xs.toggle-item-state #{messageSource.getMessage('profile.items.table.pause',[],locale)}
+										img.table-img(style="width:40px;height:40px" src="#{context.url('/images/get/'+item.images.iterator().next().id)}")
+							td
+								a(href=context.url('/store/items/'+item.id)) #{item.name}
+							td.text-right $#{item.price}
+							td #{item.sold} #{messageSource.getMessage('profile.items.table.sold',[],locale)}
+							//-td #{item.created}
+							//-td #{item.lastUpdated}
+							td(style="font-size:12px")
+								a(href="#{context.url('/store/item/'+item.id+'/details')}", title="#{messageSource.getMessage('profile.items.table.edit',[],locale)}")
+									i.fa.fa-pencil
+									span &nbsp;#{messageSource.getMessage('profile.items.table.edit',[],locale)}
+								br
+								a(href="#{context.url('/store/sell/images/'+item.id)}")
+									i.fa.fa-file-image-o
+									span &nbsp;#{messageSource.getMessage('profile.items.table.edit_images',[],locale)}
+							td
+								if status.toString() == 'PAUSED'
+									button.btn.btn-success.btn-xs.toggle-item-state #{messageSource.getMessage('profile.items.table.resume',[],locale)}
+								else
+									button.btn.btn-default.btn-xs.toggle-item-state #{messageSource.getMessage('profile.items.table.pause',[],locale)}

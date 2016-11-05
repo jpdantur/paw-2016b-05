@@ -79,7 +79,9 @@ public interface IUserService {
 	public List<Purchase> getDeclinedTransactions(final User user);
 	
 	public Set<StoreItem> getAllPublishedItems(final User user);
-	public Set<StoreItem> getPublishedItemsWithStatus(final User user, final StoreItemStatus status);
+	public Set<StoreItem> getActivePublishedItems(final User user);
+	public Set<StoreItem> getPausedPublishedItems(final User user);
+//	public Set<StoreItem> getPublishedItemsWithStatus(final User user, final StoreItemStatus status);
 	public Map<StoreItemStatus, Set<StoreItem>> getPublishedItemsGroupedByStatus(final User user);
 	
 	public boolean approvePurchase(final User user, final Purchase purchase);

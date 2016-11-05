@@ -1,9 +1,13 @@
 $ document .ready !->
 
-	$ '#myTab a, #itemsTab a, #salesTab a, #purchaseTab a' .click (e) !->
+	$ '#itemsTab a, #salesTab a, #purchaseTab a' .click (e) ->
 		# e.preventDefault!
 
+		# console .log \aaa
+
 		# $ this .tab \show
+
+		# return false
 
 	$ 'ul.nav-tabs > li > a' .on 'shown.bs.tab', (e) !->
 		id = $ e.target .attr \href .substr(1)

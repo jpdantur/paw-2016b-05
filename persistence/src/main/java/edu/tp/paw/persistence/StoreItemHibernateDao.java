@@ -206,6 +206,17 @@ public class StoreItemHibernateDao implements IStoreItemDao {
 		
 		return u.getPublishedItems();
 	}
+	
+	@Override
+	public Set<StoreItem> getUserItems(final User user, final StoreItemStatus status) {
+		
+		final User u = entityManager.getReference(User.class, user.getId());
+		
+		// hibernate trick
+		u.getPublishedItems().iterator();
+		
+		return u.getPublishedItems();
+	}
 
 	@Override
 	public boolean updateItem(final StoreItem item) {

@@ -163,6 +163,25 @@ public class StoreItemService implements IStoreItemService {
 		
 		return u.getPublishedItems();
 	}
+	
+	@Override
+	public Set<StoreItem> getUserItems(final User user, final StoreItemStatus status) {
+		
+		if (user == null) {
+			throw new IllegalStateException("user cant be null");
+		}
+		
+		if (!userService.userExists(user)) {
+			throw new IllegalStateException("user must exist");
+		}
+		
+		final User u = userService.findById(user.getId());
+		
+		// hibernate trick
+		u.getPublishedItems().iterator();
+		
+		return u.getPublishedItems();
+	}
 
 	@Override
 	public boolean updateItem(final StoreItem item) {
