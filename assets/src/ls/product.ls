@@ -15,15 +15,16 @@ $ document .ready !->
 		$self = $ this
 
 		item = $self .data \item
+		favId = $self.data \favid
 
-		remove = '/remove'
-		isRemoving = true
-		if $self.hasClass \text-muted
-			remove = '/'
-			isRemoving = false
+		isRemoving = $self.hasClass \text-danger
+
+		url = baseUrl + "/favourites/#{if isRemoving then 'remove' else 'add'}/#{if isRemoving then favId else item}"
+
+		console.log(url)
 
 		$ .ajax do
-			url: baseUrl + '/store/item/' + item + '/favourite' + remove
+			url: url
 			type: 'POST'
 			success: (data) !->
 				console.log data
@@ -38,6 +39,8 @@ $ document .ready !->
 					} , do
 						type: 'success'
 					$self .toggleClass 'text-muted text-danger'
+					if !isRemoving
+						$self.data \favid, data.favid
 
 	$ '#purchase[data-buyer-email]' .click (e) !->
 

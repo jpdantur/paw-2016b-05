@@ -3,7 +3,6 @@ package edu.tp.paw.interfaces.dao;
 import java.util.List;
 import java.util.Set;
 
-import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.model.StoreItemStatus;

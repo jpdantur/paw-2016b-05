@@ -17,6 +17,7 @@ import edu.tp.paw.model.StoreItemStatus;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
 import edu.tp.paw.model.filter.Filter;
+import edu.tp.paw.model.filter.PagedResult;
 
 public interface IUserService {
 
@@ -48,7 +49,7 @@ public interface IUserService {
 	public boolean isUsersPassword(final User user, final String password);
 	
 	public Set<Favourite> getAllFavourites(final User user);
-	public List<Favourite> getFavourites(final User user, final Filter filter);
+	public PagedResult<Favourite> getFavourites(final User user, final Filter filter);
 	
 	public Favourite addFavourite(final FavouriteBuilder builder);
 	public boolean removeFavourite(final Favourite favourite);

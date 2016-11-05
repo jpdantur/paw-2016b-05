@@ -11,16 +11,12 @@ import javax.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 
 import edu.tp.paw.interfaces.dao.IUserDao;
-import edu.tp.paw.model.Favourite;
-import edu.tp.paw.model.FavouriteBuilder;
 import edu.tp.paw.model.Purchase;
 import edu.tp.paw.model.PurchaseBuilder;
 import edu.tp.paw.model.PurchaseStatus;
 import edu.tp.paw.model.Role;
-import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
-import edu.tp.paw.model.filter.Filter;
 
 @Repository
 public class UserHibernateDao implements IUserDao {

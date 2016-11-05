@@ -57,7 +57,12 @@ block content
 						h1 #{storeItem.name}&nbsp;
 							if loggedUser
 								if !publishedItems.contains(storeItem)
-									if userFavourites.contains(storeItem)
+									- var contains = {a:false}
+									each fav in userFavourites.results
+										if fav.item.id == storeItem.id
+											- contains.a = true
+											- break
+									if contains.a
 										a.text-danger.add-favourite(href="#", data-item=storeItem.id)
 											i.fa.fa-heart
 									else

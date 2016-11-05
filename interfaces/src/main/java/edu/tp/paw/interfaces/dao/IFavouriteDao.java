@@ -7,6 +7,7 @@ import edu.tp.paw.model.Favourite;
 import edu.tp.paw.model.FavouriteBuilder;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.filter.Filter;
+import edu.tp.paw.model.filter.PagedResult;
 
 public interface IFavouriteDao {
 
@@ -18,6 +19,6 @@ public interface IFavouriteDao {
 	public boolean removeFavourite(final Favourite favourite);
 	
 	public Set<Favourite> getFavouritesForUser(final User user);
-	public List<Favourite> getFavouritesForUser(final User user, final Filter filter);
+	public PagedResult<Favourite> getFavouritesForUser(final User user, final Filter filter);
 	
 }

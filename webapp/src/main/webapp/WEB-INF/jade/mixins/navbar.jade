@@ -25,27 +25,31 @@ mixin navbar(search)
 									i.fa.fa-heart
 									span.caret
 								ul.dropdown-menu.dropdown-favourite
-									if !userFavourites.isEmpty()
+									if !userFavourites.results.isEmpty()
 										li
 											span.fav-title #{messageSource.getMessage('index.favourite.title',[],locale)}
 									else
 										li
 											a #{messageSource.getMessage('index.favourite.empty',[],locale)}
-									each favourite in userFavourites
+									each favourite in userFavourites.results
 										li
 											span.item
 												span.item-left
-													a(href="#{context.url('/store/items/'+favourite.id)}")
-														if favourite.images.isEmpty()
+													a(href="#{context.url('/store/items/'+favourite.item.id)}")
+														if favourite.item.images.isEmpty()
 															img(src="http://placehold.it/80x80")
 														else
-															img(src="#{context.url('/images/get/'+favourite.images.iterator().next().id)}")
+															img(src="#{context.url('/images/get/'+favourite.item.images.iterator().next().id)}")
 													span.item-info
-														a(href="#{context.url('/store/items/'+favourite.id)}")
-															span #{favourite.name}
-														span.price $#{favourite.price}
+														a(href="#{context.url('/store/items/'+favourite.item.id)}")
+															span #{favourite.item.name}
+														span.price $#{favourite.item.price}
 												span.item-right(title="#{messageSource.getMessage('index.favourite.remove',[],locale)}")
 													button.btn.btn-xs.btn-danger.pull-right.remove-fav(data-id="#{favourite.id}") x
+									if userFavourites.numberOfTotalResults >= 8
+										li.separator
+										li.text-center
+											a(href="#") Ver Todos
 							li
 								a.dropdown-toggle(href="#", data-toggle="dropdown")
 									span #{loggedUser.firstName} #{loggedUser.lastName}&nbsp;

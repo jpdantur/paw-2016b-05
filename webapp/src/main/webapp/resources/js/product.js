@@ -10,17 +10,15 @@ $(document).ready(function(){
     update_input_field_name: $('#score-input')
   });
   $('.add-favourite').click(function(e){
-    var $self, item, remove, isRemoving;
+    var $self, item, favId, isRemoving, url;
     $self = $(this);
     item = $self.data('item');
-    remove = '/remove';
-    isRemoving = true;
-    if ($self.hasClass('text-muted')) {
-      remove = '/';
-      isRemoving = false;
-    }
+    favId = $self.data('favid');
+    isRemoving = $self.hasClass('text-danger');
+    url = baseUrl + ("/favourites/" + (isRemoving ? 'remove' : 'add') + "/" + (isRemoving ? favId : item));
+    console.log(url);
     $.ajax({
-      url: baseUrl + '/store/item/' + item + '/favourite' + remove,
+      url: url,
       type: 'POST',
       success: function(data){
         console.log(data);
@@ -41,6 +39,9 @@ $(document).ready(function(){
             type: 'success'
           });
           $self.toggleClass('text-muted text-danger');
+          if (!isRemoving) {
+            $self.data('favid', data.favid);
+          }
         }
       }
     });

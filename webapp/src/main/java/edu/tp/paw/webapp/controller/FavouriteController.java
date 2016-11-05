@@ -41,7 +41,7 @@ public class FavouriteController extends BaseController {
 		final Favourite favourite = userService.addFavourite(builder); 
 		if (favourite != null) {
 			
-			return "{\"err\":0 }";
+			return "{\"err\":0, \"favid\": "+favourite.getId()+" }";
 		}
 		
 		return "{\"err\":2 }";

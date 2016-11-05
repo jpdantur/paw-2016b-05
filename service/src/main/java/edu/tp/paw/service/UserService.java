@@ -2,17 +2,14 @@ package edu.tp.paw.service;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
 import edu.tp.paw.interfaces.dao.IUserDao;
@@ -35,6 +32,7 @@ import edu.tp.paw.model.StoreItemStatus;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
 import edu.tp.paw.model.filter.Filter;
+import edu.tp.paw.model.filter.PagedResult;
 
 
 @Service
@@ -169,7 +167,7 @@ public class UserService implements IUserService {
 	}
 	
 	@Override
-	public List<Favourite> getFavourites(final User user, final Filter filter) {
+	public PagedResult<Favourite> getFavourites(final User user, final Filter filter) {
 		
 		if (user == null) {
 			throw new IllegalArgumentException("user cant be null");

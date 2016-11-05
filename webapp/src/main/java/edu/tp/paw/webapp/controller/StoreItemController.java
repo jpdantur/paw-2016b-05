@@ -20,8 +20,6 @@ import edu.tp.paw.interfaces.service.IStoreService;
 import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.CommentBuilder;
-import edu.tp.paw.model.Favourite;
-import edu.tp.paw.model.FavouriteBuilder;
 import edu.tp.paw.model.PurchaseBuilder;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;

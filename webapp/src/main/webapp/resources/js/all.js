@@ -5,7 +5,7 @@ $(document).ready(function(){
     $self = $(this);
     item = $self.data('id');
     $.ajax({
-      url: baseUrl + '/store/item/' + item + '/favourite/remove',
+      url: baseUrl + '/favourites/remove/' + item,
       type: 'POST',
       success: function(data){
         console.log(data);

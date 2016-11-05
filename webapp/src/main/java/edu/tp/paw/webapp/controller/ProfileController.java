@@ -1,23 +1,5 @@
 package edu.tp.paw.webapp.controller;
 
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-
-import edu.tp.paw.interfaces.service.IStoreItemService;
-import edu.tp.paw.interfaces.service.IUserService;
-import edu.tp.paw.model.StoreItem;
-import edu.tp.paw.model.StoreItemStatus;
-import edu.tp.paw.model.User;
-import edu.tp.paw.model.UserBuilder;
-import edu.tp.paw.webapp.form.ChangePasswordForm;
-import edu.tp.paw.webapp.form.ProfileForm;
-import edu.tp.paw.webapp.form.validator.ChangePasswordFormValidator;
-import edu.tp.paw.webapp.form.validator.ProfileFormValidator;
-
-import java.util.Map;
-import java.util.Set;
-
 import javax.validation.Valid;
 
 import org.slf4j.Logger;
@@ -26,6 +8,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
+import edu.tp.paw.interfaces.service.IStoreItemService;
+import edu.tp.paw.interfaces.service.IUserService;
+import edu.tp.paw.model.User;
+import edu.tp.paw.model.UserBuilder;
+import edu.tp.paw.webapp.form.ChangePasswordForm;
+import edu.tp.paw.webapp.form.ProfileForm;
+import edu.tp.paw.webapp.form.validator.ChangePasswordFormValidator;
+import edu.tp.paw.webapp.form.validator.ProfileFormValidator;
 
 @Controller
 @RequestMapping("/profile")

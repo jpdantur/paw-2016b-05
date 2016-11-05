@@ -1,11 +1,8 @@
 package edu.tp.paw.webapp.controller;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
-import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -21,14 +18,14 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
+import edu.tp.paw.interfaces.service.IUserService;
+import edu.tp.paw.model.Favourite;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.filter.Filter;
 import edu.tp.paw.model.filter.FilterBuilder;
 import edu.tp.paw.model.filter.OrderFilter.SortField;
 import edu.tp.paw.model.filter.OrderFilter.SortOrder;
-import edu.tp.paw.interfaces.service.IUserService;
-import edu.tp.paw.model.Favourite;
-import edu.tp.paw.model.StoreItem;
+import edu.tp.paw.model.filter.PagedResult;
 
 @Controller
 public class BaseController {
@@ -84,7 +81,7 @@ public class BaseController {
 	}
 	
 	@ModelAttribute("userFavourites")
-	public List<Favourite> favourites(
+	public PagedResult<Favourite> favourites(
 			@ModelAttribute("loggedUser") final User user
 			) {
 		if (user == null) {

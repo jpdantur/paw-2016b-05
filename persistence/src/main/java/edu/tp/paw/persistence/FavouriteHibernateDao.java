@@ -1,6 +1,5 @@
 package edu.tp.paw.persistence;
 
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
@@ -15,6 +14,8 @@ import edu.tp.paw.model.Favourite;
 import edu.tp.paw.model.FavouriteBuilder;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.filter.Filter;
+import edu.tp.paw.model.filter.PageFilter;
+import edu.tp.paw.model.filter.PagedResult;
 
 @Repository
 public class FavouriteHibernateDao implements IFavouriteDao {
@@ -34,16 +35,26 @@ public class FavouriteHibernateDao implements IFavouriteDao {
 	}
 
 	@Override
-	public List<Favourite> getFavouritesForUser(final User user, final Filter filter) {
+	public PagedResult<Favourite> getFavouritesForUser(final User user, final Filter filter) {
 		
-		final TypedQuery<Favourite> query = entityManager.createQuery("from Favourite f where f.user=:user offset :offset order by created", Favourite.class);
+		final TypedQuery<Favourite> query = entityManager.createQuery("from Favourite f where f.user=:user order by created", Favourite.class);
+		final TypedQuery<Long> countQuery = entityManager.createQuery("select count(*) from Favourite f where f.user=:user", Long.class);
 		
-		query.setMaxResults(filter.getPageFilter().getPageSize());
+		final PageFilter pageFilter = filter.getPageFilter();
+		query.setMaxResults(pageFilter.getPageSize());
+		query.setFirstResult(pageFilter.getPageNumber()*pageFilter.getPageSize());
 		
 		query.setParameter("user", user);
-		query.setParameter("offset", filter.getPageFilter().getPageNumber()*filter.getPageFilter().getPageSize());
+		countQuery.setParameter("user", user);
 		
-		return query.getResultList();
+		final PagedResult<Favourite> pagedResult = new PagedResult<>();
+		
+		pagedResult.setCurrentPage(pageFilter.getPageNumber());
+		pagedResult.setNumberOfAvailableResults(pageFilter.getPageSize());
+		pagedResult.setNumberOfTotalResults(countQuery.getSingleResult().intValue());
+		pagedResult.setResults(query.getResultList());
+		
+		return pagedResult;
 	}
 	
 	@Override

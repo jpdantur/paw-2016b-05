@@ -28,7 +28,7 @@ public class Favourite {
 	private Date created;
 	
 	@ManyToOne( fetch = FetchType.EAGER, optional = false)
-	@JoinColumn( name = "item_id", foreignKey = @ForeignKey( name = "item_fk" ) )
+	@JoinColumn( name = "store_item_id", foreignKey = @ForeignKey( name = "item_fk" ) )
 	private StoreItem item;
 	
 	@ManyToOne( fetch = FetchType.EAGER, optional = false)

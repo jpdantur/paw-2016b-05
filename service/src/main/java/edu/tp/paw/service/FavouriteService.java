@@ -1,6 +1,5 @@
 package edu.tp.paw.service;
 
-import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +11,7 @@ import edu.tp.paw.model.Favourite;
 import edu.tp.paw.model.FavouriteBuilder;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.filter.Filter;
+import edu.tp.paw.model.filter.PagedResult;
 
 @Service
 public class FavouriteService implements IFavouriteService {
@@ -42,7 +42,7 @@ public class FavouriteService implements IFavouriteService {
 	}
 
 	@Override
-	public List<Favourite> getFavouritesForUser(final User user, final Filter filter) {
+	public PagedResult<Favourite> getFavouritesForUser(final User user, final Filter filter) {
 		return favouriteDao.getFavouritesForUser(user, filter);
 	}
 

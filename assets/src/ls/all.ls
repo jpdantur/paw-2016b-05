@@ -9,7 +9,7 @@ $ document .ready !->
 		item = $self .data \id
 
 		$ .ajax do
-			url: baseUrl + '/store/item/' + item + '/favourite/remove'
+			url: baseUrl + '/favourites/remove/' + item
 			type: 'POST'
 			success: (data) !->
 				console.log data
