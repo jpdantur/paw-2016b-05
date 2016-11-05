@@ -3,6 +3,8 @@ package edu.tp.paw.interfaces.dao;
 import java.util.List;
 import java.util.Set;
 
+import edu.tp.paw.model.Favourite;
+import edu.tp.paw.model.FavouriteBuilder;
 import edu.tp.paw.model.Purchase;
 import edu.tp.paw.model.PurchaseBuilder;
 import edu.tp.paw.model.PurchaseStatus;
@@ -10,6 +12,7 @@ import edu.tp.paw.model.Role;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
+import edu.tp.paw.model.filter.Filter;
 
 public interface IUserDao {
 
@@ -37,9 +40,10 @@ public interface IUserDao {
 	
 	public boolean changePassword(final User user, final String password);
 	
-	public boolean addFavourite(final User user, final StoreItem item);
-	public Set<StoreItem> getFavourites(final User user);
-	public boolean removeFavourite(final User user, final StoreItem item);
+//	public boolean addFavourite(final FavouriteBuilder builder);
+//	public Set<Favourite> getFavourites(final User user);
+//	public List<Favourite> getFavourites(final User user, final Filter filter);
+//	public boolean removeFavourite(final User user, final StoreItem item);
 	
 	public int getNumberOfUsers();
 	

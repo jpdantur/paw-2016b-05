@@ -20,7 +20,6 @@ import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.FetchProfile;
 
 @Entity
 @Table(name = "users", uniqueConstraints = {
@@ -44,19 +43,20 @@ public class User {
 	@Column(length = 100)
 	private String email;
 	
-	@ManyToMany(fetch = FetchType.LAZY)
-	@JoinTable(
-			name = "favourites",
-			joinColumns = @JoinColumn(name = "user_id"),
-			inverseJoinColumns = @JoinColumn( name = "store_item_id"),
-			foreignKey = @ForeignKey( name = "user_fk" ),
-			inverseForeignKey = @ForeignKey( name = "store_item_fk" ),
-			uniqueConstraints = {
-				@UniqueConstraint( name = "favourite_uniq", columnNames = { "user_id", "store_item_id" })
-			}
-	)
+//	@ManyToMany(fetch = FetchType.LAZY)
+//	@JoinTable(
+//			name = "favourites",
+//			joinColumns = @JoinColumn(name = "user_id"),
+//			inverseJoinColumns = @JoinColumn( name = "store_item_id"),
+//			foreignKey = @ForeignKey( name = "user_fk" ),
+//			inverseForeignKey = @ForeignKey( name = "store_item_fk" ),
+//			uniqueConstraints = {
+//				@UniqueConstraint( name = "favourite_uniq", columnNames = { "user_id", "store_item_id" })
+//			}
+//	)
 //	@Fetch(FetchMode.SELECT)
-	private Set<StoreItem> favourites = new HashSet<>();
+	@OneToMany( fetch = FetchType.LAZY, mappedBy = "user" )
+	private Set<Favourite> favourites = new HashSet<>();
 	
 	@ManyToMany(fetch = FetchType.LAZY)
 	@JoinTable(
@@ -119,7 +119,7 @@ public class User {
 		return email;
 	}
 
-	public Set<StoreItem> getFavourites() {
+	public Set<Favourite> getFavourites() {
 		return favourites;
 	}
 	

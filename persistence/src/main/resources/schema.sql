@@ -51,6 +51,7 @@ insert into store_categories (category_id, category_name, parent)
 -- 	favourite_id serial primary key,
 -- 	user_id integer,
 -- 	store_item_id integer,
+--	created timestamp default now(),
 -- 	constraint user_fk foreign key (user_id) references users,
 -- 	constraint store_item_fk foreign key (store_item_id) references store_items
 -- );

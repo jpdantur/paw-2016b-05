@@ -18,6 +18,8 @@ header#top-navbar {
     color: #222; }
   header#top-navbar .dropdown-menu a {
     color: black; }
+  header#top-navbar .open .dropdown-toggle {
+    color: black; }
 
 .with-divider {
   border-bottom: 1px solid #e9eaeb; }

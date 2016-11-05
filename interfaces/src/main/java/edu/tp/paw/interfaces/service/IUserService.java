@@ -1,11 +1,13 @@
 package edu.tp.paw.interfaces.service;
 
 import java.util.List;
-import java.util.Set;
 import java.util.Map;
+import java.util.Set;
 
 import edu.tp.paw.model.Comment;
 import edu.tp.paw.model.CommentBuilder;
+import edu.tp.paw.model.Favourite;
+import edu.tp.paw.model.FavouriteBuilder;
 import edu.tp.paw.model.Purchase;
 import edu.tp.paw.model.PurchaseBuilder;
 import edu.tp.paw.model.PurchaseStatus;
@@ -14,6 +16,7 @@ import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemStatus;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
+import edu.tp.paw.model.filter.Filter;
 
 public interface IUserService {
 
@@ -44,10 +47,11 @@ public interface IUserService {
 	
 	public boolean isUsersPassword(final User user, final String password);
 	
-	public Set<StoreItem> getFavourites(final User user);
+	public Set<Favourite> getAllFavourites(final User user);
+	public List<Favourite> getFavourites(final User user, final Filter filter);
 	
-	public boolean addFavourite(final User user, final StoreItem item);
-	public boolean removeFavourite(final User user, final StoreItem item);
+	public Favourite addFavourite(final FavouriteBuilder builder);
+	public boolean removeFavourite(final Favourite favourite);
 	
 	public Comment issueComment(final CommentBuilder builder);
 	

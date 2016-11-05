@@ -35,6 +35,10 @@ header#top-navbar {
 	.dropdown-menu a {
 		color: black;
 	}
+
+	.open .dropdown-toggle {
+		color: black;
+	}
 }
 
 .with-divider {

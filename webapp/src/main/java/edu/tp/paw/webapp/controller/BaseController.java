@@ -22,12 +22,21 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 
 import edu.tp.paw.model.User;
+import edu.tp.paw.model.filter.Filter;
+import edu.tp.paw.model.filter.FilterBuilder;
+import edu.tp.paw.model.filter.OrderFilter.SortField;
+import edu.tp.paw.model.filter.OrderFilter.SortOrder;
 import edu.tp.paw.interfaces.service.IUserService;
+import edu.tp.paw.model.Favourite;
 import edu.tp.paw.model.StoreItem;
 
 @Controller
 public class BaseController {
 	
+	private static final int NUMBER_OF_FAVOURITES = 8;
+
+	private static final int FIRST_PAGE = 0;
+
 	final static Logger logger = LoggerFactory.getLogger(BaseController.class);
 	
 	@Autowired private ApplicationContext appContext;
@@ -75,13 +84,22 @@ public class BaseController {
 	}
 	
 	@ModelAttribute("userFavourites")
-	public Set<StoreItem> favourites(
+	public List<Favourite> favourites(
 			@ModelAttribute("loggedUser") final User user
 			) {
 		if (user == null) {
 			return null;
 		}
-		return userService.getFavourites(user);
+		final Filter filter = FilterBuilder
+				.create()
+				.page()
+					.take(FIRST_PAGE)
+					.size(NUMBER_OF_FAVOURITES)
+				.and().sort()
+					.by(SortField.CREATED)
+					.order(SortOrder.ASC)
+				.end().build();
+		return userService.getFavourites(user, filter);
 	}
 	
 	@ModelAttribute("currentURI")

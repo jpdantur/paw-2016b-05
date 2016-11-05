@@ -20,6 +20,8 @@ import edu.tp.paw.interfaces.service.IStoreService;
 import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.CommentBuilder;
+import edu.tp.paw.model.Favourite;
+import edu.tp.paw.model.FavouriteBuilder;
 import edu.tp.paw.model.PurchaseBuilder;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
@@ -119,48 +121,6 @@ public class StoreItemController extends BaseController {
 		}
 		
 		return "redirect:/store/items/"+id+"?e=1";
-	}
-	
-	@RequestMapping( value = "/{itemId}/favourite", method = RequestMethod.POST, produces = "application/json; charset=utf-8" )
-	@ResponseBody
-	public String makeFavourite(
-			@PathVariable("itemId") final long id,
-			@ModelAttribute("loggedUser") final User user
-			) {
-		
-		final StoreItem item = itemService.findById(id);
-		
-		if (item == null) {
-			return "{\"err\":3 }";
-		}
-		
-		if (userService.addFavourite(user, item)) {
-			
-			return "{\"err\":0 }";
-		}
-		
-		return "{\"err\":2 }";
-	}
-	
-	@RequestMapping( value = "/{itemId}/favourite/remove", method = RequestMethod.POST, produces = "application/json; charset=utf-8" )
-	@ResponseBody
-	public String removeFavourite(
-			@PathVariable("itemId") final long id,
-			@ModelAttribute("loggedUser") final User user
-			) {
-		
-		final StoreItem item = itemService.findById(id);
-		
-		if (item == null) {
-			return "{\"err\":3 }";
-		}
-		
-		if (userService.removeFavourite(user, item)) {
-			
-			return "{\"err\":0 }";
-		}
-		
-		return "{\"err\":2 }";
 	}
 	
 	@RequestMapping( value = "/{itemId}/purchase", method = RequestMethod.POST, produces = "application/json; charset=utf-8" )

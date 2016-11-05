@@ -266,17 +266,6 @@ public class StoreItemHibernateDao implements IStoreItemDao {
 	}
 
 	@Override
-	public Set<StoreItem> getFavourites(final User user) {
-		
-		final User u = entityManager.getReference(User.class, user.getId());
-		
-		// hibernate trick
-		u.getFavourites().iterator();
-		
-		return u.getFavourites();
-	}
-
-	@Override
 	public boolean itemExists(final long id) {
 		final TypedQuery<Long> query = entityManager.createQuery("select count(*) from StoreItem item where item.id=:id", Long.class);
 		query.setParameter("id", id);

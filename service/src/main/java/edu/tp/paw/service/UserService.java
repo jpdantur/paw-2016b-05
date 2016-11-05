@@ -17,12 +17,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import edu.tp.paw.interfaces.dao.IUserDao;
 import edu.tp.paw.interfaces.service.ICommentService;
+import edu.tp.paw.interfaces.service.IFavouriteService;
 import edu.tp.paw.interfaces.service.IPurchaseService;
 import edu.tp.paw.interfaces.service.IRoleService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.Comment;
 import edu.tp.paw.model.CommentBuilder;
+import edu.tp.paw.model.Favourite;
+import edu.tp.paw.model.FavouriteBuilder;
 import edu.tp.paw.model.Purchase;
 import edu.tp.paw.model.PurchaseBuilder;
 import edu.tp.paw.model.PurchaseStatus;
@@ -31,6 +34,7 @@ import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemStatus;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
+import edu.tp.paw.model.filter.Filter;
 
 
 @Service
@@ -42,6 +46,7 @@ public class UserService implements IUserService {
 	@Autowired private ICommentService commentService;
 	@Autowired private IRoleService roleService;
 	@Autowired private IPurchaseService purchaseService;
+	@Autowired private IFavouriteService favouriteService;
 	
 	@Autowired private PasswordEncoder passwordEncoder;
 	
@@ -149,7 +154,7 @@ public class UserService implements IUserService {
 	}
 
 	@Override
-	public Set<StoreItem> getFavourites(final User user) {
+	public Set<Favourite> getAllFavourites(final User user) {
 		
 		if (user == null) {
 			throw new IllegalArgumentException("user cant be null");
@@ -159,52 +164,66 @@ public class UserService implements IUserService {
 			throw new IllegalArgumentException("user must exist");
 		}
 		
-		return userDao.getFavourites(user);
+		return favouriteService.getFavouritesForUser(user);
 		
-	}
-
-	@Override
-	public boolean addFavourite(final User user, final StoreItem item) {
-		
-		if (user == null) {
-			throw new IllegalArgumentException("user cant be null");
-		}
-		
-		if (item == null) {
-			throw new IllegalArgumentException("item cant be null");
-		}
-		
-		if (!userExists(user)) {
-			throw new IllegalArgumentException("user must exist");
-		}
-		
-		if (!itemService.itemExists(item)) {
-			throw new IllegalArgumentException("item must exist");
-		}
-		
-		return userDao.addFavourite(user, item);
 	}
 	
 	@Override
-	public boolean removeFavourite(final User user, final StoreItem item) {
+	public List<Favourite> getFavourites(final User user, final Filter filter) {
 		
 		if (user == null) {
 			throw new IllegalArgumentException("user cant be null");
 		}
 		
-		if (item == null) {
-			throw new IllegalArgumentException("item cant be null");
+		if (filter == null) {
+			throw new IllegalArgumentException("filter cant be null");
 		}
 		
 		if (!userExists(user)) {
 			throw new IllegalArgumentException("user must exist");
 		}
 		
-		if (!itemService.itemExists(item)) {
+		return  favouriteService.getFavouritesForUser(user, filter);
+	}
+
+	@Override
+	public Favourite addFavourite(final FavouriteBuilder builder) {
+		
+		if (builder == null) {
+			throw new IllegalArgumentException("builder cant be null");
+		}
+		
+		if (builder.getUser() == null) {
+			throw new IllegalArgumentException("user cant be null");
+		}
+		
+		if (builder.getItem() == null) {
+			throw new IllegalArgumentException("item cant be null");
+		}
+		
+		if (!userExists(builder.getUser())) {
+			throw new IllegalArgumentException("user must exist");
+		}
+		
+		if (!itemService.itemExists(builder.getItem())) {
 			throw new IllegalArgumentException("item must exist");
 		}
 		
-		return userDao.removeFavourite(user, item);
+		return favouriteService.addFavourite(builder);
+	}
+	
+	@Override
+	public boolean removeFavourite(final Favourite favourite) {
+		
+		if (favourite == null) {
+			throw new IllegalArgumentException("favourite cant be null");
+		}
+		
+		if (!favouriteService.exists(favourite)) {
+			throw new IllegalArgumentException("favourite must exist");
+		}
+		
+		return favouriteService.removeFavourite(favourite);
 	}
 
 	@Override

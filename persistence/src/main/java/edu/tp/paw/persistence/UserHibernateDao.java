@@ -11,6 +11,8 @@ import javax.persistence.TypedQuery;
 import org.springframework.stereotype.Repository;
 
 import edu.tp.paw.interfaces.dao.IUserDao;
+import edu.tp.paw.model.Favourite;
+import edu.tp.paw.model.FavouriteBuilder;
 import edu.tp.paw.model.Purchase;
 import edu.tp.paw.model.PurchaseBuilder;
 import edu.tp.paw.model.PurchaseStatus;
@@ -18,6 +20,7 @@ import edu.tp.paw.model.Role;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
+import edu.tp.paw.model.filter.Filter;
 
 @Repository
 public class UserHibernateDao implements IUserDao {
@@ -82,43 +85,8 @@ public class UserHibernateDao implements IUserDao {
 		query.executeUpdate();
 		return true;
 	}
-
-	@Override
-	public boolean addFavourite(final User user, final StoreItem item) {
-		
-		final User u = entityManager.getReference(User.class, user.getId());
-		
-		// hibernate trick
-		u.getFavourites().iterator();
-		
-		u.getFavourites().add(item);
-		
-		return true;
-	}
 	
-	@Override
-	public Set<StoreItem> getFavourites(final User user) {
-		
-		final User u = entityManager.getReference(User.class, user.getId());
-		
-		u.getFavourites().iterator();
-		
-		return u.getFavourites();
-		
-	}
-
-	@Override
-	public boolean removeFavourite(final User user, final StoreItem item) {
-		
-		final User u = entityManager.getReference(User.class, user.getId());
-		
-		// hibernate trick
-		u.getFavourites().iterator();
-		
-		u.getFavourites().remove(item);
-		
-		return true;
-	}
+	
 
 	@Override
 	public int getNumberOfUsers() {

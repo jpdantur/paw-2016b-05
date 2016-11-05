@@ -22,10 +22,17 @@ El usuario administrador inicial es `system.admin:root`
 	|        |__ /details
 	|        |__ /images
 	|        |__ /comment
+	|        |__ /purchase
+	|        |__ /resume
+	|        |__ /pause
 	|
 	|___+ /profile                       #(ProfileController)
 	|   |____ /details
 	|   |____ /published
+	|
+	|___+ /favourites                    #(FavouriteController)
+	|   |____ /add/{itemId}
+	|   |____ /remove/{favId}
 	|
 	|___+ /images                        #(ImageController)
 	|   |___ /get/{imageId}

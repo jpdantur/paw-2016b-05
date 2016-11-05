@@ -47,8 +47,6 @@ public interface IStoreItemDao {
 	public int getNumberOfItems();
 	public int getNumberOfItems(final Filter filter);
 	
-	public Set<StoreItem> getFavourites(final User user);
-	
 	public boolean itemExists(final long id);
 	public boolean itemExists(final StoreItem item);
 

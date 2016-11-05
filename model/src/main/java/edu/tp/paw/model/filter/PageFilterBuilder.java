@@ -9,16 +9,26 @@ public class PageFilterBuilder implements IBuilder<PageFilter> {
 	
 	private FilterBuilder filterBuilder;
 	
-	public PageFilterBuilder(FilterBuilder filterBuilder) {
+	public PageFilterBuilder() {
+		
+	}
+	
+	public PageFilterBuilder(final FilterBuilder filterBuilder) {
 		this.filterBuilder = filterBuilder;
 	}
 	
 	public FilterBuilder and() {
-		return filterBuilder;
+		if (filterBuilder != null) {
+			return filterBuilder;
+		}
+		return null;
 	}
 	
 	public FilterBuilder end() {
-		return filterBuilder;
+		if (filterBuilder != null) {
+			return filterBuilder;
+		}
+		return null;
 	}
 	
 	public PageFilterBuilder size(final int pageSize) {

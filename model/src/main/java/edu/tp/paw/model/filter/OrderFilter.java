@@ -5,7 +5,7 @@ import java.util.function.Function;
 public class OrderFilter {
 
 	public enum SortField {
-		PRICE, NAME;
+		PRICE, NAME, CREATED;
 	};
 	
 	public enum SortOrder {

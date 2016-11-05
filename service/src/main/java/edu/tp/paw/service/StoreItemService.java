@@ -179,20 +179,6 @@ public class StoreItemService implements IStoreItemService {
 	}
 
 	@Override
-	public Set<StoreItem> getFavourites(final User user) {
-		
-		if (user == null) {
-			throw new IllegalArgumentException("user cant be null");
-		}
-		
-		if (!userService.userExists(user)) {
-			throw new IllegalArgumentException("user must exist");
-		}
-		
-		return storeItemDao.getFavourites(user);
-	}
-
-	@Override
 	public Comment addComment(final CommentBuilder builder) {
 		return commentService.createComment(builder);
 	}
