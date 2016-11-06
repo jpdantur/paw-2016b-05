@@ -426,14 +426,25 @@ public class UserService implements IUserService {
 	}
 
 	@Override
-	public Set<StoreItem> getAllPublishedItems(final User user) {
+	public PagedResult<StoreItem> getPublishedItems(final User user, final Filter filter) {
+		return itemService.getUserItems(user, filter);
+	}
+	
+	@Override
+	public List<StoreItem> getAllPublishedItems(final User user) {
 		return itemService.getUserItems(user);
 	}
 
 	@Override
-	public Set<StoreItem> getPublishedItemsWithStatus(final User user, final StoreItemStatus status) {
+	public List<StoreItem> getActivePublishedItems(final User user) {
 		
-		return getAllPublishedItems(user).stream().filter(i -> i.getStatus().equals(status)).collect(Collectors.toSet());
+		return itemService.getUserItems(user, StoreItemStatus.ACTIVE);
+	}
+	
+	@Override
+	public List<StoreItem> getPausedPublishedItems(final User user) {
+		
+		return itemService.getUserItems(user, StoreItemStatus.PAUSED);
 	}
 	
 	@Override
@@ -445,7 +456,7 @@ public class UserService implements IUserService {
 			result.put(status, new HashSet<>());
 		}
 		
-		final Set<StoreItem> publishedItems = getAllPublishedItems(user);
+		final List<StoreItem> publishedItems = getAllPublishedItems(user);
 		
 		for (final StoreItem item : publishedItems) {
 			result.get(item.getStatus()).add(item);

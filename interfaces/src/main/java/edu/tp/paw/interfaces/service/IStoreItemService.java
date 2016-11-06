@@ -44,8 +44,8 @@ public interface IStoreItemService {
 	public PagedResult<StoreItem> findByFiltering(final Filter filter);
 	public PagedResult<StoreItem> findByFiltering(final FilterBuilder filter);
 
-	public Set<StoreItem> getUserItems(final User user);
-	public Set<StoreItem> getUserItems(final User user, final StoreItemStatus status);
+	public List<StoreItem> getUserItems(final User user);
+	public List<StoreItem> getUserItems(final User user, final StoreItemStatus status);
 	
 	public boolean updateItem(final StoreItem item);
 
@@ -59,5 +59,7 @@ public interface IStoreItemService {
 	
 	public boolean pauseStoreItem(final StoreItem item);
 	public boolean resumeStoreItem(final StoreItem item);
+
+	public PagedResult<StoreItem> getUserItems(final User user, final Filter filter);
 	
 }

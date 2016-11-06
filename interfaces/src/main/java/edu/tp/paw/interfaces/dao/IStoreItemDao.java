@@ -52,5 +52,7 @@ public interface IStoreItemDao {
 	public boolean increaseSellCount(final StoreItem item); 
 	
 	public boolean updateItemStatus(final StoreItem item, final StoreItemStatus status);
+
+	public PagedResult<StoreItem> getUserItems(final User user, final Filter filter);
 	
 }

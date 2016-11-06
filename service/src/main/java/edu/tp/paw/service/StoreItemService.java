@@ -146,26 +146,25 @@ public class StoreItemService implements IStoreItemService {
 	}
 
 	@Override
-	public Set<StoreItem> getUserItems(final User user) {
+	public PagedResult<StoreItem> getUserItems(final User user, final Filter filter) {
 		
 		if (user == null) {
 			throw new IllegalStateException("user cant be null");
+		}
+		
+		if (filter == null) {
+			throw new IllegalStateException("filter cant be null");
 		}
 		
 		if (!userService.userExists(user)) {
 			throw new IllegalStateException("user must exist");
 		}
 		
-		final User u = userService.findById(user.getId());
-		
-		// hibernate trick
-		u.getPublishedItems().iterator();
-		
-		return u.getPublishedItems();
+		return storeItemDao.getUserItems(user, filter);
 	}
 	
 	@Override
-	public Set<StoreItem> getUserItems(final User user, final StoreItemStatus status) {
+	public List<StoreItem> getUserItems(final User user) {
 		
 		if (user == null) {
 			throw new IllegalStateException("user cant be null");
@@ -175,12 +174,21 @@ public class StoreItemService implements IStoreItemService {
 			throw new IllegalStateException("user must exist");
 		}
 		
-		final User u = userService.findById(user.getId());
+		return storeItemDao.getUserItems(user);
+	}
+	
+	@Override
+	public List<StoreItem> getUserItems(final User user, final StoreItemStatus status) {
 		
-		// hibernate trick
-		u.getPublishedItems().iterator();
+		if (user == null) {
+			throw new IllegalStateException("user cant be null");
+		}
 		
-		return u.getPublishedItems();
+		if (!userService.userExists(user)) {
+			throw new IllegalStateException("user must exist");
+		}
+		
+		return storeItemDao.getUserItems(user, status);
 	}
 
 	@Override

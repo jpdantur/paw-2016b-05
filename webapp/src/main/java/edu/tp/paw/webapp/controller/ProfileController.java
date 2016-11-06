@@ -17,8 +17,12 @@ import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.StoreItemStatus;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
+import edu.tp.paw.model.filter.Filter;
+import edu.tp.paw.model.filter.FilterBuilder;
+import edu.tp.paw.model.filter.StoreItemStatusFilter.ItemStatusFilter;
 import edu.tp.paw.webapp.form.ChangePasswordForm;
 import edu.tp.paw.webapp.form.ProfileForm;
+import edu.tp.paw.webapp.form.ProfileItemSearchForm;
 import edu.tp.paw.webapp.form.validator.ChangePasswordFormValidator;
 import edu.tp.paw.webapp.form.validator.ProfileFormValidator;
 
@@ -121,26 +125,99 @@ public class ProfileController extends BaseController {
 	}
 	
 	@RequestMapping( value = "/items", method = RequestMethod.GET )
-	public String items(final Model model, @ModelAttribute("loggedUser") final User user) {
-		return "redirect:/profile/items/active";
+	public String items() {
+		
+		return "redirect:/profile/items/all";
+		
+	}
+	
+	@RequestMapping( value = "/items/all", method = RequestMethod.GET )
+	public String allItems(
+			@ModelAttribute("profileItemSearch") final ProfileItemSearchForm form,
+			final Model model,
+			@ModelAttribute("loggedUser") final User user) {
+		
+		final Filter filter =
+				FilterBuilder
+				.create()
+				.query()
+					.text(form.getQuery())
+				.and().status()
+					.status(ItemStatusFilter.ANY)
+				.and().page()
+					.size(form.getPageSize())
+					.take(form.getPageNumber())
+				.and().sort()
+					.by(form.orderBy())
+					.order(form.sortOrder())
+				.end().build();
+		
+		model.addAttribute("items", userService.getPublishedItems(user, filter));
+		model.addAttribute("filter", filter);
+		model.addAttribute("status", ItemStatusFilter.ANY);
+		model.addAttribute("show", "items");
+		model.addAttribute("sort", String.format("%s-%s", filter.getOrderFilter().getField().toString(), filter.getOrderFilter().getOrder().toString()));
+		
+		return "profile";
+		
 	}
 	
 	@RequestMapping( value = "/items/active", method = RequestMethod.GET )
-	public String activeItems(final Model model, @ModelAttribute("loggedUser") final User user) {
+	public String activeItems(
+			@ModelAttribute("profileItemSearch") final ProfileItemSearchForm form,
+			final Model model,
+			@ModelAttribute("loggedUser") final User user) {
 		
-		model.addAttribute("items", userService.getActivePublishedItems(user));
-		model.addAttribute("status", StoreItemStatus.ACTIVE);
+		final Filter filter =
+				FilterBuilder
+				.create()
+				.query()
+					.text(form.getQuery())
+				.and().status()
+					.status(ItemStatusFilter.ACTIVE)
+				.and().page()
+					.size(form.getPageSize())
+					.take(form.getPageNumber())
+				.and().sort()
+					.by(form.orderBy())
+					.order(form.sortOrder())
+				.end().build();
+		
+		model.addAttribute("items", userService.getPublishedItems(user, filter));
+		model.addAttribute("filter", filter);
+		model.addAttribute("status", ItemStatusFilter.ACTIVE);
 		model.addAttribute("show", "items");
+		model.addAttribute("sort", String.format("%s-%s", filter.getOrderFilter().getField().toString(), filter.getOrderFilter().getOrder().toString()));
 		
 		return "profile";
 	}
 	
 	@RequestMapping( value = "/items/paused", method = RequestMethod.GET )
-	public String pausedItems(final Model model, @ModelAttribute("loggedUser") final User user) {
+	public String pausedItems(
+			@ModelAttribute("profileItemSearch") final ProfileItemSearchForm form,
+			final Model model,
+			@ModelAttribute("loggedUser") final User user) {
 		
-		model.addAttribute("items", userService.getPausedPublishedItems(user));
-		model.addAttribute("status", StoreItemStatus.PAUSED);
+		final Filter filter =
+				FilterBuilder
+				.create()
+				.query()
+					.text(form.getQuery())
+				.and().status()
+					.status(ItemStatusFilter.PAUSED)
+				.and().page()
+					.size(form.getPageSize())
+					.take(form.getPageNumber())
+				.and().sort()
+					.by(form.orderBy())
+					.order(form.sortOrder())
+				.end().build();
+		
+		model.addAttribute("items", userService.getPublishedItems(user, filter));
+		model.addAttribute("filter", filter);
+		model.addAttribute("status", ItemStatusFilter.PAUSED);
 		model.addAttribute("show", "items");
+		model.addAttribute("sort", String.format("%s-%s", filter.getOrderFilter().getField().toString(), filter.getOrderFilter().getOrder().toString()));
 		
 		return "profile";
 	}

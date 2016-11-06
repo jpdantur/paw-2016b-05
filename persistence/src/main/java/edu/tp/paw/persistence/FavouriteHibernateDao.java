@@ -1,5 +1,6 @@
 package edu.tp.paw.persistence;
 
+import java.util.List;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
@@ -48,11 +49,13 @@ public class FavouriteHibernateDao implements IFavouriteDao {
 		countQuery.setParameter("user", user);
 		
 		final PagedResult<Favourite> pagedResult = new PagedResult<>();
+		final List<Favourite> resultList = query.getResultList();
 		
+		pagedResult.setPageSize(pageFilter.getPageSize());
 		pagedResult.setCurrentPage(pageFilter.getPageNumber());
-		pagedResult.setNumberOfAvailableResults(pageFilter.getPageSize());
+		pagedResult.setNumberOfAvailableResults(resultList.size());
 		pagedResult.setNumberOfTotalResults(countQuery.getSingleResult().intValue());
-		pagedResult.setResults(query.getResultList());
+		pagedResult.setResults(resultList);
 		
 		return pagedResult;
 	}

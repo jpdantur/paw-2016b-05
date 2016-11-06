@@ -78,9 +78,11 @@ public interface IUserService {
 	public List<Purchase> getApprovedTransactions(final User user);
 	public List<Purchase> getDeclinedTransactions(final User user);
 	
-	public Set<StoreItem> getAllPublishedItems(final User user);
-	public Set<StoreItem> getActivePublishedItems(final User user);
-	public Set<StoreItem> getPausedPublishedItems(final User user);
+	public PagedResult<StoreItem> getPublishedItems(final User user, final Filter filter);
+	
+	public List<StoreItem> getAllPublishedItems(final User user);
+	public List<StoreItem> getActivePublishedItems(final User user);
+	public List<StoreItem> getPausedPublishedItems(final User user);
 //	public Set<StoreItem> getPublishedItemsWithStatus(final User user, final StoreItemStatus status);
 	public Map<StoreItemStatus, Set<StoreItem>> getPublishedItemsGroupedByStatus(final User user);
 	

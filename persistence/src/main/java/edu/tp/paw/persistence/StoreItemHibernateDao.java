@@ -26,6 +26,8 @@ import edu.tp.paw.model.filter.PageFilter;
 import edu.tp.paw.model.filter.PagedResult;
 import edu.tp.paw.model.filter.PriceFilter;
 import edu.tp.paw.model.filter.Range;
+import edu.tp.paw.model.filter.StoreItemStatusFilter;
+import edu.tp.paw.model.filter.StoreItemStatusFilter.ItemStatusFilter;
 import edu.tp.paw.model.filter.TermFilter;
 
 @Repository
@@ -33,8 +35,8 @@ public class StoreItemHibernateDao implements IStoreItemDao {
 
 	private final static Logger logger = LoggerFactory.getLogger(StoreItemHibernateDao.class);
 	
-	private static final String ORDER_DESCENDING = "DESC";	
-	private static final String ORDER_ASCENDING = "ASC";
+//	private static final String ORDER_DESCENDING = "DESC";	
+//	private static final String ORDER_ASCENDING = "ASC";
 	
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -97,31 +99,8 @@ public class StoreItemHibernateDao implements IStoreItemDao {
 		
 		final OrderFilter orderFilter = filter.getOrderFilter();
 		
-		switch (orderFilter.getField()) {
-			case PRICE:
-				query.append(String.format(" order by item.%s ", "price"));
-				break;
-			case NAME:
-				query.append(String.format(" order by item.%s ", "name"));
-				break;
-
-			default:
-				query.append(String.format(" order by item.%s ", "price"));
-				break;
-		}
-		
-		switch (orderFilter.getOrder()) {
-			case ASC:
-				query.append(String.format(" %s ", ORDER_ASCENDING));
-				break;
-			case DESC:
-				query.append(String.format(" %s ", ORDER_DESCENDING));
-				break;
-				
-			default:
-				query.append(String.format(" %s ", ORDER_DESCENDING));
-				break;
-		}
+		query.append(String.format(" order by item.%s ", orderFilter.getField().toString().toLowerCase()));
+		query.append(String.format(" %s ", orderFilter.getOrder().toString()));
 		
 		return query.toString();
 	}
@@ -197,25 +176,78 @@ public class StoreItemHibernateDao implements IStoreItemDao {
 	}
 
 	@Override
-	public Set<StoreItem> getUserItems(final User user) {
+	public PagedResult<StoreItem> getUserItems(final User user, final Filter filter) {
 		
-		final User u = entityManager.getReference(User.class, user.getId());
+		final StringBuilder stringBuilder = new StringBuilder("from StoreItem as si where si.owner=:owner");
 		
-		// hibernate trick
-		u.getPublishedItems().iterator();
+		final StoreItemStatusFilter statusFilter = filter.getStoreItemStatusFilter();
+		if (statusFilter.getStatus() != ItemStatusFilter.ANY) {
+			stringBuilder.append(" and si.status=:status");
+		}
 		
-		return u.getPublishedItems();
+		final TermFilter termFilter = filter.getTermFilter();
+		
+		if (termFilter.getTerm().isPresent()) {
+			stringBuilder.append(" and lower(name) like concat('%', lower(:term), '%')");
+		}
+		
+		final OrderFilter orderFilter = filter.getOrderFilter();
+		
+		
+		
+		
+		stringBuilder.insert(0, "select count(*) ");
+		final TypedQuery<Long> countQuery = entityManager.createQuery(stringBuilder.toString(), Long.class);
+		stringBuilder.delete(0, 16);
+		
+		stringBuilder.append(String.format(" order by si.%s ", orderFilter.getField().toString().toLowerCase()));
+		stringBuilder.append(String.format(" %s ", orderFilter.getOrder().toString()));
+		final TypedQuery<StoreItem> query = entityManager.createQuery(stringBuilder.toString(), StoreItem.class);
+		
+		query.setParameter("owner", user);
+		countQuery.setParameter("owner", user);
+		if (statusFilter.getStatus() != ItemStatusFilter.ANY) {
+			query.setParameter("status", StoreItemStatus.valueOf(statusFilter.getStatus().toString()));
+			countQuery.setParameter("status", StoreItemStatus.valueOf(statusFilter.getStatus().toString()));
+		}
+		if (termFilter.getTerm().isPresent()) {
+			query.setParameter("term", termFilter.getTerm().get().toLowerCase().replace("%", "\\%"));
+			countQuery.setParameter("term", termFilter.getTerm().get().toLowerCase().replace("%", "\\%"));
+		}
+		
+		final PageFilter pageFilter = filter.getPageFilter();
+		
+		query.setFirstResult(pageFilter.getPageNumber()*pageFilter.getPageSize());
+		query.setMaxResults(pageFilter.getPageSize());
+		
+		final PagedResult<StoreItem> pagedResult = new PagedResult<>();
+		final List<StoreItem> results = query.getResultList();
+		
+		pagedResult.setNumberOfAvailableResults(results.size());
+		pagedResult.setNumberOfTotalResults(countQuery.getSingleResult().intValue());
+		pagedResult.setCurrentPage(pageFilter.getPageNumber());
+		pagedResult.setResults(results);
+		pagedResult.setPageSize(pageFilter.getPageSize());
+		
+		return pagedResult;
 	}
 	
 	@Override
-	public Set<StoreItem> getUserItems(final User user, final StoreItemStatus status) {
+	public List<StoreItem> getUserItems(final User user) {
 		
-		final User u = entityManager.getReference(User.class, user.getId());
+		final TypedQuery<StoreItem> query = entityManager.createQuery("from StoreItem as si where si.owner=:owner", StoreItem.class);
+		query.setParameter("owner", user);
+		return query.getResultList();
+	}
+	
+	@Override
+	public List<StoreItem> getUserItems(final User user, final StoreItemStatus status) {
 		
-		// hibernate trick
-		u.getPublishedItems().iterator();
+		final TypedQuery<StoreItem> query = entityManager.createQuery("from StoreItem as si where si.owner=:owner and si.status=:status", StoreItem.class);
+		query.setParameter("owner", user);
+		query.setParameter("status", status);
+		return query.getResultList();
 		
-		return u.getPublishedItems();
 	}
 
 	@Override
