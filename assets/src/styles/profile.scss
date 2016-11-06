@@ -33,6 +33,7 @@ table {
 	background-color: white;
 	@include box-shadow(2px, 1px, 1px, #ccc);
 	padding-top: 30px;
+	min-height: 90%;
 }
 
 h1 {

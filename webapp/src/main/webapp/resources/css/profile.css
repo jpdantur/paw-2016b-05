@@ -12,7 +12,8 @@ table {
   -webkit-box-shadow: 2px 1px 1px #ccc;
   -moz-box-shadow: 2px 1px 1px #ccc;
   box-shadow: 2px 1px 1px #ccc;
-  padding-top: 30px; }
+  padding-top: 30px;
+  min-height: 90%; }
 
 h1 {
   border-bottom: 1px solid #ddd; }

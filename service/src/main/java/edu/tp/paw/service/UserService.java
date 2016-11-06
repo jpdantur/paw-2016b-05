@@ -389,6 +389,12 @@ public class UserService implements IUserService {
 	}
 
 	@Override
+	public PagedResult<Purchase> getPurchases(final User user, final Filter filter) {
+		
+		return userDao.getPurchases(user, filter);
+	}
+	
+	@Override
 	public Set<Purchase> getAllPurchases(final User user) {
 		
 		return userDao.getPurchases(user);

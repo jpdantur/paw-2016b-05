@@ -1,27 +1,29 @@
 div.tab-pane-content
 	h1.page-header #{messageSource.getMessage('profile.purchases.title',[],locale)}
-	ul.nav.nav-tabs#purchaseTab
-		li.active
-			a(href="#purchases-pending", data-toggle="tab") #{messageSource.getMessage('profile.purchases.pending',[],locale)}
-		li
-			a(href="#purchases-approved", data-toggle="tab") #{messageSource.getMessage('profile.purchases.approved',[],locale)}
-		li
-			a(href="#purchases-declined", data-toggle="tab") #{messageSource.getMessage('profile.purchases.declined',[],locale)}
+	ul.nav.nav-tabs#purchasesTab
+		li(class=status.toString().equals('PENDING')?'active':'')
+			a(href=context.url('/profile/purchases/pending')) #{messageSource.getMessage('profile.purchases.pending',[],locale)}
+		li(class=status.toString().equals('APPROVED')?'active':'')
+			a(href=context.url('/profile/purchases/approved')) #{messageSource.getMessage('profile.purchases.approved',[],locale)}
+		li(class=status.toString().equals('DECLINED')?'active':'')
+			a(href=context.url('/profile/purchases/declined')) #{messageSource.getMessage('profile.purchases.declined',[],locale)}
 	div.tab-content
-		each status, i in purchases.keySet()
-			div.tab-pane.fade(class=(status.toString()=='PENDING'?'in active':''), id='purchases-'+status.toString().toLowerCase())
-				if purchases.get(status).isEmpty()
-					div.alert.alert-info #{messageSource.getMessage('profile.sales.nothing',[],locale)}
-				else
-					table.table.table-striped
-						thead
-							tr
-								th #{messageSource.getMessage('profile.items.table.picture',[],locale)}
-								th #{messageSource.getMessage('profile.items.table.name',[],locale)}
-								th #{messageSource.getMessage('profile.purchases.seller',[],locale)}
-								th.text-right #{messageSource.getMessage('profile.items.table.price',[],locale)}
-						tbody
-							each purchase in purchases.get(status)
+		div.tab-pane.fade.in.active(id='purchases-'+status.toString().toLowerCase())
+			if items.numberOfTotalResults == 0
+				div.alert.alert-info #{messageSource.getMessage('profile.sales.nothing',[],locale)}
+			else
+				table.table.table-striped
+					thead
+						tr
+							th(colspan=3)
+								include profile_modifiers
+							th(colspan=1)
+								div.input-group.input-group-sm(style="width:100%")
+									span.input-group-addon
+										i.fa.fa-search
+									input.form-control#query-input(type="text", placeholder="Search", value=filter.termFilter.term.orElse(''))
+					tbody
+						each purchase in items.results
 								tr
 									td
 										if purchase.item.images.isEmpty()

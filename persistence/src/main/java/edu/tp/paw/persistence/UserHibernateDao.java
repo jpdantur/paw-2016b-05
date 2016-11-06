@@ -202,6 +202,54 @@ public class UserHibernateDao implements IUserDao {
 	}
 
 	@Override
+	public PagedResult<Purchase> getPurchases(final User user, final Filter filter) {
+		
+		final StringBuilder stringBuilder = new StringBuilder("from Purchase as p where p.buyer=:buyer and p.status=:status");
+		
+		final TermFilter termFilter = filter.getTermFilter();
+		if (termFilter.getTerm().isPresent()) {
+			stringBuilder.append(" and lower(p.item.name) like concat('%', lower(:term), '%')");
+		}
+		
+		stringBuilder.insert(0, "select count(*) ");
+		final TypedQuery<Long> countQuery = entityManager.createQuery(stringBuilder.toString(), Long.class);
+		stringBuilder.delete(0, 16);
+		
+		final OrderFilter orderFilter = filter.getOrderFilter();
+		stringBuilder.append(String.format(" order by p.item.%s ", orderFilter.getField().toString().toLowerCase()));
+		stringBuilder.append(String.format(" %s ", orderFilter.getOrder().toString()));
+		final TypedQuery<Purchase> query = entityManager.createQuery(stringBuilder.toString(), Purchase.class);
+		
+		query.setParameter("buyer", user);
+		countQuery.setParameter("buyer", user);
+		
+		final PurchaseStatusFilter statusFilter = filter.getPurchaseStatusFilter();
+		query.setParameter("status", PurchaseStatus.valueOf(statusFilter.getStatus().toString()));
+		countQuery.setParameter("status", PurchaseStatus.valueOf(statusFilter.getStatus().toString()));
+		
+		if (termFilter.getTerm().isPresent()) {
+			query.setParameter("term", termFilter.getTerm().get().toLowerCase().replace("%", "\\%"));
+			countQuery.setParameter("term", termFilter.getTerm().get().toLowerCase().replace("%", "\\%"));
+		}
+		
+		final PageFilter pageFilter = filter.getPageFilter();
+		
+		query.setFirstResult(pageFilter.getPageNumber()*pageFilter.getPageSize());
+		query.setMaxResults(pageFilter.getPageSize());
+		
+		final PagedResult<Purchase> pagedResult = new PagedResult<>();
+		final List<Purchase> results = query.getResultList();
+		
+		pagedResult.setNumberOfAvailableResults(results.size());
+		pagedResult.setNumberOfTotalResults(countQuery.getSingleResult().intValue());
+		pagedResult.setCurrentPage(pageFilter.getPageNumber());
+		pagedResult.setResults(results);
+		pagedResult.setPageSize(pageFilter.getPageSize());
+		
+		return pagedResult;
+	}
+	
+	@Override
 	public Set<Purchase> getPurchases(final User user) {
 		
 		final User u = entityManager.getReference(User.class, user.getId());
