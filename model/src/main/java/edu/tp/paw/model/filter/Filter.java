@@ -8,14 +8,16 @@ public class Filter {
 	private final TermFilter termFilter;
 	private final OrderFilter orderFilter;
 	private final StoreItemStatusFilter storeItemStatusFilter;
+	private final PurchaseStatusFilter purchaseStatusFilter;
 	
-	/* package */ Filter(FilterBuilder builder) {
+	/* package */ Filter(final FilterBuilder builder) {
 		this.priceFilter = builder.getPriceFilter();
 		this.pageFilter = builder.getPageFilter();
 		this.categoryFilter = builder.getCategoryFilter();
 		this.termFilter = builder.getTermFilter();
 		this.orderFilter = builder.getOrderFilter();
 		this.storeItemStatusFilter = builder.getStoreItemStatusFilter();
+		this.purchaseStatusFilter = builder.getPurchaseStatusFilter();
 	}
 	
 	public PriceFilter getPriceFilter() {
@@ -40,6 +42,10 @@ public class Filter {
 
 	public StoreItemStatusFilter getStoreItemStatusFilter() {
 		return storeItemStatusFilter;
+	}
+	
+	public PurchaseStatusFilter getPurchaseStatusFilter() {
+		return purchaseStatusFilter;
 	}
 	
 	

@@ -17,6 +17,12 @@ import edu.tp.paw.model.PurchaseStatus;
 import edu.tp.paw.model.Role;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
+import edu.tp.paw.model.filter.Filter;
+import edu.tp.paw.model.filter.OrderFilter;
+import edu.tp.paw.model.filter.PageFilter;
+import edu.tp.paw.model.filter.PagedResult;
+import edu.tp.paw.model.filter.PurchaseStatusFilter;
+import edu.tp.paw.model.filter.TermFilter;
 
 @Repository
 public class UserHibernateDao implements IUserDao {
@@ -126,6 +132,54 @@ public class UserHibernateDao implements IUserDao {
 		return true;
 	}
 
+	@Override
+	public PagedResult<Purchase> getTransactions(final User user, final Filter filter) {
+		
+		final StringBuilder stringBuilder = new StringBuilder("from Purchase as p where p.item.owner=:owner and p.status=:status");
+		
+		final TermFilter termFilter = filter.getTermFilter();
+		if (termFilter.getTerm().isPresent()) {
+			stringBuilder.append(" and lower(p.item.name) like concat('%', lower(:term), '%')");
+		}
+		
+		stringBuilder.insert(0, "select count(*) ");
+		final TypedQuery<Long> countQuery = entityManager.createQuery(stringBuilder.toString(), Long.class);
+		stringBuilder.delete(0, 16);
+		
+		final OrderFilter orderFilter = filter.getOrderFilter();
+		stringBuilder.append(String.format(" order by p.item.%s ", orderFilter.getField().toString().toLowerCase()));
+		stringBuilder.append(String.format(" %s ", orderFilter.getOrder().toString()));
+		final TypedQuery<Purchase> query = entityManager.createQuery(stringBuilder.toString(), Purchase.class);
+		
+		query.setParameter("owner", user);
+		countQuery.setParameter("owner", user);
+		
+		final PurchaseStatusFilter statusFilter = filter.getPurchaseStatusFilter();
+		query.setParameter("status", PurchaseStatus.valueOf(statusFilter.getStatus().toString()));
+		countQuery.setParameter("status", PurchaseStatus.valueOf(statusFilter.getStatus().toString()));
+		
+		if (termFilter.getTerm().isPresent()) {
+			query.setParameter("term", termFilter.getTerm().get().toLowerCase().replace("%", "\\%"));
+			countQuery.setParameter("term", termFilter.getTerm().get().toLowerCase().replace("%", "\\%"));
+		}
+		
+		final PageFilter pageFilter = filter.getPageFilter();
+		
+		query.setFirstResult(pageFilter.getPageNumber()*pageFilter.getPageSize());
+		query.setMaxResults(pageFilter.getPageSize());
+		
+		final PagedResult<Purchase> pagedResult = new PagedResult<>();
+		final List<Purchase> results = query.getResultList();
+		
+		pagedResult.setNumberOfAvailableResults(results.size());
+		pagedResult.setNumberOfTotalResults(countQuery.getSingleResult().intValue());
+		pagedResult.setCurrentPage(pageFilter.getPageNumber());
+		pagedResult.setResults(results);
+		pagedResult.setPageSize(pageFilter.getPageSize());
+		
+		return pagedResult;
+	}
+	
 	@Override
 	public List<Purchase> getTransactions(final User user) {
 		

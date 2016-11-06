@@ -111,7 +111,9 @@ $(document).ready(function(){
     console.log(query);
     window.location.search = $.param(query, true);
   };
-  buildQuery();
+  if ($('#query-input').length) {
+    buildQuery();
+  }
   $('#query-input').keyup(function(e){
     if (e.keyCode === 13) {
       e.preventDefault();

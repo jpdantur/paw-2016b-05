@@ -1,45 +1,43 @@
 div.tab-pane-content
 	h1.page-header #{messageSource.getMessage('profile.sales.title',[],locale)}
 	ul.nav.nav-tabs#salesTab
-		li.active
-			a(href="#sales-pending", data-toggle="tab") #{messageSource.getMessage('profile.sales.pending',[],locale)}
-		li
-			a(href="#sales-approved", data-toggle="tab") #{messageSource.getMessage('profile.sales.approved',[],locale)}
-		li
-			a(href="#sales-declined", data-toggle="tab") #{messageSource.getMessage('profile.sales.declined',[],locale)}
+		li(class=status.toString().equals('PENDING')?'active':'')
+			a(href=context.url('/profile/sales/pending')) #{messageSource.getMessage('profile.sales.pending',[],locale)}
+		li(class=status.toString().equals('APPROVED')?'active':'')
+			a(href=context.url('/profile/sales/approved')) #{messageSource.getMessage('profile.sales.approved',[],locale)}
+		li(class=status.toString().equals('DECLINED')?'active':'')
+			a(href=context.url('/profile/sales/declined')) #{messageSource.getMessage('profile.sales.declined',[],locale)}
 	div.tab-content
-		each status, i in transactions.keySet()
-			div.tab-pane.fade(class=(status.toString().equals('PENDING')?'in active':''), id='sales-'+status.toString().toLowerCase())
-				if transactions.get(status).isEmpty()
-					div.alert.alert-info #{messageSource.getMessage('profile.sales.nothing',[],locale)}
-				else
-					table.table.table-striped
-						thead
-							tr
-								th #{messageSource.getMessage('profile.items.table.picture',[],locale)}
-								th #{messageSource.getMessage('profile.items.table.name',[],locale)}
-								th.text-right #{messageSource.getMessage('profile.items.table.price',[],locale)}
-								//-th #{messageSource.getMessage('profile.items.table.sold',[],locale)}
-								//-th Publicado
-								//-th Ultima Modificación
-								th
-								th
-						tbody
-							each transaction in transactions.get(status)
-								tr(data-id=transaction.id)
+		div.tab-pane.fade.in.active(id='sales-'+status.toString().toLowerCase())
+			if items.numberOfTotalResults == 0
+				div.alert.alert-info #{messageSource.getMessage('profile.sales.nothing',[],locale)}
+			else
+				table.table.table-striped
+					thead
+						tr
+							th(colspan=3)
+								include profile_modifiers
+							th(colspan=1)
+								div.input-group.input-group-sm(style="width:100%")
+									span.input-group-addon
+										i.fa.fa-search
+									input.form-control#query-input(type="text", placeholder="Search", value=filter.termFilter.term.orElse(''))
+					tbody
+						each transaction in items.results
+							tr(data-id=transaction.id)
+								td
+									if transaction.item.images.isEmpty()
+										img.table-img(style="width:40px;height:40px" src="http://placehold.it/40?text=Sin+Imagen")
+									else
+										img.table-img(style="width:40px;height:40px" src="#{context.url('/images/get/'+transaction.item.images.iterator().next().id)}")
+								td #{transaction.item.name}
+								td.text-right $#{transaction.item.price}
+								if transaction.status.toString().equals('PENDING')
 									td
-										if transaction.item.images.isEmpty()
-											img.table-img(style="width:40px;height:40px" src="http://placehold.it/40?text=Sin+Imagen")
-										else
-											img.table-img(style="width:40px;height:40px" src="#{context.url('/images/get/'+transaction.item.images.iterator().next().id)}")
-									td #{transaction.item.name}
-									td.text-right $#{transaction.item.price}
-									if status.toString().equals('PENDING')
-										td
-											button.btn.btn-success.decide-transaction #{messageSource.getMessage('profile.sales.success',[],locale)}
-											button.btn.btn-danger.decide-transaction #{messageSource.getMessage('profile.sales.danger',[],locale)}
-									//-td #{item.sold} #{messageSource.getMessage('profile.items.table.sold',[],locale)}
-									//-td #{item.created}
-									//-td #{item.lastUpdated}
-									//-td
-										a(href="#{context.url('/store/item/'+item.id+'/details')}", title="#{messageSource.getMessage('profile.items.table.edit',[],locale)}") #{messageSource.getMessage('profile.items.table.edit',[],locale)}
+										button.btn.btn-success.decide-transaction #{messageSource.getMessage('profile.sales.success',[],locale)}
+										button.btn.btn-danger.decide-transaction #{messageSource.getMessage('profile.sales.danger',[],locale)}
+								//-td #{item.sold} #{messageSource.getMessage('profile.items.table.sold',[],locale)}
+								//-td #{item.created}
+								//-td #{item.lastUpdated}
+								//-td
+									a(href="#{context.url('/store/item/'+item.id+'/details')}", title="#{messageSource.getMessage('profile.items.table.edit',[],locale)}") #{messageSource.getMessage('profile.items.table.edit',[],locale)}

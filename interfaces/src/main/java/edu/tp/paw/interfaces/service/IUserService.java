@@ -72,6 +72,7 @@ public interface IUserService {
 	public List<Purchase> getApprovedPurchases(final User user);
 	public List<Purchase> getDeclinedPurchases(final User user);
 	
+	public PagedResult<Purchase> getTransactions(final User user, final Filter filter);
 	public List<Purchase> getAllTransactions(final User user);
 	public Map<PurchaseStatus, Set<Purchase>> getGroupedTransactions(final User user);
 	public List<Purchase> getPendingTransactions(final User user);
@@ -88,5 +89,6 @@ public interface IUserService {
 	
 	public boolean approvePurchase(final User user, final Purchase purchase);
 	public boolean declinePurchase(final User user, final Purchase purchase);
+	
 	
 }

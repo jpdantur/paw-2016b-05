@@ -9,6 +9,8 @@ import edu.tp.paw.model.PurchaseStatus;
 import edu.tp.paw.model.Role;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
+import edu.tp.paw.model.filter.Filter;
+import edu.tp.paw.model.filter.PagedResult;
 
 public interface IUserDao {
 
@@ -51,9 +53,12 @@ public interface IUserDao {
 	
 	public boolean purchase(final PurchaseBuilder builder);
 	
+	public PagedResult<Purchase> getTransactions(final User user, final Filter filter);
 	public List<Purchase> getTransactions(final User user);
 	public List<Purchase> getTransactions(final User user, final PurchaseStatus status);
+	
 	public Set<Purchase> getPurchases(final User user);
 	public List<Purchase> getPurchases(final User user, final PurchaseStatus status);
+
 	
 }

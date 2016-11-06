@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IUserService;
+import edu.tp.paw.model.PurchaseStatus;
 import edu.tp.paw.model.StoreItemStatus;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
@@ -223,10 +224,98 @@ public class ProfileController extends BaseController {
 	}
 	
 	@RequestMapping( value = "/sales", method = RequestMethod.GET )
-	public String sales(final Model model, @ModelAttribute("loggedUser") final User user) {
+	public String sales() {
 		
-		model.addAttribute("transactions", userService.getGroupedTransactions(user));
+		return "redirect:/profile/sales/pending";
+		
+	}
+	
+	@RequestMapping( value = "/sales/pending", method = RequestMethod.GET )
+	public String pendingSales(
+			@ModelAttribute("profileItemSearch") final ProfileItemSearchForm form,
+			final Model model,
+			@ModelAttribute("loggedUser") final User user) {
+		
+		final Filter filter =
+				FilterBuilder
+				.create()
+				.query()
+					.text(form.getQuery())
+				.and().purchaseStatus()
+					.status(PurchaseStatus.PENDING)
+				.and().page()
+					.size(form.getPageSize())
+					.take(form.getPageNumber())
+				.and().sort()
+					.by(form.orderBy())
+					.order(form.sortOrder())
+				.end().build();
+		
+		model.addAttribute("items", userService.getTransactions(user, filter));
+		model.addAttribute("filter", filter);
+		model.addAttribute("status", PurchaseStatus.PENDING);
 		model.addAttribute("show", "sales");
+		model.addAttribute("sort", String.format("%s-%s", filter.getOrderFilter().getField().toString(), filter.getOrderFilter().getOrder().toString()));
+		
+		return "profile";
+	}
+	
+	@RequestMapping( value = "/sales/approved", method = RequestMethod.GET )
+	public String approvedSales(
+			@ModelAttribute("profileItemSearch") final ProfileItemSearchForm form,
+			final Model model,
+			@ModelAttribute("loggedUser") final User user) {
+		
+		final Filter filter =
+				FilterBuilder
+				.create()
+				.query()
+					.text(form.getQuery())
+				.and().purchaseStatus()
+					.status(PurchaseStatus.APPROVED)
+				.and().page()
+					.size(form.getPageSize())
+					.take(form.getPageNumber())
+				.and().sort()
+					.by(form.orderBy())
+					.order(form.sortOrder())
+				.end().build();
+		
+		model.addAttribute("items", userService.getTransactions(user, filter));
+		model.addAttribute("filter", filter);
+		model.addAttribute("status", PurchaseStatus.APPROVED);
+		model.addAttribute("show", "sales");
+		model.addAttribute("sort", String.format("%s-%s", filter.getOrderFilter().getField().toString(), filter.getOrderFilter().getOrder().toString()));
+		
+		return "profile";
+	}
+	
+	@RequestMapping( value = "/sales/declined", method = RequestMethod.GET )
+	public String declinedSales(
+			@ModelAttribute("profileItemSearch") final ProfileItemSearchForm form,
+			final Model model,
+			@ModelAttribute("loggedUser") final User user) {
+		
+		final Filter filter =
+				FilterBuilder
+				.create()
+				.query()
+					.text(form.getQuery())
+				.and().purchaseStatus()
+					.status(PurchaseStatus.DECLINED)
+				.and().page()
+					.size(form.getPageSize())
+					.take(form.getPageNumber())
+				.and().sort()
+					.by(form.orderBy())
+					.order(form.sortOrder())
+				.end().build();
+		
+		model.addAttribute("items", userService.getTransactions(user, filter));
+		model.addAttribute("filter", filter);
+		model.addAttribute("status", PurchaseStatus.DECLINED);
+		model.addAttribute("show", "sales");
+		model.addAttribute("sort", String.format("%s-%s", filter.getOrderFilter().getField().toString(), filter.getOrderFilter().getOrder().toString()));
 		
 		return "profile";
 	}

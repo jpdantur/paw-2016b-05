@@ -193,9 +193,6 @@ public class StoreItemHibernateDao implements IStoreItemDao {
 		
 		final OrderFilter orderFilter = filter.getOrderFilter();
 		
-		
-		
-		
 		stringBuilder.insert(0, "select count(*) ");
 		final TypedQuery<Long> countQuery = entityManager.createQuery(stringBuilder.toString(), Long.class);
 		stringBuilder.delete(0, 16);

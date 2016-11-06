@@ -9,69 +9,58 @@ div.tab-pane-content
 			a(href=context.url('/profile/items/paused')) #{messageSource.getMessage('profile.items.paused',[],locale)}
 	div.tab-content
 		div.tab-pane.fade.in.active(id='items-'+status.toString().toLowerCase())
-			table.table.table-striped.table-condensed
-				thead
-					tr
-						th(colspan=3)
-							include profile_modifiers
-						th(colspan=1)
-							div.input-group.input-group-sm(style="width:100%")
-								span.input-group-addon
-									i.fa.fa-search
-								input.form-control#query-input(type="text", placeholder="Search", value=filter.termFilter.term.orElse(''))
-							//- span #{messageSource.getMessage('profile.items.table.picture',[],locale)}
-						//- th
-							span #{messageSource.getMessage('profile.items.table.name',[],locale)}
-						//- th.text-right
-							span #{messageSource.getMessage('profile.items.table.price',[],locale)}
-						//- th
-							span #{messageSource.getMessage('profile.items.table.sold',[],locale)}
-						//-th Publicado
-						//-th Ultima Modificación
-						//- th(colspan=2)
-							
-				tbody
-					each item in items.results
-						tr(data-id=item.id)
-							td
-								a(href=context.url('/store/items/'+item.id))
-									if item.images.isEmpty()
-										img.table-img(style="width:40px;height:40px" src="http://placehold.it/40?text=Sin+Imagen")
+			if items.numberOfTotalResults == 0
+				div.alert.alert-info #{messageSource.getMessage('profile.sales.nothing',[],locale)}
+			else
+				table.table.table-striped.table-condensed
+					thead
+						tr
+							th(colspan=3)
+								include profile_modifiers
+							th(colspan=1)
+								div.input-group.input-group-sm(style="width:100%")
+									span.input-group-addon
+										i.fa.fa-search
+									input.form-control#query-input(type="text", placeholder="Search", value=filter.termFilter.term.orElse(''))
+								
+					tbody
+						each item in items.results
+							tr(data-id=item.id)
+								td
+									a(href=context.url('/store/items/'+item.id))
+										if item.images.isEmpty()
+											img.table-img(style="width:40px;height:40px" src="http://placehold.it/40?text=Sin+Imagen")
+										else
+											img.table-img(style="width:40px;height:40px" src="#{context.url('/images/get/'+item.images.iterator().next().id)}")
+								td
+									a(href=context.url('/store/items/'+item.id)) #{item.name}
+									br
+									span(style="color:#900;font-weight:500") $ #{item.price}
+									span &nbsp;- 
+									span.text-muted #{item.sold} #{messageSource.getMessage('profile.items.table.sold',[],locale)}
+								td(style="font-size:12px")
+									a(href="#{context.url('/store/item/'+item.id+'/details')}", title="#{messageSource.getMessage('profile.items.table.edit',[],locale)}")
+										i.fa.fa-pencil
+										span &nbsp;#{messageSource.getMessage('profile.items.table.edit',[],locale)}
+									br
+									a(href="#{context.url('/store/sell/images/'+item.id)}")
+										i.fa.fa-file-image-o
+										span &nbsp;#{messageSource.getMessage('profile.items.table.edit_images',[],locale)}
+								td
+									if item.status.toString() == 'PAUSED'
+										button.btn.btn-success.btn-xs.toggle-item-state #{messageSource.getMessage('profile.items.table.resume',[],locale)}
 									else
-										img.table-img(style="width:40px;height:40px" src="#{context.url('/images/get/'+item.images.iterator().next().id)}")
-							td
-								a(href=context.url('/store/items/'+item.id)) #{item.name}
-								br
-								span(style="color:#900;font-weight:500") $ #{item.price}
-								span &nbsp;- 
-								span.text-muted #{item.sold} #{messageSource.getMessage('profile.items.table.sold',[],locale)}
-							//- td.text-right $#{item.price}
-							//- td #{item.sold} #{messageSource.getMessage('profile.items.table.sold',[],locale)}
-							//-td #{item.created}
-							//-td #{item.lastUpdated}
-							td(style="font-size:12px")
-								a(href="#{context.url('/store/item/'+item.id+'/details')}", title="#{messageSource.getMessage('profile.items.table.edit',[],locale)}")
-									i.fa.fa-pencil
-									span &nbsp;#{messageSource.getMessage('profile.items.table.edit',[],locale)}
-								br
-								a(href="#{context.url('/store/sell/images/'+item.id)}")
-									i.fa.fa-file-image-o
-									span &nbsp;#{messageSource.getMessage('profile.items.table.edit_images',[],locale)}
-							td
-								if item.status.toString() == 'PAUSED'
-									button.btn.btn-success.btn-xs.toggle-item-state #{messageSource.getMessage('profile.items.table.resume',[],locale)}
-								else
-									button.btn.btn-default.btn-xs.toggle-item-state #{messageSource.getMessage('profile.items.table.pause',[],locale)}
-			ul.pager#filter-page(data-page="#{items.currentPage}", data-last-page="#{items.numberOfTotalResults/items.pageSize}")
-				li.previous(class="#{items.currentPage==0?'disabled':''}")
-					a.filter-page-action(href="#")
-						span &larr;
-						span #{messageSource.getMessage('search.filters.pagination.pagers.first', [], locale)}
-				li.pre(class="#{items.currentPage==0?'disabled':''}")
-					a.filter-page-action(href="#") #{messageSource.getMessage('search.filters.pagination.pagers.previous', [], locale)}
-				li.ne(class="#{items.currentPage==items.numberOfTotalResults/items.pageSize?'disabled':''}")
-					a.filter-page-action(href="#") #{messageSource.getMessage('search.filters.pagination.pagers.next', [], locale)}
-				li.next(class="#{items.currentPage==items.numberOfTotalResults/items.pageSize?'disabled':''}")
-					a.filter-page-action(href="#")
-						span #{messageSource.getMessage('search.filters.pagination.pagers.last', [], locale)}
-						span &rarr;
+										button.btn.btn-default.btn-xs.toggle-item-state #{messageSource.getMessage('profile.items.table.pause',[],locale)}
+				ul.pager#filter-page(data-page="#{items.currentPage}", data-last-page="#{items.numberOfTotalResults/items.pageSize}")
+					li.previous(class="#{items.currentPage==0?'disabled':''}")
+						a.filter-page-action(href="#")
+							span &larr;
+							span #{messageSource.getMessage('search.filters.pagination.pagers.first', [], locale)}
+					li.pre(class="#{items.currentPage==0?'disabled':''}")
+						a.filter-page-action(href="#") #{messageSource.getMessage('search.filters.pagination.pagers.previous', [], locale)}
+					li.ne(class="#{items.currentPage==items.numberOfTotalResults/items.pageSize?'disabled':''}")
+						a.filter-page-action(href="#") #{messageSource.getMessage('search.filters.pagination.pagers.next', [], locale)}
+					li.next(class="#{items.currentPage==items.numberOfTotalResults/items.pageSize?'disabled':''}")
+						a.filter-page-action(href="#")
+							span #{messageSource.getMessage('search.filters.pagination.pagers.last', [], locale)}
+							span &rarr;

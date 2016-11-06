@@ -122,7 +122,8 @@ $ document .ready !->
 
 		window.location.search = $ .param query, true
 
-	buildQuery!
+	if $ \#query-input .length
+		buildQuery!
 
 	$ \#query-input .keyup (e) !->
 		if e.keyCode == 13
