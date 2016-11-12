@@ -348,7 +348,7 @@ public class ProfileController extends BaseController {
 					.order(form.sortOrder())
 				.end().build();
 		
-		model.addAttribute("items", userService.getTransactions(user, filter));
+		model.addAttribute("items", userService.getPurchases(user, filter));
 		model.addAttribute("filter", filter);
 		model.addAttribute("status", PurchaseStatus.PENDING);
 		model.addAttribute("show", "purchases");
@@ -378,7 +378,7 @@ public class ProfileController extends BaseController {
 					.order(form.sortOrder())
 				.end().build();
 		
-		model.addAttribute("items", userService.getTransactions(user, filter));
+		model.addAttribute("items", userService.getPurchases(user, filter));
 		model.addAttribute("filter", filter);
 		model.addAttribute("status", PurchaseStatus.APPROVED);
 		model.addAttribute("show", "purchases");

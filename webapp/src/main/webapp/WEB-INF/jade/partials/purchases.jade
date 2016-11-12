@@ -12,7 +12,7 @@ div.tab-pane-content
 			if items.numberOfTotalResults == 0
 				div.alert.alert-info #{messageSource.getMessage('profile.sales.nothing',[],locale)}
 			else
-				table.table.table-striped
+				table.table.table-striped.table-condensed
 					thead
 						tr
 							th(colspan=3)
@@ -22,15 +22,29 @@ div.tab-pane-content
 									span.input-group-addon
 										i.fa.fa-search
 									input.form-control#query-input(type="text", placeholder="Search", value=filter.termFilter.term.orElse(''))
+						tr
+							th Comprador
+							th(colspan=2) Articulo
+							th Fecha
 					tbody
 						each purchase in items.results
-								tr
-									td
-										if purchase.item.images.isEmpty()
-											img.table-img(style="width:40px;height:40px" src="http://placehold.it/40?text=Sin+Imagen")
-										else
-											img.table-img(style="width:40px;height:40px" src="#{context.url('/images/get/'+purchase.item.images.iterator().next().id)}")
-									td #{purchase.item.name}
-									td #{purchase.item.owner.username}
-									td.text-right $#{purchase.item.price}
-									
+							tr
+								td
+									b #{purchase.item.owner.firstName} #{purchase.item.owner.lastName}
+									br
+									span.text-muted #{purchase.item.owner.username}
+									if purchase.status.toString().equals('APPROVED')
+										| &nbsp;
+										span (#{purchase.item.owner.email})
+								td(style="width:40px")
+									if purchase.item.images.isEmpty()
+										img.table-img(style="width:40px;height:40px" src="http://placehold.it/40?text=Sin+Imagen")
+									else
+										img.table-img(style="width:40px;height:40px" src="#{context.url('/images/get/'+purchase.item.images.iterator().next().id)}")
+								td
+									span #{purchase.item.name}
+									br
+									span(style="color:#900") $#{purchase.item.price}
+								td #{dateFormatter.format(purchase.created)}
+								//- td.text-right $#{purchase.item.price}
+								

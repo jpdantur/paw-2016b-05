@@ -9,35 +9,54 @@ div.tab-pane-content
 			a(href=context.url('/profile/sales/declined')) #{messageSource.getMessage('profile.sales.declined',[],locale)}
 	div.tab-content
 		div.tab-pane.fade.in.active(id='sales-'+status.toString().toLowerCase())
-			if items.numberOfTotalResults == 0
-				div.alert.alert-info #{messageSource.getMessage('profile.sales.nothing',[],locale)}
-			else
-				table.table.table-striped
-					thead
-						tr
-							th(colspan=3)
-								include profile_modifiers
-							th(colspan=1)
-								div.input-group.input-group-sm(style="width:100%")
-									span.input-group-addon
-										i.fa.fa-search
-									input.form-control#query-input(type="text", placeholder="Search", value=filter.termFilter.term.orElse(''))
-					tbody
-						each transaction in items.results
-							tr(data-id=transaction.id)
-								td
-									if transaction.item.images.isEmpty()
-										img.table-img(style="width:40px;height:40px" src="http://placehold.it/40?text=Sin+Imagen")
-									else
-										img.table-img(style="width:40px;height:40px" src="#{context.url('/images/get/'+transaction.item.images.iterator().next().id)}")
-								td #{transaction.item.name}
-								td.text-right $#{transaction.item.price}
-								if transaction.status.toString().equals('PENDING')
-									td
-										button.btn.btn-success.decide-transaction #{messageSource.getMessage('profile.sales.success',[],locale)}
-										button.btn.btn-danger.decide-transaction #{messageSource.getMessage('profile.sales.danger',[],locale)}
-								//-td #{item.sold} #{messageSource.getMessage('profile.items.table.sold',[],locale)}
-								//-td #{item.created}
-								//-td #{item.lastUpdated}
-								//-td
-									a(href="#{context.url('/store/item/'+item.id+'/details')}", title="#{messageSource.getMessage('profile.items.table.edit',[],locale)}") #{messageSource.getMessage('profile.items.table.edit',[],locale)}
+			table.table.table-striped.table-condensed
+				thead
+					tr
+						th(colspan=status.toString().equals('PENDING')?4:3)
+							include profile_modifiers_sales
+						th(colspan=1)
+							div.input-group.input-group-sm(style="width:100%")
+								span.input-group-addon
+									i.fa.fa-search
+								input.form-control#query-input(type="text", placeholder="Search", value=filter.termFilter.term.orElse(''))
+					tr
+						th Comprador
+						th
+						th Articulo
+						th 
+				tbody
+					if items.numberOfTotalResults == 0
+						tr.info
+							td(colspan=status.toString().equals('PENDING')?5:4)
+								div.alert #{messageSource.getMessage('profile.sales.nothing',[],locale)}
+					each transaction in items.results
+						tr(data-id=transaction.id)
+							td
+								b #{transaction.buyer.firstName} #{transaction.buyer.lastName}
+								br
+								span.text-muted #{transaction.buyer.username} (#{transaction.buyer.email})
+							td(style="vertical-align:middle")
+								i.fa.fa-3x.fa-long-arrow-right(class=status.toString().equals('APPROVED')?'text-success':(status.toString().equals('DECLINED')?'text-danger':''))
+							td(style="width:40px")
+								if transaction.item.images.isEmpty()
+									img.table-img(style="width:40px;height:40px" src="http://placehold.it/40?text=Sin+Imagen")
+								else
+									img.table-img(style="width:40px;height:40px" src="#{context.url('/images/get/'+transaction.item.images.iterator().next().id)}")
+							td
+								span #{transaction.item.name}
+								br
+								span(style="color:#900") $#{transaction.item.price}
+							if transaction.status.toString().equals('PENDING')
+								td(style="vertical-align:middle")
+									button.btn.btn-success.decide-transaction.btn-xs
+										i.fa-2x.glyphicon.glyphicon-ok
+									// #{messageSource.getMessage('profile.sales.success',[],locale)}
+									| &nbsp;
+									button.btn.btn-danger.decide-transaction.btn-xs
+										i.fa-2x.glyphicon.glyphicon-remove
+									// #{messageSource.getMessage('profile.sales.danger',[],locale)}
+							//-td #{item.sold} #{messageSource.getMessage('profile.items.table.sold',[],locale)}
+							//-td #{item.created}
+							//-td #{item.lastUpdated}
+							//-td
+								a(href="#{context.url('/store/item/'+item.id+'/details')}", title="#{messageSource.getMessage('profile.items.table.edit',[],locale)}") #{messageSource.getMessage('profile.items.table.edit',[],locale)}

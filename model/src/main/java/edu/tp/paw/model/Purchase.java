@@ -67,6 +67,10 @@ public class Purchase {
 		return status;
 	}
 
+	public Timestamp getCreated() {
+		return created;
+	}
+
 	@Override
 	public int hashCode() {
 		final int prime = 31;

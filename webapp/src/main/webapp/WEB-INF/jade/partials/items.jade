@@ -22,11 +22,14 @@ div.tab-pane-content
 									span.input-group-addon
 										i.fa.fa-search
 									input.form-control#query-input(type="text", placeholder="Search", value=filter.termFilter.term.orElse(''))
-								
+						tr
+							th(colspan=2) Articulo
+							th Editar
+							th Estado
 					tbody
 						each item in items.results
 							tr(data-id=item.id)
-								td
+								td(style="width:40px")
 									a(href=context.url('/store/items/'+item.id))
 										if item.images.isEmpty()
 											img.table-img(style="width:40px;height:40px" src="http://placehold.it/40?text=Sin+Imagen")
