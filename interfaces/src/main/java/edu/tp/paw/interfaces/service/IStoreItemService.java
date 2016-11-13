@@ -47,7 +47,7 @@ public interface IStoreItemService {
 	public List<StoreItem> getUserItems(final User user);
 	public List<StoreItem> getUserItems(final User user, final StoreItemStatus status);
 	
-	public boolean updateItem(final StoreItem item);
+	public StoreItem updateItem(final StoreItem item);
 
 	public Comment addComment(final CommentBuilder builder);
 	
@@ -59,7 +59,10 @@ public interface IStoreItemService {
 	
 	public boolean pauseStoreItem(final StoreItem item);
 	public boolean resumeStoreItem(final StoreItem item);
+	public boolean publishStoreItem(final StoreItem item);
 
 	public PagedResult<StoreItem> getUserItems(final User user, final Filter filter);
+
+	
 	
 }

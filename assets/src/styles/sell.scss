@@ -1,3 +1,15 @@
+@mixin box-shadow($top, $left, $blur, $color, $inset: false) {
+	@if $inset {
+		-webkit-box-shadow:inset $top $left $blur $color;
+		-moz-box-shadow:inset $top $left $blur $color;
+		box-shadow:inset $top $left $blur $color;
+	} @else {
+		-webkit-box-shadow: $top $left $blur $color;
+		-moz-box-shadow: $top $left $blur $color;
+		box-shadow: $top $left $blur $color;
+	}
+}
+
 @mixin border-radius($property) {
 	border-radius: $property;
 	-o-border-radius: $property;
@@ -9,4 +21,10 @@
 	border: 2px dashed #0087F7;
 	@include border-radius(5px);
 	background: white;
+}
+
+#sell-container {
+	background-color: white;
+	@include box-shadow(2px, 1px, 1px, #ccc);
+	min-height: 90%;
 }

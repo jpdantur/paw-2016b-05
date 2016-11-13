@@ -1,0 +1,52 @@
+div.tab-content
+	if success
+		div.alert.alert-success Enhorabuena!, se ha actualizado exitosamente.
+	h1.page-header.text-center #{messageSource.getMessage('edit.headline',[],locale)} `#{item.name}`
+	div.row
+		div.col-sm-11
+			form.form-horizontal(method="POST", action="#{context.url('/store/item/'+item.id+'/details')}")
+				input(type="hidden", name="owner", value="#{loggedUser.id}")
+				div.form-group(class="#{bindingResult.hasFieldErrors('name')?'has-error':''}")
+					label.col-sm-2.control-label(for="name") #{messageSource.getMessage('sell.field.name',[],locale)}
+					div.col-sm-10
+						input.form-control(type="text", id="name", name="name", placeholder="#{messageSource.getMessage('sell.field.name',[],locale)}", value="#{item.name?item.name:''}")
+						+errors(bindingResult, 'name')
+				div.form-group(class="#{bindingResult.hasFieldErrors('description')?'has-error':''}")
+					label.col-sm-2.control-label(for="description") #{messageSource.getMessage('sell.field.description',[],locale)}
+					div.col-sm-10
+						textarea.form-control(name="description", id="description", placeholder="#{messageSource.getMessage('sell.field.description',[],locale)}", value="#{item.description?item.description:''}", rows="12") #{item.description?item.description:''}
+						+errors(bindingResult, 'description')
+				div.form-group(class="#{bindingResult.hasFieldErrors('price')?'has-error':''}")
+					label.col-sm-2.control-label(for="price") #{messageSource.getMessage('sell.field.price',[],locale)}
+					div.col-sm-10
+						div.input-group
+							span.input-group-addon $
+							input.form-control(type="number", id="price", name="price", placeholder="#{messageSource.getMessage('sell.field.price',[],locale)}", min="0", step="0.01", value="!{item.price}")
+						+errors(bindingResult, 'price')
+				div.form-group
+					label.col-sm-2.control-label(for="category") #{messageSource.getMessage('sell.field.category',[],locale)}
+					div.col-sm-10
+						mixin categories(categories)
+							each category in categories
+								if item && item.categoryId == item.category.id
+									option(value="#{category.id}", selected) #{category.name}
+								else	
+									option(value="#{category.id}") #{category.name}
+						select.form-control(name="categoryId", id="category")
+							+categories(categories)
+						+errors(bindingResult, 'category')
+				div.form-group(class="#{bindingResult.hasFieldErrors('used')?'has-error':''}")
+					label.col-sm-2.control-label(for="used") #{messageSource.getMessage('sell.field.status.title',[],locale)}
+					div.col-sm-10
+						div.btn-group(data-toggle="buttons")
+							label.btn.btn-primary(class="#{item.used?'active':''}")
+								input(type="radio", name="used", id="used", value="1", checked=item.used)
+								span #{messageSource.getMessage('sell.field.status.used',[],locale)}
+							label.btn.btn-primary(class="#{item.used?'':'active'}")
+								input(type="radio", name="used", value="0", checked=!item.used)
+								span #{messageSource.getMessage('sell.field.status.new',[],locale)}
+						+errors(bindingResult, 'used')
+				input(type="hidden", name="itemStatus", value=item.status.toString())
+				div.form-group
+					div.col-sm-4.col-sm-offset-8
+						button.btn.btn-success.btn-block(type="submit") #{messageSource.getMessage('edit.action',[],locale)}

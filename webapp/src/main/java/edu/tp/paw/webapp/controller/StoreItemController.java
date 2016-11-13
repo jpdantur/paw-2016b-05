@@ -12,12 +12,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import edu.tp.paw.interfaces.service.ICategoryService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IStoreService;
-import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.CommentBuilder;
 import edu.tp.paw.model.PurchaseBuilder;
@@ -37,7 +37,6 @@ public class StoreItemController extends BaseController {
 	@Autowired private IStoreService storeService;
 	@Autowired private IStoreItemService itemService;
 	@Autowired private ICategoryService categoryService;
-	@Autowired private IUserService userService;
 	
 	@RequestMapping( value = "/{itemId}/details", method = RequestMethod.GET)
 	public String details(
@@ -53,9 +52,30 @@ public class StoreItemController extends BaseController {
 			throw new StoreItemNotFoundException();
 		}
 		
+		model.addAttribute("show", "details");
 		model.addAttribute("bindingResult", result);
 		model.addAttribute("item", item);
 		model.addAttribute("categories", categoryService.getCategories());
+		
+		return "edit";
+	}
+	
+	@RequestMapping( value = "/{itemId}/images", method = RequestMethod.GET)
+	public String images(
+			@PathVariable("itemId") final long id,
+			@RequestParam("s") final boolean success,
+			final Model model) {
+		
+		final StoreItem item = itemService.findById(id);
+		
+		if (item == null) {
+			logger.info("item with id {} was not found", id);
+			throw new StoreItemNotFoundException();
+		}
+		
+		model.addAttribute("show", "images");
+		model.addAttribute("item", item);
+		model.addAttribute("success", success);
 		
 		return "edit";
 	}
@@ -67,6 +87,15 @@ public class StoreItemController extends BaseController {
 			final Model model,
 			@ModelAttribute("loggedUser") final User user,
 			@PathVariable("itemId") final long id) {
+		
+		boolean success = false;
+		
+		final StoreItem originalItem = itemService.findById(id);
+		
+		if (originalItem == null) {
+			logger.info("item with id {} was not found", id);
+			throw new StoreItemNotFoundException();
+		}
 		
 		if (!result.hasErrors()) {
 			
@@ -80,17 +109,23 @@ public class StoreItemController extends BaseController {
 					.category(category)
 					.owner(user)
 					.id(id)
+					.created(originalItem.getCreated())
+					.status(form.getStatus())
 					.build();
 			
 			itemService.updateItem(item);
 			
-			return "redirect:/profile/details#items";
+			model.addAttribute("success", true);
+			model.addAttribute("item", item);
+			success = true;
 			
 		}
-		
+		model.addAttribute("show", "details");
 		model.addAttribute("categories", categoryService.getCategories());
 		model.addAttribute("bindingResult", result);
-		model.addAttribute("item", form);
+		if (!success) {
+			model.addAttribute("item", originalItem);
+		}
 		
 		return "edit";
 	}
@@ -178,6 +213,27 @@ public class StoreItemController extends BaseController {
 		}
 		
 		if (itemService.pauseStoreItem(item)) {
+			return "{\"err\":0 }";
+		}
+		
+		
+		return "{\"err\": 1}";
+	}
+	
+	@RequestMapping( value = "/{itemId}/publish", method = RequestMethod.POST, produces = "application/json; charset=utf-8" )
+	@ResponseBody
+	public String publishItem(
+			@PathVariable("itemId") final long id,
+			@ModelAttribute("loggedUser") final User user
+			) {
+		
+		final StoreItem item = itemService.findById(id);
+		
+		if (item == null) {
+			return "{\"err\":3 }";
+		}
+		
+		if (itemService.publishStoreItem(item)) {
 			return "{\"err\":0 }";
 		}
 		

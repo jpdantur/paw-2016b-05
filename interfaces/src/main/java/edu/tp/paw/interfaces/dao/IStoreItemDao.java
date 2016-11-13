@@ -41,7 +41,7 @@ public interface IStoreItemDao {
 	public List<StoreItem> getUserItems(final User user);
 	public List<StoreItem> getUserItems(final User user, final StoreItemStatus status);
 	
-	public boolean updateItem(final StoreItem item);
+	public StoreItem updateItem(final StoreItem item);
 	
 	public int getNumberOfItems();
 	public int getNumberOfItems(final Filter filter);

@@ -5,6 +5,7 @@ public class StoreItemStatusFilter {
 	public enum ItemStatusFilter {
 		ACTIVE,
 		PAUSED,
+		UNPUBLISHED,
 		ANY
 	};
 	

@@ -1,0 +1,51 @@
+.dropzone {
+  border: 2px dashed #0087F7;
+  border-radius: 5px;
+  -o-border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  background: white; }
+
+.tab-pane-content {
+  position: relative; }
+
+h1 {
+  border-bottom: 1px solid #ddd; }
+  h1.page-header {
+    margin-top: 0; }
+
+.tabs-left {
+  border-bottom: none;
+  padding-top: 2px;
+  border-right: 1px solid #ddd; }
+  .tabs-left > li {
+    float: none;
+    margin-bottom: 2px;
+    margin-right: -1px; }
+    .tabs-left > li > a {
+      border-radius: 4px 0 0 4px;
+      margin-right: 0;
+      display: block; }
+    .tabs-left > li.active > a,
+    .tabs-left > li.active > a:hover,
+    .tabs-left > li.active > a:focus {
+      border-bottom-color: #ddd;
+      border-right-color: transparent; }
+
+#edit-container {
+  background-color: white;
+  -webkit-box-shadow: 2px 1px 1px #ccc;
+  -moz-box-shadow: 2px 1px 1px #ccc;
+  box-shadow: 2px 1px 1px #ccc;
+  padding-top: 30px;
+  min-height: 90%; }
+
+#myTab li.separator {
+  height: 40px; }
+
+#myTab > li.static > a:hover {
+  border-color: #204d74; }
+
+#myTab > li.static > a:hover, #myTab > li.static > a:focus {
+  text-decoration: none;
+  background-color: #286090; }

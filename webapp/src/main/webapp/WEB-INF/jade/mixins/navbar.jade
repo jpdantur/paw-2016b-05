@@ -56,12 +56,26 @@ mixin navbar(search)
 									span.caret
 								ul.dropdown-menu
 									li
-										a(href="#{context.url('/profile/details')}") #{messageSource.getMessage('index.user.profile',[],locale)}
+										a(href="#{context.url('/profile/details')}")
+											i.fa.fa-user
+											span &nbsp;#{messageSource.getMessage('index.user.profile',[],locale)}
 									li
-										a(href="#{context.url('/profile/details#items')}") #{messageSource.getMessage('index.user.items',[],locale)}
+										a(href="#{context.url('/profile/items')}")
+											i.fa.fa-list
+											span &nbsp;#{messageSource.getMessage('index.user.items',[],locale)}
+									li
+										a(href="#{context.url('/profile/sales')}")
+											i.fa.fa-suitcase
+											span &nbsp;Mis Ventas
+									li
+										a(href="#{context.url('/profile/purchases')}")
+											i.fa.fa-shopping-bag
+											span &nbsp;Mis Compras
 									li.separator
 									li
-										a(href="#{context.url('/auth/logout')}") #{messageSource.getMessage('index.user.logout',[],locale)}
+										a(href="#{context.url('/auth/logout')}")
+											i.fa.fa-sign-out
+											span &nbsp;#{messageSource.getMessage('index.user.logout',[],locale)}
 				if search
 					form.navbar-form#navbar-search(action="#{context.url('/store/items/all')}")
 						div.form-group(style="width:50%")

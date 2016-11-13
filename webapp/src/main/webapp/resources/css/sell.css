@@ -5,3 +5,10 @@
   -moz-border-radius: 5px;
   -webkit-border-radius: 5px;
   background: white; }
+
+#sell-container {
+  background-color: white;
+  -webkit-box-shadow: 2px 1px 1px #ccc;
+  -moz-box-shadow: 2px 1px 1px #ccc;
+  box-shadow: 2px 1px 1px #ccc;
+  min-height: 90%; }

@@ -1,6 +1,5 @@
 package edu.tp.paw.persistence;
 
-import java.util.List;
 import java.util.Set;
 
 import javax.persistence.EntityManager;

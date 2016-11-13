@@ -248,13 +248,13 @@ public class StoreItemHibernateDao implements IStoreItemDao {
 	}
 
 	@Override
-	public boolean updateItem(final StoreItem item) {
+	public StoreItem updateItem(final StoreItem item) {
 		
 		logger.debug("merging {}", item);
 		
 		entityManager.merge(item);
 		
-		return true;
+		return item;
 		
 	}
 

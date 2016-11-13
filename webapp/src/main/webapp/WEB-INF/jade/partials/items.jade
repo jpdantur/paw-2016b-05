@@ -7,6 +7,8 @@ div.tab-pane-content
 			a(href=context.url('/profile/items/active')) #{messageSource.getMessage('profile.items.active',[],locale)}
 		li(class=status.toString().equals('PAUSED')?'active':'')
 			a(href=context.url('/profile/items/paused')) #{messageSource.getMessage('profile.items.paused',[],locale)}
+		li(class=status.toString().equals('UNPUBLISHED')?'active':'')
+			a(href=context.url('/profile/items/drafts')) Borradores
 	div.tab-content
 		div.tab-pane.fade.in.active(id='items-'+status.toString().toLowerCase())
 			if items.numberOfTotalResults == 0
@@ -39,21 +41,20 @@ div.tab-pane-content
 									a(href=context.url('/store/items/'+item.id)) #{item.name}
 									br
 									span(style="color:#900;font-weight:500") $ #{item.price}
-									span &nbsp;- 
-									span.text-muted #{item.sold} #{messageSource.getMessage('profile.items.table.sold',[],locale)}
-								td(style="font-size:12px")
+									if !item.status.toString().equals('UNPUBLISHED')
+										span &nbsp;- 
+										span.text-muted #{item.sold} #{messageSource.getMessage('profile.items.table.sold',[],locale)}
+								td(style="font-size:12px;vertical-align:middle")
 									a(href="#{context.url('/store/item/'+item.id+'/details')}", title="#{messageSource.getMessage('profile.items.table.edit',[],locale)}")
 										i.fa.fa-pencil
 										span &nbsp;#{messageSource.getMessage('profile.items.table.edit',[],locale)}
-									br
-									a(href="#{context.url('/store/sell/images/'+item.id)}")
-										i.fa.fa-file-image-o
-										span &nbsp;#{messageSource.getMessage('profile.items.table.edit_images',[],locale)}
-								td
+								td(style="vertical-align:middle")
 									if item.status.toString() == 'PAUSED'
 										button.btn.btn-success.btn-xs.toggle-item-state
 											i.fa.fa-play
 											span &nbsp;#{messageSource.getMessage('profile.items.table.resume',[],locale)}
+									else if item.status.toString() == 'UNPUBLISHED'
+										button.btn.btn-success.btn-xs.publish Publicar
 									else
 										button.btn.btn-default.btn-xs.toggle-item-state
 											i.fa.fa-pause

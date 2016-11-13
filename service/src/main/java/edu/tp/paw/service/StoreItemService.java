@@ -192,7 +192,7 @@ public class StoreItemService implements IStoreItemService {
 	}
 
 	@Override
-	public boolean updateItem(final StoreItem item) {
+	public StoreItem updateItem(final StoreItem item) {
 		
 		if (item == null) {
 			throw new IllegalArgumentException("item cant be null");
@@ -267,6 +267,11 @@ public class StoreItemService implements IStoreItemService {
 
 	@Override
 	public boolean resumeStoreItem(final StoreItem item) {
+		return storeItemDao.updateItemStatus(item, StoreItemStatus.ACTIVE);
+	}
+	
+	@Override
+	public boolean publishStoreItem(final StoreItem item) {
 		return storeItemDao.updateItemStatus(item, StoreItemStatus.ACTIVE);
 	}
 	

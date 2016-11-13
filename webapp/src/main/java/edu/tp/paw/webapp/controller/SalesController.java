@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import edu.tp.paw.interfaces.service.IPurchaseService;
 import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.Purchase;
-import edu.tp.paw.model.PurchaseBuilder;
-import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.User;
 
 @Controller

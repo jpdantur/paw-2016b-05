@@ -13,7 +13,6 @@ import org.springframework.security.web.FilterInvocation;
 import org.springframework.stereotype.Component;
 
 import edu.tp.paw.interfaces.service.IStoreItemService;
-import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.webapp.exceptions.StoreItemNotFoundException;
 
@@ -25,7 +24,6 @@ public class ItemOwnerBasedVoter implements AccessDecisionVoter<FilterInvocation
 	private final static Logger logger = LoggerFactory.getLogger(ItemOwnerBasedVoter.class); 
 	
 	@Autowired private IStoreItemService itemService;
-	@Autowired private IUserService userService;
 	
 	@Override
 	public boolean supports(final ConfigAttribute attribute) {

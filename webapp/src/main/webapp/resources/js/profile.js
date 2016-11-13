@@ -96,6 +96,37 @@ $(document).ready(function(){
       }
     });
   });
+  $('.publish').click(function(e){
+    var $self, $row, isActive;
+    e.preventDefault();
+    $self = $(this);
+    $row = $self.closest('tr');
+    isActive = $self.hasClass('btn-default');
+    bootbox.confirm("Esta seguro que desea publicar este articulo", function(r){
+      if (r) {
+        $.ajax({
+          url: baseUrl + "/store/item/" + $row.data('id') + "/publish",
+          type: 'POST',
+          success: function(data){
+            if (data.err) {
+              $.notify({
+                message: 'Mensaje de error que le falta i18n'
+              }, {
+                type: 'danger'
+              });
+            } else {
+              $.notify({
+                message: 'Mensaje de exito que le falta i18n'
+              }, {
+                type: 'success'
+              });
+              $self.toggleClass('publish').prop('disabled', 'disabled').text('Publicado');
+            }
+          }
+        });
+      }
+    });
+  });
   query = {};
   buildQuery = function(){
     var $filterOption, filterOption;

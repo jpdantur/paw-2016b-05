@@ -101,6 +101,32 @@ $ document .ready !->
 
 							$self .text if isActive then 'Reanudar Publicación' else 'Pausar Publicación'
 
+	$ \.publish .click (e) !->
+		e.preventDefault!
+
+		$self = $ this
+		$row = $self .closest \tr
+
+		isActive = $self .hasClass \btn-default
+
+		bootbox.confirm "Esta seguro que desea publicar este articulo", (r) !->
+			if r
+				$ .ajax do
+					url: "#{baseUrl}/store/item/#{$row.data('id')}/publish"
+					type: 'POST'
+					success: (data) !->
+						if data.err
+							$.notify {
+								message: 'Mensaje de error que le falta i18n'
+							} , do
+								type: 'danger'
+						else
+							$.notify {
+								message: 'Mensaje de exito que le falta i18n'
+							} , do
+								type: 'success'
+							$self .toggleClass 'publish' .prop 'disabled', 'disabled' .text \Publicado
+
 	query = {}
 
 	buildQuery = !->

@@ -8,6 +8,8 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
+import edu.tp.paw.model.StoreItemStatus;
+
 public class SellForm {
 
 	@Size(min = 4, max = 100, message = "{Size.SellForm.name}")
@@ -25,6 +27,8 @@ public class SellForm {
 	private long categoryId;
 	
 	private boolean used;
+	
+	private String itemStatus = "ACTIVE";
 
 	public long getCategoryId() {
 		return categoryId;
@@ -68,6 +72,18 @@ public class SellForm {
 
 	public void setUsed(boolean used) {
 		this.used = used;
+	}
+
+	public String getItemStatus() {
+		return itemStatus;
+	}
+	
+	public StoreItemStatus getStatus() {
+		return StoreItemStatus.valueOf(itemStatus);
+	}
+
+	public void setItemStatus(String status) {
+		this.itemStatus = status;
 	}
 
 	@Override

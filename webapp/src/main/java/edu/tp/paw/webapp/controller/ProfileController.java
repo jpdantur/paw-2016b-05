@@ -12,10 +12,8 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
-import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.PurchaseStatus;
-import edu.tp.paw.model.StoreItemStatus;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
 import edu.tp.paw.model.filter.Filter;
@@ -33,7 +31,6 @@ public class ProfileController extends BaseController {
 
 	private static final Logger logger = LoggerFactory.getLogger(ProfileController.class);
 	
-	@Autowired private IStoreItemService itemService;
 	@Autowired private IUserService userService;
 	
 	@Autowired private ProfileFormValidator validator;
@@ -210,6 +207,36 @@ public class ProfileController extends BaseController {
 		model.addAttribute("items", userService.getPublishedItems(user, filter));
 		model.addAttribute("filter", filter);
 		model.addAttribute("status", ItemStatusFilter.PAUSED);
+		model.addAttribute("show", "items");
+		model.addAttribute("sort", String.format("%s-%s", filter.getOrderFilter().getField().toString(), filter.getOrderFilter().getOrder().toString()));
+		
+		return "profile";
+	}
+	
+	@RequestMapping( value = "/items/drafts", method = RequestMethod.GET )
+	public String draftItems(
+			@ModelAttribute("profileItemSearch") final ProfileItemSearchForm form,
+			final Model model,
+			@ModelAttribute("loggedUser") final User user) {
+		
+		final Filter filter =
+				FilterBuilder
+				.create()
+				.query()
+					.text(form.getQuery())
+				.and().status()
+					.status(ItemStatusFilter.UNPUBLISHED)
+				.and().page()
+					.size(form.getPageSize())
+					.take(form.getPageNumber())
+				.and().sort()
+					.by(form.orderBy())
+					.order(form.sortOrder())
+				.end().build();
+		
+		model.addAttribute("items", userService.getPublishedItems(user, filter));
+		model.addAttribute("filter", filter);
+		model.addAttribute("status", ItemStatusFilter.UNPUBLISHED);
 		model.addAttribute("show", "items");
 		model.addAttribute("sort", String.format("%s-%s", filter.getOrderFilter().getField().toString(), filter.getOrderFilter().getOrder().toString()));
 		

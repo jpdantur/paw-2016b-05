@@ -1,6 +1,5 @@
 package edu.tp.paw.webapp.controller;
 
-import java.util.List;
 import java.util.Set;
 
 import javax.validation.Valid;
