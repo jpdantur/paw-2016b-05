@@ -11,7 +11,7 @@ public class CommentBuilder implements IBuilder<Comment> {
 	
 	private Long id;
 	private StoreItem item;
-	private Timestamp created = new Timestamp( (new Date()).getTime() );
+	private Date created = new Date();
 
 	public CommentBuilder(final User user, final String content, final float rating) {
 		super();
@@ -51,7 +51,7 @@ public class CommentBuilder implements IBuilder<Comment> {
 		return content;
 	}
 
-	public Timestamp getCreated() {
+	public Date getCreated() {
 		return created;
 	}
 	

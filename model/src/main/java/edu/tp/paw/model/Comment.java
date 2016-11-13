@@ -1,8 +1,7 @@
 package edu.tp.paw.model;
 
-import java.sql.Timestamp;
+import java.util.Date;
 
-import javax.annotation.Generated;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -38,7 +37,7 @@ public class Comment {
 	private String content;
 	
 	@Column(insertable = false, updatable = false, nullable = false)
-	private Timestamp created;
+	private Date created;
 	
 	private float rating;
 	
@@ -64,7 +63,7 @@ public class Comment {
 	public String getContent() {
 		return content;
 	}
-	public Timestamp getCreated() {
+	public Date getCreated() {
 		return created;
 	}
 	public long getId() {

@@ -1,7 +1,6 @@
 package edu.tp.paw.model;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -17,8 +16,8 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 	private final boolean used;
 	
 	// Optional parameters
-	private Timestamp created = new Timestamp( (new Date()).getTime() );
-	private Timestamp lastUpdated = new Timestamp( (new Date()).getTime() );
+	private Date created = new Date();
+	private Date lastUpdated = new Date();
 	private int sold = 0;
 	private Long id;
 	private User owner;
@@ -75,7 +74,7 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 	 * @param created Timestamp when #{this} was created
 	 * @return #{this}
 	 */
-	public StoreItemBuilder created(Timestamp created) {
+	public StoreItemBuilder created(final Date created) {
 		this.created = created;
 		return this;
 	}
@@ -85,7 +84,7 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 	 * @param lastUpdated Timestamp when #{this} was last updated
 	 * @return #{this}
 	 */
-	public StoreItemBuilder lastUpdated(Timestamp lastUpdated) {
+	public StoreItemBuilder lastUpdated(final Date lastUpdated) {
 		this.lastUpdated = lastUpdated;
 		return this;
 	}
@@ -95,12 +94,12 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 	 * @param sold the value to set
 	 * @return #{this}
 	 */
-	public StoreItemBuilder sold(int sold) {
+	public StoreItemBuilder sold(final int sold) {
 		this.sold = sold;
 		return this;
 	}
 	
-	public StoreItemBuilder id(long id) {
+	public StoreItemBuilder id(final long id) {
 		this.id = id;
 		return this;
 	}
@@ -132,11 +131,11 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 		return price;
 	}
 
-	public Timestamp getCreated() {
+	public Date getCreated() {
 		return created;
 	}
 
-	public Timestamp getLastUpdated() {
+	public Date getLastUpdated() {
 		return lastUpdated;
 	}
 

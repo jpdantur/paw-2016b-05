@@ -1,7 +1,6 @@
 package edu.tp.paw.model;
 
-import java.sql.Timestamp;
-import java.util.List;
+import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
@@ -20,7 +19,6 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.Formula;
 
 @Entity
 @Table(name="store_categories")
@@ -42,9 +40,9 @@ public class Category {
 	private Set<Category> children;
 	
 	@Column( insertable = false, updatable = false )
-	private Timestamp created;
+	private Date created;
 	@Column( name =  "last_updated", insertable = false, updatable = true )
-	private Timestamp lastUpdated;
+	private Date lastUpdated;
 	
 	/* package */ Category() {
 		
@@ -94,12 +92,12 @@ public class Category {
 		return children;
 	}
 
-	public Timestamp getCreated() {
+	public Date getCreated() {
 		return created;
 	}
 
 
-	public Timestamp getLastUpdated() {
+	public Date getLastUpdated() {
 		return lastUpdated;
 	}
 

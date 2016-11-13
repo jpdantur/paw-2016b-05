@@ -1,8 +1,7 @@
 package edu.tp.paw.model;
 
 import java.math.BigDecimal;
-import java.sql.Timestamp;
-import java.util.List;
+import java.util.Date;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -58,9 +57,9 @@ public class StoreItem {
 	private long sold;
 	
 	@Column(insertable = false, updatable = false)
-	private Timestamp created;
+	private Date created;
 	@Column(name = "last_updated", insertable = false, updatable = true)
-	private Timestamp lastUpdated;
+	private Date lastUpdated;
 	
 	@OneToMany( fetch = FetchType.EAGER,  mappedBy = "item")
 	@Fetch(FetchMode.JOIN)
@@ -127,13 +126,13 @@ public class StoreItem {
 
 
 
-	public Timestamp getCreated() {
+	public Date getCreated() {
 		return created;
 	}
 
 
 
-	public Timestamp getLastUpdated() {
+	public Date getLastUpdated() {
 		return lastUpdated;
 	}
 	

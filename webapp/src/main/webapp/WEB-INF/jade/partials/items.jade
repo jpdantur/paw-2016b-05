@@ -51,9 +51,13 @@ div.tab-pane-content
 										span &nbsp;#{messageSource.getMessage('profile.items.table.edit_images',[],locale)}
 								td
 									if item.status.toString() == 'PAUSED'
-										button.btn.btn-success.btn-xs.toggle-item-state #{messageSource.getMessage('profile.items.table.resume',[],locale)}
+										button.btn.btn-success.btn-xs.toggle-item-state
+											i.fa.fa-play
+											span &nbsp;#{messageSource.getMessage('profile.items.table.resume',[],locale)}
 									else
-										button.btn.btn-default.btn-xs.toggle-item-state #{messageSource.getMessage('profile.items.table.pause',[],locale)}
+										button.btn.btn-default.btn-xs.toggle-item-state
+											i.fa.fa-pause
+											span &nbsp;#{messageSource.getMessage('profile.items.table.pause',[],locale)}
 				ul.pager#filter-page(data-page="#{items.currentPage}", data-last-page="#{items.numberOfTotalResults/items.pageSize}")
 					li.previous(class="#{items.currentPage==0?'disabled':''}")
 						a.filter-page-action(href="#")

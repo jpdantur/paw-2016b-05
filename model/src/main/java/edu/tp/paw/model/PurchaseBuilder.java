@@ -1,5 +1,7 @@
 package edu.tp.paw.model;
 
+import java.util.Date;
+
 public class PurchaseBuilder  implements IBuilder<Purchase> {
 
 	private final User buyer;
@@ -7,6 +9,8 @@ public class PurchaseBuilder  implements IBuilder<Purchase> {
 	
 	private PurchaseStatus status = PurchaseStatus.PENDING;
 	private Long id;
+	
+	private Date created = new Date();
 	
 	public PurchaseBuilder(final User user, final StoreItem item) {
 		this.buyer = user;
@@ -20,6 +24,11 @@ public class PurchaseBuilder  implements IBuilder<Purchase> {
 	
 	public PurchaseBuilder id(final long id) {
 		this.id = id;
+		return this;
+	}
+	
+	public PurchaseBuilder created(final Date created) {
+		this.created = created;
 		return this;
 	}
 	
@@ -37,6 +46,10 @@ public class PurchaseBuilder  implements IBuilder<Purchase> {
 
 	public Long getId() {
 		return id;
+	}
+	
+	public Date getCreated() {
+		return created;
 	}
 
 	@Override

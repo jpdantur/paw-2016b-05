@@ -1,6 +1,6 @@
 package edu.tp.paw.model;
 
-import java.sql.Timestamp;
+import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -38,7 +38,7 @@ public class Purchase {
 	private PurchaseStatus status;
 
 	@Column( name = "created", insertable = false, updatable = false )
-	private Timestamp created;
+	private Date created;
 	
 	/* protected */ Purchase() {
 		// hibernate, duh!
@@ -49,6 +49,7 @@ public class Purchase {
 		this.buyer = builder.getBuyer();
 		this.item = builder.getItem();
 		this.status = builder.getStatus();
+		this.created = builder.getCreated();
 	}
 	
 	public Long getId() {
@@ -67,7 +68,7 @@ public class Purchase {
 		return status;
 	}
 
-	public Timestamp getCreated() {
+	public Date getCreated() {
 		return created;
 	}
 
