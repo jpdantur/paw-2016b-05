@@ -49,7 +49,7 @@ mixin navbar(search)
 									if userFavourites.numberOfTotalResults >= 8
 										li.separator
 										li.text-center
-											a(href="#") Ver Todos
+											a(href=context.url('/profile/favourites')) Ver Todos
 							li
 								a.dropdown-toggle(href="#", data-toggle="dropdown")
 									span #{loggedUser.firstName} #{loggedUser.lastName}&nbsp;

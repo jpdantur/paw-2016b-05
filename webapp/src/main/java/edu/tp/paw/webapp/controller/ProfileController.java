@@ -425,13 +425,31 @@ public class ProfileController extends BaseController {
 		return "profile";
 	}
 	
-//	@RequestMapping( value = "/purchases", method = RequestMethod.GET )
-//	public String purchases(final Model model, @ModelAttribute("loggedUser") final User user) {
-//		
-//		model.addAttribute("purchases", userService.getGroupedPurchases(user));
-//		model.addAttribute("show", "purchases");
-//		
-//		return "profile";
-//	}
+	@RequestMapping( value = "/favourites", method = RequestMethod.GET )
+	public String favourites(
+			@ModelAttribute("profileItemSearch") final ProfileItemSearchForm form,
+			final Model model,
+			@ModelAttribute("loggedUser") final User user) {
+		
+		final Filter filter =
+				FilterBuilder
+				.create()
+				.query()
+					.text(form.getQuery())
+				.and().page()
+					.size(form.getPageSize())
+					.take(form.getPageNumber())
+				.and().sort()
+					.by(form.orderBy())
+					.order(form.sortOrder())
+				.end().build();
+		
+		model.addAttribute("items", userService.getFavourites(user, filter));
+		model.addAttribute("filter", filter);
+		model.addAttribute("show", "favourites");
+		model.addAttribute("sort", String.format("%s-%s", filter.getOrderFilter().getField().toString(), filter.getOrderFilter().getOrder().toString()));
+		
+		return "profile";
+	}
 	
 }

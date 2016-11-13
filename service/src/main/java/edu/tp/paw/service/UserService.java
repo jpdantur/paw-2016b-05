@@ -180,7 +180,7 @@ public class UserService implements IUserService {
 			throw new IllegalArgumentException("user must exist");
 		}
 		
-		return  favouriteService.getFavouritesForUser(user, filter);
+		return favouriteService.getFavouritesForUser(user, filter);
 	}
 
 	@Override

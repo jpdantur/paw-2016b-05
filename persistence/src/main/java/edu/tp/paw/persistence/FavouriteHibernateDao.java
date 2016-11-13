@@ -15,8 +15,11 @@ import edu.tp.paw.model.Favourite;
 import edu.tp.paw.model.FavouriteBuilder;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.filter.Filter;
+import edu.tp.paw.model.filter.OrderFilter;
+import edu.tp.paw.model.filter.OrderFilter.SortField;
 import edu.tp.paw.model.filter.PageFilter;
 import edu.tp.paw.model.filter.PagedResult;
+import edu.tp.paw.model.filter.TermFilter;
 
 @Repository
 public class FavouriteHibernateDao implements IFavouriteDao {
@@ -38,24 +41,47 @@ public class FavouriteHibernateDao implements IFavouriteDao {
 	@Override
 	public PagedResult<Favourite> getFavouritesForUser(final User user, final Filter filter) {
 		
-		final TypedQuery<Favourite> query = entityManager.createQuery("from Favourite f where f.user=:user order by created", Favourite.class);
-		final TypedQuery<Long> countQuery = entityManager.createQuery("select count(*) from Favourite f where f.user=:user", Long.class);
+		final StringBuilder stringBuilder = new StringBuilder("from Favourite as f where f.user=:user");
 		
-		final PageFilter pageFilter = filter.getPageFilter();
-		query.setMaxResults(pageFilter.getPageSize());
-		query.setFirstResult(pageFilter.getPageNumber()*pageFilter.getPageSize());
+		final TermFilter termFilter = filter.getTermFilter();
+		if (termFilter.getTerm().isPresent()) {
+			stringBuilder.append(" and lower(f.item.name) like concat('%', lower(:term), '%')");
+		}
+		
+		stringBuilder.insert(0, "select count(*) ");
+		final TypedQuery<Long> countQuery = entityManager.createQuery(stringBuilder.toString(), Long.class);
+		stringBuilder.delete(0, 16);
+		
+		final OrderFilter orderFilter = filter.getOrderFilter();
+		if (orderFilter.getField() == SortField.CREATED) {
+			stringBuilder.append(String.format(" order by f.%s ", orderFilter.getField().toString().toLowerCase()));
+		} else {
+			stringBuilder.append(String.format(" order by f.item.%s ", orderFilter.getField().toString().toLowerCase()));
+		}
+		stringBuilder.append(String.format(" %s ", orderFilter.getOrder().toString()));
+		final TypedQuery<Favourite> query = entityManager.createQuery(stringBuilder.toString(), Favourite.class);
 		
 		query.setParameter("user", user);
 		countQuery.setParameter("user", user);
 		
-		final PagedResult<Favourite> pagedResult = new PagedResult<>();
-		final List<Favourite> resultList = query.getResultList();
+		if (termFilter.getTerm().isPresent()) {
+			query.setParameter("term", termFilter.getTerm().get().toLowerCase().replace("%", "\\%"));
+			countQuery.setParameter("term", termFilter.getTerm().get().toLowerCase().replace("%", "\\%"));
+		}
 		
-		pagedResult.setPageSize(pageFilter.getPageSize());
-		pagedResult.setCurrentPage(pageFilter.getPageNumber());
-		pagedResult.setNumberOfAvailableResults(resultList.size());
+		final PageFilter pageFilter = filter.getPageFilter();
+		
+		query.setFirstResult(pageFilter.getPageNumber()*pageFilter.getPageSize());
+		query.setMaxResults(pageFilter.getPageSize());
+		
+		final PagedResult<Favourite> pagedResult = new PagedResult<>();
+		final List<Favourite> results = query.getResultList();
+		
+		pagedResult.setNumberOfAvailableResults(results.size());
 		pagedResult.setNumberOfTotalResults(countQuery.getSingleResult().intValue());
-		pagedResult.setResults(resultList);
+		pagedResult.setCurrentPage(pageFilter.getPageNumber());
+		pagedResult.setResults(results);
+		pagedResult.setPageSize(pageFilter.getPageSize());
 		
 		return pagedResult;
 	}
