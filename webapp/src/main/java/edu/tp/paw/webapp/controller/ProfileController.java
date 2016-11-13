@@ -125,14 +125,7 @@ public class ProfileController extends BaseController {
 		return "profile";
 	}
 	
-	@RequestMapping( value = "/items", method = RequestMethod.GET )
-	public String items() {
-		
-		return "redirect:/profile/items/all";
-		
-	}
-	
-	@RequestMapping( value = "/items/all", method = RequestMethod.GET )
+	@RequestMapping( value = {"/items", "/items/all"}, method = RequestMethod.GET )
 	public String allItems(
 			@ModelAttribute("profileItemSearch") final ProfileItemSearchForm form,
 			final Model model,
@@ -223,14 +216,7 @@ public class ProfileController extends BaseController {
 		return "profile";
 	}
 	
-	@RequestMapping( value = "/sales", method = RequestMethod.GET )
-	public String sales() {
-		
-		return "redirect:/profile/sales/pending";
-		
-	}
-	
-	@RequestMapping( value = "/sales/pending", method = RequestMethod.GET )
+	@RequestMapping( value = {"/sales", "/sales/pending"}, method = RequestMethod.GET )
 	public String pendingSales(
 			@ModelAttribute("profileItemSearch") final ProfileItemSearchForm form,
 			final Model model,
@@ -320,18 +306,13 @@ public class ProfileController extends BaseController {
 		return "profile";
 	}
 	
-	@RequestMapping( value = "/purchases", method = RequestMethod.GET )
-	public String purchases() {
-		
-		return "redirect:/profile/purchases/pending";
-		
-	}
-	
-	@RequestMapping( value = "/purchases/pending", method = RequestMethod.GET )
+	@RequestMapping( value = {"/purchases", "/purchases/pending" }, method = RequestMethod.GET )
 	public String pendingPurchases(
 			@ModelAttribute("profileItemSearch") final ProfileItemSearchForm form,
 			final Model model,
 			@ModelAttribute("loggedUser") final User user) {
+		
+		logger.trace("form is: {}", form);
 		
 		final Filter filter =
 				FilterBuilder

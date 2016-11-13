@@ -19,6 +19,7 @@ import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
 import edu.tp.paw.model.filter.Filter;
 import edu.tp.paw.model.filter.OrderFilter;
+import edu.tp.paw.model.filter.OrderFilter.SortField;
 import edu.tp.paw.model.filter.PageFilter;
 import edu.tp.paw.model.filter.PagedResult;
 import edu.tp.paw.model.filter.PurchaseStatusFilter;
@@ -147,7 +148,11 @@ public class UserHibernateDao implements IUserDao {
 		stringBuilder.delete(0, 16);
 		
 		final OrderFilter orderFilter = filter.getOrderFilter();
-		stringBuilder.append(String.format(" order by p.item.%s ", orderFilter.getField().toString().toLowerCase()));
+		if (orderFilter.getField() == SortField.CREATED) {
+			stringBuilder.append(String.format(" order by p.%s ", orderFilter.getField().toString().toLowerCase()));
+		} else {
+			stringBuilder.append(String.format(" order by p.item.%s ", orderFilter.getField().toString().toLowerCase()));
+		}
 		stringBuilder.append(String.format(" %s ", orderFilter.getOrder().toString()));
 		final TypedQuery<Purchase> query = entityManager.createQuery(stringBuilder.toString(), Purchase.class);
 		
@@ -216,7 +221,11 @@ public class UserHibernateDao implements IUserDao {
 		stringBuilder.delete(0, 16);
 		
 		final OrderFilter orderFilter = filter.getOrderFilter();
-		stringBuilder.append(String.format(" order by p.item.%s ", orderFilter.getField().toString().toLowerCase()));
+		if (orderFilter.getField() == SortField.CREATED) {
+			stringBuilder.append(String.format(" order by p.%s ", orderFilter.getField().toString().toLowerCase()));
+		} else {
+			stringBuilder.append(String.format(" order by p.item.%s ", orderFilter.getField().toString().toLowerCase()));
+		}
 		stringBuilder.append(String.format(" %s ", orderFilter.getOrder().toString()));
 		final TypedQuery<Purchase> query = entityManager.createQuery(stringBuilder.toString(), Purchase.class);
 		

@@ -10,8 +10,8 @@ public class ProfileItemSearchForm {
 	private int pageNumber = 0;
 	private int pageSize = NUMBER_OF_ITEMS_PER_PAGE;
 	private String query;
-	private String sortOrder = "DESC";
-	private String orderBy = "SOLD";
+	private String sortOrder = "ASC";
+	private String orderBy = "PRICE";
 	
 	public int getPageNumber() {
 		return pageNumber;
@@ -50,6 +50,11 @@ public class ProfileItemSearchForm {
 	
 	public SortOrder sortOrder() {
 		return SortOrder.valueOf(sortOrder);
+	}
+	@Override
+	public String toString() {
+		return "ProfileItemSearchForm [pageNumber=" + pageNumber + ", pageSize=" + pageSize + ", query=" + query
+				+ ", sortOrder=" + sortOrder + ", orderBy=" + orderBy + "]";
 	}
 	
 }

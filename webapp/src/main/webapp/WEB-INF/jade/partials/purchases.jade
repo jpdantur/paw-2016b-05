@@ -9,42 +9,54 @@ div.tab-pane-content
 			a(href=context.url('/profile/purchases/declined')) #{messageSource.getMessage('profile.purchases.declined',[],locale)}
 	div.tab-content
 		div.tab-pane.fade.in.active(id='purchases-'+status.toString().toLowerCase())
-			if items.numberOfTotalResults == 0
-				div.alert.alert-info #{messageSource.getMessage('profile.sales.nothing',[],locale)}
-			else
-				table.table.table-striped.table-condensed
-					thead
+			table.table.table-striped.table-condensed
+				thead
+					tr
+						th(colspan=3)
+							include profile_modifiers_purchases
+						th(colspan=1)
+							div.input-group.input-group-sm(style="width:100%")
+								span.input-group-addon
+									i.fa.fa-search
+								input.form-control#query-input(type="text", placeholder="Search", value=filter.termFilter.term.orElse(''))
+					tr
+						th Fecha
+						th Comprador
+						th(colspan=2) Articulo
+				tbody
+					if items.numberOfTotalResults == 0
+						tr.info
+							td(colspan=4)
+								div.alert #{messageSource.getMessage('profile.sales.nothing',[],locale)}
+					each purchase in items.results
 						tr
-							th(colspan=3)
-								include profile_modifiers
-							th(colspan=1)
-								div.input-group.input-group-sm(style="width:100%")
-									span.input-group-addon
-										i.fa.fa-search
-									input.form-control#query-input(type="text", placeholder="Search", value=filter.termFilter.term.orElse(''))
-						tr
-							th Comprador
-							th(colspan=2) Articulo
-							th Fecha
-					tbody
-						each purchase in items.results
-							tr
-								td
-									b #{purchase.item.owner.firstName} #{purchase.item.owner.lastName}
-									br
-									span.text-muted #{purchase.item.owner.username}
-									if purchase.status.toString().equals('APPROVED')
-										| &nbsp;
-										span (#{purchase.item.owner.email})
-								td(style="width:40px")
-									if purchase.item.images.isEmpty()
-										img.table-img(style="width:40px;height:40px" src="http://placehold.it/40?text=Sin+Imagen")
-									else
-										img.table-img(style="width:40px;height:40px" src="#{context.url('/images/get/'+purchase.item.images.iterator().next().id)}")
-								td
-									span #{purchase.item.name}
-									br
-									span(style="color:#900") $#{purchase.item.price}
-								td #{dateFormatter.format(purchase.created)}
-								//- td.text-right $#{purchase.item.price}
-								
+							td #{dateFormatter.format(purchase.created)}
+							td
+								b #{purchase.item.owner.firstName} #{purchase.item.owner.lastName}
+								br
+								span.text-muted #{purchase.item.owner.username}
+								if purchase.status.toString().equals('APPROVED')
+									| &nbsp;
+									span (#{purchase.item.owner.email})
+							td(style="width:40px")
+								if purchase.item.images.isEmpty()
+									img.table-img(style="width:40px;height:40px" src="http://placehold.it/40?text=Sin+Imagen")
+								else
+									img.table-img(style="width:40px;height:40px" src="#{context.url('/images/get/'+purchase.item.images.iterator().next().id)}")
+							td
+								span #{purchase.item.name}
+								br
+								span(style="color:#900") $#{purchase.item.price}
+			ul.pager#filter-page(data-page="#{items.currentPage}", data-last-page="#{items.numberOfTotalResults/items.pageSize}")
+				li.previous(class="#{items.currentPage==0?'disabled':''}")
+					a.filter-page-action(href="#")
+						span &larr;
+						span #{messageSource.getMessage('search.filters.pagination.pagers.first', [], locale)}
+				li.pre(class="#{items.currentPage==0?'disabled':''}")
+					a.filter-page-action(href="#") #{messageSource.getMessage('search.filters.pagination.pagers.previous', [], locale)}
+				li.ne(class="#{items.currentPage==items.numberOfTotalResults/items.pageSize?'disabled':''}")
+					a.filter-page-action(href="#") #{messageSource.getMessage('search.filters.pagination.pagers.next', [], locale)}
+				li.next(class="#{items.currentPage==items.numberOfTotalResults/items.pageSize?'disabled':''}")
+					a.filter-page-action(href="#")
+						span #{messageSource.getMessage('search.filters.pagination.pagers.last', [], locale)}
+						span &rarr;
