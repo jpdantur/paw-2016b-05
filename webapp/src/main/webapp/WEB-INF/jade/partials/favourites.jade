@@ -8,7 +8,7 @@ div.tab-pane-content
 				table.table.table-striped.table-condensed
 					thead
 						tr
-							th(colspan=3)
+							th(colspan=2)
 								include profile_modifiers
 							th(colspan=1)
 								div.input-group.input-group-sm(style="width:100%")
@@ -17,8 +17,7 @@ div.tab-pane-content
 									input.form-control#query-input(type="text", placeholder="Search", value=filter.termFilter.term.orElse(''))
 						tr
 							th(colspan=2) Articulo
-							th Editar
-							th Estado
+							th Vendedor
 					tbody
 						each fav in items.results
 							tr(data-id=item.id)
@@ -34,8 +33,8 @@ div.tab-pane-content
 									span(style="color:#900;font-weight:500") $ #{fav.item.price}
 									span &nbsp;- 
 									span.text-muted #{fav.item.sold} #{messageSource.getMessage('profile.items.table.sold',[],locale)}
-								td(style="font-size:12px;vertical-align:middle")
 								td(style="vertical-align:middle")
+									span #{fav.item.owner.username}
 				ul.pager#filter-page(data-page="#{items.currentPage}", data-last-page="#{items.numberOfTotalResults/items.pageSize}")
 					li.previous(class="#{items.currentPage==0?'disabled':''}")
 						a.filter-page-action(href="#")
