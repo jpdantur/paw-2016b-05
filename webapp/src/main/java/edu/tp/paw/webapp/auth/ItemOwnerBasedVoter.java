@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.model.StoreItem;
+import edu.tp.paw.model.StoreItemStatus;
 import edu.tp.paw.webapp.exceptions.StoreItemNotFoundException;
 
 @Component
@@ -21,6 +22,7 @@ public class ItemOwnerBasedVoter implements AccessDecisionVoter<FilterInvocation
 
 	private static final String EDIT_ITEM_SUFFIX = "/details";
 	private static final String STORE_ITEMS_PREFIX = "/store/item/";
+	private static final String STORE_ITEM_PREVIEW_PREFIX = "/store/items/";
 	private final static Logger logger = LoggerFactory.getLogger(ItemOwnerBasedVoter.class); 
 	
 	@Autowired private IStoreItemService itemService;
@@ -65,14 +67,23 @@ public class ItemOwnerBasedVoter implements AccessDecisionVoter<FilterInvocation
 		
 		logger.trace("url: {}", stringBuilder.toString());
 		
-		if (invocation.getRequestUrl().startsWith(STORE_ITEMS_PREFIX)
-				&& invocation.getRequestUrl().contains(EDIT_ITEM_SUFFIX)) {
+		final boolean isEditing =
+				invocation.getRequestUrl().startsWith(STORE_ITEMS_PREFIX) &&
+				invocation.getRequestUrl().contains(EDIT_ITEM_SUFFIX);
+		
+		final boolean isPreviewing = invocation.getRequestUrl().startsWith(STORE_ITEM_PREVIEW_PREFIX);
+		
+		if (isEditing || isPreviewing) {
 			
-			stringBuilder.delete(0, STORE_ITEMS_PREFIX.length());
+			if (isEditing) {
+				stringBuilder.delete(0, STORE_ITEMS_PREFIX.length());
+			} else {
+				stringBuilder.delete(0, STORE_ITEM_PREVIEW_PREFIX.length());
+			}
 			
 			logger.trace("url: {}", stringBuilder.toString());
 			
-			final String[] requestUrlParts = stringBuilder.toString().split("/");
+			final String[] requestUrlParts = stringBuilder.toString().split("[/?]");
 			final int itemId = Integer.valueOf(requestUrlParts[0]); 
 			
 			logger.trace("itemId is {}", itemId);
@@ -85,7 +96,17 @@ public class ItemOwnerBasedVoter implements AccessDecisionVoter<FilterInvocation
 			
 			logger.trace("item owner is {}", item.getOwner().getUsername());
 			
-			if (item.getOwner().getUsername().equals(username)) {
+			if (isEditing) {
+			
+				if (item.getOwner().getUsername().equals(username)) {
+					return ACCESS_GRANTED;
+				}
+			} else {
+				if (item.getStatus() == StoreItemStatus.UNPUBLISHED) {
+					if (!item.getOwner().getUsername().equals(username)) {
+						return ACCESS_DENIED;
+					}
+				}
 				return ACCESS_GRANTED;
 			}
 			return ACCESS_DENIED;

@@ -21,6 +21,7 @@ import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.Purchase;
 import edu.tp.paw.model.StoreItem;
+import edu.tp.paw.model.StoreItemStatus;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.filter.FilterBuilder;
 import edu.tp.paw.model.filter.PagedResult;
@@ -105,6 +106,10 @@ public class StoreSearchController extends BaseController {
 		final StoreItem storeItem = storeItemService.findById(id);
 		
 		if (storeItem == null) {
+			throw new StoreItemNotFoundException();
+		}
+		
+		if (storeItem.getStatus() == StoreItemStatus.PAUSED) {
 			throw new StoreItemNotFoundException();
 		}
 		
