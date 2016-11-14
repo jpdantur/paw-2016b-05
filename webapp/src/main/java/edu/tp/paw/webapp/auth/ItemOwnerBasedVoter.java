@@ -23,6 +23,7 @@ public class ItemOwnerBasedVoter implements AccessDecisionVoter<FilterInvocation
 	private static final String EDIT_ITEM_SUFFIX = "/details";
 	private static final String STORE_ITEMS_PREFIX = "/store/item/";
 	private static final String STORE_ITEM_PREVIEW_PREFIX = "/store/items/";
+	private static final String STORE_ITEM_PREVIEW_SUFFIX = "/all";
 	private final static Logger logger = LoggerFactory.getLogger(ItemOwnerBasedVoter.class); 
 	
 	@Autowired private IStoreItemService itemService;
@@ -71,7 +72,9 @@ public class ItemOwnerBasedVoter implements AccessDecisionVoter<FilterInvocation
 				invocation.getRequestUrl().startsWith(STORE_ITEMS_PREFIX) &&
 				invocation.getRequestUrl().contains(EDIT_ITEM_SUFFIX);
 		
-		final boolean isPreviewing = invocation.getRequestUrl().startsWith(STORE_ITEM_PREVIEW_PREFIX);
+		final boolean isPreviewing =
+				invocation.getRequestUrl().startsWith(STORE_ITEM_PREVIEW_PREFIX) &&
+				!invocation.getRequestUrl().contains(STORE_ITEM_PREVIEW_SUFFIX);
 		
 		if (isEditing || isPreviewing) {
 			
