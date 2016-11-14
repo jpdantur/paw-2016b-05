@@ -18,11 +18,11 @@ div.tab-pane-content
 							div.input-group.input-group-sm(style="width:100%")
 								span.input-group-addon
 									i.fa.fa-search
-								input.form-control#query-input(type="text", placeholder="Search", value=filter.termFilter.term.orElse(''))
+								input.form-control#query-input(type="text", placeholder="#{messageSource.getMessage('profile.purchases.table.search',[],locale)}", value=filter.termFilter.term.orElse(''))
 					tr
-						th Fecha
-						th Comprador
-						th(colspan=2) Articulo
+						th #{messageSource.getMessage('profile.purchases.table.date',[],locale)}
+						th #{messageSource.getMessage('profile.purchases.table.seller',[],locale)}
+						th(colspan=2) #{messageSource.getMessage('profile.purchases.table.item',[],locale)}
 				tbody
 					if items.numberOfTotalResults == 0
 						tr.info

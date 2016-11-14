@@ -2,13 +2,13 @@ div.tab-pane-content
 	h1.page-header #{messageSource.getMessage('profile.items.title',[],locale)}
 	ul.nav.nav-tabs#itemsTab
 		li(class=status.toString().equals('ANY')?'active':'')
-			a(href=context.url('/profile/items/all')) All Publications
+			a(href=context.url('/profile/items/all')) #{messageSource.getMessage('profile.items.all',[],locale)}
 		li(class=status.toString().equals('ACTIVE')?'active':'')
 			a(href=context.url('/profile/items/active')) #{messageSource.getMessage('profile.items.active',[],locale)}
 		li(class=status.toString().equals('PAUSED')?'active':'')
 			a(href=context.url('/profile/items/paused')) #{messageSource.getMessage('profile.items.paused',[],locale)}
 		li(class=status.toString().equals('UNPUBLISHED')?'active':'')
-			a(href=context.url('/profile/items/drafts')) Borradores
+			a(href=context.url('/profile/items/drafts')) #{messageSource.getMessage('profile.items.drafts',[],locale)}
 	div.tab-content
 		div.tab-pane.fade.in.active(id='items-'+status.toString().toLowerCase())
 			if items.numberOfTotalResults == 0
@@ -23,11 +23,11 @@ div.tab-pane-content
 								div.input-group.input-group-sm(style="width:100%")
 									span.input-group-addon
 										i.fa.fa-search
-									input.form-control#query-input(type="text", placeholder="Search", value=filter.termFilter.term.orElse(''))
+									input.form-control#query-input(type="text", placeholder="#{messageSource.getMessage('profile.items.table.search',[],locale)}", value=filter.termFilter.term.orElse(''))
 						tr
-							th(colspan=2) Articulo
-							th Editar
-							th Estado
+							th(colspan=2) #{messageSource.getMessage('profile.items.table.item',[],locale)}
+							th #{messageSource.getMessage('profile.items.table.edit',[],locale)}
+							th #{messageSource.getMessage('profile.items.table.status',[],locale)}
 					tbody
 						each item in items.results
 							tr(data-id=item.id)
@@ -54,7 +54,7 @@ div.tab-pane-content
 											i.fa.fa-play
 											span &nbsp;#{messageSource.getMessage('profile.items.table.resume',[],locale)}
 									else if item.status.toString() == 'UNPUBLISHED'
-										button.btn.btn-success.btn-xs.publish Publicar
+										button.btn.btn-success.btn-xs.publish #{messageSource.getMessage('profile.items.table.publish',[],locale)}
 									else
 										button.btn.btn-default.btn-xs.toggle-item-state
 											i.fa.fa-pause

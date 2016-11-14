@@ -22,7 +22,7 @@ block content
 					li(class=show.equals("purchases")?'active':'')
 						a(href=context.url('/profile/purchases')) #{messageSource.getMessage('profile.purchases.title',[],locale)}
 					li(class=show.equals("favourites")?'active':'')
-						a(href=context.url('/profile/favourites')) Favoritos
+						a(href=context.url('/profile/favourites')) #{messageSource.getMessage('profile.favourites.title',[],locale)}
 			div.col-sm-9(style="padding: 0")
 				div.tab-content
 					div.tab-pane.fade(class=show.equals("account")?'in active':'')#account

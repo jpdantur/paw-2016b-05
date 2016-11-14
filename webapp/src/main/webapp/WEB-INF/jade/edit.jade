@@ -72,7 +72,7 @@ block content
 				ul.nav.nav-tabs.tabs-left#myTab
 					li.static
 						a.btn.btn-primary(href=context.url('/profile/items'))
-							span Volver a mis articulos
+							span #{messageSource.getMessage('sell.edit.return',[],locale)}
 					li.separator
 					li(class=show.equals("details")?'active':'')
 						a(href=context.url('/store/item/'+item.id+'/details')) Detalles

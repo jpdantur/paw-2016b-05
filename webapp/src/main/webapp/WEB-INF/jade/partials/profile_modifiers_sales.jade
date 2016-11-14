@@ -42,10 +42,10 @@ div.modifier#modifier-order
 		else
 			option(value="PRICE-DESC") #{messageSource.getMessage('search.filters.order.priceDesc', [], locale)}
 		if sort.equals('CREATED-ASC')
-			option(value="CREATED-ASC", selected) Menos Reciente
+			option(value="CREATED-ASC", selected) #{messageSource.getMessage('search.filters.order.recentAsc', [], locale)}
 		else
-			option(value="CREATED-ASC") Menos Reciente
+			option(value="CREATED-ASC") #{messageSource.getMessage('search.filters.order.recentAsc', [], locale)}
 		if sort.equals('CREATED-DESC')
-			option(value="CREATED-DESC", selected) Mas Reciente
+			option(value="CREATED-DESC", selected) #{messageSource.getMessage('search.filters.order.recentDesc', [], locale)}
 		else
-			option(value="CREATED-DESC") Mas Reciente
+			option(value="CREATED-DESC") #{messageSource.getMessage('search.filters.order.recentDesc', [], locale)}

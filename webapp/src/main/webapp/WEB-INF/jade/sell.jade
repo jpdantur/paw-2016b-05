@@ -54,14 +54,14 @@ block content
 									span #{messageSource.getMessage('sell.field.status.new',[],locale)}
 							+errors(bindingResult, 'used')
 					div.form-group(class="#{bindingResult.hasFieldErrors('status')?'has-error':''}")
-						label.col-sm-2.control-label(for="status") Publicar Ahora
+						label.col-sm-2.control-label(for="status") #{messageSource.getMessage('sell.field.publish',[],locale)}
 						div.col-sm-10
 							label.radio-inline
 								input#status(type="radio", name="itemStatus", value="ACTIVE", checked=item.status.toString().equals('ACTIVE'))
-								| Si
+								| #{messageSource.getMessage('sell.field.radio.yes',[],locale)}
 							label.radio-inline
 								input#status1(type="radio", name="itemStatus", value="UNPUBLISHED", checked=item.status.toString().equals('UNPUBLISHED'))
-								| No
+								| #{messageSource.getMessage('sell.field.radio.no',[],locale)}
 					div.form-group
 						div.col-sm-2.col-sm-offset-2
 							a.btn.btn-default.btn-block(href="#{context.url('/')}")

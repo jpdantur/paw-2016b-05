@@ -49,7 +49,7 @@ mixin navbar(search)
 									if userFavourites.numberOfTotalResults >= 8
 										li.separator
 										li.text-center
-											a(href=context.url('/profile/favourites')) Ver Todos
+											a(href=context.url('/profile/favourites')) #{messageSource.getMessage('index.favourite.viewAll',[],locale)}
 							li
 								a.dropdown-toggle(href="#", data-toggle="dropdown")
 									span #{loggedUser.firstName} #{loggedUser.lastName}&nbsp;
@@ -66,11 +66,11 @@ mixin navbar(search)
 									li
 										a(href="#{context.url('/profile/sales')}")
 											i.fa.fa-suitcase
-											span &nbsp;Mis Ventas
+											span &nbsp;#{messageSource.getMessage('index.user.sales',[],locale)}
 									li
 										a(href="#{context.url('/profile/purchases')}")
 											i.fa.fa-shopping-bag
-											span &nbsp;Mis Compras
+											span &nbsp;#{messageSource.getMessage('index.user.purchases',[],locale)}
 									li.separator
 									li
 										a(href="#{context.url('/auth/logout')}")
