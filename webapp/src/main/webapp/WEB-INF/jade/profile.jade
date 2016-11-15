@@ -4,7 +4,26 @@ block styles
 	link(href="#{context.url('/resources/css/profile.css')}", rel="stylesheet")
 
 block scripts
+	script.
+		var messages = {
+			sellConfirmation:   "#{messageSource.getMessage('profile.sales.sell.confirmation',[],locale)}" + " ",
+			sellApprove:        "#{messageSource.getMessage('profile.sales.sell.approve',[],locale)}",
+			sellReject:         "#{messageSource.getMessage('profile.sales.sell.reject',[],locale)}",
+			sellPause:          "#{messageSource.getMessage('profile.sales.sell.pause',[],locale)}",
+			sellResume:         "#{messageSource.getMessage('profile.sales.sell.resume',[],locale)}",
+			sellConfirmation2:  " " + "#{messageSource.getMessage('profile.sales.sell.confirmation2',[],locale)}",
+			sellSuccess:        "#{messageSource.getMessage('profile.sales.sell.success',[],locale)}",
+			sellError:          "#{messageSource.getMessage('profile.sales.sell.error',[],locale)}",
+			sellApproved:       "#{messageSource.getMessage('profile.sales.sell.approved',[],locale)}",
+			sellRejected:       "#{messageSource.getMessage('profile.sales.sell.rejected',[],locale)}",
+			sellResumeBtn:      "#{messageSource.getMessage('profile.sales.sell.resumeBtn',[],locale)}",
+			sellPauseBtn:       "#{messageSource.getMessage('profile.sales.sell.pauseBtn',[],locale)}",
+			sellPublishConfirm: "#{messageSource.getMessage('profile.sales.sell.publishConfirmation',[],locale)}",
+			sellPublished:      "#{messageSource.getMessage('profile.sales.sell.published',[],locale)}"
+		};
 	script(src="#{context.url('/resources/js/profile.js')}", type="text/javascript")
+
+
 block content
 	+navbar(true)
 	div.container#profile-container

@@ -66,7 +66,7 @@ $ document .ready !->
 						type: 'success'
 
 					$self .fadeOut "slow", ->
-						$p = $('<div class="alert alert-info"><p>Su compra se encuentra bajo revision del vendedor</p><a href="/webapp/profile/details#purchases" class="btn btn-success btn-sm">Vea el estado aqui</a></div>').hide!
+						$p = $('<div class="alert alert-info"><p>' + messages.purchaseInRevision + '</p><a href="/webapp/profile/details#purchases" class="btn btn-success btn-sm">' + messages.seeStatus + '</a></div>').hide!
 						$self .replaceWith $p
 						$p .fadeIn "slow"
 

@@ -12,7 +12,9 @@ block scripts
 			removeError: "#{messageSource.getMessage('successMessages.toggleFavourite.removeError',[],locale)}",
 			removeSuccess: "#{messageSource.getMessage('successMessages.toggleFavourite.removeSuccess',[],locale)}",
 			buySuccess: "#{messageSource.getMessage('successMessages.buyItem.success',[],locale)}",
-			buyError: "#{messageSource.getMessage('successMessages.buyItem.error',[],locale)}"
+			buyError: "#{messageSource.getMessage('successMessages.buyItem.error',[],locale)}",
+			purchaseInRevision: "#{messageSource.getMessage('item.bought.underRevision',[],locale)}",
+			seeStatus: "#{messageSource.getMessage('item.bought.viewStatus',[],locale)}"
 		};
 	script(type="text/javascript", src="#{context.url('/resources/js/product.js')}")
 
@@ -89,8 +91,8 @@ block content
 							if purchasedItems.contains(storeItem)
 								- purchasedItem = true
 								div.alert.alert-info
-									p Su compra se encuentra bajo revision del vendedor
-									a.btn.btn-success.btn-sm(href=context.url('/profile/details#purchases')) Vea el estado aqui
+									p #{messageSource.getMessage('item.bought.underRevision', [], locale)}
+									a.btn.btn-success.btn-sm(href=context.url('/profile/details#purchases')) #{messageSource.getMessage('item.bought.viewStatus', [], locale)}
 						if loggedUser && !publishedItem && !purchasedItem
 							button.btn.btn-success.btn-lg#purchase(data-buyer-email="#{storeItem.owner.email}", data-item="#{storeItem.id}") #{messageSource.getMessage('item.buy', [], locale)}
 						if !loggedUser

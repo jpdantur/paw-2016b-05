@@ -47,7 +47,8 @@ $ document .ready !->
 
 		isApproving = $self.hasClass \btn-success
 
-		bootbox.confirm "Esta seguro que desea #{if isApproving then 'aprobar' else 'rechazar' } esta venta", (r) !->
+		actionDesc = if isApproving then messages.sellApprove else messages.sellReject
+		bootbox.confirm messages.sellConfirmation + actionDesc + messages.sellConfirmation2, (r) !->
 			if r
 				$ .ajax do
 					url: "#{baseUrl}/store/sales/#{$row.data('id')}/#{if isApproving then 'approve' else 'decline'}"
@@ -55,21 +56,21 @@ $ document .ready !->
 					success: (data) !->
 						if data.err
 							$.notify {
-								message: 'Mensaje de error que le falta i18n'
+								message: messages.sellError
 							} , do
 								type: 'danger'
 						else
 							$.notify {
-								message: 'Mensaje de exito que le falta i18n'
+								message: messages.sellSuccess
 							} , do
 								type: 'success'
 
 							if isApproving
 								$self .next! .remove!
-								$self .text 'Venta Aprobada'
+								$self .text messages.sellApproved
 							else
 								$self .prev! .remove!
-								$self .text 'Venta Rechazada'
+								$self .text messages.sellRejected
 
 							$self.removeClass \decide-transaction
 
@@ -81,7 +82,8 @@ $ document .ready !->
 
 		isActive = $self .hasClass \btn-default
 
-		bootbox.confirm "Esta seguro que desea #{if isActive then 'pausar' else 'reanudar' } esta publicación", (r) !->
+		actionDesc = if isActive then messages.sellPause else messages.sellResume
+		bootbox.confirm messages.sellConfirmation + actionDesc + messages.sellConfirmation2, (r) !->
 			if r
 				$ .ajax do
 					url: "#{baseUrl}/store/item/#{$row.data('id')}/#{if isActive then 'pause' else 'resume'}"
@@ -89,17 +91,17 @@ $ document .ready !->
 					success: (data) !->
 						if data.err
 							$.notify {
-								message: 'Mensaje de error que le falta i18n'
+								message: messages.sellError
 							} , do
 								type: 'danger'
 						else
 							$.notify {
-								message: 'Mensaje de exito que le falta i18n'
+								message: messages.sellSuccess
 							} , do
 								type: 'success'
 							$self .toggleClass 'btn-success btn-default'
 
-							$self .text if isActive then 'Reanudar Publicación' else 'Pausar Publicación'
+							$self .text if isActive then messages.sellResumeBtn else messages.sellPauseBtn
 
 	$ \.publish .click (e) !->
 		e.preventDefault!
@@ -109,7 +111,7 @@ $ document .ready !->
 
 		isActive = $self .hasClass \btn-default
 
-		bootbox.confirm "Esta seguro que desea publicar este articulo", (r) !->
+		bootbox.confirm messages.sellPublishConfirm, (r) !->
 			if r
 				$ .ajax do
 					url: "#{baseUrl}/store/item/#{$row.data('id')}/publish"
@@ -117,15 +119,15 @@ $ document .ready !->
 					success: (data) !->
 						if data.err
 							$.notify {
-								message: 'Mensaje de error que le falta i18n'
+								message: messages.sellError
 							} , do
 								type: 'danger'
 						else
 							$.notify {
-								message: 'Mensaje de exito que le falta i18n'
+								message: messages.sellSuccess
 							} , do
 								type: 'success'
-							$self .toggleClass 'publish' .prop 'disabled', 'disabled' .text \Publicado
+							$self .toggleClass 'publish' .prop 'disabled', 'disabled' .text messages.sellPublished
 
 	query = {}
 

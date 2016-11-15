@@ -27,12 +27,15 @@ $(document).ready(function(){
     onHashChange(window.location.hash);
   });
   $('.decide-transaction').click(function(e){
-    var $self, $row, isApproving;
+    var $self, $row, isApproving, actionDesc;
     e.preventDefault();
     $self = $(this);
     $row = $self.closest('tr');
     isApproving = $self.hasClass('btn-success');
-    bootbox.confirm("Esta seguro que desea " + (isApproving ? 'aprobar' : 'rechazar') + " esta venta", function(r){
+    actionDesc = isApproving
+      ? messages.sellApprove
+      : messages.sellReject;
+    bootbox.confirm(messages.sellConfirmation + actionDesc + messages.sellConfirmation2, function(r){
       if (r) {
         $.ajax({
           url: baseUrl + "/store/sales/" + $row.data('id') + "/" + (isApproving ? 'approve' : 'decline'),
@@ -40,22 +43,22 @@ $(document).ready(function(){
           success: function(data){
             if (data.err) {
               $.notify({
-                message: 'Mensaje de error que le falta i18n'
+                message: messages.sellError
               }, {
                 type: 'danger'
               });
             } else {
               $.notify({
-                message: 'Mensaje de exito que le falta i18n'
+                message: messages.sellSuccess
               }, {
                 type: 'success'
               });
               if (isApproving) {
                 $self.next().remove();
-                $self.text('Venta Aprobada');
+                $self.text(messages.sellApproved);
               } else {
                 $self.prev().remove();
-                $self.text('Venta Rechazada');
+                $self.text(messages.sellRejected);
               }
               $self.removeClass('decide-transaction');
             }
@@ -65,12 +68,15 @@ $(document).ready(function(){
     });
   });
   $('.toggle-item-state').click(function(e){
-    var $self, $row, isActive;
+    var $self, $row, isActive, actionDesc;
     e.preventDefault();
     $self = $(this);
     $row = $self.closest('tr');
     isActive = $self.hasClass('btn-default');
-    bootbox.confirm("Esta seguro que desea " + (isActive ? 'pausar' : 'reanudar') + " esta publicación", function(r){
+    actionDesc = isActive
+      ? messages.sellPause
+      : messages.sellResume;
+    bootbox.confirm(messages.sellConfirmation + actionDesc + messages.sellConfirmation2, function(r){
       if (r) {
         $.ajax({
           url: baseUrl + "/store/item/" + $row.data('id') + "/" + (isActive ? 'pause' : 'resume'),
@@ -78,18 +84,20 @@ $(document).ready(function(){
           success: function(data){
             if (data.err) {
               $.notify({
-                message: 'Mensaje de error que le falta i18n'
+                message: messages.sellError
               }, {
                 type: 'danger'
               });
             } else {
               $.notify({
-                message: 'Mensaje de exito que le falta i18n'
+                message: messages.sellSuccess
               }, {
                 type: 'success'
               });
               $self.toggleClass('btn-success btn-default');
-              $self.text(isActive ? 'Reanudar Publicación' : 'Pausar Publicación');
+              $self.text(isActive
+                ? messages.sellResumeBtn
+                : messages.sellPauseBtn);
             }
           }
         });
@@ -102,7 +110,7 @@ $(document).ready(function(){
     $self = $(this);
     $row = $self.closest('tr');
     isActive = $self.hasClass('btn-default');
-    bootbox.confirm("Esta seguro que desea publicar este articulo", function(r){
+    bootbox.confirm(messages.sellPublishConfirm, function(r){
       if (r) {
         $.ajax({
           url: baseUrl + "/store/item/" + $row.data('id') + "/publish",
@@ -110,17 +118,17 @@ $(document).ready(function(){
           success: function(data){
             if (data.err) {
               $.notify({
-                message: 'Mensaje de error que le falta i18n'
+                message: messages.sellError
               }, {
                 type: 'danger'
               });
             } else {
               $.notify({
-                message: 'Mensaje de exito que le falta i18n'
+                message: messages.sellSuccess
               }, {
                 type: 'success'
               });
-              $self.toggleClass('publish').prop('disabled', 'disabled').text('Publicado');
+              $self.toggleClass('publish').prop('disabled', 'disabled').text(messages.sellPublished);
             }
           }
         });
