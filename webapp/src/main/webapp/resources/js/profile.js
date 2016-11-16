@@ -60,7 +60,7 @@ $(document).ready(function(){
                 $self.prev().remove();
                 $self.text(messages.sellRejected);
               }
-              $self.removeClass('decide-transaction');
+              $self.prop('disabled', 'disabled').removeClass('decide-transaction');
             }
           }
         });

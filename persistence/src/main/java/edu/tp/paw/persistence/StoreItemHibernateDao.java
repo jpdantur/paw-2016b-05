@@ -48,7 +48,8 @@ public class StoreItemHibernateDao implements IStoreItemDao {
 
 	@Override
 	public List<StoreItem> findMostSold(final int n) {
-		final TypedQuery<StoreItem> query = entityManager.createQuery("from StoreItem as o order by o.sold", StoreItem.class);
+		final TypedQuery<StoreItem> query = entityManager.createQuery("from StoreItem as o where status=:status order by o.sold", StoreItem.class);
+		query.setParameter("status", StoreItemStatus.ACTIVE);
 		query.setMaxResults(n);
 		return query.getResultList();
 	}

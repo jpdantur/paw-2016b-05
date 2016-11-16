@@ -72,7 +72,7 @@ $ document .ready !->
 								$self .prev! .remove!
 								$self .text messages.sellRejected
 
-							$self.removeClass \decide-transaction
+							$self .prop(\disabled, \disabled) .removeClass \decide-transaction
 
 	$ \.toggle-item-state .click (e) !->
 		e.preventDefault!

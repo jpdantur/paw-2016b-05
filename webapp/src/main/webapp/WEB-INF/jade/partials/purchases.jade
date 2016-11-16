@@ -30,10 +30,11 @@ div.tab-pane-content
 								div.alert #{messageSource.getMessage('profile.sales.nothing',[],locale)}
 					each purchase in items.results
 						tr
-							td #{dateFormatter.format(purchase.created)}
-							td
-								b #{purchase.item.owner.firstName} #{purchase.item.owner.lastName}
-								br
+							td.center-vertical #{dateFormatter.format(purchase.created)}
+							td.center-vertical
+								if purchase.status.toString().equals('APPROVED')
+									b #{purchase.item.owner.firstName} #{purchase.item.owner.lastName}
+									br
 								span.text-muted #{purchase.item.owner.username}
 								if purchase.status.toString().equals('APPROVED')
 									| &nbsp;

@@ -63,7 +63,7 @@ public class StoreItemController extends BaseController {
 	@RequestMapping( value = "/{itemId}/images", method = RequestMethod.GET)
 	public String images(
 			@PathVariable("itemId") final long id,
-			@RequestParam("s") final boolean success,
+			@RequestParam( name = "s", required = false) final boolean success,
 			final Model model) {
 		
 		final StoreItem item = itemService.findById(id);

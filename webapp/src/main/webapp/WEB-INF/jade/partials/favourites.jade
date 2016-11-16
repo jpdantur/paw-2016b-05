@@ -33,7 +33,7 @@ div.tab-pane-content
 									span(style="color:#900;font-weight:500") $ #{fav.item.price}
 									span &nbsp;- 
 									span.text-muted #{fav.item.sold} #{messageSource.getMessage('profile.items.table.sold',[],locale)}
-								td(style="vertical-align:middle")
+								td.center-vertical
 									span #{fav.item.owner.username}
 				ul.pager#filter-page(data-page="#{items.currentPage}", data-last-page="#{items.numberOfTotalResults/items.pageSize}")
 					li.previous(class="#{items.currentPage==0?'disabled':''}")

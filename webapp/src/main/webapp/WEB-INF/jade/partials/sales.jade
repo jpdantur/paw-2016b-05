@@ -32,12 +32,12 @@ div.tab-pane-content
 								div.alert #{messageSource.getMessage('profile.sales.nothing',[],locale)}
 					each transaction in items.results
 						tr(data-id=transaction.id)
-							td #{dateFormatter.format(transaction.created)}
+							td.center-vertical #{dateFormatter.format(transaction.created)}
 							td
 								b #{transaction.buyer.firstName} #{transaction.buyer.lastName}
 								br
 								span.text-muted #{transaction.buyer.username} (#{transaction.buyer.email})
-							td(style="vertical-align:middle")
+							td.center-vertical
 								i.fa.fa-3x.fa-long-arrow-right(class=status.toString().equals('APPROVED')?'text-success':(status.toString().equals('DECLINED')?'text-danger':''))
 							td(style="width:40px")
 								if transaction.item.images.isEmpty()
@@ -49,7 +49,7 @@ div.tab-pane-content
 								br
 								span(style="color:#900") $#{transaction.item.price}
 							if transaction.status.toString().equals('PENDING')
-								td(style="vertical-align:middle")
+								td.center-vertical
 									button.btn.btn-success.decide-transaction.btn-xs
 										i.fa-2x.glyphicon.glyphicon-ok
 									// #{messageSource.getMessage('profile.sales.success',[],locale)}

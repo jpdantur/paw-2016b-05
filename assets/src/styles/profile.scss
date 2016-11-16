@@ -120,3 +120,7 @@ th span {
 		display: inline-block;
 	}
 }
+
+.table > tbody > tr > td.center-vertical {
+	vertical-align: middle;
+}

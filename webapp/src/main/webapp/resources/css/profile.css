@@ -74,3 +74,6 @@ th span {
   .modifier .form-control.input-xs {
     width: auto;
     display: inline-block; }
+
+.table > tbody > tr > td.center-vertical {
+  vertical-align: middle; }
