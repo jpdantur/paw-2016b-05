@@ -43,7 +43,9 @@ $(document).ready(function(){
           success: function(data){
             if (data.err) {
               $.notify({
-                message: messages.sellError
+                message: messages.sellError + (isApproving
+                  ? messages.approving
+                  : messages.rejecting)
               }, {
                 type: 'danger'
               });
@@ -84,7 +86,9 @@ $(document).ready(function(){
           success: function(data){
             if (data.err) {
               $.notify({
-                message: messages.sellError
+                message: messages.sellError + (isActive
+                  ? messages.pausing
+                  : messages.resuming)
               }, {
                 type: 'danger'
               });
@@ -118,7 +122,7 @@ $(document).ready(function(){
           success: function(data){
             if (data.err) {
               $.notify({
-                message: messages.sellError
+                message: messages.sellError + messages.publishing
               }, {
                 type: 'danger'
               });

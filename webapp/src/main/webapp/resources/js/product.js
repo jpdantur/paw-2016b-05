@@ -16,6 +16,7 @@ $(document).ready(function(){
     favId = $self.data('favid');
     isRemoving = $self.hasClass('text-danger');
     url = baseUrl + ("/favourites/" + (isRemoving ? 'remove' : 'add') + "/" + (isRemoving ? favId : item));
+    $self.prop('disabled', 'disabled');
     console.log(url);
     $.ajax({
       url: url,
@@ -46,15 +47,17 @@ $(document).ready(function(){
       }
     });
   });
-  $('#purchase[data-buyer-email]').click(function(e){
+  $('#purchase[data-buyer-email]').click(_.once(function(e){
     var $self, item;
     e.preventDefault();
     $self = $(this);
     item = $self.data('item');
+    $self.prop('disabled', 'disabled');
     $.ajax({
       url: baseUrl + '/store/item/' + item + '/purchase',
       type: 'POST',
       success: function(data){
+        $self.removeAttr('disabled');
         if (data.err) {
           $.notify({
             message: messages.buyError
@@ -69,12 +72,16 @@ $(document).ready(function(){
           });
           $self.fadeOut("slow", function(){
             var $p;
-            $p = $('<div class="alert alert-info"><p>' + messages.purchaseInRevision + '</p><a href="/webapp/profile/details#purchases" class="btn btn-success btn-sm">' + messages.seeStatus + '</a></div>').hide();
+            $p = $("<div class='alert alert-info'><p>" + messages.purchaseInRevision + "</p><a href='" + baseUrl + "/profile/purchases' class='btn btn-success btn-sm'>" + messages.seeStatus + "</a></div>").hide();
             $self.replaceWith($p);
             return $p.fadeIn("slow");
           });
         }
       }
     });
+  }));
+  $('#comment-form').submit(function(e){
+    console.log('hola');
+    $('#submit-comment').prop('disabled', 'disabled');
   });
 });

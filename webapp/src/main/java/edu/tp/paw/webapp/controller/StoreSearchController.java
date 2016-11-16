@@ -21,7 +21,6 @@ import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.Purchase;
 import edu.tp.paw.model.StoreItem;
-import edu.tp.paw.model.StoreItemStatus;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.filter.FilterBuilder;
 import edu.tp.paw.model.filter.PagedResult;
@@ -98,6 +97,7 @@ public class StoreSearchController extends BaseController {
 	public ModelAndView individualItem(
 			@PathVariable("itemId") final int id,
 			@RequestParam(value = "s", defaultValue = "false") final boolean published,
+			@RequestParam(value = "p", defaultValue = "false") final boolean saved,
 			@RequestParam(value = "e", defaultValue = "false") final boolean commentError,
 			@ModelAttribute("loggedUser") final User user) {
 		
@@ -109,12 +109,9 @@ public class StoreSearchController extends BaseController {
 			throw new StoreItemNotFoundException();
 		}
 		
-		if (storeItem.getStatus() == StoreItemStatus.PAUSED) {
-			throw new StoreItemNotFoundException();
-		}
-		
 		modelAndView.addObject("storeItem", storeItem);
 		modelAndView.addObject("published", published);
+		modelAndView.addObject("saved", saved);
 		modelAndView.addObject("commentError", commentError);
 		modelAndView.addObject("comments", storeItemService.getComments(storeItem));
 		if (user != null) {

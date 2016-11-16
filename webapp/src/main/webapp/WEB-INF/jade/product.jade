@@ -34,7 +34,10 @@ block content
 								button.close(type="button", data-dismiss="alert")
 									span &times;
 								strong #{messageSource.getMessage('successMessages.publishItem.title', [], locale)}!
-								span &nbsp; #{messageSource.getMessage('successMessages.publishItem.content', [], locale)}
+								if saved
+									span &nbsp; #{messageSource.getMessage('successMessages.publishItem.content', [], locale)}
+								else
+									span &nbsp; #{messageSource.getMessage('successMessages.publishItem.content2', [], locale)}
 								br
 								a.btn.btn-success(href=context.url('/store/sell/details')) #{messageSource.getMessage('successMessages.publishItem.action', [], locale)}
 				div.row#product-container
@@ -92,7 +95,7 @@ block content
 								- purchasedItem = true
 								div.alert.alert-info
 									p #{messageSource.getMessage('item.bought.underRevision', [], locale)}
-									a.btn.btn-success.btn-sm(href=context.url('/profile/details/purchases')) #{messageSource.getMessage('item.bought.viewStatus', [], locale)}
+									a.btn.btn-success.btn-sm(href=context.url('/profile/purchases')) #{messageSource.getMessage('item.bought.viewStatus', [], locale)}
 						if loggedUser && !publishedItem && !purchasedItem
 							button.btn.btn-success.btn-lg#purchase(data-buyer-email="#{storeItem.owner.email}", data-item="#{storeItem.id}") #{messageSource.getMessage('item.buy', [], locale)}
 						if !loggedUser
@@ -105,7 +108,7 @@ block content
 					if loggedUser
 						if publishedItems
 							if !publishedItems.contains(storeItem)
-								form.form-horizontal(action="#{context.url('/store/item/'+storeItem.id+'/comment')}", method="POST")
+								form.form-horizontal#comment-form(action=context.url('/store/item/'+storeItem.id+'/comment'), method="POST")
 									div.form-group
 										div.col-sm-12
 											label.col-sm-2.control-label(for="score") Puntaje
@@ -122,7 +125,7 @@ block content
 												span.help-block #{messageSource.getMessage('Size.CommentForm.contentFixed',[],locale)}
 									div.form-group
 										div.col-sm-offset-8.col-sm-4
-											button.btn.btn-block.btn-success(type="submit")
+											button.btn.btn-block.btn-success#submit-comment(type="submit")
 												i.fa.fa-comment
 												span &nbsp;#{messageSource.getMessage('item.commentAction', [], locale)}
 					else

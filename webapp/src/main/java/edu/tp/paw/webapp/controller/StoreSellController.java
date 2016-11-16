@@ -20,6 +20,7 @@ import edu.tp.paw.interfaces.service.IStoreService;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
+import edu.tp.paw.model.StoreItemStatus;
 import edu.tp.paw.model.User;
 import edu.tp.paw.webapp.exceptions.StoreItemNotFoundException;
 import edu.tp.paw.webapp.form.SellForm;
@@ -70,7 +71,7 @@ public class StoreSellController extends BaseController {
 			
 			logger.debug("created item: {}", storeItem);
 			
-			return "redirect:/store/sell/images/"+storeItem.getId()+"?s=1";
+			return String.format("redirect:/store/sell/images/%d?s=1&p=%b", storeItem.getId(), form.getStatus()==StoreItemStatus.ACTIVE);
 		}
 		
 		model.addAttribute("categories", categoryService.getCategoryTree());
@@ -83,6 +84,7 @@ public class StoreSellController extends BaseController {
 	@RequestMapping( value = "/images/{itemId}", method = RequestMethod.GET )
 	public String sellStage2(
 			@RequestParam( value = "s", required = false) final boolean s,
+			@RequestParam( value = "p", required = false) final boolean p,
 			@PathVariable("itemId") final long itemId,
 			final Model model) {
 		
@@ -92,7 +94,8 @@ public class StoreSellController extends BaseController {
 			throw new StoreItemNotFoundException();
 		}
 		
-		model.addAttribute("publishedItem", s);
+		model.addAttribute("success", s);
+		model.addAttribute("published", p);
 		model.addAttribute("item", item);
 		
 		return "sell2";

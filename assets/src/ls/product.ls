@@ -21,6 +21,8 @@ $ document .ready !->
 
 		url = baseUrl + "/favourites/#{if isRemoving then 'remove' else 'add'}/#{if isRemoving then favId else item}"
 
+		$self.prop \disabled, \disabled
+
 		console.log(url)
 
 		$ .ajax do
@@ -42,7 +44,9 @@ $ document .ready !->
 					if !isRemoving
 						$self.data \favid, data.favid
 
-	$ '#purchase[data-buyer-email]' .click (e) !->
+					
+
+	$ '#purchase[data-buyer-email]' .click _.once (e) !->
 
 		e.preventDefault!
 
@@ -50,24 +54,34 @@ $ document .ready !->
 
 		item = $self .data \item
 
+		$self.prop \disabled, \disabled
+
 		$ .ajax do
 			url: baseUrl + '/store/item/' + item + '/purchase'
 			type: 'POST'
 			success: (data) !->
+				
+				$self.removeAttr \disabled
+
 				if data.err
 					$.notify {
 						message: messages.buyError
 					} , do
 						type: 'danger'
 				else
+
 					$.notify {
 						message: messages.buySuccess
 					} , do
 						type: 'success'
 
 					$self .fadeOut "slow", ->
-						$p = $('<div class="alert alert-info"><p>' + messages.purchaseInRevision + '</p><a href="/webapp/profile/details#purchases" class="btn btn-success btn-sm">' + messages.seeStatus + '</a></div>').hide!
+						$p = $("<div class='alert alert-info'><p>#{messages.purchaseInRevision}</p><a href='#{baseUrl}/profile/purchases' class='btn btn-success btn-sm'>#{messages.seeStatus}</a></div>").hide!
 						$self .replaceWith $p
 						$p .fadeIn "slow"
 
+	$ \#comment-form .submit (e) !->
+
+		console.log('hola')
+		$ \#submit-comment .prop \disabled, \disabled
 

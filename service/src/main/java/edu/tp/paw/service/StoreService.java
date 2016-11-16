@@ -50,11 +50,13 @@ public class StoreService implements IStoreService {
 	@Override
 	public boolean purchase(final PurchaseBuilder builder) {
 		
-		if (!userService.purchase(builder)) {
-			return false;
-		}
+		return userService.purchase(builder);
 		
-		return storeItemService.increaseSellCount(builder.getItem());
+//		if (!userService.purchase(builder)) {
+//			return false;
+//		}
+		
+//		return storeItemService.increaseSellCount(builder.getItem());
 	}
 
 	@Override

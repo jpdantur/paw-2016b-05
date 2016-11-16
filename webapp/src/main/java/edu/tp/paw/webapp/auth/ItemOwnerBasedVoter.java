@@ -15,7 +15,6 @@ import org.springframework.stereotype.Component;
 import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemStatus;
-import edu.tp.paw.webapp.exceptions.StoreItemNotFoundException;
 
 @Component
 public class ItemOwnerBasedVoter implements AccessDecisionVoter<FilterInvocation> {
@@ -94,7 +93,7 @@ public class ItemOwnerBasedVoter implements AccessDecisionVoter<FilterInvocation
 			final StoreItem item = itemService.findById(itemId);
 			
 			if (item == null) {
-				throw new StoreItemNotFoundException();
+				return ACCESS_ABSTAIN;
 			}
 			
 			logger.trace("item owner is {}", item.getOwner().getUsername());
@@ -105,7 +104,7 @@ public class ItemOwnerBasedVoter implements AccessDecisionVoter<FilterInvocation
 					return ACCESS_GRANTED;
 				}
 			} else {
-				if (item.getStatus() == StoreItemStatus.UNPUBLISHED) {
+				if (item.getStatus() == StoreItemStatus.UNPUBLISHED || item.getStatus() == StoreItemStatus.PAUSED) {
 					if (!item.getOwner().getUsername().equals(username)) {
 						return ACCESS_DENIED;
 					}

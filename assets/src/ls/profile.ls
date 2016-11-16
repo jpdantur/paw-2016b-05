@@ -56,7 +56,7 @@ $ document .ready !->
 					success: (data) !->
 						if data.err
 							$.notify {
-								message: messages.sellError
+								message: messages.sellError + ( if isApproving then messages.approving else messages.rejecting )
 							} , do
 								type: 'danger'
 						else
@@ -91,7 +91,7 @@ $ document .ready !->
 					success: (data) !->
 						if data.err
 							$.notify {
-								message: messages.sellError
+								message: messages.sellError + ( if isActive then messages.pausing else messages.resuming )
 							} , do
 								type: 'danger'
 						else
@@ -119,7 +119,7 @@ $ document .ready !->
 					success: (data) !->
 						if data.err
 							$.notify {
-								message: messages.sellError
+								message: messages.sellError + messages.publishing
 							} , do
 								type: 'danger'
 						else

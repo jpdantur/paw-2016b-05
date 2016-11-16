@@ -495,7 +495,10 @@ public class UserService implements IUserService {
 		
 		// item owner is user
 		
-		return purchaseService.approvePurchase(purchase);
+		purchaseService.approvePurchase(purchase);
+		
+		
+		return itemService.increaseSellCount(purchase.getItem()); 
 	}
 
 	@Override
