@@ -23,3 +23,6 @@
   .comment .user-score {
     font-size: 32px;
     display: block; }
+
+.add-favourite:hover, .add-favourite:focus {
+  color: inherit; }

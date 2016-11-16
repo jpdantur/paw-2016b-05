@@ -43,9 +43,13 @@ $ document .ready !->
 		e.preventDefault!
 
 		$self = $ this
+		if $self .hasClass \disabled
+			return
 		$row = $self .closest \tr
 
 		isApproving = $self.hasClass \btn-success
+
+		$self .addClass \disabled
 
 		actionDesc = if isApproving then messages.sellApprove else messages.sellReject
 		bootbox.confirm messages.sellConfirmation + actionDesc + messages.sellConfirmation2, (r) !->
@@ -54,6 +58,7 @@ $ document .ready !->
 					url: "#{baseUrl}/store/sales/#{$row.data('id')}/#{if isApproving then 'approve' else 'decline'}"
 					type: 'POST'
 					success: (data) !->
+						$self .removeClass \disabled
 						if data.err
 							$.notify {
 								message: messages.sellError + ( if isApproving then messages.approving else messages.rejecting )
@@ -72,15 +77,19 @@ $ document .ready !->
 								$self .prev! .remove!
 								$self .text messages.sellRejected
 
-							$self .prop(\disabled, \disabled) .removeClass \decide-transaction
+							# $self .prop(\disabled, \disabled) .removeClass \decide-transaction
 
-	$ \.toggle-item-state .click (e) !->
+	$ document.body .on \click, \.toggle-item-state, (e) !->
 		e.preventDefault!
 
 		$self = $ this
+		if $self .hasClass \disabled
+			return
 		$row = $self .closest \tr
 
 		isActive = $self .hasClass \btn-default
+
+		$self .addClass \disabled
 
 		actionDesc = if isActive then messages.sellPause else messages.sellResume
 		bootbox.confirm messages.sellConfirmation + actionDesc + messages.sellConfirmation2, (r) !->
@@ -89,6 +98,7 @@ $ document .ready !->
 					url: "#{baseUrl}/store/item/#{$row.data('id')}/#{if isActive then 'pause' else 'resume'}"
 					type: 'POST'
 					success: (data) !->
+						$self .removeClass \disabled
 						if data.err
 							$.notify {
 								message: messages.sellError + ( if isActive then messages.pausing else messages.resuming )
@@ -103,11 +113,15 @@ $ document .ready !->
 
 							$self .text if isActive then messages.sellResumeBtn else messages.sellPauseBtn
 
-	$ \.publish .click (e) !->
+	$ document.body .on \click, \.publish, (e) !->
 		e.preventDefault!
 
 		$self = $ this
+		if $self .hasClass \disabled
+			return
 		$row = $self .closest \tr
+
+		$self .addClass \disabled
 
 		isActive = $self .hasClass \btn-default
 
@@ -117,6 +131,7 @@ $ document .ready !->
 					url: "#{baseUrl}/store/item/#{$row.data('id')}/publish"
 					type: 'POST'
 					success: (data) !->
+						$self .removeClass \disabled
 						if data.err
 							$.notify {
 								message: messages.sellError + messages.publishing
@@ -127,7 +142,7 @@ $ document .ready !->
 								message: messages.sellSuccess
 							} , do
 								type: 'success'
-							$self .toggleClass 'publish' .prop 'disabled', 'disabled' .text messages.sellPublished
+							$self .toggleClass 'publish btn-success btn-default toggle-item-state' .text messages.sellPauseBtn
 
 	query = {}
 

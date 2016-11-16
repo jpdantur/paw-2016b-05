@@ -3,11 +3,16 @@ $(document).ready(function(){
     var $self, item;
     e.preventDefault();
     $self = $(this);
+    if ($self.hasClass('disabled')) {
+      return;
+    }
     item = $self.data('id');
+    $self.addClass('disabled');
     $.ajax({
       url: baseUrl + '/favourites/remove/' + item,
       type: 'POST',
       success: function(data){
+        $self.removeClass('disabled');
         console.log(data);
         if (data.err) {
           $.notify({
@@ -21,7 +26,7 @@ $(document).ready(function(){
           }, {
             type: 'success'
           });
-          $self.closest('li').remove();
+          $self.closest('li,tr').remove();
         }
       }
     });

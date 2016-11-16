@@ -30,8 +30,12 @@ $(document).ready(function(){
     var $self, $row, isApproving, actionDesc;
     e.preventDefault();
     $self = $(this);
+    if ($self.hasClass('disabled')) {
+      return;
+    }
     $row = $self.closest('tr');
     isApproving = $self.hasClass('btn-success');
+    $self.addClass('disabled');
     actionDesc = isApproving
       ? messages.sellApprove
       : messages.sellReject;
@@ -41,6 +45,7 @@ $(document).ready(function(){
           url: baseUrl + "/store/sales/" + $row.data('id') + "/" + (isApproving ? 'approve' : 'decline'),
           type: 'POST',
           success: function(data){
+            $self.removeClass('disabled');
             if (data.err) {
               $.notify({
                 message: messages.sellError + (isApproving
@@ -62,19 +67,22 @@ $(document).ready(function(){
                 $self.prev().remove();
                 $self.text(messages.sellRejected);
               }
-              $self.prop('disabled', 'disabled').removeClass('decide-transaction');
             }
           }
         });
       }
     });
   });
-  $('.toggle-item-state').click(function(e){
+  $(document.body).on('click', '.toggle-item-state', function(e){
     var $self, $row, isActive, actionDesc;
     e.preventDefault();
     $self = $(this);
+    if ($self.hasClass('disabled')) {
+      return;
+    }
     $row = $self.closest('tr');
     isActive = $self.hasClass('btn-default');
+    $self.addClass('disabled');
     actionDesc = isActive
       ? messages.sellPause
       : messages.sellResume;
@@ -84,6 +92,7 @@ $(document).ready(function(){
           url: baseUrl + "/store/item/" + $row.data('id') + "/" + (isActive ? 'pause' : 'resume'),
           type: 'POST',
           success: function(data){
+            $self.removeClass('disabled');
             if (data.err) {
               $.notify({
                 message: messages.sellError + (isActive
@@ -108,11 +117,15 @@ $(document).ready(function(){
       }
     });
   });
-  $('.publish').click(function(e){
+  $(document.body).on('click', '.publish', function(e){
     var $self, $row, isActive;
     e.preventDefault();
     $self = $(this);
+    if ($self.hasClass('disabled')) {
+      return;
+    }
     $row = $self.closest('tr');
+    $self.addClass('disabled');
     isActive = $self.hasClass('btn-default');
     bootbox.confirm(messages.sellPublishConfirm, function(r){
       if (r) {
@@ -120,6 +133,7 @@ $(document).ready(function(){
           url: baseUrl + "/store/item/" + $row.data('id') + "/publish",
           type: 'POST',
           success: function(data){
+            $self.removeClass('disabled');
             if (data.err) {
               $.notify({
                 message: messages.sellError + messages.publishing
@@ -132,7 +146,7 @@ $(document).ready(function(){
               }, {
                 type: 'success'
               });
-              $self.toggleClass('publish').prop('disabled', 'disabled').text(messages.sellPublished);
+              $self.toggleClass('publish btn-success btn-default toggle-item-state').text(messages.sellPauseBtn);
             }
           }
         });

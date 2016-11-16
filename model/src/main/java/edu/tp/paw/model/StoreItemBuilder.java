@@ -18,7 +18,7 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 	// Optional parameters
 	private Date created = new Date();
 	private Date lastUpdated = new Date();
-	private int sold = 0;
+	private long sold = 0;
 	private Long id;
 	private User owner;
 	private Set<StoreImage> images = new HashSet<>();
@@ -94,7 +94,7 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 	 * @param sold the value to set
 	 * @return #{this}
 	 */
-	public StoreItemBuilder sold(final int sold) {
+	public StoreItemBuilder sold(final long sold) {
 		this.sold = sold;
 		return this;
 	}
@@ -139,7 +139,7 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 		return lastUpdated;
 	}
 
-	public int getSold() {
+	public long getSold() {
 		return sold;
 	}
 	

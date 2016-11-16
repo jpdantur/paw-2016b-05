@@ -60,5 +60,10 @@ public class Favourite {
 	public User getUser() {
 		return user;
 	}
+
+	@Override
+	public String toString() {
+		return "Favourite [id=" + id + ", created=" + created + ", item=" + item.getId() + ", user=" + user.getId() + "]";
+	}
 	
 }

@@ -11,18 +11,22 @@ $(document).ready(function(){
   });
   $('.add-favourite').click(function(e){
     var $self, item, favId, isRemoving, url;
+    e.preventDefault();
     $self = $(this);
+    if ($self.hasClass('disabled')) {
+      return;
+    }
     item = $self.data('item');
     favId = $self.data('favid');
     isRemoving = $self.hasClass('text-danger');
     url = baseUrl + ("/favourites/" + (isRemoving ? 'remove' : 'add') + "/" + (isRemoving ? favId : item));
-    $self.prop('disabled', 'disabled');
-    console.log(url);
+    $self.addClass('disabled');
     $.ajax({
       url: url,
       type: 'POST',
       success: function(data){
         console.log(data);
+        $self.removeClass('disabled');
         if (data.err) {
           $.notify({
             message: isRemoving
@@ -51,13 +55,15 @@ $(document).ready(function(){
     var $self, item;
     e.preventDefault();
     $self = $(this);
+    if ($self.hasClass('disabled')) {
+      return;
+    }
     item = $self.data('item');
-    $self.prop('disabled', 'disabled');
+    $self.addClass('disabled');
     $.ajax({
       url: baseUrl + '/store/item/' + item + '/purchase',
       type: 'POST',
       success: function(data){
-        $self.removeAttr('disabled');
         if (data.err) {
           $.notify({
             message: messages.buyError

@@ -65,13 +65,16 @@ block content
 						h1 #{storeItem.name}&nbsp;
 							if loggedUser
 								if !publishedItems.contains(storeItem)
-									- var contains = {a:false}
-									each fav in userFavourites.results
+									- var contains = {a:false, id:0}
+									span(style="display:none") #{allFavourites}
+									each fav in allFavourites
+										span(style="display:none") #{fav.id}
 										if fav.item.id == storeItem.id
 											- contains.a = true
+											- contains.id = fav.id
 											- break
 									if contains.a
-										a.text-danger.add-favourite(href="#", data-item=storeItem.id)
+										a.text-danger.add-favourite(href="#", data-favid=contains.id)
 											i.fa.fa-heart
 									else
 										a.text-muted.add-favourite(href="#", data-item=storeItem.id)

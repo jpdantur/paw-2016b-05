@@ -17,7 +17,8 @@ div.tab-pane-content
 									input.form-control#query-input(type="text", placeholder="#{messageSource.getMessage('profile.favourites.table.search',[],locale)}", value=filter.termFilter.term.orElse(''))
 						tr
 							th(colspan=2) #{messageSource.getMessage('profile.favourites.table.item',[],locale)}
-							th #{messageSource.getMessage('profile.favourites.table.seller',[],locale)}
+							th
+							//-th #{messageSource.getMessage('profile.favourites.table.seller',[],locale)}
 					tbody
 						each fav in items.results
 							tr(data-id=item.id)
@@ -33,7 +34,12 @@ div.tab-pane-content
 									span(style="color:#900;font-weight:500") $ #{fav.item.price}
 									span &nbsp;- 
 									span.text-muted #{fav.item.sold} #{messageSource.getMessage('profile.items.table.sold',[],locale)}
-								td.center-vertical
+								th.center-vertical
+									button.btn.btn-xs.btn-danger.remove-fav.pull-right(data-id=fav.id)
+										i.fa.fa-trash
+										span &nbsp;Eliminar
+
+								//-td.center-vertical
 									span #{fav.item.owner.username}
 				ul.pager#filter-page(data-page="#{items.currentPage}", data-last-page="#{items.numberOfTotalResults/items.pageSize}")
 					li.previous(class="#{items.currentPage==0?'disabled':''}")

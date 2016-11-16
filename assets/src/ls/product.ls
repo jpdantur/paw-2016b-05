@@ -12,7 +12,12 @@ $ document .ready !->
 
 	$ \.add-favourite .click (e) !->
 
+		e.preventDefault!
+
 		$self = $ this
+
+		if $self .hasClass \disabled
+			return
 
 		item = $self .data \item
 		favId = $self.data \favid
@@ -21,15 +26,14 @@ $ document .ready !->
 
 		url = baseUrl + "/favourites/#{if isRemoving then 'remove' else 'add'}/#{if isRemoving then favId else item}"
 
-		$self.prop \disabled, \disabled
-
-		console.log(url)
+		$self .addClass \disabled
 
 		$ .ajax do
 			url: url
 			type: 'POST'
 			success: (data) !->
 				console.log data
+				$self .removeClass \disabled
 				if data.err
 					$.notify {
 						message: if isRemoving then messages.removeError else messages.addError
@@ -52,16 +56,17 @@ $ document .ready !->
 
 		$self = $ this
 
+		if $self.hasClass \disabled
+			return
+
 		item = $self .data \item
 
-		$self.prop \disabled, \disabled
+		$self.addClass \disabled
 
 		$ .ajax do
 			url: baseUrl + '/store/item/' + item + '/purchase'
 			type: 'POST'
 			success: (data) !->
-				
-				$self.removeAttr \disabled
 
 				if data.err
 					$.notify {

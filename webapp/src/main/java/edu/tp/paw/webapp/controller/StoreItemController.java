@@ -111,6 +111,7 @@ public class StoreItemController extends BaseController {
 					.id(id)
 					.created(originalItem.getCreated())
 					.status(form.getStatus())
+					.sold(originalItem.getSold())
 					.build();
 			
 			itemService.updateItem(item);

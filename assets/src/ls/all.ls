@@ -6,12 +6,18 @@ $ document .ready !->
 
 		$self = $ this
 
+		if $self.hasClass \disabled
+			return
+
 		item = $self .data \id
+
+		$self .addClass \disabled
 
 		$ .ajax do
 			url: baseUrl + '/favourites/remove/' + item
 			type: 'POST'
 			success: (data) !->
+				$self .removeClass \disabled
 				console.log data
 				if data.err
 					$.notify {
@@ -23,5 +29,5 @@ $ document .ready !->
 						message: globalMessages.removeSuccess
 					} , do
 						type: 'success'
-					$self .closest 'li' .remove!
+					$self .closest 'li,tr' .remove!
 					
