@@ -1,19 +1,26 @@
 extends layout
 
 block styles
-	
+	link(href=context.url('/resources/css/id.css'), rel="stylesheet")
 
 block scripts
 	
 
 
 block content
+	include mixins/product
 	+navbar(true)
 	div.container
 		div.row
 			div.col-sm-10.col-sm-offset-1#item-container
-				div.row#product-title
+				div.row#id-title
 					div.col-sm-12
 						h1 #{user.username}
 				div.row#product-container
+					div.col-sm-12
+						h2 Puntaje como vendedor
+						h2.h1 Articulos Publicados
+						div.row
+							each item in items.results
+								+product(item)
 						
