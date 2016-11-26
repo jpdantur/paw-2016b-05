@@ -29,6 +29,8 @@
 		<org.hibernate.jpa.version>1.0.0.Final</org.hibernate.jpa.version>
 		<javax-mail.version>1.5.5</javax-mail.version>
 		<greenmail.version>1.5.0</greenmail.version>
+		<apache.velocity.version>1.7</apache.velocity.version>
+		<apache.velocity-tools.version>2.0</apache.velocity-tools.version>
 	</properties>
 
 	<build>
@@ -116,6 +118,11 @@
 			<dependency>
 				<groupId>org.springframework</groupId>
 				<artifactId>spring-context</artifactId>
+				<version>${org.springframework.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.springframework</groupId>
+				<artifactId>spring-context-support</artifactId>
 				<version>${org.springframework.version}</version>
 			</dependency>
 			<dependency>
@@ -285,6 +292,19 @@
 				<groupId>commons-fileupload</groupId>
 				<artifactId>commons-fileupload</artifactId>
 				<version>${commons-fileupload.version}</version>
+			</dependency>
+
+			<!-- https://mvnrepository.com/artifact/org.apache.velocity/velocity -->
+			<dependency>
+				<groupId>org.apache.velocity</groupId>
+				<artifactId>velocity</artifactId>
+				<version>${apache.velocity.version}</version>
+			</dependency>
+			<!-- https://mvnrepository.com/artifact/org.apache.velocity/velocity-tools -->
+			<dependency>
+				<groupId>org.apache.velocity</groupId>
+				<artifactId>velocity-tools</artifactId>
+				<version>${apache.velocity-tools.version}</version>
 			</dependency>
 
 		</dependencies>

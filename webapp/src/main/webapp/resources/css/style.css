@@ -178,3 +178,18 @@ footer {
     .store-item .product-container .product-owner {
       color: #222;
       font-size: 13px; }
+
+.rating.worst .rate-select-layer {
+  color: #991619; }
+
+.rating.bad .rate-select-layer {
+  color: #E16E01; }
+
+.rating.ok .rate-select-layer {
+  color: #8DB75F; }
+
+.rating.good .rate-select-layer {
+  color: #67A22A; }
+
+.rating.great .rate-select-layer {
+  color: #016900; }

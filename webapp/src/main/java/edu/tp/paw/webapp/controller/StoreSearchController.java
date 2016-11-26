@@ -40,8 +40,8 @@ public class StoreSearchController extends BaseController {
 	
 	@RequestMapping(value = "/all")
 	public String itemBrowser(
-			@ModelAttribute("searchForm") SearchForm form,
-			Model model) {
+			@ModelAttribute("searchForm") final SearchForm form,
+			final Model model) {
 		
 		final FilterBuilder filter = FilterBuilder
 				.create()

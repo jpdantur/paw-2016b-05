@@ -4,6 +4,22 @@ $(document).ready(function(){
     step_size: 0.5,
     readonly: true
   });
+  $('.rating.static').each(function(){
+    var $self, rateValue;
+    $self = $(this);
+    rateValue = $self.data('rate-value');
+    if (rateValue > 4) {
+      $self.addClass('great');
+    } else if (rateValue > 3) {
+      $self.addClass('good');
+    } else if (rateValue > 2) {
+      $self.addClass('ok');
+    } else if (rateValue > 1) {
+      $self.addClass('bad');
+    } else {
+      $self.addClass('worst');
+    }
+  });
   $('.remove-fav').click(function(e){
     var $self, item;
     e.preventDefault();

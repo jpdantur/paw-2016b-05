@@ -1,5 +1,5 @@
 $(document).ready(function(){
-  var onHashChange, query, buildQuery, submit;
+  var onHashChange, query, buildQuery, submit, resetPageNumber;
   $('#itemsTab a, #salesTab a, #purchaseTab a').click(function(e){});
   $('ul.nav-tabs > li > a').on('shown.bs.tab', function(e){
     var id;
@@ -168,6 +168,9 @@ $(document).ready(function(){
     console.log(query);
     window.location.search = $.param(query, true);
   };
+  resetPageNumber = function(){
+    query.pageNumber = 0;
+  };
   if ($('#query-input').length) {
     buildQuery();
   }
@@ -175,7 +178,7 @@ $(document).ready(function(){
     if (e.keyCode === 13) {
       e.preventDefault();
       buildQuery();
-      query.pageNumber = 0;
+      resetPageNumber();
       submit();
     }
   });
@@ -203,6 +206,7 @@ $(document).ready(function(){
   $('#modifier-order-input').change(function(e){
     e.preventDefault();
     buildQuery();
+    resetPageNumber();
     submit();
   });
   $('.modifier-option').click(function(e){
@@ -216,6 +220,7 @@ $(document).ready(function(){
     $row.find('.selected').toggleClass('selected');
     $self.toggleClass('selected');
     buildQuery();
+    resetPageNumber();
     submit();
   });
 });

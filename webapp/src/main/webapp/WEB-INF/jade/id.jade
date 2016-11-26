@@ -4,6 +4,7 @@ block styles
 	link(href=context.url('/resources/css/id.css'), rel="stylesheet")
 
 block scripts
+	script(src="#{context.url('/resources/js/id.js')}", type="text/javascript")
 	
 
 
@@ -18,9 +19,27 @@ block content
 						h1 #{user.username}
 				div.row#product-container
 					div.col-sm-12
-						h2 Puntaje como vendedor
+						h2.h1.page-header Puntaje como vendedor
+							div.rating.static(style="margin-left:40px;display:inline-block;line-height:2em" ,data-rate-value=user.buyerRating)
 						h2.h1 Articulos Publicados
+						div.row.text-right
+							div.col-sm-12
+								include partials/profile_modifiers
 						div.row
 							each item in items.results
 								+product(item)
+						div.row
+							ul.pager#filter-page(data-page="#{items.currentPage}", data-last-page="#{items.numberOfTotalResults/items.pageSize}")
+								li.previous(class="#{items.currentPage==0?'disabled':''}")
+									a.filter-page-action(href="#")
+										span &larr;
+										span #{messageSource.getMessage('search.filters.pagination.pagers.first', [], locale)}
+								li.pre(class="#{items.currentPage==0?'disabled':''}")
+									a.filter-page-action(href="#") #{messageSource.getMessage('search.filters.pagination.pagers.previous', [], locale)}
+								li.ne(class="#{items.currentPage==items.numberOfTotalResults/items.pageSize?'disabled':''}")
+									a.filter-page-action(href="#") #{messageSource.getMessage('search.filters.pagination.pagers.next', [], locale)}
+								li.next(class="#{items.currentPage==items.numberOfTotalResults/items.pageSize?'disabled':''}")
+									a.filter-page-action(href="#")
+										span #{messageSource.getMessage('search.filters.pagination.pagers.last', [], locale)}
+										span &rarr;
 						

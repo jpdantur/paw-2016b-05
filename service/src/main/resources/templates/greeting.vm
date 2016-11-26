@@ -1,0 +1,46 @@
+<html>
+	<head>
+		<style>
+		#container {width:600px;margin:0 auto}
+		a {
+  color: #337ab7;
+  text-decoration: none;
+}
+.btn {
+  display: inline-block;
+  margin-bottom: 0;
+  font-weight: normal;
+  text-align: center;
+  vertical-align: middle;
+  -ms-touch-action: manipulation;
+      touch-action: manipulation;
+  cursor: pointer;
+  background-image: none;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  padding: 6px 12px;
+  font-size: 14px;
+  line-height: 1.42857143;
+  border-radius: 4px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+.btn-primary {
+  color: #ffffff;
+  background-color: #337ab7;
+  border-color: #2e6da4;
+}
+		</style>
+	</head>
+	<body>
+		<div id="container">
+			<h3>Hola ${user.firstName}, le damos la bienvenida a Siglas Commerce</h3>
+			<p>
+				Acceda a mas informacion aqui <a href="http://pawserver.it.itba.edu.ar/paw-2016b-05/" class="btn btn-primary">Siglas Commerce</a>
+			</p>
+		</div>
+	</body>
+
+</html>

@@ -342,3 +342,37 @@ footer {
 			}
 		}
 	}
+
+.rating {
+
+	&.worst {
+		.rate-select-layer {
+			color: #991619
+		}
+	}
+
+	&.bad {
+		.rate-select-layer {
+			color: #E16E01
+		}	
+	}
+
+	&.ok {
+		.rate-select-layer {
+			color: #8DB75F
+		}	
+	}
+
+	&.good {
+		.rate-select-layer {
+			color: #67A22A
+		}	
+	}
+
+	&.great {
+		.rate-select-layer {
+			color: #016900
+		}
+	}
+	
+}

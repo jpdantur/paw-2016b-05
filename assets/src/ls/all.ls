@@ -5,6 +5,21 @@ $ document .ready !->
 		step_size: 0.5,
 		readonly: true
 
+	$ \.rating.static .each !->
+		$self = $ this
+		rate-value = $self .data \rate-value
+
+		if rate-value > 4
+			$self.addClass \great
+		else if rate-value > 3
+			$self.addClass \good
+		else if rate-value > 2
+			$self.addClass \ok
+		else if rate-value > 1
+			$self.addClass \bad
+		else
+			$self.addClass \worst
+
 	$ \.remove-fav .click (e) !->
 
 		e.preventDefault!

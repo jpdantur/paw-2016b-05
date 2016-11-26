@@ -13,6 +13,11 @@
 #product-container {
   padding-top: 50px; }
 
+.carousel-inner {
+  height: 300px; }
+  .carousel-inner img {
+    width: 100%; }
+
 .price {
   color: #900; }
 

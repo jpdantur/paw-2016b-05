@@ -165,6 +165,10 @@ $ document .ready !->
 
 		window.location.search = $ .param query, true
 
+	resetPageNumber = !->
+
+		query.pageNumber = 0
+
 	if $ \#query-input .length
 		buildQuery!
 
@@ -173,9 +177,7 @@ $ document .ready !->
 			e.preventDefault!
 
 			buildQuery!
-
-			query.pageNumber = 0
-
+			resetPageNumber!
 			submit!
 
 	$ \.filter-page-action .click (e) !->
@@ -204,6 +206,7 @@ $ document .ready !->
 		e.preventDefault!
 
 		buildQuery!
+		resetPageNumber!
 		submit!
 
 	$ \.modifier-option .click (e) !->
@@ -219,4 +222,5 @@ $ document .ready !->
 		$self .toggleClass \selected
 
 		buildQuery!
+		resetPageNumber!
 		submit!

@@ -23,7 +23,7 @@ public class IdController extends BaseController {
 	
 	@RequestMapping( value = {"/{username}", "/{username}/buyer"})
 	public String userProfileBuyer(
-			@ModelAttribute("profileItemSearch") final ProfileItemSearchForm form,
+			@ModelAttribute("searchForm") final ProfileItemSearchForm form,
 			@PathVariable("username") final String username,
 			final Model model
 		) {
@@ -34,23 +34,22 @@ public class IdController extends BaseController {
 			throw new StoreItemNotFoundException();
 		}
 		
-		final Filter filter =
-				FilterBuilder
+		final Filter filter = FilterBuilder
 				.create()
-				.query()
-					.text(form.getQuery())
-				.and().status()
-					.status(ItemStatusFilter.ACTIVE)
-				.and().page()
+				.page()
 					.size(form.getPageSize())
 					.take(form.getPageNumber())
-				.and().sort()
+				.end().status()
+					.status(ItemStatusFilter.ACTIVE)
+				.end().sort()
 					.by(form.orderBy())
 					.order(form.sortOrder())
 				.end().build();
 		
+		model.addAttribute("filter", filter);
 		model.addAttribute("items", userService.getPublishedItems(user, filter));
 		model.addAttribute("user", user);
+		model.addAttribute("sort", String.format("%s-%s", filter.getOrderFilter().getField().toString(), filter.getOrderFilter().getOrder().toString()));
 		
 		return "id";
 	}

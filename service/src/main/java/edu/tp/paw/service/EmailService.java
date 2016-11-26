@@ -2,6 +2,8 @@ package edu.tp.paw.service;
 
 import java.io.UnsupportedEncodingException;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.mail.Authenticator;
@@ -13,10 +15,15 @@ import javax.mail.Transport;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeMessage;
 
+import org.apache.velocity.app.VelocityEngine;
+import org.apache.velocity.runtime.RuntimeConstants;
+import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import org.springframework.ui.Model;
+import org.springframework.ui.velocity.VelocityEngineUtils;
 
 import edu.tp.paw.interfaces.service.IEmailService;
 import edu.tp.paw.model.Purchase;
@@ -34,6 +41,7 @@ public class EmailService implements IEmailService {
 	
 	private Session session;
 	private Properties props = new Properties();
+	private VelocityEngine velocityEngine;
 
 
 	public EmailService() {
@@ -43,6 +51,12 @@ public class EmailService implements IEmailService {
 		props.put("mail.smtp.starttls.enable", "true");
 		final Authenticator auth = getAuthenticator(USER, PASS);
 		session = Session.getInstance(props, auth);
+		velocityEngine = new VelocityEngine();
+		
+		velocityEngine.setProperty(RuntimeConstants.RESOURCE_LOADER, "classpath"); 
+		velocityEngine.setProperty("classpath.resource.loader.class", ClasspathResourceLoader.class.getName());
+		
+		velocityEngine.init();
 	}
 
 	public EmailService(Session session) {
@@ -98,8 +112,12 @@ public class EmailService implements IEmailService {
 	@Override
 	public boolean greet(final User user) {
 		
+		final Map<String, Object> model = new HashMap<>();
+		model.put("user", user);
 		
-		return sendRawEmail(user, "Bienvenido a Siglas Commerce", String.format("Hola %s %s, le damos la bienvenida a Siglas Commerce. Puede acceder <a href=\"http://pawserver.it.itba.edu.ar/paw-2016b-05/\">aqui</a>", user.getFirstName(), user.getLastName()));
+		final String body = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "templates/greeting.vm", "utf-8", model);
+		
+		return sendRawEmail(user, "Bienvenido a Siglas Commerce", body);
 	}
 
 	@Override
