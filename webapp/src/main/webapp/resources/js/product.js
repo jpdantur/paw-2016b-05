@@ -1,9 +1,4 @@
 $(document).ready(function(){
-  $('.rating.static').rate({
-    max_value: 5,
-    step_size: 0.5,
-    readonly: true
-  });
   $('#score').rate({
     max_value: 5,
     step_size: 0.5,

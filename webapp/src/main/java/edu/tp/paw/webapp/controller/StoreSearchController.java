@@ -22,8 +22,10 @@ import edu.tp.paw.model.Category;
 import edu.tp.paw.model.Purchase;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.User;
+import edu.tp.paw.model.filter.Filter;
 import edu.tp.paw.model.filter.FilterBuilder;
 import edu.tp.paw.model.filter.PagedResult;
+import edu.tp.paw.model.filter.StoreItemStatusFilter.ItemStatusFilter;
 import edu.tp.paw.webapp.exceptions.StoreItemNotFoundException;
 import edu.tp.paw.webapp.form.SearchForm;
 
@@ -108,6 +110,18 @@ public class StoreSearchController extends BaseController {
 		if (storeItem == null) {
 			throw new StoreItemNotFoundException();
 		}
+		
+		final Filter filter =
+				FilterBuilder
+				.create()
+				.status()
+					.status(ItemStatusFilter.ACTIVE)
+				.and().page()
+					.size(4)
+					.take(0)
+				.end().build();
+		
+		modelAndView.addObject("relatedItems", userService.getPublishedItems(storeItem.getOwner(), filter));
 		
 		modelAndView.addObject("storeItem", storeItem);
 		modelAndView.addObject("published", published);

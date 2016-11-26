@@ -139,3 +139,42 @@ footer {
       cursor: pointer; }
   footer i {
     margin-left: 5px; }
+
+.store-item {
+  padding: 0; }
+  .store-item .product-container {
+    height: 310px;
+    padding: 10px;
+    border: 1px solid #dfdfdf; }
+    .store-item .product-container:hover {
+      background-color: #fafafa;
+      border-width: 2px; }
+    .store-item .product-container .image-container {
+      width: 100%;
+      height: auto;
+      max-height: 200px;
+      overflow: hidden; }
+    .store-item .product-container .product-title {
+      height: 24px;
+      line-height: 24px;
+      display: block;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      padding-top: 4px; }
+    .store-item .product-container .product-description {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      font-size: 12px;
+      color: #454545;
+      margin: 0;
+      padding-top: 4px; }
+    .store-item .product-container .product-price {
+      color: #900;
+      font-size: 18px;
+      font-weight: 500;
+      line-height: 2em; }
+    .store-item .product-container .product-owner {
+      color: #222;
+      font-size: 13px; }

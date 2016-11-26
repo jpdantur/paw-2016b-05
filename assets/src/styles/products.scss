@@ -99,60 +99,15 @@ html body {
 
 	.store-item {
 
-		padding: 0;
-
 		.product-container {
 			
-			height: 300px;
-			padding: 10px;
 			border: {
 				top: 1px solid #dfdfdf;
 				left: 1px solid #dfdfdf;
-				botton: 1px solid #dfdfdf;
+				bottom: 1px solid #dfdfdf;
+				right: none
 			}
-			// margin: 5px;
-			// border-top: 
-			// border-top: 1px solid #dfdfdf;
-			// @include border-radius(7px);
 			
-			&:hover {
-				background-color: #fafafa;
-				border-width: 2px;
-			}
-
-			.image-container {
-				width: 100%;
-				height: auto;
-				max-height: 200px;
-				overflow: hidden;
-			}
-
-			.product-title {
-				height: 24px;
-				line-height: 24px;
-				display: block;
-				white-space: nowrap;
-				overflow: hidden;
-				text-overflow: ellipsis;
-				padding-top: 4px;
-			}
-
-			.product-description {
-				white-space: nowrap;
-				overflow: hidden;
-				text-overflow: ellipsis;
-				font-size: 12px;
-				color: #454545;
-				margin: 0;
-				padding-top: 4px;
-			}
-
-			.product-price {
-				color: #900;
-				font-size: 18px;
-				font-weight: 500;
-				line-height: 2em;
-			}
 		}
 	}
 }

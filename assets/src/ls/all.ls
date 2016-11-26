@@ -1,5 +1,10 @@
 $ document .ready !->
 
+	$ \.rating.static .rate do
+		max_value: 5,
+		step_size: 0.5,
+		readonly: true
+
 	$ \.remove-fav .click (e) !->
 
 		e.preventDefault!

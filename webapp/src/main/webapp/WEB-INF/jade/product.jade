@@ -4,7 +4,6 @@ block styles
 	link(href=context.url('/resources/css/product.css'), rel="stylesheet")
 
 block scripts
-	script(type="text/javascript", src=context.url('/resources/js/lib/rater.js'))
 	script.
 		var messages = {
 			addError: "#{messageSource.getMessage('successMessages.toggleFavourite.addError',[],locale)}",
@@ -20,6 +19,7 @@ block scripts
 
 
 block content
+	include mixins/product
 	+navbar(true)
 	div.container
 		div.row
@@ -117,6 +117,12 @@ block content
 					div.col-sm-12
 						h3 #{messageSource.getMessage('item.description', [], locale)}
 						p #{storeItem.description}
+					div.col-sm-12
+						h3.h1 Publicaciones del mismo vendedor
+						div.row
+							div.col-sm-12
+								each item in relatedItems.results
+									+product(item)
 				div.well
 					h3 #{messageSource.getMessage('item.comments', [], locale)}
 					if loggedUser
