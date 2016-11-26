@@ -20,6 +20,7 @@ import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
+import org.hibernate.annotations.Formula;
 
 @Entity
 @Table(name = "users", uniqueConstraints = {
@@ -43,18 +44,6 @@ public class User {
 	@Column(length = 100)
 	private String email;
 	
-//	@ManyToMany(fetch = FetchType.LAZY)
-//	@JoinTable(
-//			name = "favourites",
-//			joinColumns = @JoinColumn(name = "user_id"),
-//			inverseJoinColumns = @JoinColumn( name = "store_item_id"),
-//			foreignKey = @ForeignKey( name = "user_fk" ),
-//			inverseForeignKey = @ForeignKey( name = "store_item_fk" ),
-//			uniqueConstraints = {
-//				@UniqueConstraint( name = "favourite_uniq", columnNames = { "user_id", "store_item_id" })
-//			}
-//	)
-//	@Fetch(FetchMode.SELECT)
 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "user" )
 	private Set<Favourite> favourites = new HashSet<>();
 	
@@ -79,6 +68,12 @@ public class User {
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "buyer")
 	@Fetch(FetchMode.SELECT)
 	private Set<Purchase> purchases = new HashSet<>();
+	
+	@Formula("(select round(coalesce(avg(s.rating),0)::numeric,1) from sales s where s.user_id=user_id)")
+	private float buyerRating;
+	
+//	@Formula("(select round(coalesce(avg(sr.rating),0)::numeric,1) from comments sr where sr.item_id=item_id)");
+//	private float sellerRating;
 	
 	/* package */ User() {
 		// hibernate, duh!
@@ -133,6 +128,10 @@ public class User {
 	
 	public Set<Purchase> getPurchases() {
 		return purchases;
+	}
+
+	public float getBuyerRating() {
+		return buyerRating;
 	}
 
 	@Override

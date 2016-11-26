@@ -40,6 +40,10 @@ public class Purchase {
 	@Column( name = "created", insertable = false, updatable = false )
 	private Date created;
 	
+	private String comment;
+	
+	private float rating;
+	
 	/* protected */ Purchase() {
 		// hibernate, duh!
 	}
@@ -50,6 +54,8 @@ public class Purchase {
 		this.item = builder.getItem();
 		this.status = builder.getStatus();
 		this.created = builder.getCreated();
+		this.rating = builder.getRating();
+		this.comment = builder.getComment();
 	}
 	
 	public Long getId() {
@@ -70,6 +76,14 @@ public class Purchase {
 
 	public Date getCreated() {
 		return created;
+	}
+
+	public String getComment() {
+		return comment;
+	}
+
+	public float getRating() {
+		return rating;
 	}
 
 	@Override

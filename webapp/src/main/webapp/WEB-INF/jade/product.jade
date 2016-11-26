@@ -41,7 +41,8 @@ block content
 								br
 								a.btn.btn-success(href=context.url('/store/sell/details')) #{messageSource.getMessage('successMessages.publishItem.action', [], locale)}
 				div.row#product-container
-					div.col-sm-4
+					//- carousel
+					div.col-sm-5
 						if storeItem.images.isEmpty()
 							img(src="http://placehold.it/400?text=Sin+Imagen", style="width:100%;height:auto")
 						else
@@ -61,7 +62,8 @@ block content
 									a.right.carousel-control(href="#carousel", data-slide="next")
 										span.glyphicon.glyphicon-chevron-right
 										span.sr-only Next
-					div.col-sm-8
+					//- item info
+					div.col-sm-7
 						h1 #{storeItem.name}&nbsp;
 							if loggedUser
 								if !publishedItems.contains(storeItem)
@@ -88,6 +90,15 @@ block content
 								b #{messageSource.getMessage('item.used', [], locale)}
 							else
 								b #{messageSource.getMessage('item.new', [], locale)}
+						br
+						span Vendedor:&nbsp;
+						a(href=context.url('/id/'+storeItem.owner.username))
+							i.fa.fa-user
+							span &nbsp;#{storeItem.owner.username}
+						span.puntaje
+							| (
+							div.rating.static(style="font-size:9px;display:inline-block", data-rate-value=storeItem.owner.buyerRating)
+							| )
 						h3.price $#{storeItem.price}
 						- var publishedItem = false
 						- var purchasedItem = false
