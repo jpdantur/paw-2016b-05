@@ -17,10 +17,8 @@ public class IndexController extends BaseController {
 	
 	private static final int MOST_SOLD_ITEMS = 12;
 	
-	@Autowired
-	private IStoreItemService storeItemService;
-	@Autowired
-	private ICategoryService categoryService;
+	@Autowired private IStoreItemService storeItemService;
+	@Autowired private ICategoryService categoryService;
 	
 	@RequestMapping("/")
 	public ModelAndView index() {

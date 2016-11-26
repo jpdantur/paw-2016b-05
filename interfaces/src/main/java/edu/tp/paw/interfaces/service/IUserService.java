@@ -65,7 +65,7 @@ public interface IUserService {
 	
 	public boolean updateUser(final User user);
 	
-	public boolean purchase(final PurchaseBuilder builder);
+	public Purchase purchase(final PurchaseBuilder builder);
 	
 	public PagedResult<Purchase> getPurchases(final User user, final Filter filter);
 	public Set<Purchase> getAllPurchases(final User user);

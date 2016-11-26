@@ -51,7 +51,7 @@ public interface IUserDao {
 	
 	public boolean updateUser(final User user);
 	
-	public boolean purchase(final PurchaseBuilder builder);
+	public Purchase purchase(final PurchaseBuilder builder);
 	
 	public PagedResult<Purchase> getTransactions(final User user, final Filter filter);
 	public List<Purchase> getTransactions(final User user);

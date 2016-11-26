@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import edu.tp.paw.interfaces.dao.IUserDao;
 import edu.tp.paw.interfaces.service.ICommentService;
+import edu.tp.paw.interfaces.service.IEmailService;
 import edu.tp.paw.interfaces.service.IFavouriteService;
 import edu.tp.paw.interfaces.service.IPurchaseService;
 import edu.tp.paw.interfaces.service.IRoleService;
@@ -44,6 +45,8 @@ public class UserService implements IUserService {
 	@Autowired private IRoleService roleService;
 	@Autowired private IPurchaseService purchaseService;
 	@Autowired private IFavouriteService favouriteService;
+	
+	@Autowired private IEmailService emailService;
 	
 	@Autowired private PasswordEncoder passwordEncoder;
 	
@@ -81,7 +84,9 @@ public class UserService implements IUserService {
 		}
 		
 		builder.password(passwordEncoder.encode(builder.getPassword()));
-		return createUser(builder, roleService.getDefaultRole());
+		final User user = createUser(builder, roleService.getDefaultRole());
+		emailService.greet(user);
+		return user;
 	}
 
 	@Override
@@ -336,7 +341,7 @@ public class UserService implements IUserService {
 	}
 
 	@Override
-	public boolean purchase(final PurchaseBuilder builder) {
+	public Purchase purchase(final PurchaseBuilder builder) {
 		return userDao.purchase(builder);
 	}
 	
@@ -497,12 +502,15 @@ public class UserService implements IUserService {
 		
 		purchaseService.approvePurchase(purchase);
 		
+		emailService.notifyPurchaseApproval(user, purchase);
 		
 		return itemService.increaseSellCount(purchase.getItem()); 
 	}
 
 	@Override
 	public boolean declinePurchase(final User user, final Purchase purchase) {
+		
+		emailService.notifyPurchaseDeclined(user, purchase);
 		
 		return purchaseService.declinePurchase(purchase);
 	}

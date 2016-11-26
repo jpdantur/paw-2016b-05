@@ -11,10 +11,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import edu.tp.paw.interfaces.service.ICategoryService;
+import edu.tp.paw.interfaces.service.IEmailService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IStoreService;
 import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.Category;
+import edu.tp.paw.model.Purchase;
 import edu.tp.paw.model.PurchaseBuilder;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
@@ -31,6 +33,7 @@ public class StoreService implements IStoreService {
 	@Autowired private IStoreItemService storeItemService;
 	@Autowired private ICategoryService categoryService;
 	@Autowired private IUserService userService;
+	@Autowired private IEmailService emailService;
 
 	@Override
 	public StoreItem sell(final StoreItemBuilder builder) {
@@ -48,9 +51,19 @@ public class StoreService implements IStoreService {
 	}
 
 	@Override
-	public boolean purchase(final PurchaseBuilder builder) {
+	public Purchase purchase(final PurchaseBuilder builder) {
 		
-		return userService.purchase(builder);
+		final Purchase purchase = userService.purchase(builder);
+		
+		if (purchase != null) {
+			
+			emailService.notifySale(builder.getItem().getOwner(), purchase);
+			
+			return purchase;
+			
+		}
+		
+		return null;
 		
 //		if (!userService.purchase(builder)) {
 //			return false;

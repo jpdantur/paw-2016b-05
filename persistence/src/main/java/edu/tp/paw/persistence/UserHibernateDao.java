@@ -126,11 +126,13 @@ public class UserHibernateDao implements IUserDao {
 	}
 
 	@Override
-	public boolean purchase(final PurchaseBuilder builder) {
+	public Purchase purchase(final PurchaseBuilder builder) {
 		
-		entityManager.persist(builder.build());
+		final Purchase p = builder.build();
 		
-		return true;
+		entityManager.persist(p);
+		
+		return p;
 	}
 
 	@Override

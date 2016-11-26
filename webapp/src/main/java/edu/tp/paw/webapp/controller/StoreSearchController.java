@@ -19,7 +19,6 @@ import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IStoreService;
 import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.Category;
-import edu.tp.paw.model.Favourite;
 import edu.tp.paw.model.Purchase;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.User;

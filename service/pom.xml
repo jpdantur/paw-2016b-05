@@ -59,5 +59,13 @@
       <groupId>org.logback-extensions</groupId>
       <artifactId>logback-ext-spring</artifactId>
     </dependency>
+    <dependency>
+      <groupId>com.icegreen</groupId>
+      <artifactId>greenmail</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>javax.mail</groupId>
+      <artifactId>javax.mail-api</artifactId>
+    </dependency>
   </dependencies>
 </project>

@@ -20,6 +20,7 @@ import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IStoreService;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.CommentBuilder;
+import edu.tp.paw.model.Purchase;
 import edu.tp.paw.model.PurchaseBuilder;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
@@ -171,8 +172,8 @@ public class StoreItemController extends BaseController {
 		}
 		
 		final PurchaseBuilder builder = new PurchaseBuilder(user, item);
-		
-		if (storeService.purchase(builder)) {
+		final Purchase purchase = storeService.purchase(builder);
+		if (purchase != null) {
 			logger.trace("user {} purchased item {}", user.getUsername(), item.getId());
 			return "{\"err\":0 }";
 		}

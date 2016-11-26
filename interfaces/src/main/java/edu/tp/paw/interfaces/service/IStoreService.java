@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import edu.tp.paw.model.Category;
+import edu.tp.paw.model.Purchase;
 import edu.tp.paw.model.PurchaseBuilder;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
@@ -20,5 +21,5 @@ public interface IStoreService {
 	
 	public Set<Category> getCategoriesForResultsInHigherDepthCategories(final Set<Category> categories, final List<StoreItem> items);
 	
-	public boolean purchase(final PurchaseBuilder builder);
+	public Purchase purchase(final PurchaseBuilder builder);
 }
