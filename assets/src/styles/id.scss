@@ -33,10 +33,13 @@
 
 #id-container {
 	padding-top: 50px;
+}
 
-	
-	// @include border-radius(5px);
-
+#stats-container {
+	margin: {
+		top: 50px;
+		bottom: 50px;
+	}
 }
 
 .input-xs {

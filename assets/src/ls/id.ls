@@ -1,4 +1,35 @@
+Math.easeInOutCirc = (t, b, c, d) ->
+	t /= d/2
+	if t < 1
+		return -c/2 * (Math.sqrt(1 - t*t) - 1) + b
+	t -= 2
+	c/2 * (Math.sqrt(1 - t*t) + 1) + b
+
+Math.easeInOutExpo = (t, b, c, d) ->
+	t /= d/2
+	if t < 1
+		return c/2 * Math.pow( 2, 10 * (t - 1) ) + b
+	t--
+	c/2 * ( -Math.pow( 2, -10 * t) + 2 ) + b
+
 $ document .ready !->
+
+	$approvedSales = $ \#approved-sales
+	$rejectedSales = $ \#rejected-sales
+
+	t = 0
+	DURATION = 2000
+
+	interval = setInterval !->
+		b = 0
+		c1 = $approvedSales.data(\end) + 1
+		c2 = $rejectedSales.data(\end) + 1
+		$approvedSales.text parseInt( Math.easeInOutExpo( t, b, c1, DURATION ) )
+		$rejectedSales.text parseInt( Math.easeInOutExpo( t, b, c2, DURATION ) )
+		if t >= DURATION
+			clearInterval interval
+		t += 10
+	, 10
 
 	query = {}
 

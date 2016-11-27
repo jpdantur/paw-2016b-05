@@ -13,6 +13,10 @@
 #id-container {
   padding-top: 50px; }
 
+#stats-container {
+  margin-top: 50px;
+  margin-bottom: 50px; }
+
 .input-xs {
   height: 22px;
   padding: 5px 5px;
