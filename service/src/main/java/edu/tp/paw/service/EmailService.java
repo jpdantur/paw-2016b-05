@@ -22,11 +22,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import org.springframework.ui.Model;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
 import edu.tp.paw.interfaces.service.IEmailService;
 import edu.tp.paw.model.Purchase;
+import edu.tp.paw.model.PurchaseReview;
 import edu.tp.paw.model.User;
 
 @Service
@@ -138,6 +138,16 @@ public class EmailService implements IEmailService {
 		
 		return sendRawEmail(user, "Se ha rechazado su compra", String.format("Hola %s %s, le informamos que se ha rechazado su compra. Puede acceder <a href=\"http://pawserver.it.itba.edu.ar/paw-2016b-05/\">aqui</a>", user.getFirstName(), user.getLastName()));
 		
+	}
+
+	@Override
+	public boolean notifySellerAboutReview(final User user, final Purchase purchase, final PurchaseReview review) {
+		return false;
+	}
+
+	@Override
+	public boolean notifyBuyerAboutReview(final User user, final Purchase purchase, final PurchaseReview review) {
+		return false;
 	}
 
 }

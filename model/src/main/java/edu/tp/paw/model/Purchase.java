@@ -13,6 +13,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 
@@ -40,9 +41,13 @@ public class Purchase {
 	@Column( name = "created", insertable = false, updatable = false )
 	private Date created;
 	
-	private String comment;
+	@JoinColumn(name = "buyer_review", foreignKey = @ForeignKey( name = "buyer_review_fk" ))
+	@OneToOne( optional = true, fetch = FetchType.EAGER)
+	private PurchaseReview buyerReview;
 	
-	private float rating;
+	@JoinColumn(name = "seller_review", foreignKey = @ForeignKey( name = "seller_review_fk" ))
+	@OneToOne( optional = true, fetch = FetchType.EAGER )
+	private PurchaseReview sellerReview;
 	
 	/* protected */ Purchase() {
 		// hibernate, duh!
@@ -54,8 +59,8 @@ public class Purchase {
 		this.item = builder.getItem();
 		this.status = builder.getStatus();
 		this.created = builder.getCreated();
-		this.rating = builder.getRating();
-		this.comment = builder.getComment();
+		this.buyerReview = builder.getBuyerReview();
+		this.sellerReview = builder.getSellerReview();
 	}
 	
 	public Long getId() {
@@ -77,13 +82,13 @@ public class Purchase {
 	public Date getCreated() {
 		return created;
 	}
-
-	public String getComment() {
-		return comment;
+	
+	public PurchaseReview getBuyerReview() {
+		return buyerReview;
 	}
-
-	public float getRating() {
-		return rating;
+	
+	public PurchaseReview getSellerReview() {
+		return sellerReview;
 	}
 
 	@Override

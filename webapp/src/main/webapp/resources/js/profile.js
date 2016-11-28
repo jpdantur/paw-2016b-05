@@ -70,6 +70,8 @@ $(document).ready(function(){
             }
           }
         });
+      } else {
+        $self.removeClass('disabled');
       }
     });
   });
@@ -114,6 +116,8 @@ $(document).ready(function(){
             }
           }
         });
+      } else {
+        $self.removeClass('disabled');
       }
     });
   });
@@ -150,6 +154,8 @@ $(document).ready(function(){
             }
           }
         });
+      } else {
+        $self.removeClass('disabled');
       }
     });
   });

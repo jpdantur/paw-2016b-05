@@ -10,6 +10,7 @@ import edu.tp.paw.model.Favourite;
 import edu.tp.paw.model.FavouriteBuilder;
 import edu.tp.paw.model.Purchase;
 import edu.tp.paw.model.PurchaseBuilder;
+import edu.tp.paw.model.PurchaseReviewBuilder;
 import edu.tp.paw.model.PurchaseStatus;
 import edu.tp.paw.model.Role;
 import edu.tp.paw.model.StoreItem;
@@ -91,6 +92,8 @@ public interface IUserService {
 	
 	public boolean approvePurchase(final User user, final Purchase purchase);
 	public boolean declinePurchase(final User user, final Purchase purchase);
+	public boolean reviewPurchaseAsBuyer(final User user, final Purchase purchase, final PurchaseReviewBuilder builderReview);
+	public boolean reviewPurchaseAsSeller(final User user, final Purchase purchase, final PurchaseReviewBuilder builderReview);
 	
 	
 }

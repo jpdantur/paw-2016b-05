@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import edu.tp.paw.interfaces.service.IPurchaseService;
 import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.Purchase;
+import edu.tp.paw.model.PurchaseReviewBuilder;
 import edu.tp.paw.model.User;
+import edu.tp.paw.webapp.form.PurchaseReviewForm;
 
 @Controller
 @RequestMapping("/store/sales")
@@ -39,7 +41,7 @@ public class SalesController extends BaseController {
 		}
 		
 		if (userService.approvePurchase(user, purchase)) {
-			logger.trace("user {} approved purchase {}", user.getUsername(), purchase.getId());
+			logger.debug("user {} approved purchase {}", user.getUsername(), purchase.getId());
 			return "{\"err\":0 }";
 		}
 		
@@ -60,7 +62,57 @@ public class SalesController extends BaseController {
 		}
 		
 		if (userService.declinePurchase(user, purchase)) {
-			logger.trace("user {} declined purchase {}", user.getUsername(), purchase.getId());
+			logger.debug("user {} declined purchase {}", user.getUsername(), purchase.getId());
+			return "{\"err\":0 }";
+		}
+		
+		return "{\"err\": 1}";
+		
+	}
+	
+	@RequestMapping(value = "/{purchaseId}/buyer/review", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+	@ResponseBody
+	public String buyerReview(
+			@PathVariable("purchaseId") final long id,
+			@ModelAttribute("loggedUser") final User user,
+			@ModelAttribute("reviewForm") final PurchaseReviewForm form
+		) {
+		
+		final Purchase purchase = purchaseService.findById(id);
+		
+		if (purchase == null) {
+			return "{\"err\":3 }";
+		}
+		
+		final PurchaseReviewBuilder builder = new PurchaseReviewBuilder(form.getComment()).rating(form.getRating());
+		
+		if (userService.reviewPurchaseAsBuyer(user, purchase, builder)) {
+			logger.debug("user {} declined purchase {}", user.getUsername(), purchase.getId());
+			return "{\"err\":0 }";
+		}
+		
+		return "{\"err\": 1}";
+		
+	}
+	
+	@RequestMapping(value = "/{purchaseId}/seller/review", method = RequestMethod.POST, produces = "application/json; charset=utf-8")
+	@ResponseBody
+	public String sellerReview(
+			@PathVariable("purchaseId") final long id,
+			@ModelAttribute("loggedUser") final User user,
+			@ModelAttribute("reviewForm") final PurchaseReviewForm form
+		) {
+		
+		final Purchase purchase = purchaseService.findById(id);
+		
+		if (purchase == null) {
+			return "{\"err\":3 }";
+		}
+		
+		final PurchaseReviewBuilder builder = new PurchaseReviewBuilder(form.getComment()).rating(form.getRating());
+		
+		if (userService.reviewPurchaseAsSeller(user, purchase, builder)) {
+			logger.debug("user {} declined purchase {}", user.getUsername(), purchase.getId());
 			return "{\"err\":0 }";
 		}
 		

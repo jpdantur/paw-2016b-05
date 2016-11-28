@@ -76,7 +76,8 @@ $ document .ready !->
 							else
 								$self .prev! .remove!
 								$self .text messages.sellRejected
-
+			else
+				$self .removeClass \disabled
 							# $self .prop(\disabled, \disabled) .removeClass \decide-transaction
 
 	$ document.body .on \click, \.toggle-item-state, (e) !->
@@ -112,7 +113,9 @@ $ document .ready !->
 							$self .toggleClass 'btn-success btn-default'
 
 							$self .text if isActive then messages.sellResumeBtn else messages.sellPauseBtn
-
+			else
+				$self .removeClass \disabled
+							
 	$ document.body .on \click, \.publish, (e) !->
 		e.preventDefault!
 
@@ -143,7 +146,8 @@ $ document .ready !->
 							} , do
 								type: 'success'
 							$self .toggleClass 'publish btn-success btn-default toggle-item-state' .text messages.sellPauseBtn
-
+			else
+				$self .removeClass \disabled
 	query = {}
 
 	buildQuery = !->

@@ -8,6 +8,8 @@ import org.springframework.stereotype.Repository;
 
 import edu.tp.paw.interfaces.dao.IPurchaseDao;
 import edu.tp.paw.model.Purchase;
+import edu.tp.paw.model.PurchaseReview;
+import edu.tp.paw.model.PurchaseReviewBuilder;
 import edu.tp.paw.model.PurchaseStatus;
 
 @Repository
@@ -26,8 +28,36 @@ public class PurchaseHibernateDao implements IPurchaseDao {
 		final Query query = entityManager.createQuery("update Purchase set status = :status where id = :id");
 		query.setParameter("id", purchase.getId());
 		query.setParameter("status", status);
-		query.executeUpdate();
-		return true;
+		return query.executeUpdate() == 1;
+	}
+
+	@Override
+	public boolean updatePurchaseBuyerReview(final Purchase purchase, final PurchaseReview review) {
+		
+		final Query query = entityManager.createQuery("update Purchase set buyerReview = :review where id = :id");
+		query.setParameter("id", purchase.getId());
+		query.setParameter("review", review.getId());
+		return query.executeUpdate() == 1;
+		
+	}
+
+	@Override
+	public boolean updatePurchaseSellerReview(final Purchase purchase, final PurchaseReview review) {
+		
+		final Query query = entityManager.createQuery("update Purchase set sellerReview = :review where id = :id");
+		query.setParameter("id", purchase.getId());
+		query.setParameter("review", review.getId());
+		return query.executeUpdate() == 1;
+	}
+
+	@Override
+	public PurchaseReview createPurchaseReview(final PurchaseReviewBuilder builder) {
+		
+		final PurchaseReview review = builder.build();
+		
+		entityManager.persist(review);
+		
+		return review;
 	}
 
 }

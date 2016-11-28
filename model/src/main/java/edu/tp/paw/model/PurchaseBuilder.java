@@ -12,9 +12,8 @@ public class PurchaseBuilder  implements IBuilder<Purchase> {
 	
 	private Date created = new Date();
 	
-	private float rating;
-	
-	private String comment;
+	private PurchaseReview buyerReview;
+	private PurchaseReview sellerReview;
 	
 	public PurchaseBuilder(final User user, final StoreItem item) {
 		this.buyer = user;
@@ -36,13 +35,13 @@ public class PurchaseBuilder  implements IBuilder<Purchase> {
 		return this;
 	}
 	
-	public PurchaseBuilder rating(final float rating) {
-		this.rating = rating;
+	public PurchaseBuilder buyerReview(final PurchaseReview buyerReview) {
+		this.buyerReview = buyerReview;
 		return this;
 	}
 	
-	public PurchaseBuilder rating(final String comment) {
-		this.comment = comment;
+	public PurchaseBuilder sellerReview(final PurchaseReview sellerReview) {
+		this.sellerReview = sellerReview;
 		return this;
 	}
 	
@@ -65,13 +64,13 @@ public class PurchaseBuilder  implements IBuilder<Purchase> {
 	public Date getCreated() {
 		return created;
 	}
-
-	public float getRating() {
-		return rating;
+	
+	public PurchaseReview getBuyerReview() {
+		return buyerReview;
 	}
-
-	public String getComment() {
-		return comment;
+	
+	public PurchaseReview getSellerReview() {
+		return sellerReview;
 	}
 
 	@Override

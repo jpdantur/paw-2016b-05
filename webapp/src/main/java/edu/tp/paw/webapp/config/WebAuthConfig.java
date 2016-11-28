@@ -111,7 +111,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 	
 	@Bean
 	public PasswordEncoder passwordEncoder() {
-		return new BCryptPasswordEncoder(BCRYPT_ROUNDS);  
+		return new BCryptPasswordEncoder(BCRYPT_ROUNDS);
 	}
 	
 //	@Bean

@@ -25,6 +25,8 @@ import edu.tp.paw.model.Favourite;
 import edu.tp.paw.model.FavouriteBuilder;
 import edu.tp.paw.model.Purchase;
 import edu.tp.paw.model.PurchaseBuilder;
+import edu.tp.paw.model.PurchaseReview;
+import edu.tp.paw.model.PurchaseReviewBuilder;
 import edu.tp.paw.model.PurchaseStatus;
 import edu.tp.paw.model.Role;
 import edu.tp.paw.model.StoreItem;
@@ -513,5 +515,26 @@ public class UserService implements IUserService {
 		emailService.notifyPurchaseDeclined(user, purchase);
 		
 		return purchaseService.declinePurchase(purchase);
+	}
+
+	@Override
+	public boolean reviewPurchaseAsBuyer(final User user, final Purchase purchase, final PurchaseReviewBuilder builderReview) {
+		
+		final PurchaseReview review = purchaseService.createPurchaseReview(builderReview);
+		
+		emailService.notifySellerAboutReview(user, purchase, review);
+		
+		return purchaseService.updateBuyerReview(purchase, review);
+	}
+
+	@Override
+	public boolean reviewPurchaseAsSeller(final User user, final Purchase purchase, final PurchaseReviewBuilder builderReview) {
+		
+		final PurchaseReview review = purchaseService.createPurchaseReview(builderReview);
+		
+		emailService.notifyBuyerAboutReview(user, purchase, review);
+		
+		return purchaseService.updateSellerReview(purchase, review);
+		
 	}
 }

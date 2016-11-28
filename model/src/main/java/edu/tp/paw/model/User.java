@@ -16,6 +16,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.Fetch;
@@ -69,8 +70,9 @@ public class User {
 	@Fetch(FetchMode.SELECT)
 	private Set<Purchase> purchases = new HashSet<>();
 	
-	@Formula("(select round(coalesce(avg(s.rating),0)::numeric,1) from sales s where s.user_id=user_id)")
-	private float buyerRating;
+//	@Formula("(select round(coalesce(avg(s.rating),0)::numeric,1) from sales s where s.user_id=user_id)")
+	@Transient
+	private float buyerRating = 2.5f;
 	
 //	@Formula("(select round(coalesce(avg(sr.rating),0)::numeric,1) from comments sr where sr.item_id=item_id)");
 //	private float sellerRating;
