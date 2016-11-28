@@ -47,3 +47,6 @@ block content
 							div.col-sm-12
 								span #{messageSource.getMessage('register.form.hasAccount', [], locale)}&nbsp;
 								a(href="#{context.url('/auth/login')}") #{messageSource.getMessage('register.form.login', [], locale)}
+								br
+								span Olvido su contraseña?&nbsp;
+								a(href=context.url('/auth/forgot-pass')) Recuperela

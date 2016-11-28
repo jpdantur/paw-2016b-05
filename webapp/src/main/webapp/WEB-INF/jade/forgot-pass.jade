@@ -1,0 +1,30 @@
+extends layout
+
+block styles
+	link(href=context.url('/resources/css/login.css'), rel="stylesheet")
+
+block content
+	+navbar(true)
+	div.container
+		div.row
+			div.col-sm-6.col-sm-offset-3
+				div.well.login-box
+					if error
+						div.alert.alert-danger
+							b #{messageSource.getMessage('login.error.error', [], locale)}&nbsp;
+							span #{messageSource.getMessage('login.error.wrongData', [], locale)}
+					form.form-horizontal(action=context.url('/auth/forgot-pass'), method="POST")
+						div.form-group
+							label.control-label.col-sm-3(for="username") #{messageSource.getMessage('login.field.user', [], locale)} o Email
+							div.col-sm-9
+								input.form-control#username(type="text", placeholder="#{messageSource.getMessage('login.field.user', [], locale)} o Email", name="username")
+						div.form-group
+								div.col-sm-12
+									button.btn.btn-success.btn-block(type="submit") Recuperar
+						div.form-group
+							div.col-sm-12
+								span #{messageSource.getMessage('register.form.hasAccount', [], locale)}&nbsp;
+								a(href="#{context.url('/auth/login')}") #{messageSource.getMessage('register.form.login', [], locale)}
+								br
+								span #{messageSource.getMessage('login.form.noUserQuestion', [], locale)}&nbsp;
+								a(href=context.url('/auth/register')) #{messageSource.getMessage('login.form.register', [], locale)}
