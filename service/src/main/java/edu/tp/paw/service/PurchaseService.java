@@ -9,6 +9,7 @@ import edu.tp.paw.model.Purchase;
 import edu.tp.paw.model.PurchaseReview;
 import edu.tp.paw.model.PurchaseReviewBuilder;
 import edu.tp.paw.model.PurchaseStatus;
+import edu.tp.paw.model.User;
 
 @Service
 public class PurchaseService implements IPurchaseService {
@@ -46,6 +47,17 @@ public class PurchaseService implements IPurchaseService {
 	@Override
 	public PurchaseReview createPurchaseReview(final PurchaseReviewBuilder builder) {
 		return purchaseDao.createPurchaseReview(builder);
+	}
+
+	@Override
+	public float getAverageAsBuyer(final User user) {
+		return purchaseDao.getAverageAsBuyer(user);
+	}
+
+	@Override
+	public float getAverageAsSeller(final User user) {
+		
+		return purchaseDao.getAverageAsSeller(user);
 	}
 
 }

@@ -46,6 +46,9 @@ public class IdController extends BaseController {
 					.order(form.sortOrder())
 				.end().build();
 		
+		model.addAttribute("buyerRating", userService.getBuyerRating(user));
+		model.addAttribute("sellerRating", userService.getSellerRating(user));
+		
 		model.addAttribute("filter", filter);
 		model.addAttribute("items", userService.getPublishedItems(user, filter));
 		model.addAttribute("user", user);

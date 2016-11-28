@@ -4,6 +4,7 @@ import edu.tp.paw.model.Purchase;
 import edu.tp.paw.model.PurchaseReview;
 import edu.tp.paw.model.PurchaseReviewBuilder;
 import edu.tp.paw.model.PurchaseStatus;
+import edu.tp.paw.model.User;
 
 public interface IPurchaseDao {
 
@@ -15,5 +16,9 @@ public interface IPurchaseDao {
 	
 	public boolean updatePurchaseBuyerReview(final Purchase purchase, final PurchaseReview review);
 	public boolean updatePurchaseSellerReview(final Purchase purchase, final PurchaseReview review);
+
+	public float getAverageAsBuyer(final User user);
+
+	public float getAverageAsSeller(final User user);
 	
 }

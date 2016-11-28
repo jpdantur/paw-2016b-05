@@ -3,6 +3,7 @@ package edu.tp.paw.persistence;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +14,7 @@ import edu.tp.paw.model.Purchase;
 import edu.tp.paw.model.PurchaseReview;
 import edu.tp.paw.model.PurchaseReviewBuilder;
 import edu.tp.paw.model.PurchaseStatus;
+import edu.tp.paw.model.User;
 
 @Repository
 public class PurchaseHibernateDao implements IPurchaseDao {
@@ -66,6 +68,20 @@ public class PurchaseHibernateDao implements IPurchaseDao {
 		entityManager.flush();
 		
 		return review;
+	}
+
+	@Override
+	public float getAverageAsBuyer(final User user) {
+		final TypedQuery<Double> query = entityManager.createQuery("select round(coalesce(avg(p.sellerReview.rating),0), 1) from Purchase p where p.buyer = :user", Double.class);
+		query.setParameter("user", user);
+		return query.getSingleResult().floatValue();
+	}
+
+	@Override
+	public float getAverageAsSeller(final User user) {
+		final TypedQuery<Double> query = entityManager.createQuery("select round(coalesce(avg(p.buyerReview.rating),0), 1) from Purchase p where p.item.owner = :user", Double.class);
+		query.setParameter("user", user);
+		return query.getSingleResult().floatValue();
 	}
 
 }

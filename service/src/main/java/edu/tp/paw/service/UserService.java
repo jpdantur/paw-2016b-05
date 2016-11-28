@@ -537,4 +537,16 @@ public class UserService implements IUserService {
 		return purchaseService.updateSellerReview(purchase, review);
 		
 	}
+
+	@Override
+	public float getBuyerRating(final User user) {
+		
+		return purchaseService.getAverageAsBuyer(user);
+	}
+
+	@Override
+	public float getSellerRating(final User user) {
+		
+		return purchaseService.getAverageAsSeller(user);
+	}
 }

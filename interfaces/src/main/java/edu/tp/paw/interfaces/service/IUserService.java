@@ -96,4 +96,7 @@ public interface IUserService {
 	public boolean reviewPurchaseAsSeller(final User user, final Purchase purchase, final PurchaseReviewBuilder builderReview);
 	
 	
+	public float getBuyerRating(final User user);
+	public float getSellerRating(final User user);
+	
 }

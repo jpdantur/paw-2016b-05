@@ -19,18 +19,43 @@ block content
 						h1 #{user.username}
 				div.row#product-container
 					div.col-sm-12
-						h2.h1 Puntaje como vendedor
-							div.rating.static(style="margin-left:40px;display:inline-block;line-height:2em" ,data-rate-value=user.buyerRating)
+						table(style="width:100%")
+							tr
+								td
+									h2.h1(style="white-space:nowrap") Puntaje como vendedor
+								td.text-left(style="width:100%")
+									span.h1
+										div.rating.static(style="margin-left:40px;display:inline-block;line-height:2em" ,data-rate-value=sellerRating)
 					div.col-sm-12
 						div.row.text-center#stats-container
 							div.col-sm-6
-								span Ventas Aprobadas
+								span.text-muted Ventas Aprobadas
 								br
 								span.h1#approved-sales(data-end=174) 174
 							div.col-sm-6
-								span Ventas Rechazadas
+								span.text-muted Ventas Rechazadas
 								br
 								span.h1#rejected-sales(data-end=6) 6
+					hr.col-sm-12
+					div.col-sm-12
+						table(style="width:100%")
+							tr
+								td
+									h2.h1(style="white-space:nowrap") Puntaje como comprador
+								td.text-left(style="width:100%")
+									span.h1
+										div.rating.static(style="margin-left:40px;display:inline-block;line-height:2em" ,data-rate-value=buyerRating)
+					div.col-sm-12
+						div.row.text-center#stats-container
+							div.col-sm-6
+								span.text-muted Compras Aprobadas
+								br
+								span.h1#approved-sales(data-end=174) 174
+							div.col-sm-6
+								span.text-muted Compras Rechazadas
+								br
+								span.h1#rejected-sales(data-end=6) 6
+					hr.col-sm-12
 					div.col-sm-12
 						h2.h1 Articulos Publicados
 						div.row.text-right
