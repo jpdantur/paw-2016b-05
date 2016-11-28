@@ -12,7 +12,7 @@ div.tab-pane-content
 			table.table.table-striped.table-condensed
 				thead
 					tr
-						th(colspan=status.toString().equals('PENDING')?5:4)
+						th(colspan=5)
 							include profile_modifiers_sales
 						th(colspan=1)
 							div.input-group.input-group-sm(style="width:100%")
@@ -32,7 +32,7 @@ div.tab-pane-content
 							td(colspan=status.toString().equals('PENDING')?6:5)
 								div.alert #{messageSource.getMessage('profile.sales.nothing',[],locale)}
 					each transaction in items.results
-						tr(data-id=transaction.id)
+						tr.p(data-id=transaction.id)
 							td.center-vertical #{dateFormatter.format(transaction.created)}
 							td(style="width:40px")
 								if transaction.item.images.isEmpty()

@@ -2,12 +2,12 @@ $ document .ready !->
 
 	$ \.rating.static .rate do
 		max_value: 5,
-		step_size: 0.5,
+		step_size: 0.1,
 		readonly: true
 
 	$ \.rating.static .each !->
 		$self = $ this
-		rate-value = $self .data \rate-value
+		rate-value = $self .rate \getValue
 
 		if rate-value > 4
 			$self.addClass \great

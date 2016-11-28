@@ -47,7 +47,19 @@ $ document .ready !->
 
 	reviewBuyer = ($self, r) !->
 		if r
-			$ \#review-modal .modal(\show) .data \target, $self
+
+			$modal = $ \#review-modal
+
+			$row = $self .closest \tr
+
+			isSale = $row .hasClass \p
+
+			if isSale
+				$modal .find \.what .text \comprador
+			else
+				$modal .find \.what .text \vendedor
+
+			$modal .modal(\show) .data \target, $self
 
 
 	$ \.show-scores .click (e) !->
@@ -55,17 +67,72 @@ $ document .ready !->
 		e.preventDefault!
 
 		$self = $ this
+		$row = $self .closest \tr
 
-		buyer-rating = $self.data \b-rating
-		seller-rating = $self.data \s-rating
+		isSale = $row .hasClass \p
+
+		buyer-rating = $self.data(\b-rating) || {rating:0}
+		seller-rating = $self.data(\s-rating) || {rating:0}
 
 		$modal = $ \#review-modal-readonly
 
-		$modal .find \.rating .rate do
-			readonly: true
-		.rate \setValue, seller-rating.rating
+		# if isSale
+			# $modal .find($ \.j) .before($modal .find \.i)
 
-		$modal .find \#content-show .text seller-rating.comment
+		$modal .find \.what .text if isSale then \Comprador else \Vendedor 
+
+		# r1 es comprador
+		# r2 es vendedor
+
+		$modal .find ".r1, .r2" .hide!
+		$modal .find ".r1.l,.r2.l" .text "No ha puntuado aun"
+
+		idx = if isSale then 1 else 2
+
+		if buyer-rating.id
+			$modal .find ".r#idx.rating, .r#idx.l" .show!
+			$modal .find ".r#idx.l" .text buyer-rating.comment
+		else
+			$modal .find ".r#idx.help-block, .r#idx.l" .show!
+
+		idx = if isSale then 2 else 1
+
+		if seller-rating.id
+			$modal .find ".r#idx.rating, .r#idx.l" .show!
+			$modal .find ".r#idx.l" .text seller-rating.comment
+		else
+			$modal .find ".r#idx.help-block, .r#idx.l" .show!
+
+		idx = if isSale then 1 else 2
+
+		$modal .find \.rating .rate \destroy
+		.each !->
+			$rater = $ this
+
+			rate-value = if $rater.hasClass "r#idx" then buyer-rating.rating else seller-rating.rating
+
+			$rater
+			.rate do
+				max_value: 5,
+				step_size: 0.1,
+				readonly: true,
+				initial_value: rate-value
+			
+			if rate-value > 4
+				$rater.addClass \great
+			else if rate-value > 3
+				$rater.addClass \good
+			else if rate-value > 2
+				$rater.addClass \ok
+			else if rate-value > 1
+				$rater.addClass \bad
+			else
+				$rater.addClass \worst
+
+		$modal .find \.rate-button .click (e) !->
+			e.preventDefault!
+
+			reviewBuyer($self, true)
 
 		$modal .modal \show
 
@@ -77,9 +144,11 @@ $ document .ready !->
 		$self = $ this
 
 		$content = $ \#content
-		$target = $ \#review-modal .data \target
+		$modal = $ \#review-modal
+		$target = $modal .data \target
 		$row = $target .closest \tr
 
+		isSale = $row .hasClass \p
 
 		if !$content.val!
 
@@ -93,7 +162,7 @@ $ document .ready !->
 		console.log( $ \#comment-form .serialize!)
 
 		$ .ajax do
-			url: "#{baseUrl}/store/sales/#{$row.data('id')}/seller/review"
+			url: "#{baseUrl}/store/sales/#{$row.data('id')}/#{if isSale then 'seller' else 'buyer'}/review"
 			data: $ \#comment-form .serialize!
 			type: 'POST'
 			success: (data) !->
@@ -105,6 +174,7 @@ $ document .ready !->
 						type: 'danger'
 						z_index: 1300
 				else
+					$modal .modal \hide
 					$.notify {
 						message: 'Exito'
 					} , do

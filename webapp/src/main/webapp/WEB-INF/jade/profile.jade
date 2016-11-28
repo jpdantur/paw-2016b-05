@@ -74,7 +74,8 @@ block content
 					button.close(type="button", data-dismiss="modal")
 						span(aria-hidden="true") &times;
 						span.sr-only Close
-					h4.modal-title Puntuando al comprador
+					h4.modal-title Puntuando al&nbsp;
+						span.what comprador
 				.modal-body
 					form.form-horizontal#comment-form(role="form")
 						div.form-group
@@ -99,15 +100,29 @@ block content
 						span.sr-only Close
 					h4.modal-title Viendo Puntajes
 				.modal-body
-					form.form-horizontal(role="form")
+					form.form-horizontal.i(role="form")
+						legend Puntuacion del&nbsp;
+							span.what Vendedor
 						div.form-group
-							div.col-sm-12
-								label.col-sm-2.control-label(for="score") Puntaje
-								div.col-sm-10
-									div.rating.static(style="font-size:1.5em", data-rate-value="2.5")
+							label.col-sm-2.control-label(for="score") Puntaje
+							div.col-sm-10
+								div.rating.static.r1(style="font-size:1.5em")
+								p.help-block.r1 No ha puntuado aun
 						div.form-group
 							label.col-sm-2.control-label(for="content") #{messageSource.getMessage('item.comment', [], locale)}
 							div.col-sm-10
-								p#content-show
+								p.form-control-static.r1.l
+					form.form-horizontal.j(role="form")
+						legend Su Puntuacion
+						div.form-group
+							label.col-sm-2.control-label(for="score") Puntaje
+							div.col-sm-10
+								div.rating.static.r2(style="font-size:1.5em")
+								p.help-block.r2 No ha puntuado aun&nbsp;
+									button.btn-xs.btn-default.btn.rate-button Puntuar
+						div.form-group
+							label.col-sm-2.control-label(for="content") #{messageSource.getMessage('item.comment', [], locale)}
+							div.col-sm-10
+								p.form-control-static.r2.l
 				.modal-footer
 					button.btn.btn-default(type="button", data-dismiss="modal") Cerrar

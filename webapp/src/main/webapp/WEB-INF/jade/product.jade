@@ -124,12 +124,11 @@ block content
 								if !publishedItems.contains(storeItem)
 									form.form-horizontal#comment-form(action=context.url('/store/item/'+storeItem.id+'/comment'), method="POST")
 										div.form-group
-											div.col-sm-12
-												label.col-sm-2.control-label(for="score") Puntaje
-												div.col-sm-10
-													input#score-input(type="hidden", value="2.5", name="rating")
-													div#score.rating(style="font-size:1.5em", data-rate-value="2.5")
-													p.help-block
+											label.col-sm-2.control-label(for="score") Puntaje
+											div.col-sm-10
+												input#score-input(type="hidden", value="2.5", name="rating")
+												div#score.rating(style="font-size:1.5em", data-rate-value="2.5")
+												p.help-block
 										div.form-group(class="#{commentError?'has-error':''}")
 											label.col-sm-2.control-label(for="content") #{messageSource.getMessage('item.comment', [], locale)}
 											div.col-sm-10

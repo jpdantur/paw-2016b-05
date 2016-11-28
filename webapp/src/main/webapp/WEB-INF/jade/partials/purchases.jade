@@ -12,7 +12,7 @@ div.tab-pane-content
 			table.table.table-striped.table-condensed
 				thead
 					tr
-						th(colspan=3)
+						th(colspan=status.toString().equals('PENDING')?3:4)
 							include profile_modifiers_purchases
 						th(colspan=1)
 							div.input-group.input-group-sm(style="width:100%")
@@ -23,13 +23,15 @@ div.tab-pane-content
 						th #{messageSource.getMessage('profile.purchases.table.date',[],locale)}
 						th #{messageSource.getMessage('profile.purchases.table.seller',[],locale)}
 						th(colspan=2) #{messageSource.getMessage('profile.purchases.table.item',[],locale)}
+						if !status.toString().equals('PENDING')
+							th Puntaje
 				tbody
 					if items.numberOfTotalResults == 0
 						tr.info
 							td(colspan=4)
 								div.alert #{messageSource.getMessage('profile.sales.nothing',[],locale)}
 					each purchase in items.results
-						tr
+						tr(data-id=purchase.id)
 							td.center-vertical #{dateFormatter.format(purchase.created)}
 							td.center-vertical
 								if purchase.status.toString().equals('APPROVED')
@@ -48,6 +50,9 @@ div.tab-pane-content
 								span #{purchase.item.name}
 								br
 								span(style="color:#900") $#{purchase.item.price}
+							if !status.toString().equals('PENDING')
+								td.center-vertical
+									button.btn.btn-default.btn-xs.show-scores(data-s-rating=purchase.sellerReview, data-b-rating=purchase.buyerReview) Ver puntajes
 			ul.pager#filter-page(data-page="#{items.currentPage}", data-last-page="#{items.numberOfTotalResults/items.pageSize}")
 				li.previous(class="#{items.currentPage==0?'disabled':''}")
 					a.filter-page-action(href="#")

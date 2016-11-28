@@ -33,30 +33,89 @@ $(document).ready(function(){
     onHashChange(window.location.hash);
   });
   reviewBuyer = function($self, r){
+    var $modal, $row, isSale;
     if (r) {
-      $('#review-modal').modal('show').data('target', $self);
+      $modal = $('#review-modal');
+      $row = $self.closest('tr');
+      isSale = $row.hasClass('p');
+      if (isSale) {
+        $modal.find('.what').text('comprador');
+      } else {
+        $modal.find('.what').text('vendedor');
+      }
+      $modal.modal('show').data('target', $self);
     }
   };
   $('.show-scores').click(function(e){
-    var $self, buyerRating, sellerRating, $modal;
+    var $self, $row, isSale, buyerRating, sellerRating, $modal, idx;
     e.preventDefault();
     $self = $(this);
-    buyerRating = $self.data('b-rating');
-    sellerRating = $self.data('s-rating');
+    $row = $self.closest('tr');
+    isSale = $row.hasClass('p');
+    buyerRating = $self.data('b-rating') || {
+      rating: 0
+    };
+    sellerRating = $self.data('s-rating') || {
+      rating: 0
+    };
     $modal = $('#review-modal-readonly');
-    $modal.find('.rating').rate({
-      readonly: true
-    }).rate('setValue', sellerRating.rating);
-    $modal.find('#content-show').text(sellerRating.comment);
+    $modal.find('.what').text(isSale ? 'Comprador' : 'Vendedor');
+    $modal.find(".r1, .r2").hide();
+    $modal.find(".r1.l,.r2.l").text("No ha puntuado aun");
+    idx = isSale ? 1 : 2;
+    if (buyerRating.id) {
+      $modal.find(".r" + idx + ".rating, .r" + idx + ".l").show();
+      $modal.find(".r" + idx + ".l").text(buyerRating.comment);
+    } else {
+      $modal.find(".r" + idx + ".help-block, .r" + idx + ".l").show();
+    }
+    idx = isSale ? 2 : 1;
+    if (sellerRating.id) {
+      $modal.find(".r" + idx + ".rating, .r" + idx + ".l").show();
+      $modal.find(".r" + idx + ".l").text(sellerRating.comment);
+    } else {
+      $modal.find(".r" + idx + ".help-block, .r" + idx + ".l").show();
+    }
+    idx = isSale ? 1 : 2;
+    $modal.find('.rating').rate('destroy').each(function(){
+      var $rater, rateValue;
+      $rater = $(this);
+      rateValue = $rater.hasClass("r" + idx)
+        ? buyerRating.rating
+        : sellerRating.rating;
+      $rater.rate({
+        max_value: 5,
+        step_size: 0.1,
+        readonly: true,
+        initial_value: rateValue
+      });
+      if (rateValue > 4) {
+        $rater.addClass('great');
+      } else if (rateValue > 3) {
+        $rater.addClass('good');
+      } else if (rateValue > 2) {
+        $rater.addClass('ok');
+      } else if (rateValue > 1) {
+        $rater.addClass('bad');
+      } else {
+        $rater.addClass('worst');
+      }
+    });
+    $modal.find('.rate-button').click(function(e){
+      e.preventDefault();
+      reviewBuyer($self, true);
+    });
     $modal.modal('show');
   });
   $('#rate-action').click(function(e){
-    var $self, $content, $target, $row;
+    var $self, $content, $modal, $target, $row, isSale;
     e.preventDefault();
     $self = $(this);
     $content = $('#content');
-    $target = $('#review-modal').data('target');
+    $modal = $('#review-modal');
+    $target = $modal.data('target');
     $row = $target.closest('tr');
+    isSale = $row.hasClass('p');
     if (!$content.val()) {
       $content.closest('.form-group').addClass('has-error');
       $content.after('<span class="help-block">Contenido vacio</span>');
@@ -65,7 +124,7 @@ $(document).ready(function(){
     $self.addClass('disabled');
     console.log($('#comment-form').serialize());
     $.ajax({
-      url: baseUrl + "/store/sales/" + $row.data('id') + "/seller/review",
+      url: baseUrl + "/store/sales/" + $row.data('id') + "/" + (isSale ? 'seller' : 'buyer') + "/review",
       data: $('#comment-form').serialize(),
       type: 'POST',
       success: function(data){
@@ -78,6 +137,7 @@ $(document).ready(function(){
             z_index: 1300
           });
         } else {
+          $modal.modal('hide');
           $.notify({
             message: 'Exito'
           }, {

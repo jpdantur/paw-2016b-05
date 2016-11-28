@@ -1,13 +1,13 @@
 $(document).ready(function(){
   $('.rating.static').rate({
     max_value: 5,
-    step_size: 0.5,
+    step_size: 0.1,
     readonly: true
   });
   $('.rating.static').each(function(){
     var $self, rateValue;
     $self = $(this);
-    rateValue = $self.data('rate-value');
+    rateValue = $self.rate('getValue');
     if (rateValue > 4) {
       $self.addClass('great');
     } else if (rateValue > 3) {
