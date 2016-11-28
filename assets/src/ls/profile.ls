@@ -1,5 +1,12 @@
 $ document .ready !->
 
+	$ '[data-toggle="tooltip"]' .tooltip!
+
+	$ \#score .rate do
+		max_value: 5,
+		step_size: 0.5,
+		update_input_field_name: $('#score-input')
+
 	$ '#itemsTab a, #salesTab a, #purchaseTab a' .click (e) ->
 		# e.preventDefault!
 
@@ -38,6 +45,72 @@ $ document .ready !->
 	$ window .on \hashchange, !->
 		onHashChange window.location.hash
 
+	reviewBuyer = ($self, r) !->
+		if r
+			$ \#review-modal .modal(\show) .data \target, $self
+
+
+	$ \.show-scores .click (e) !->
+
+		e.preventDefault!
+
+		$self = $ this
+
+		buyer-rating = $self.data \b-rating
+		seller-rating = $self.data \s-rating
+
+		$modal = $ \#review-modal-readonly
+
+		$modal .find \.rating .rate do
+			readonly: true
+		.rate \setValue, seller-rating.rating
+
+		$modal .find \#content-show .text seller-rating.comment
+
+		$modal .modal \show
+
+
+	$ \#rate-action .click (e) !->
+
+		e.preventDefault!
+
+		$self = $ this
+
+		$content = $ \#content
+		$target = $ \#review-modal .data \target
+		$row = $target .closest \tr
+
+
+		if !$content.val!
+
+			$content .closest \.form-group .addClass \has-error
+			$content .after '<span class="help-block">Contenido vacio</span>'
+
+			return
+
+		$self .addClass \disabled
+
+		console.log( $ \#comment-form .serialize!)
+
+		$ .ajax do
+			url: "#{baseUrl}/store/sales/#{$row.data('id')}/seller/review"
+			data: $ \#comment-form .serialize!
+			type: 'POST'
+			success: (data) !->
+				$self .removeClass \disabled
+				if data.err
+					$.notify {
+						message: 'Error'
+					} , do
+						type: 'danger'
+						z_index: 1300
+				else
+					$.notify {
+						message: 'Exito'
+					} , do
+						type: 'success'
+						z_index: 1300
+
 	$ \.decide-transaction .click (e) !->
 
 		e.preventDefault!
@@ -64,11 +137,13 @@ $ document .ready !->
 								message: messages.sellError + ( if isApproving then messages.approving else messages.rejecting )
 							} , do
 								type: 'danger'
+								z_index: 1300
 						else
 							$.notify {
 								message: messages.sellSuccess
 							} , do
 								type: 'success'
+								z_index: 1300
 
 							if isApproving
 								$self .next! .remove!
@@ -76,6 +151,10 @@ $ document .ready !->
 							else
 								$self .prev! .remove!
 								$self .text messages.sellRejected
+
+							bootbox.confirm "Desea calificar al comprador ahora?", (r) !->
+								reviewBuyer($self, r)
+
 			else
 				$self .removeClass \disabled
 							# $self .prop(\disabled, \disabled) .removeClass \decide-transaction
@@ -148,6 +227,9 @@ $ document .ready !->
 							$self .toggleClass 'publish btn-success btn-default toggle-item-state' .text messages.sellPauseBtn
 			else
 				$self .removeClass \disabled
+	
+
+
 	query = {}
 
 	buildQuery = !->

@@ -1,5 +1,11 @@
 $(document).ready(function(){
-  var onHashChange, query, buildQuery, submit, resetPageNumber;
+  var onHashChange, reviewBuyer, query, buildQuery, submit, resetPageNumber;
+  $('[data-toggle="tooltip"]').tooltip();
+  $('#score').rate({
+    max_value: 5,
+    step_size: 0.5,
+    update_input_field_name: $('#score-input')
+  });
   $('#itemsTab a, #salesTab a, #purchaseTab a').click(function(e){});
   $('ul.nav-tabs > li > a').on('shown.bs.tab', function(e){
     var id;
@@ -25,6 +31,62 @@ $(document).ready(function(){
   onHashChange(window.location.hash);
   $(window).on('hashchange', function(){
     onHashChange(window.location.hash);
+  });
+  reviewBuyer = function($self, r){
+    if (r) {
+      $('#review-modal').modal('show').data('target', $self);
+    }
+  };
+  $('.show-scores').click(function(e){
+    var $self, buyerRating, sellerRating, $modal;
+    e.preventDefault();
+    $self = $(this);
+    buyerRating = $self.data('b-rating');
+    sellerRating = $self.data('s-rating');
+    $modal = $('#review-modal-readonly');
+    $modal.find('.rating').rate({
+      readonly: true
+    }).rate('setValue', sellerRating.rating);
+    $modal.find('#content-show').text(sellerRating.comment);
+    $modal.modal('show');
+  });
+  $('#rate-action').click(function(e){
+    var $self, $content, $target, $row;
+    e.preventDefault();
+    $self = $(this);
+    $content = $('#content');
+    $target = $('#review-modal').data('target');
+    $row = $target.closest('tr');
+    if (!$content.val()) {
+      $content.closest('.form-group').addClass('has-error');
+      $content.after('<span class="help-block">Contenido vacio</span>');
+      return;
+    }
+    $self.addClass('disabled');
+    console.log($('#comment-form').serialize());
+    $.ajax({
+      url: baseUrl + "/store/sales/" + $row.data('id') + "/seller/review",
+      data: $('#comment-form').serialize(),
+      type: 'POST',
+      success: function(data){
+        $self.removeClass('disabled');
+        if (data.err) {
+          $.notify({
+            message: 'Error'
+          }, {
+            type: 'danger',
+            z_index: 1300
+          });
+        } else {
+          $.notify({
+            message: 'Exito'
+          }, {
+            type: 'success',
+            z_index: 1300
+          });
+        }
+      }
+    });
   });
   $('.decide-transaction').click(function(e){
     var $self, $row, isApproving, actionDesc;
@@ -52,13 +114,15 @@ $(document).ready(function(){
                   ? messages.approving
                   : messages.rejecting)
               }, {
-                type: 'danger'
+                type: 'danger',
+                z_index: 1300
               });
             } else {
               $.notify({
                 message: messages.sellSuccess
               }, {
-                type: 'success'
+                type: 'success',
+                z_index: 1300
               });
               if (isApproving) {
                 $self.next().remove();
@@ -67,6 +131,9 @@ $(document).ready(function(){
                 $self.prev().remove();
                 $self.text(messages.sellRejected);
               }
+              bootbox.confirm("Desea calificar al comprador ahora?", function(r){
+                reviewBuyer($self, r);
+              });
             }
           }
         });

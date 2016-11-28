@@ -25,8 +25,7 @@ div.tab-pane-content
 						th 
 						th
 						th #{messageSource.getMessage('profile.sales.table.buyer',[],locale)}
-						if status.toString().equals('PENDING')
-							th
+						th #{status.toString().equals('PENDING') ? "" : "Puntajes"}
 				tbody
 					if items.numberOfTotalResults == 0
 						tr.info
@@ -59,6 +58,19 @@ div.tab-pane-content
 									button.btn.btn-danger.decide-transaction.btn-xs
 										i.fa-2x.glyphicon.glyphicon-remove
 									// #{messageSource.getMessage('profile.sales.danger',[],locale)}
+							else
+								td.center-vertical
+									button.btn.btn-default.btn-xs.show-scores(data-s-rating=transaction.sellerReview, data-b-rating=transaction.buyerReview) Ver puntajes
+									//-if !transaction.sellerReview
+										button.btn.btn-default.btn-xs Puntuar
+										else
+											span(data-toggle="tooltip", data-placement="top", title=transaction.sellerReview.comment) #{transaction.sellerReview.rating}
+									//-td.center-vertical
+										if !transaction.buyerReview
+											span -
+										else
+											button.btn-xs.btn.btn-default Ver Puntaje
+											span(data-toggle="tooltip", data-placement="top", title=transaction.sellerReview.comment) #{transaction.buyerReview.rating}
 							//-td #{item.sold} #{messageSource.getMessage('profile.items.table.sold',[],locale)}
 							//-td #{item.created}
 							//-td #{item.lastUpdated}

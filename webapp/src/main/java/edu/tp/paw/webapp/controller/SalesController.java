@@ -1,5 +1,7 @@
 package edu.tp.paw.webapp.controller;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,8 +33,11 @@ public class SalesController extends BaseController {
 	@ResponseBody
 	public String approveSale(
 			@PathVariable("purchaseId") final long id,
-			@ModelAttribute("loggedUser") final User user
+			@ModelAttribute("loggedUser") final User user,
+			final HttpServletRequest request
 		) {
+		
+		logger.trace("POST {}", request.getRequestURI());
 		
 		final Purchase purchase = purchaseService.findById(id);
 		
@@ -75,8 +80,14 @@ public class SalesController extends BaseController {
 	public String buyerReview(
 			@PathVariable("purchaseId") final long id,
 			@ModelAttribute("loggedUser") final User user,
-			@ModelAttribute("reviewForm") final PurchaseReviewForm form
+			@ModelAttribute("reviewForm") final PurchaseReviewForm form,
+			final HttpServletRequest request
 		) {
+		
+		logger.trace("POST {}", request.getRequestURI());
+		
+		logger.trace("PurchaseReviewForm: {}", form);
+		
 		
 		final Purchase purchase = purchaseService.findById(id);
 		
@@ -100,8 +111,13 @@ public class SalesController extends BaseController {
 	public String sellerReview(
 			@PathVariable("purchaseId") final long id,
 			@ModelAttribute("loggedUser") final User user,
-			@ModelAttribute("reviewForm") final PurchaseReviewForm form
+			@ModelAttribute("reviewForm") final PurchaseReviewForm form,
+			final HttpServletRequest request
 		) {
+		
+		logger.trace("POST {}", request.getRequestURI());
+		
+		logger.trace("PurchaseReviewForm: {}", form);
 		
 		final Purchase purchase = purchaseService.findById(id);
 		

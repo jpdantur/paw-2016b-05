@@ -55,9 +55,17 @@ public class PurchaseReview {
 	public float getRating() {
 		return rating;
 	}
+
+	@Override
+	public String toString() {
+		return "{\"id\":" + id + ", \"comment\":\"" + comment + "\", \"rating\":"
+				+ rating + ", \"created\":\"" + created + "\"}";
+	}
 	
 //	public Purchase getPurchase() {
 //		return purchase;
 //	}
+
+	
 	
 }

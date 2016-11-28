@@ -41,11 +41,11 @@ public class Purchase {
 	@Column( name = "created", insertable = false, updatable = false )
 	private Date created;
 	
-	@JoinColumn(name = "buyer_review", foreignKey = @ForeignKey( name = "buyer_review_fk" ))
+	@JoinColumn(name = "buyer_review", foreignKey = @ForeignKey( name = "buyer_review_fk" ), nullable = true, updatable = false)
 	@OneToOne( optional = true, fetch = FetchType.EAGER)
 	private PurchaseReview buyerReview;
 	
-	@JoinColumn(name = "seller_review", foreignKey = @ForeignKey( name = "seller_review_fk" ))
+	@JoinColumn(name = "seller_review", foreignKey = @ForeignKey( name = "seller_review_fk" ), nullable = true, updatable = false)
 	@OneToOne( optional = true, fetch = FetchType.EAGER )
 	private PurchaseReview sellerReview;
 	

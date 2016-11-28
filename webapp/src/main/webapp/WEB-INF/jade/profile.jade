@@ -67,3 +67,47 @@ block content
 					div.tab-pane.fade(class=show.equals("favourites")?'in active':'')#favourites
 						if show.equals('favourites')
 							include partials/favourites
+	#review-modal.modal.fade
+		.modal-dialog
+			.modal-content
+				.modal-header
+					button.close(type="button", data-dismiss="modal")
+						span(aria-hidden="true") &times;
+						span.sr-only Close
+					h4.modal-title Puntuando al comprador
+				.modal-body
+					form.form-horizontal#comment-form(role="form")
+						div.form-group
+							div.col-sm-12
+								label.col-sm-2.control-label(for="score") Puntaje
+								div.col-sm-10
+									input#score-input(type="hidden", value="2.5", name="rating")
+									div#score.rating(style="font-size:1.5em", data-rate-value="2.5")
+						div.form-group
+							label.col-sm-2.control-label(for="content") #{messageSource.getMessage('item.comment', [], locale)}
+							div.col-sm-10
+								textarea.form-control#content(name="comment", placeholder="#{messageSource.getMessage('item.comment', [], locale)}")
+				.modal-footer
+					button.btn.btn-default(type="button", data-dismiss="modal") Cerrar
+					button.btn.btn-primary#rate-action(type="button") Puntuar
+	#review-modal-readonly.modal.fade
+		.modal-dialog
+			.modal-content
+				.modal-header
+					button.close(type="button", data-dismiss="modal")
+						span(aria-hidden="true") &times;
+						span.sr-only Close
+					h4.modal-title Viendo Puntajes
+				.modal-body
+					form.form-horizontal(role="form")
+						div.form-group
+							div.col-sm-12
+								label.col-sm-2.control-label(for="score") Puntaje
+								div.col-sm-10
+									div.rating.static(style="font-size:1.5em", data-rate-value="2.5")
+						div.form-group
+							label.col-sm-2.control-label(for="content") #{messageSource.getMessage('item.comment', [], locale)}
+							div.col-sm-10
+								p#content-show
+				.modal-footer
+					button.btn.btn-default(type="button", data-dismiss="modal") Cerrar

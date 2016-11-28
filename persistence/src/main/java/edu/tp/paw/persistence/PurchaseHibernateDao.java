@@ -4,6 +4,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import edu.tp.paw.interfaces.dao.IPurchaseDao;
@@ -15,6 +17,8 @@ import edu.tp.paw.model.PurchaseStatus;
 @Repository
 public class PurchaseHibernateDao implements IPurchaseDao {
 
+	private final static Logger logger = LoggerFactory.getLogger(PurchaseHibernateDao.class);
+	
 	@PersistenceContext
 	private EntityManager entityManager;
 	
@@ -36,7 +40,7 @@ public class PurchaseHibernateDao implements IPurchaseDao {
 		
 		final Query query = entityManager.createQuery("update Purchase set buyerReview = :review where id = :id");
 		query.setParameter("id", purchase.getId());
-		query.setParameter("review", review.getId());
+		query.setParameter("review", review);
 		return query.executeUpdate() == 1;
 		
 	}
@@ -46,7 +50,7 @@ public class PurchaseHibernateDao implements IPurchaseDao {
 		
 		final Query query = entityManager.createQuery("update Purchase set sellerReview = :review where id = :id");
 		query.setParameter("id", purchase.getId());
-		query.setParameter("review", review.getId());
+		query.setParameter("review", review);
 		return query.executeUpdate() == 1;
 	}
 
@@ -55,7 +59,11 @@ public class PurchaseHibernateDao implements IPurchaseDao {
 		
 		final PurchaseReview review = builder.build();
 		
+		logger.debug("persisting {}", review);
+		
 		entityManager.persist(review);
+		
+		entityManager.flush();
 		
 		return review;
 	}
