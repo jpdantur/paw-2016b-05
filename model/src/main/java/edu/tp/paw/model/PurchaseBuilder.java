@@ -1,6 +1,7 @@
 package edu.tp.paw.model;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class PurchaseBuilder  implements IBuilder<Purchase> {
 
@@ -16,8 +17,8 @@ public class PurchaseBuilder  implements IBuilder<Purchase> {
 	private PurchaseReview sellerReview;
 	
 	public PurchaseBuilder(final User user, final StoreItem item) {
-		this.buyer = user;
-		this.item = item;
+		this.buyer = Objects.requireNonNull(user);
+		this.item = Objects.requireNonNull(item);
 	}
 	
 	public PurchaseBuilder approved(final PurchaseStatus status) {
@@ -31,17 +32,17 @@ public class PurchaseBuilder  implements IBuilder<Purchase> {
 	}
 	
 	public PurchaseBuilder created(final Date created) {
-		this.created = created;
+		this.created = Objects.requireNonNull(created);
 		return this;
 	}
 	
 	public PurchaseBuilder buyerReview(final PurchaseReview buyerReview) {
-		this.buyerReview = buyerReview;
+		this.buyerReview = Objects.requireNonNull(buyerReview);
 		return this;
 	}
 	
 	public PurchaseBuilder sellerReview(final PurchaseReview sellerReview) {
-		this.sellerReview = sellerReview;
+		this.sellerReview = Objects.requireNonNull(sellerReview);
 		return this;
 	}
 	
@@ -75,6 +76,13 @@ public class PurchaseBuilder  implements IBuilder<Purchase> {
 
 	@Override
 	public Purchase build() {
+		
+		Objects.requireNonNull(buyer);
+		Objects.requireNonNull(item);
+		Objects.requireNonNull(sellerReview);
+		Objects.requireNonNull(buyerReview);
+		Objects.requireNonNull(created);
+		
 		return new Purchase(this);
 	}
 

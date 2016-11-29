@@ -15,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.jdbc.JdbcTestUtils;
@@ -47,8 +46,6 @@ public class UserHibernateDaoTest {
 	private static final BigDecimal PRICE = new BigDecimal(100);
 
 	@Autowired private IUserDao userDao;
-	
-	@Autowired private PasswordEncoder passwordEncoder;
 	
 	private User user;
 	private Purchase purchase;

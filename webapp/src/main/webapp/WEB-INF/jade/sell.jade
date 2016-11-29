@@ -33,15 +33,38 @@ block content
 					div.form-group
 						label.col-sm-2.control-label(for="category") #{messageSource.getMessage('sell.field.category',[],locale)}
 						div.col-sm-10
-							mixin categories(categories)
+							input#category-input(type="hidden", name="categoryId", value=(item?item.categoryId:''))
+							mixin categories(categories, depth)
+								if !categories.isEmpty()
+									div.category-card(class=(depth==0?' visible':''), data-parent=categories.iterator().next().parent.id)
+										ul.list-unstyled
+											each category in categories
+												li
+													a(class=(item && item.categoryId == item.category.id ? 'active': ''), href="#", data-id=category.id) #{category.name}
 								each category in categories
-									if item && item.categoryId == item.category.id
-										option(value="#{category.id}", selected) #{category.name}
-									else	
-										option(value="#{category.id}") #{category.name}
-							select.form-control(name="categoryId", id="category")
-								+categories(categories)
+									+categories(category.children, depth+1)
+								
+							div#category-browser
+								div
+									+categories(categories, 0)
+									div.category-card.text-center#success-card
+										span.text-muted Usted Eligio:
+										br
+										span.h4#category-name
+
+
+							//- mixin categories(categories)
+							//- 	each category in categories
+							//- 		if item && item.categoryId == item.category.id
+							//- 			option(value="#{category.id}", selected) #{category.name}
+							//- 		else	
+							//- 			option(value="#{category.id}") #{category.name}
+							//- select.form-control(name="categoryId", id="category")
+							//- 	+categories(categories)
 							+errors(bindingResult, 'category')
+					
+
+
 					div.form-group(class="#{bindingResult.hasFieldErrors('used')?'has-error':''}")
 						label.col-sm-2.control-label(for="used") #{messageSource.getMessage('sell.field.status.title',[],locale)}
 						div.col-sm-10
