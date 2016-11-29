@@ -47,16 +47,45 @@ $ document .ready !->
 		redrawBrowser!
 		
 	$ 'form' .submit (e) !->
-		
-		console.log('form-submit')
 
-		console.log($category-input .val!)
-		console.log(!$category-input .val!)
+		$ \#submit-button .addClass \disabled
 
-		if !$category-input .val!
-			console.log('preventing')
+		if !$category-input .val! || $category-input .val! == '0'
+			
+			$ \#submit-button .removeClass \disabled
+
+			$.notify {
+				message: 'Por favor elija una categoria'
+			} , do
+				type: 'warning'
+
+
 			e.preventDefault!
 			return false
+
+	markActiveTree = !->
+
+		$self = this
+
+		$card = $self.closest \.category-card
+
+		$parentLink = $ ".category-card a[data-id=#{$card.data('parent')}]"
+
+		$parentCard = $parentLink .parent! .addClass \active .closest \.category-card
+
+		$card .addClass \visible
+
+		if $card.data('parent') != $parentCard .data('parent')
+			markActiveTree.apply $parentLink
+
+	$activeCategory = $ ".category-card a[data-id=#{$category-input.val!}]"
+
+	$success-card.addClass \visible
+	$category-name.text $activeCategory.text!
+
+	markActiveTree.apply(  $activeCategory.parent! )
+
+	# markActiveTree.apply( $ ".category-card a[data-id=#{$category-input.val!}]" .parent!)
 
 
 		

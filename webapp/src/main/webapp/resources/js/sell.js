@@ -1,5 +1,5 @@
 $(document).ready(function(){
-  var $prevCard, $successCard, $categoryName, $categoryInput, redrawBrowser;
+  var $prevCard, $successCard, $categoryName, $categoryInput, redrawBrowser, markActiveTree, $activeCategory;
   $prevCard = [];
   $successCard = $('#success-card');
   $categoryName = $('#category-name');
@@ -39,13 +39,31 @@ $(document).ready(function(){
     redrawBrowser();
   });
   $('form').submit(function(e){
-    console.log('form-submit');
-    console.log($categoryInput.val());
-    console.log(!$categoryInput.val());
-    if (!$categoryInput.val()) {
-      console.log('preventing');
+    $('#submit-button').addClass('disabled');
+    if (!$categoryInput.val() || $categoryInput.val() === '0') {
+      $('#submit-button').removeClass('disabled');
+      $.notify({
+        message: 'Por favor elija una categoria'
+      }, {
+        type: 'warning'
+      });
       e.preventDefault();
       return false;
     }
   });
+  markActiveTree = function(){
+    var $self, $card, $parentLink, $parentCard;
+    $self = this;
+    $card = $self.closest('.category-card');
+    $parentLink = $(".category-card a[data-id=" + $card.data('parent') + "]");
+    $parentCard = $parentLink.parent().addClass('active').closest('.category-card');
+    $card.addClass('visible');
+    if ($card.data('parent') !== $parentCard.data('parent')) {
+      markActiveTree.apply($parentLink);
+    }
+  };
+  $activeCategory = $(".category-card a[data-id=" + $categoryInput.val() + "]");
+  $successCard.addClass('visible');
+  $categoryName.text($activeCategory.text());
+  markActiveTree.apply($activeCategory.parent());
 });
