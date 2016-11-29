@@ -36,7 +36,7 @@ public class Comment {
 	@Column(length = 300, nullable = false, name = "comment_content")
 	private String content;
 	
-	@Column(insertable = false, updatable = false, nullable = false)
+	@Column(insertable = false, updatable = false, nullable = false, columnDefinition = "timestamp default now()")
 	private Date created;
 	
 	private float rating;

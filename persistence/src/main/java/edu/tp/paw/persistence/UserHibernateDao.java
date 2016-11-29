@@ -85,8 +85,11 @@ public class UserHibernateDao implements IUserDao {
 		final Query query = entityManager.createQuery("update User set password = :password where id = :id");
 		query.setParameter("id", user.getId());
 		query.setParameter("password", password);
-		query.executeUpdate();
-		return true;
+		final boolean ok = query.executeUpdate() == 1;
+		
+		entityManager.refresh(user);
+		
+		return ok;
 	}
 	
 	

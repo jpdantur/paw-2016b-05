@@ -9,6 +9,8 @@ import javax.sql.DataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
@@ -33,6 +35,8 @@ import edu.tp.paw.model.UserBuilder;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
 public class CommentHibernateDaoTest {
+	
+	private final static Logger logger = LoggerFactory.getLogger(CommentHibernateDaoTest.class);
 	
 	@Autowired
 	DataSource ds;
@@ -68,6 +72,7 @@ public class CommentHibernateDaoTest {
 	@Before
 	@Transactional
 	public void setUp() throws Exception {
+		logger.trace("setUp start");
 		jdbcTemplate = new JdbcTemplate(ds);
 		jdbcTemplate.execute("insert into store_categories(category_id, category_name, parent) values (0, 'root', 0);");
 		categoryBuilder = new CategoryBuilder("Category", categoryDao.findById(0));
@@ -81,6 +86,7 @@ public class CommentHibernateDaoTest {
 		item = itemDao.create(itemBuilder);
 		//System.out.println(item.getId());
 		commentBuilder = new CommentBuilder(otherUser, "Comentario", 0).item(item);
+		logger.trace("setUp end");
 	}
 	
 	@Test
@@ -93,7 +99,9 @@ public class CommentHibernateDaoTest {
 	@Test
 	@Transactional
 	public void commentsForItemTest(){
+		logger.trace("commentsForItemTest start");
 		comment = commentDao.createComment(commentBuilder);
 		assertTrue(commentDao.commentsForItem(item).contains(comment));
+		logger.trace("commentsForItemTest end");
 	}
 }

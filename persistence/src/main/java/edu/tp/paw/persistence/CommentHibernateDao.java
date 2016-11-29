@@ -1,9 +1,10 @@
 package edu.tp.paw.persistence;
 
-import java.util.Set;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 
 import org.springframework.stereotype.Repository;
 
@@ -29,14 +30,18 @@ public class CommentHibernateDao implements ICommentDao {
 	}
 
 	@Override
-	public Set<Comment> commentsForItem(final StoreItem item) {
+	public List<Comment> commentsForItem(final StoreItem item) {
 		
-		final StoreItem i = entityManager.getReference(StoreItem.class, item.getId());
+		final TypedQuery<Comment> query = entityManager.createQuery("from Comment c where item=:item", Comment.class);
+		query.setParameter("item", item);
+		return query.getResultList();
+		
+//		final StoreItem i = entityManager.getReference(StoreItem.class, item.getId());
 		
 		// hibernate trick
-		i.getComments().iterator();
+//		i.getComments().iterator();
 		
-		return i.getComments();
+//		return i.getComments();
 
 //		final TypedQuery<Comment> query = entityManager.createQuery("from Comment as c where c.item_id = :id", Comment.class);
 //		query.setParameter("id", item.getId());

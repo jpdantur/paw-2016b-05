@@ -1,6 +1,6 @@
 package edu.tp.paw.interfaces.service;
 
-import java.util.Set;
+import java.util.List;
 
 import edu.tp.paw.model.Favourite;
 import edu.tp.paw.model.FavouriteBuilder;
@@ -17,7 +17,7 @@ public interface IFavouriteService {
 	public Favourite addFavourite(final FavouriteBuilder builder);
 	public boolean removeFavourite(final Favourite favourite);
 	
-	public Set<Favourite> getFavouritesForUser(final User user);
+	public List<Favourite> getFavouritesForUser(final User user);
 	public PagedResult<Favourite> getFavouritesForUser(final User user, final Filter filter); 
 	
 }

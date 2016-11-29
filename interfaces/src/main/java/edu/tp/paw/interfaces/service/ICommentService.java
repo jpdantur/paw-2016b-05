@@ -1,6 +1,6 @@
 package edu.tp.paw.interfaces.service;
 
-import java.util.Set;
+import java.util.List;
 
 import edu.tp.paw.model.Comment;
 import edu.tp.paw.model.CommentBuilder;
@@ -12,6 +12,6 @@ public interface ICommentService {
 	
 	public Comment createComment(final CommentBuilder builder);
 	
-	public Set<Comment> commentsForItem(final StoreItem item);
+	public List<Comment> commentsForItem(final StoreItem item);
 	
 }

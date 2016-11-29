@@ -1,6 +1,6 @@
 package edu.tp.paw.service;
 
-import java.util.Set;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -49,7 +49,7 @@ public class CommentService implements ICommentService {
 	}
 	
 	@Override
-	public Set<Comment> commentsForItem(final StoreItem item) {
+	public List<Comment> commentsForItem(final StoreItem item) {
 		return commentDao.commentsForItem(item);
 	}
 

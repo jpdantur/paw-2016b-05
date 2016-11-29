@@ -11,8 +11,11 @@ import javax.sql.DataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.jdbc.JdbcTestUtils;
@@ -32,26 +35,20 @@ import edu.tp.paw.model.UserBuilder;
 @ContextConfiguration(classes = TestConfig.class)
 public class UserHibernateDaoTest {
 
+	private final static Logger logger = LoggerFactory.getLogger(UserHibernateDaoTest.class);
 	
 	private static final String USER_NAME = "Chuck Norris";
-
 	private static final String EMAIL = "PresidentTrump@WhiteHouse.gov";
-
 	private static final String PASSWORD = "12345";
-
 	private static final String ROLENAME = "Rol";
-
 	private static final String SLUG = "Slug";
-
 	private static final String ITEM_NAME = "Paw TEST";
-
 	private static final String DESCRIPTION = "Very Fun and Challenging!";
-
 	private static final BigDecimal PRICE = new BigDecimal(100);
 
-	@Autowired
-	private IUserDao userDao;
+	@Autowired private IUserDao userDao;
 	
+	@Autowired private PasswordEncoder passwordEncoder;
 	
 	private User user;
 	private Purchase purchase;
@@ -72,7 +69,7 @@ public class UserHibernateDaoTest {
 	public void setUp() throws Exception {
 		jdbcTemplate = new JdbcTemplate(ds);
 		userBuilder = new UserBuilder(USER_NAME).email(EMAIL).password(PASSWORD);
-		roleBuilder = new RoleBuilder (ROLENAME, SLUG).id(6);
+		roleBuilder = new RoleBuilder(ROLENAME, SLUG).id(6);
 		role = roleBuilder.build();
 		itemBuilder = new StoreItemBuilder(ITEM_NAME, DESCRIPTION, PRICE, false);
 		item = itemBuilder.build();
@@ -134,9 +131,8 @@ public class UserHibernateDaoTest {
 	@Transactional
 	public void changePasswordTest() {
 		user = userDao.create(userBuilder);
-		userDao.changePassword(user, "54321");
-		assertEquals("54321",userDao.findById(user.getId()).getPassword());
-		
+		assertTrue(userDao.changePassword(user, "54321"));
+		assertEquals("passwords should match", "54321", user.getPassword());
 	}
 	
 	@Test

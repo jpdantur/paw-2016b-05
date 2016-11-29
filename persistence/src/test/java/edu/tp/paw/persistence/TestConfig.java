@@ -12,6 +12,8 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import java.util.Properties;
@@ -24,6 +26,8 @@ import org.hsqldb.jdbc.JDBCDriver;
 @ComponentScan({ "edu.tp.paw.persistence", })
 @Configuration
 public class TestConfig {
+	
+	private static final int BCRYPT_ROUNDS = 10;
 	
 	@Value("classpath:schema.sql")
 	private Resource schemaSql;
@@ -57,8 +61,16 @@ public class TestConfig {
         properties.setProperty("hibernate.hbm2ddl.auto", "update");
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
 
+        properties.setProperty("hibernate.show_sql", "true");
+    		properties.setProperty("hibernate.format_sql", "true");
+        
         factoryBean.setJpaProperties(properties);
 
         return factoryBean;
     }
+    
+    @Bean
+  	public PasswordEncoder passwordEncoder() {
+  		return new BCryptPasswordEncoder(BCRYPT_ROUNDS);
+  	}
 } 

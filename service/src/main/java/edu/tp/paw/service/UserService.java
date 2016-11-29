@@ -164,7 +164,7 @@ public class UserService implements IUserService {
 	}
 
 	@Override
-	public Set<Favourite> getAllFavourites(final User user) {
+	public List<Favourite> getAllFavourites(final User user) {
 		
 		if (user == null) {
 			throw new IllegalArgumentException("user cant be null");

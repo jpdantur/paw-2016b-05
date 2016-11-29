@@ -1,9 +1,10 @@
 package edu.tp.paw.persistence;
 
-import java.util.Set;
+import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TypedQuery;
 
 import org.springframework.stereotype.Repository;
 
@@ -15,6 +16,8 @@ import edu.tp.paw.model.StoreItem;
 @Repository
 public class StoreImageHibernateDao implements IImageDao {
 
+//	private final static Logger logger = LoggerFactory.getLogger(StoreImageHibernateDao.class);
+	
 	@PersistenceContext
 	private EntityManager entityManager;
 
@@ -24,14 +27,23 @@ public class StoreImageHibernateDao implements IImageDao {
 	}
 
 	@Override
-	public Set<StoreImage> imagesForItem(final StoreItem item) {
+	public List<StoreImage> imagesForItem(final StoreItem item) {
 		
-		final StoreItem i = entityManager.getReference(StoreItem.class, item.getId());
+		final TypedQuery<StoreImage> query = entityManager.createQuery("from StoreImage si where item=:item", StoreImage.class);
+		query.setParameter("item", item);
+		return query.getResultList();
 		
-		// hibernate trick
-		i.getImages().iterator();
-		
-		return i.getImages();
+//		final StoreItem i = entityManager.getReference(StoreItem.class, item.getId());
+//		
+//		logger.debug("item images: {}", i.getImages());
+//		
+//		// hibernate trick
+//		i.getImages().iterator();
+//		i.getImages().size();
+//		
+//		logger.debug("item images: {}", i.getImages());
+//		
+//		return i.getImages();
 	}
 
 	@Override

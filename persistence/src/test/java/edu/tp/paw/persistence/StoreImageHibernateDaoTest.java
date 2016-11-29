@@ -10,6 +10,8 @@ import javax.sql.DataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
@@ -34,6 +36,8 @@ import edu.tp.paw.model.UserBuilder;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
 public class StoreImageHibernateDaoTest {
+	
+	private final static Logger logger = LoggerFactory.getLogger(StoreImageHibernateDaoTest.class);
 	
 	@Autowired
 	DataSource ds;
@@ -67,6 +71,7 @@ public class StoreImageHibernateDaoTest {
 	@Before
 	@Transactional
 	public void setUp() throws Exception {
+		logger.trace("setUp start");
 		jdbcTemplate = new JdbcTemplate(ds);
 		jdbcTemplate.execute("insert into store_categories(category_id, category_name, parent) values (0, 'root', 0);");
 		categoryBuilder = new CategoryBuilder("Category", categoryDao.findById(0));
@@ -77,6 +82,7 @@ public class StoreImageHibernateDaoTest {
 		itemBuilder = new StoreItemBuilder("Nombre", "Desc", new BigDecimal(100), false).category(category).owner(user).status(StoreItemStatus.ACTIVE);
 		item = itemDao.create(itemBuilder);
 		imageBuilder = new StoreImageBuilder("Foto", new byte[200] ).item(item);
+		logger.trace("setUp end");
 	}
 	
 	@Test
@@ -96,7 +102,9 @@ public class StoreImageHibernateDaoTest {
 	@Test
 	@Transactional
 	public void testImagesForItem() {
+		logger.trace("testImagesForItem start");
 		image = imageDao.createImage(imageBuilder);
 		assertTrue(imageDao.imagesForItem(item).contains(image));
+		logger.trace("testImagesForItem end");
 	}
 }

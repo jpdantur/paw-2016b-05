@@ -1,7 +1,6 @@
 package edu.tp.paw.persistence;
 
 import java.util.List;
-import java.util.Set;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -13,6 +12,7 @@ import org.springframework.stereotype.Repository;
 import edu.tp.paw.interfaces.dao.IFavouriteDao;
 import edu.tp.paw.model.Favourite;
 import edu.tp.paw.model.FavouriteBuilder;
+import edu.tp.paw.model.StoreImage;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.filter.Filter;
 import edu.tp.paw.model.filter.OrderFilter;
@@ -28,13 +28,17 @@ public class FavouriteHibernateDao implements IFavouriteDao {
 	private EntityManager entityManager;
 	
 	@Override
-	public Set<Favourite> getFavouritesForUser(final User user) {
+	public List<Favourite> getFavouritesForUser(final User user) {
 		
-		final User u = entityManager.getReference(User.class, user.getId());
+		final TypedQuery<Favourite> query = entityManager.createQuery("from Favourite f where user=:user", Favourite.class);
+		query.setParameter("user", user);
+		return query.getResultList();
 		
-		u.getFavourites().iterator();
-		
-		return u.getFavourites();
+//		final User u = entityManager.getReference(User.class, user.getId());
+//		
+//		u.getFavourites().iterator();
+//		
+//		return u.getFavourites();
 		
 	}
 

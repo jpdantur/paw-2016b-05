@@ -50,7 +50,7 @@ public interface IUserService {
 	
 	public boolean isUsersPassword(final User user, final String password);
 	
-	public Set<Favourite> getAllFavourites(final User user);
+	public List<Favourite> getAllFavourites(final User user);
 	public PagedResult<Favourite> getFavourites(final User user, final Filter filter);
 	
 	public Favourite addFavourite(final FavouriteBuilder builder);

@@ -1,7 +1,6 @@
 package edu.tp.paw.interfaces.service;
 
 import java.util.List;
-import java.util.Set;
 
 import edu.tp.paw.model.Comment;
 import edu.tp.paw.model.CommentBuilder;
@@ -51,7 +50,7 @@ public interface IStoreItemService {
 
 	public Comment addComment(final CommentBuilder builder);
 	
-	public Set<Comment> getComments(final StoreItem item);
+	public List<Comment> getComments(final StoreItem item);
 	
 	public int getNumberOfItems();
 	

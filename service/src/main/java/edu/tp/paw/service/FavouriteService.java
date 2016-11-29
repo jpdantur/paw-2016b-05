@@ -1,6 +1,6 @@
 package edu.tp.paw.service;
 
-import java.util.Set;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -37,7 +37,7 @@ public class FavouriteService implements IFavouriteService {
 	}
 
 	@Override
-	public Set<Favourite> getFavouritesForUser(final User user) {
+	public List<Favourite> getFavouritesForUser(final User user) {
 		return favouriteDao.getFavouritesForUser(user);
 	}
 

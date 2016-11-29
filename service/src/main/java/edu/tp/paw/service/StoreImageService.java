@@ -1,6 +1,6 @@
 package edu.tp.paw.service;
 
-import java.util.Set;
+import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -26,7 +26,7 @@ public class StoreImageService implements IImageService {
 	}
 
 	@Override
-	public Set<StoreImage> imagesForItem(final StoreItem item) {
+	public List<StoreImage> imagesForItem(final StoreItem item) {
 		if (item == null) {
 			throw new IllegalArgumentException("item cant be null");
 		}
