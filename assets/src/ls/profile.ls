@@ -55,9 +55,9 @@ $ document .ready !->
 			isSale = $row .hasClass \p
 
 			if isSale
-				$modal .find \.what .text \comprador
+				$modal .find \.what .text messages.scorebuyer
 			else
-				$modal .find \.what .text \vendedor
+				$modal .find \.what .text messages.scoreseller
 
 			$modal .modal(\show) .data \target, $self
 
@@ -79,13 +79,13 @@ $ document .ready !->
 		# if isSale
 			# $modal .find($ \.j) .before($modal .find \.i)
 
-		$modal .find \.what .text if isSale then \Comprador else \Vendedor 
+		$modal .find \.what .text if isSale then messages.scoreBuyer else messages.scoreSeller
 
 		# r1 es comprador
 		# r2 es vendedor
 
 		$modal .find ".r1, .r2" .hide!
-		$modal .find ".r1.l,.r2.l" .text "No ha puntuado aun"
+		$modal .find ".r1.l,.r2.l" .text messages.scoreStillNoScore
 
 		idx = if isSale then 1 else 2
 
@@ -153,7 +153,7 @@ $ document .ready !->
 		if !$content.val!
 
 			$content .closest \.form-group .addClass \has-error
-			$content .after '<span class="help-block">Contenido vacio</span>'
+			$content .after '<span class="help-block">' + messages.scoreVoidContent + '</span>'
 
 			return
 
@@ -169,14 +169,14 @@ $ document .ready !->
 				$self .removeClass \disabled
 				if data.err
 					$.notify {
-						message: 'Error'
+						message: messages.scoreError
 					} , do
 						type: 'danger'
 						z_index: 1300
 				else
 					$modal .modal \hide
 					$.notify {
-						message: 'Exito'
+						message: messages.scoreSuccess
 					} , do
 						type: 'success'
 						z_index: 1300
@@ -222,7 +222,7 @@ $ document .ready !->
 								$self .prev! .remove!
 								$self .text messages.sellRejected
 
-							bootbox.confirm "Desea calificar al comprador ahora?", (r) !->
+							bootbox.confirm messages.scoreScoreBuyer, (r) !->
 								reviewBuyer($self, r)
 
 			else

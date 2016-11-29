@@ -20,11 +20,20 @@ block scripts
 			sellPauseBtn:       "!{messageSource.getMessage('profile.sales.sell.pauseBtn',[],locale)}",
 			sellPublishConfirm: "!{messageSource.getMessage('profile.sales.sell.publishConfirmation',[],locale)}",
 			sellPublished:      "#{messageSource.getMessage('profile.sales.sell.published',[],locale)}",
-			approving: "#{messageSource.getMessage('profile.sales.sell.approving',[],locale)}",
-			pausing: "#{messageSource.getMessage('profile.sales.sell.pausing',[],locale)}",
-			publishing: "#{messageSource.getMessage('profile.sales.sell.publishing',[],locale)}",
-			rejecting: "#{messageSource.getMessage('profile.sales.sell.rejecting',[],locale)}",
-			resuming: "#{messageSource.getMessage('profile.sales.sell.resuming',[],locale)}"
+			approving: 			"#{messageSource.getMessage('profile.sales.sell.approving',[],locale)}",
+			pausing: 			"#{messageSource.getMessage('profile.sales.sell.pausing',[],locale)}",
+			publishing: 		"#{messageSource.getMessage('profile.sales.sell.publishing',[],locale)}",
+			rejecting: 			"#{messageSource.getMessage('profile.sales.sell.rejecting',[],locale)}",
+			resuming: 			"#{messageSource.getMessage('profile.sales.sell.resuming',[],locale)}",
+			scoreBuyer: 		"#{messageSource.getMessage('profile.modal.scores.buyer',[],locale)}",
+			scoreSeller: 		"#{messageSource.getMessage('profile.modal.scores.seller',[],locale)}",
+			scorebuyer: 		"#{messageSource.getMessage('profile.modal.scores.lowerBuyer',[],locale)}",
+			scoreseller: 		"#{messageSource.getMessage('profile.modal.scores.lowerSeller',[],locale)}",
+			scoreScoreBuyer: 	"#{messageSource.getMessage('profile.modal.scores.scoreBuyer',[],locale)}",
+			scoreStillNoScore: 	"!{messageSource.getMessage('profile.modal.scores.stillNoScore',[],locale)}",
+			scoreVoidContent: 	"#{messageSource.getMessage('profile.modal.scores.voidContent',[],locale)}",
+			scoreError: 		"#{messageSource.getMessage('profile.modal.scores.error',[],locale)}",
+			scoreSuccess: 		"#{messageSource.getMessage('profile.modal.scores.success',[],locale)}"
 		};
 	script(src="#{context.url('/resources/js/profile.js')}", type="text/javascript")
 
@@ -74,13 +83,13 @@ block content
 					button.close(type="button", data-dismiss="modal")
 						span(aria-hidden="true") &times;
 						span.sr-only Close
-					h4.modal-title Puntuando al&nbsp;
-						span.what comprador
+					h4.modal-title #{messageSource.getMessage('profile.modal.scores.scoringTo', [], locale)}&nbsp;
+						span.what #{messageSource.getMessage('profile.modal.scores.lowerBuyer', [], locale)}
 				.modal-body
 					form.form-horizontal#comment-form(role="form")
 						div.form-group
 							div.col-sm-12
-								label.col-sm-2.control-label(for="score") Puntaje
+								label.col-sm-2.control-label(for="score") #{messageSource.getMessage('profile.modal.scores.score', [], locale)}
 								div.col-sm-10
 									input#score-input(type="hidden", value="2.5", name="rating")
 									div#score.rating(style="font-size:1.5em", data-rate-value="2.5")
@@ -89,8 +98,8 @@ block content
 							div.col-sm-10
 								textarea.form-control#content(name="comment", placeholder="#{messageSource.getMessage('item.comment', [], locale)}")
 				.modal-footer
-					button.btn.btn-default(type="button", data-dismiss="modal") Cerrar
-					button.btn.btn-primary#rate-action(type="button") Puntuar
+					button.btn.btn-default(type="button", data-dismiss="modal") #{messageSource.getMessage('profile.modal.scores.close', [], locale)}
+					button.btn.btn-primary#rate-action(type="button") #{messageSource.getMessage('profile.modal.scores.toScore', [], locale)}
 	#review-modal-readonly.modal.fade
 		.modal-dialog
 			.modal-content
@@ -98,31 +107,31 @@ block content
 					button.close(type="button", data-dismiss="modal")
 						span(aria-hidden="true") &times;
 						span.sr-only Close
-					h4.modal-title Viendo Puntajes
+					h4.modal-title #{messageSource.getMessage('profile.modal.scores.title', [], locale)}
 				.modal-body
 					form.form-horizontal.i(role="form")
-						legend Puntuacion del&nbsp;
-							span.what Vendedor
+						legend #{messageSource.getMessage('profile.modal.scores.scoresFrom', [], locale)}&nbsp;
+							span.what #{messageSource.getMessage('profile.modal.scores.seller', [], locale)}
 						div.form-group
-							label.col-sm-2.control-label(for="score") Puntaje
+							label.col-sm-2.control-label(for="score") #{messageSource.getMessage('profile.modal.scores.score', [], locale)}
 							div.col-sm-10
 								div.rating.static.r1(style="font-size:1.5em")
-								p.help-block.r1 No ha puntuado aun
+								p.help-block.r1 #{messageSource.getMessage('profile.modal.scores.stillNoScore', [], locale)}
 						div.form-group
 							label.col-sm-2.control-label(for="content") #{messageSource.getMessage('item.comment', [], locale)}
 							div.col-sm-10
 								p.form-control-static.r1.l
 					form.form-horizontal.j(role="form")
-						legend Su Puntuacion
+						legend #{messageSource.getMessage('profile.modal.scores.yourScore', [], locale)}
 						div.form-group
-							label.col-sm-2.control-label(for="score") Puntaje
+							label.col-sm-2.control-label(for="score") #{messageSource.getMessage('profile.modal.scores.score', [], locale)}
 							div.col-sm-10
 								div.rating.static.r2(style="font-size:1.5em")
-								p.help-block.r2 No ha puntuado aun&nbsp;
-									button.btn-xs.btn-default.btn.rate-button Puntuar
+								p.help-block.r2 #{messageSource.getMessage('profile.modal.scores.stillNoScore', [], locale)}&nbsp;
+									button.btn-xs.btn-default.btn.rate-button #{messageSource.getMessage('profile.modal.scores.toScore', [], locale)}
 						div.form-group
 							label.col-sm-2.control-label(for="content") #{messageSource.getMessage('item.comment', [], locale)}
 							div.col-sm-10
 								p.form-control-static.r2.l
 				.modal-footer
-					button.btn.btn-default(type="button", data-dismiss="modal") Cerrar
+					button.btn.btn-default(type="button", data-dismiss="modal") #{messageSource.getMessage('profile.modal.scores.close', [], locale)}

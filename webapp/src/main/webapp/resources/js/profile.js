@@ -39,9 +39,9 @@ $(document).ready(function(){
       $row = $self.closest('tr');
       isSale = $row.hasClass('p');
       if (isSale) {
-        $modal.find('.what').text('comprador');
+        $modal.find('.what').text(messages.scorebuyer);
       } else {
-        $modal.find('.what').text('vendedor');
+        $modal.find('.what').text(messages.scoreseller);
       }
       $modal.modal('show').data('target', $self);
     }
@@ -59,9 +59,11 @@ $(document).ready(function(){
       rating: 0
     };
     $modal = $('#review-modal-readonly');
-    $modal.find('.what').text(isSale ? 'Comprador' : 'Vendedor');
+    $modal.find('.what').text(isSale
+      ? messages.scoreBuyer
+      : messages.scoreSeller);
     $modal.find(".r1, .r2").hide();
-    $modal.find(".r1.l,.r2.l").text("No ha puntuado aun");
+    $modal.find(".r1.l,.r2.l").text(messages.scoreStillNoScore);
     idx = isSale ? 1 : 2;
     if (buyerRating.id) {
       $modal.find(".r" + idx + ".rating, .r" + idx + ".l").show();
@@ -118,7 +120,7 @@ $(document).ready(function(){
     isSale = $row.hasClass('p');
     if (!$content.val()) {
       $content.closest('.form-group').addClass('has-error');
-      $content.after('<span class="help-block">Contenido vacio</span>');
+      $content.after('<span class="help-block">' + messages.scoreVoidContent + '</span>');
       return;
     }
     $self.addClass('disabled');
@@ -131,7 +133,7 @@ $(document).ready(function(){
         $self.removeClass('disabled');
         if (data.err) {
           $.notify({
-            message: 'Error'
+            message: messages.scoreError
           }, {
             type: 'danger',
             z_index: 1300
@@ -139,7 +141,7 @@ $(document).ready(function(){
         } else {
           $modal.modal('hide');
           $.notify({
-            message: 'Exito'
+            message: messages.scoreSuccess
           }, {
             type: 'success',
             z_index: 1300
@@ -191,7 +193,7 @@ $(document).ready(function(){
                 $self.prev().remove();
                 $self.text(messages.sellRejected);
               }
-              bootbox.confirm("Desea calificar al comprador ahora?", function(r){
+              bootbox.confirm(messages.scoreScoreBuyer, function(r){
                 reviewBuyer($self, r);
               });
             }
