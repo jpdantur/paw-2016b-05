@@ -63,6 +63,7 @@ $(document).ready(function(){
       markActiveTree.apply($parentLink);
     }
   };
+  console.log(".category-card a[data-id=" + $categoryInput.val() + "]");
   $activeCategory = $(".category-card a[data-id=" + $categoryInput.val() + "]");
   $successCard.addClass('visible');
   $categoryName.text($activeCategory.text());

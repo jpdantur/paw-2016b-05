@@ -49,3 +49,35 @@ h1 {
 #myTab > li.static > a:hover, #myTab > li.static > a:focus {
   text-decoration: none;
   background-color: #286090; }
+
+#category-browser {
+  max-height: 330px;
+  max-width: 100%;
+  overflow-x: scroll;
+  position: relative;
+  font-size: 12px; }
+  #category-browser > div {
+    width: 100%; }
+  #category-browser #success-card {
+    width: 200px;
+    padding: 10px;
+    padding-top: 50px;
+    height: 150px; }
+  #category-browser .category-card {
+    border-radius: 5px;
+    -o-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    border: 1px solid #f5f5f5;
+    float: left;
+    width: auto;
+    display: none; }
+    #category-browser .category-card.visible {
+      display: block; }
+    #category-browser .category-card li {
+      padding-left: 5px;
+      padding-right: 15px; }
+      #category-browser .category-card li:hover {
+        background-color: #f3f3f3; }
+      #category-browser .category-card li.active {
+        background-color: #f5f5f5; }

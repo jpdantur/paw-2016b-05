@@ -79,4 +79,51 @@ h1 {
 #myTab > li.static > a:hover, #myTab > li.static > a:focus {
 	text-decoration: none;
 	background-color: #286090;
-}    
+}
+
+#category-browser {
+	max-height: 330px;
+	max-width: 100%;
+	overflow-x: scroll;
+	position: relative;
+	font-size: 12px;
+	
+	> div {
+		width: 100%;
+	}
+
+	#success-card {
+		width: 200px;
+		padding: 10px;
+		padding-top: 50px;
+		height: 150px;
+	}
+
+	.category-card {
+		@include border-radius(5px);
+		border: 1px solid #f5f5f5;
+		float: left;
+		width: auto;
+		display: none;
+		
+		&.visible {
+			display: block;
+		}
+
+		li {
+
+			padding: {
+				left: 5px;
+				right: 15px;
+			}
+
+			&:hover {
+				background-color: #f3f3f3;
+			}
+
+			&.active {
+				background-color: #f5f5f5;
+			}
+		}
+	}
+}
