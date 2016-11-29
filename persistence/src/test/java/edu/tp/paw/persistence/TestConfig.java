@@ -8,10 +8,15 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
-import org.springframework.jdbc.datasource.init.DataSourceInitializer;
-import org.springframework.jdbc.datasource.init.DatabasePopulator;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.JpaVendorAdapter;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.transaction.PlatformTransactionManager;
 
+import java.util.Properties;
+
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.hsqldb.jdbc.JDBCDriver;
@@ -26,7 +31,7 @@ public class TestConfig {
 	@Bean
 	public DataSource dataSource() {
 		final SimpleDriverDataSource ds = new SimpleDriverDataSource();
-		ds.setUrl("jdbc:hsqldb:mem:paw;sql.syntax_pgs=true");
+		ds.setUrl("jdbc:hsqldb:mem:paw");
 		ds.setDriverClass(JDBCDriver.class);	
 		ds.setUsername("ha");
 		ds.setPassword("");
@@ -34,23 +39,26 @@ public class TestConfig {
 		return ds;
 	}
 	
-	  @Bean
-	  public DatabasePopulator databasePopulator() {
-	  	final ResourceDatabasePopulator databasePopulator = new ResourceDatabasePopulator();
-	  	
-	  	databasePopulator.addScript(schemaSql);
-	  	
-	  	return databasePopulator;
-	  }
-	  
-	  @Bean
-	  public DataSourceInitializer dataSourceInitializer(final DataSource dataSource) {
-	  	
-	  	final DataSourceInitializer dataSourceInitializer = new DataSourceInitializer();
-	  	
-	  	dataSourceInitializer.setDataSource(dataSource);
-	  	dataSourceInitializer.setDatabasePopulator(databasePopulator());
-	  	
-	  	return dataSourceInitializer;
-	  }
+    @Bean
+    public PlatformTransactionManager transactionManager(final EntityManagerFactory emf) {
+         return new JpaTransactionManager(emf);
+    }
+	
+    @Bean
+    public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+        final LocalContainerEntityManagerFactoryBean factoryBean = new LocalContainerEntityManagerFactoryBean();
+        factoryBean.setPackagesToScan("edu.tp.paw.model");
+        factoryBean.setDataSource(dataSource());
+
+        final JpaVendorAdapter vendorAdapter = new HibernateJpaVendorAdapter();
+        factoryBean.setJpaVendorAdapter(vendorAdapter);
+
+        final Properties properties = new Properties();
+        properties.setProperty("hibernate.hbm2ddl.auto", "update");
+        properties.setProperty("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
+
+        factoryBean.setJpaProperties(properties);
+
+        return factoryBean;
+    }
 } 

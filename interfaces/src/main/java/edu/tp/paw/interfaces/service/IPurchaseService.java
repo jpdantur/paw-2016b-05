@@ -18,7 +18,6 @@ public interface IPurchaseService {
 	public PurchaseReview createPurchaseReview(final PurchaseReviewBuilder builder);
 
 	public float getAverageAsBuyer(final User user);
-
 	public float getAverageAsSeller(final User user);
 	
 }
