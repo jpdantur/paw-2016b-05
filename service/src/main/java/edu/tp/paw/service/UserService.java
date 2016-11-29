@@ -399,6 +399,34 @@ public class UserService implements IUserService {
 		
 		return userDao.getTransactions(user, PurchaseStatus.APPROVED);
 	}
+	
+	@Override
+	public int getNumberOfTransactions(final User user, final Filter filter) {
+		return userDao.getNumberOfTransactions(user, filter);
+	}
+	
+	@Override
+	public int getNumberOfTransactions(final User user) {
+		return userDao.getNumberOfTransactions(user);
+	}
+	
+	@Override
+	public int getNumberOfPendingTransactions(final User user) {
+		
+		return userDao.getNumberOfTransactions(user, PurchaseStatus.PENDING);
+	}
+	
+	@Override
+	public int getNumberOfDeclinedTransactions(final User user) {
+		
+		return userDao.getNumberOfTransactions(user, PurchaseStatus.DECLINED);
+	}
+	
+	@Override
+	public int getNumberOfApprovedTransactions(final User user) {
+		
+		return userDao.getNumberOfTransactions(user, PurchaseStatus.APPROVED);
+	}
 
 	@Override
 	public PagedResult<Purchase> getPurchases(final User user, final Filter filter) {
@@ -446,6 +474,36 @@ public class UserService implements IUserService {
 	public List<Purchase> getApprovedPurchases(final User user) {
 		
 		return userDao.getPurchases(user, PurchaseStatus.APPROVED);
+	}
+	
+	@Override
+	public int getNumberOfPurchases(final User user, final Filter filter) {
+		
+		return userDao.getNumberOfPurchases(user, filter);
+	}
+	
+	@Override
+	public int getNumberOfPurchases(final User user) {
+		
+		return userDao.getNumberOfPurchases(user);
+	}
+	
+	@Override
+	public int getNumberOfPendingPurchases(final User user) {
+		
+		return userDao.getNumberOfPurchases(user, PurchaseStatus.PENDING);
+	}
+	
+	@Override
+	public int getNumberOfDeclinedPurchases(final User user) {
+		
+		return userDao.getNumberOfPurchases(user, PurchaseStatus.DECLINED);
+	}
+	
+	@Override
+	public int getNumberOfApprovedPurchases(final User user) {
+		
+		return userDao.getNumberOfPurchases(user, PurchaseStatus.APPROVED);
 	}
 
 	@Override

@@ -57,9 +57,17 @@ public interface IUserDao {
 	public List<Purchase> getTransactions(final User user);
 	public List<Purchase> getTransactions(final User user, final PurchaseStatus status);
 	
+	public int getNumberOfTransactions(final User user, final Filter filter);
+	public int getNumberOfTransactions(final User user);
+	public int getNumberOfTransactions(final User user, final PurchaseStatus status);
+	
 	public PagedResult<Purchase> getPurchases(final User user, final Filter filter);
 	public Set<Purchase> getPurchases(final User user);
 	public List<Purchase> getPurchases(final User user, final PurchaseStatus status);
+	
+	public int getNumberOfPurchases(final User user, final Filter filter);
+	public int getNumberOfPurchases(final User user);
+	public int getNumberOfPurchases(final User user, final PurchaseStatus status);
 
 
 	

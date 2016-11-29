@@ -21,7 +21,7 @@ public class IdController extends BaseController {
 
 	@Autowired IUserService userService;
 	
-	@RequestMapping( value = {"/{username}", "/{username}/buyer"})
+	@RequestMapping( value = {"/{username}", "/{username}/seller"})
 	public String userProfileBuyer(
 			@ModelAttribute("searchForm") final ProfileItemSearchForm form,
 			@PathVariable("username") final String username,
@@ -49,6 +49,11 @@ public class IdController extends BaseController {
 		model.addAttribute("buyerRating", userService.getBuyerRating(user));
 		model.addAttribute("sellerRating", userService.getSellerRating(user));
 		
+		model.addAttribute("approvedSales", userService.getNumberOfApprovedTransactions(user));
+		model.addAttribute("rejectedSales", userService.getNumberOfDeclinedTransactions(user));
+		
+		model.addAttribute("view", "seller");
+		
 		model.addAttribute("filter", filter);
 		model.addAttribute("items", userService.getPublishedItems(user, filter));
 		model.addAttribute("user", user);
@@ -57,8 +62,9 @@ public class IdController extends BaseController {
 		return "id";
 	}
 	
-	@RequestMapping( value = "/{username}/seller")
+	@RequestMapping( value = "/{username}/buyer")
 	public String userProfileSeller(
+			@ModelAttribute("searchForm") final ProfileItemSearchForm form,
 			@PathVariable("username") final String username,
 			final Model model
 		) {
@@ -69,7 +75,30 @@ public class IdController extends BaseController {
 			throw new StoreItemNotFoundException();
 		}
 		
+		final Filter filter = FilterBuilder
+				.create()
+				.page()
+					.size(form.getPageSize())
+					.take(form.getPageNumber())
+				.end().status()
+					.status(ItemStatusFilter.ACTIVE)
+				.end().sort()
+					.by(form.orderBy())
+					.order(form.sortOrder())
+				.end().build();
+		
+		model.addAttribute("buyerRating", userService.getBuyerRating(user));
+		model.addAttribute("sellerRating", userService.getSellerRating(user));
+		
+		model.addAttribute("approvedSales", userService.getNumberOfApprovedPurchases(user));
+		model.addAttribute("rejectedSales", userService.getNumberOfDeclinedPurchases(user));
+		
+		model.addAttribute("view", "buyer");
+		
+		model.addAttribute("filter", filter);
+		model.addAttribute("items", userService.getPublishedItems(user, filter));
 		model.addAttribute("user", user);
+		model.addAttribute("sort", String.format("%s-%s", filter.getOrderFilter().getField().toString(), filter.getOrderFilter().getOrder().toString()));
 		
 		return "id";
 	}

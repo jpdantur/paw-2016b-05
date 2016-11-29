@@ -1,6 +1,7 @@
 package edu.tp.paw.persistence;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
 
@@ -17,14 +18,11 @@ import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import edu.tp.paw.interfaces.dao.ICategoryDao;
-import edu.tp.paw.interfaces.dao.ICommentDao;
 import edu.tp.paw.interfaces.dao.IImageDao;
 import edu.tp.paw.interfaces.dao.IStoreItemDao;
 import edu.tp.paw.interfaces.dao.IUserDao;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.CategoryBuilder;
-import edu.tp.paw.model.Comment;
-import edu.tp.paw.model.CommentBuilder;
 import edu.tp.paw.model.StoreImage;
 import edu.tp.paw.model.StoreImageBuilder;
 import edu.tp.paw.model.StoreItem;

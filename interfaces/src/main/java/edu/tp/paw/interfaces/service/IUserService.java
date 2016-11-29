@@ -76,12 +76,24 @@ public interface IUserService {
 	public List<Purchase> getApprovedPurchases(final User user);
 	public List<Purchase> getDeclinedPurchases(final User user);
 	
+	public int getNumberOfPurchases(final User user, final Filter filter);
+	public int getNumberOfPurchases(final User user);
+	public int getNumberOfPendingPurchases(final User user);
+	public int getNumberOfApprovedPurchases(final User user);
+	public int getNumberOfDeclinedPurchases(final User user);
+	
 	public PagedResult<Purchase> getTransactions(final User user, final Filter filter);
 	public List<Purchase> getAllTransactions(final User user);
 	public Map<PurchaseStatus, Set<Purchase>> getGroupedTransactions(final User user);
 	public List<Purchase> getPendingTransactions(final User user);
 	public List<Purchase> getApprovedTransactions(final User user);
 	public List<Purchase> getDeclinedTransactions(final User user);
+	
+	public int getNumberOfTransactions(final User user, final Filter filter);
+	public int getNumberOfTransactions(final User user);
+	public int getNumberOfPendingTransactions(final User user);
+	public int getNumberOfApprovedTransactions(final User user);
+	public int getNumberOfDeclinedTransactions(final User user);
 	
 	public PagedResult<StoreItem> getPublishedItems(final User user, final Filter filter);
 	

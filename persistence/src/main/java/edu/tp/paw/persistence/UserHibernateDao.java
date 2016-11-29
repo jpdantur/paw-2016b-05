@@ -207,6 +207,51 @@ public class UserHibernateDao implements IUserDao {
 		
 		return query.getResultList();
 	}
+	
+	@Override
+	public int getNumberOfTransactions(final User user, final Filter filter) {
+		
+		final StringBuilder stringBuilder = new StringBuilder("select count(*) from Purchase as p where p.item.owner=:owner and p.status=:status");
+		
+		final TermFilter termFilter = filter.getTermFilter();
+		if (termFilter.getTerm().isPresent()) {
+			stringBuilder.append(" and lower(p.item.name) like concat('%', lower(:term), '%')");
+		}
+		
+		final TypedQuery<Long> countQuery = entityManager.createQuery(stringBuilder.toString(), Long.class);
+		
+		countQuery.setParameter("owner", user);
+		
+		final PurchaseStatusFilter statusFilter = filter.getPurchaseStatusFilter();
+		countQuery.setParameter("status", PurchaseStatus.valueOf(statusFilter.getStatus().toString()));
+		
+		if (termFilter.getTerm().isPresent()) {
+			countQuery.setParameter("term", termFilter.getTerm().get().toLowerCase().replace("%", "\\%"));
+		}
+		
+		return countQuery.getSingleResult().intValue();
+	}
+	
+	@Override
+	public int getNumberOfTransactions(final User user) {
+		
+		final TypedQuery<Long> query = entityManager.createQuery("select count(*) from Purchase p where p.item.owner=:owner", Long.class);
+		
+		query.setParameter("owner", user);
+		
+		return query.getSingleResult().intValue();
+	}
+	
+	@Override
+	public int getNumberOfTransactions(final User user, final PurchaseStatus status) {
+		
+		final TypedQuery<Long> query = entityManager.createQuery("select count(*) from Purchase p where p.status=:status and p.item.owner=:owner", Long.class);
+		
+		query.setParameter("owner", user);
+		query.setParameter("status", status);
+		
+		return query.getSingleResult().intValue();
+	}
 
 	@Override
 	public PagedResult<Purchase> getPurchases(final User user, final Filter filter) {
@@ -279,6 +324,51 @@ public class UserHibernateDao implements IUserDao {
 		query.setParameter("status", status);
 		
 		return query.getResultList();
+	}
+	
+	@Override
+	public int getNumberOfPurchases(final User user, final Filter filter) {
+		
+		final StringBuilder stringBuilder = new StringBuilder("select count(*) from Purchase as p where p.buyer=:buyer and p.status=:status");
+		
+		final TermFilter termFilter = filter.getTermFilter();
+		if (termFilter.getTerm().isPresent()) {
+			stringBuilder.append(" and lower(p.item.name) like concat('%', lower(:term), '%')");
+		}
+		
+		final TypedQuery<Long> countQuery = entityManager.createQuery(stringBuilder.toString(), Long.class);
+		
+		countQuery.setParameter("buyer", user);
+		
+		final PurchaseStatusFilter statusFilter = filter.getPurchaseStatusFilter();
+		countQuery.setParameter("status", PurchaseStatus.valueOf(statusFilter.getStatus().toString()));
+		
+		if (termFilter.getTerm().isPresent()) {
+			countQuery.setParameter("term", termFilter.getTerm().get().toLowerCase().replace("%", "\\%"));
+		}
+		
+		return countQuery.getSingleResult().intValue();
+	}
+	
+	@Override
+	public int getNumberOfPurchases(final User user) {
+		
+		final TypedQuery<Long> query = entityManager.createQuery("select count(*) from Purchase p where p.buyer=:user", Long.class);
+		
+		query.setParameter("user", user);
+		
+		return query.getSingleResult().intValue();
+	}
+	
+	@Override
+	public int getNumberOfPurchases(final User user, final PurchaseStatus status) {
+		
+		final TypedQuery<Long> query = entityManager.createQuery("select count(*) from Purchase p where p.status=:status and p.buyer=:user", Long.class);
+		
+		query.setParameter("user", user);
+		query.setParameter("status", status);
+		
+		return query.getSingleResult().intValue();
 	}
 
 }
