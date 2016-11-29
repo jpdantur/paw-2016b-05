@@ -119,4 +119,28 @@ public class AuthenticationController extends BaseController {
 		}
 	}
 	
+	@RequestMapping( value = "/forgot-pass", method = RequestMethod.GET)
+	public String forgotPass(
+			@ModelAttribute("registerForm") final RegisterForm form,
+			final BindingResult result,
+			final Model model
+			) {
+		model.addAttribute("result", result);
+		model.addAttribute("user", form);
+		
+		return "forgot-pass";
+	}
+	
+	@RequestMapping( value = "/forgot-pass", method = RequestMethod.POST)
+	public String recoverPass(
+			@ModelAttribute("registerForm") final RegisterForm form,
+			final BindingResult result,
+			final Model model
+			) {
+		model.addAttribute("result", result);
+		model.addAttribute("user", form);
+		
+		return "forgot-pass";
+	}
+	
 }
