@@ -66,6 +66,12 @@ public class UserService implements IUserService {
 		return userDao.findByUsername(username); 
 	}
 	
+	@Override
+	public User findByEmail(final String email) {
+	
+		return userDao.findByEmail(email); 
+	}
+	
 	/* (non-Javadoc)
 	 * @see edu.tp.paw.interfaces.service.IUserService#create(java.lang.String)
 	 */
@@ -548,5 +554,11 @@ public class UserService implements IUserService {
 	public float getSellerRating(final User user) {
 		
 		return purchaseService.getAverageAsSeller(user);
+	}
+
+	@Override
+	public boolean recoverPassword(final User user) {
+		
+		return emailService.sendPasswordRecovery(user);
 	}
 }

@@ -20,11 +20,13 @@ import org.apache.velocity.runtime.RuntimeConstants;
 import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.velocity.VelocityEngineUtils;
 
 import edu.tp.paw.interfaces.service.IEmailService;
+import edu.tp.paw.interfaces.service.IPasswordRecoveryService;
 import edu.tp.paw.model.Purchase;
 import edu.tp.paw.model.PurchaseReview;
 import edu.tp.paw.model.User;
@@ -43,6 +45,8 @@ public class EmailService implements IEmailService {
 	private Properties props = new Properties();
 	private VelocityEngine velocityEngine;
 
+	
+	@Autowired private IPasswordRecoveryService passwordRecoveryService;
 
 	public EmailService() {
 		props.put("mail.smtp.auth", "true");
@@ -148,6 +152,22 @@ public class EmailService implements IEmailService {
 	@Override
 	public boolean notifyBuyerAboutReview(final User user, final Purchase purchase, final PurchaseReview review) {
 		return false;
+	}
+
+	@Override
+	public boolean sendPasswordRecovery(final User user) {
+		
+		final String token = passwordRecoveryService.generatePasswordRecoveryToken(user);
+		
+		logger.debug("issued token: <{}> for user {}", token, user.getUsername());
+		
+		final Map<String, Object> model = new HashMap<>();
+		model.put("user", user);
+		model.put("token", token);
+		
+		final String body = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "templates/password-recovery.vm", "utf-8", model);
+		
+		return sendRawEmail(user, "Pedido de Recuperacion de Contrasena", body);
 	}
 
 }

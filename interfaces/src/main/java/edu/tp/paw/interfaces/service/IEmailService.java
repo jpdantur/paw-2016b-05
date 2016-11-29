@@ -18,5 +18,7 @@ public interface IEmailService {
 	
 	public boolean sendRawEmail(final User user, final String subject, final String body);
 
+	public boolean sendPasswordRecovery(final User user);
+
 	
 }

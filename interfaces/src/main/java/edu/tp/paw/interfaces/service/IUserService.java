@@ -29,6 +29,7 @@ public interface IUserService {
 	 */
 	public User findById(final long id);
 	public User findByUsername(final String username);
+	public User findByEmail(final String email);
 	
 	boolean userExists(final User user);
 	boolean userExists(final long id);
@@ -98,5 +99,6 @@ public interface IUserService {
 	
 	public float getBuyerRating(final User user);
 	public float getSellerRating(final User user);
+	public boolean recoverPassword(final User email);
 	
 }

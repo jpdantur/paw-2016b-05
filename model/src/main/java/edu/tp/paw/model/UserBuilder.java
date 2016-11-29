@@ -25,6 +25,7 @@ public class UserBuilder implements IBuilder<User> {
 		this.favourites = user.getFavourites();
 		this.password = user.getPassword();
 		this.id = user.getId();
+		this.roles = user.getRoles();
 	}
 	
 	public UserBuilder(final String username) {

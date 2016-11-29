@@ -14,10 +14,12 @@ block content
 							b #{messageSource.getMessage('login.error.error', [], locale)}&nbsp;
 							span #{messageSource.getMessage('login.error.wrongData', [], locale)}
 					form.form-horizontal(action=context.url('/auth/forgot-pass'), method="POST")
-						div.form-group
-							label.control-label.col-sm-3(for="username") #{messageSource.getMessage('login.field.user', [], locale)} o Email
+						p.help-block Ingrese su correo y le enviaremos las instrucciones para recuperar su contraseña
+						div.form-group(class="#{result.hasFieldErrors('email')?'has-error':''}")
+							label.control-label.col-sm-3(for="username") #{messageSource.getMessage('register.form.mail', [], locale)}
 							div.col-sm-9
-								input.form-control#username(type="text", placeholder="#{messageSource.getMessage('login.field.user', [], locale)} o Email", name="username")
+								input.form-control#username(type="text", placeholder="#{messageSource.getMessage('register.form.mail', [], locale)}", name="email", value="#{user.email?user.email:''}")
+								+errors(result, 'email')
 						div.form-group
 								div.col-sm-12
 									button.btn.btn-success.btn-block(type="submit") Recuperar

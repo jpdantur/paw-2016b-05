@@ -49,7 +49,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 			.and()
 			.authorizeRequests()
 				.antMatchers("/", "/id/**", "/store/items/**").permitAll()
-				.antMatchers("/auth/login", "/auth/register", "/auth/forgot-pass").anonymous()
+				.antMatchers("/auth/login", "/auth/register", "/auth/forgot-pass", "/auth/reset-pass").anonymous()
 				.antMatchers("/store/sell/**", "/store/item/**", "/images/upload/**", "/profile/**")
 					.hasRole("USER").accessDecisionManager(accessDecisionManager())
 				.antMatchers("/admin/**").hasAnyRole("ROOT", "ADMIN")

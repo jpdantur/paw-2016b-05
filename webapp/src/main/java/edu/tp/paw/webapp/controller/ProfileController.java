@@ -76,6 +76,7 @@ public class ProfileController extends BaseController {
 		}
 		
 		model.addAttribute("result", result);
+		model.addAttribute("show", "account");
 		
 		return "profile";
 	}
@@ -118,6 +119,7 @@ public class ProfileController extends BaseController {
 		
 		model.addAttribute("passSuccess", !result.hasErrors());
 		model.addAttribute("result", result);
+		model.addAttribute("show", "password");
 		
 		return "profile";
 	}

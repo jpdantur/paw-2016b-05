@@ -18,11 +18,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import edu.tp.paw.interfaces.service.IPasswordRecoveryService;
 import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
 import edu.tp.paw.webapp.auth.SiglasUserDetailsService;
+import edu.tp.paw.webapp.form.PasswordRecoveryForm;
 import edu.tp.paw.webapp.form.RegisterForm;
+import edu.tp.paw.webapp.form.validator.PasswordRecoveryFormValidator;
 import edu.tp.paw.webapp.form.validator.RegisterFormValidator;
 
 @Controller
@@ -33,8 +36,11 @@ public class AuthenticationController extends BaseController {
 	
 	@Autowired private IUserService userService;
 	@Autowired private RegisterFormValidator validator;
+	@Autowired private PasswordRecoveryFormValidator passRecoveryValidator;
 	@Autowired private SiglasUserDetailsService userDetailsService;
 	@Autowired private AuthenticationProvider authenticationProvider;
+	
+	@Autowired private IPasswordRecoveryService passwordService;
 	
 	@RequestMapping("/login")
 	public String login(
@@ -133,14 +139,46 @@ public class AuthenticationController extends BaseController {
 	
 	@RequestMapping( value = "/forgot-pass", method = RequestMethod.POST)
 	public String recoverPass(
-			@ModelAttribute("registerForm") final RegisterForm form,
+			@Valid @ModelAttribute("passRecoveryForm") final PasswordRecoveryForm form,
 			final BindingResult result,
-			final Model model
-			) {
+			final Model model) {
+		
+		passRecoveryValidator.validate(form, result);
+		
+		if (!result.hasErrors()) {
+			
+			final User user = userService.findByEmail(form.getEmail());
+			
+			userService.recoverPassword(user);
+			
+			model.addAttribute("success", true);
+			
+		}
+		
 		model.addAttribute("result", result);
 		model.addAttribute("user", form);
 		
 		return "forgot-pass";
+		
+	}
+	
+	@RequestMapping( value = "/reset-pass", method = RequestMethod.GET)
+	public String resetPass(
+			@RequestParam( value = "token", required = false) final String token,
+			@RequestParam( value = "username", required = false) final String username,
+			@ModelAttribute("registerForm") final RegisterForm form,
+			final BindingResult result,
+			final Model model
+			) {
+		
+		final User user = userService.findByUsername(username);
+		
+		model.addAttribute("tokenValidity", passwordService.checkTokenValidity(user, token));
+		model.addAttribute("result", result);
+		model.addAttribute("user", form);
+		
+		
+		return "reset-pass";
 	}
 	
 }

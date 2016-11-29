@@ -21,7 +21,6 @@ import javax.persistence.UniqueConstraint;
 
 import org.hibernate.annotations.Fetch;
 import org.hibernate.annotations.FetchMode;
-import org.hibernate.annotations.Formula;
 
 @Entity
 @Table(name = "users", uniqueConstraints = {
@@ -140,8 +139,7 @@ public class User {
 	public String toString() {
 		return "User [id=" + id + ", firstName=" + firstName + ", lastName="
 				+ lastName + ", username=" + username + ", password=" + password
-				+ ", email=" + email + ", favourites=" + favourites + ", roles="
-				+ roles + "]";
+				+ ", email=" + email + "]";
 	}
 
 	
