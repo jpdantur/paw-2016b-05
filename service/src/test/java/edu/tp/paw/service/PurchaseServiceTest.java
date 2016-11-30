@@ -26,6 +26,7 @@ import edu.tp.paw.model.Purchase;
 import edu.tp.paw.model.PurchaseBuilder;
 import edu.tp.paw.model.PurchaseReview;
 import edu.tp.paw.model.PurchaseReviewBuilder;
+import edu.tp.paw.model.PurchaseStatus;
 import edu.tp.paw.model.Role;
 import edu.tp.paw.model.RoleBuilder;
 import edu.tp.paw.model.StoreItem;
@@ -63,12 +64,13 @@ public class PurchaseServiceTest {
 		UserBuilder userBuilder = new UserBuilder("pepepe").firstName("pepe").lastName("gil").password("allala");
 		user = userService.createUser(userBuilder, roleService.findRoleById(1));
 		item = storeItemService.create(new StoreItemBuilder("name","desc",new BigDecimal(100),false).category(category).owner(user));
+		purchaseReviewBuilder = new PurchaseReviewBuilder("comment").rating(2);
 		
 		purchaseBuilder = new PurchaseBuilder(user, item);
 		
 		purchase = userService.purchase(purchaseBuilder);
 		
-		purchaseReviewBuilder = new PurchaseReviewBuilder("comment");
+		
 	}
 
 	@Test
@@ -81,43 +83,68 @@ public class PurchaseServiceTest {
 	@Test
 	@Transactional
 	public void testApprovePurchase() {
-		
+		purchaseService.approvePurchase(purchase);
+		assertEquals(PurchaseStatus.APPROVED,purchase.getStatus());
 	}
 
 	@Test
 	@Transactional
 	public void testDeclinePurchase() {
-		
+
+		purchaseService.declinePurchase(purchase);
+		assertEquals(PurchaseStatus.DECLINED,purchase.getStatus());
 	}
 
 	@Test
 	@Transactional
 	public void testUpdateBuyerReview() {
-		
+		purchaseReview = purchaseService.createPurchaseReview(purchaseReviewBuilder);
+		PurchaseBuilder pb = new PurchaseBuilder(user,item).buyerReview(purchaseReview);
+		PurchaseReviewBuilder otherb = new PurchaseReviewBuilder("other review");
+		PurchaseReview other = purchaseService.createPurchaseReview(otherb);
+		Purchase p = userService.purchase(pb);
+		purchaseService.updateBuyerReview(p, other);
+		assertEquals(other,p.getBuyerReview());
 	}
 
 	@Test
 	@Transactional
 	public void testUpdateSellerReview() {
-		
+
+		purchaseReview = purchaseService.createPurchaseReview(purchaseReviewBuilder);
+		PurchaseBuilder pb = new PurchaseBuilder(user,item).sellerReview(purchaseReview);
+		PurchaseReviewBuilder otherb = new PurchaseReviewBuilder("other review");
+		PurchaseReview other = purchaseService.createPurchaseReview(otherb);
+		Purchase p = userService.purchase(pb);
+		purchaseService.updateSellerReview(p, other);
+		assertEquals(other,p.getSellerReview());
 	}
 
 	@Test
 	@Transactional
 	public void testCreatePurchaseReview() {
-		
+		purchaseReview = purchaseService.createPurchaseReview(purchaseReviewBuilder);
+		assertNotNull(purchaseReview);
 	}
 
 	@Test
 	@Transactional
 	public void testGetAverageAsBuyer() {
-		
+
+		purchaseReview = purchaseService.createPurchaseReview(purchaseReviewBuilder);
+		PurchaseBuilder pb = new PurchaseBuilder(user,item).buyerReview(purchaseReview);
+		Purchase p = userService.purchase(pb);
+		assertTrue(purchaseService.getAverageAsBuyer(user)==2);
 	}
 
 	@Test
 	@Transactional
 	public void testGetAverageAsSeller() {
-		
+
+		purchaseReview = purchaseService.createPurchaseReview(purchaseReviewBuilder);
+		PurchaseBuilder pb = new PurchaseBuilder(user,item).sellerReview(purchaseReview);
+		Purchase p = userService.purchase(pb);
+		assertTrue(purchaseService.getAverageAsSeller(user)==2);
 	}
 
 }
