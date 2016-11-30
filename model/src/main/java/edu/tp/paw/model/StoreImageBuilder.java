@@ -1,5 +1,7 @@
 package edu.tp.paw.model;
 
+import java.util.Objects;
+
 public class StoreImageBuilder implements IBuilder<StoreImage> {
 
 	private final byte[] content;
@@ -9,12 +11,12 @@ public class StoreImageBuilder implements IBuilder<StoreImage> {
 	private Long id;
 	
 	public StoreImageBuilder(final String mimeType, final byte[] content) {
-		this.mimeType = mimeType;
+		this.mimeType = Objects.requireNonNull(mimeType);
 		this.content = content;
 	}
 	
 	public StoreImageBuilder item(final StoreItem item) {
-		this.item = item;
+		this.item = Objects.requireNonNull(item);
 		return this;
 	}
 	
@@ -42,6 +44,10 @@ public class StoreImageBuilder implements IBuilder<StoreImage> {
 
 	@Override
 	public StoreImage build() {
+		
+		Objects.requireNonNull(mimeType);
+		Objects.requireNonNull(item);
+		
 		return new StoreImage(this);
 	}
 

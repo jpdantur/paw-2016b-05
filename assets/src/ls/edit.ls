@@ -80,6 +80,8 @@ $ document .ready !->
 		if $card.data('parent') != $parentCard .data('parent')
 			markActiveTree.apply $parentLink
 
+	console.log ".category-card a[data-id=#{$category-input.val!}]"
+
 	$activeCategory = $ ".category-card a[data-id=#{$category-input.val!}]"
 
 	$success-card.addClass \visible
@@ -90,4 +92,3 @@ $ document .ready !->
 	# markActiveTree.apply( $ ".category-card a[data-id=#{$category-input.val!}]" .parent!)
 
 
-		

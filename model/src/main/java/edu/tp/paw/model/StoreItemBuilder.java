@@ -4,6 +4,7 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 
@@ -28,39 +29,43 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 	private StoreItemStatus status = StoreItemStatus.ACTIVE;
 	
 	public StoreItemBuilder(String name, String description, BigDecimal price, boolean used) {
-		this.name = name;
-		this.description = description;
-		this.price = price;
+		this.name = Objects.requireNonNull(name);
+		this.description = Objects.requireNonNull(description);
+		this.price = Objects.requireNonNull(price);
 		this.used = used;
 	}
 	
 	public StoreItemBuilder category(final Category category) {
-		this.category = category;
+		this.category = Objects.requireNonNull(category);
 		return this;
 	}
 	
 	public StoreItemBuilder owner(final User owner) {
-		this.owner = owner;
+		this.owner = Objects.requireNonNull(owner);
 		return this;
 	}
 	
 	public StoreItemBuilder images(final Collection<StoreImage> images) {
-		this.images.addAll(images);
+		for (final StoreImage i : images) {
+			image(i);
+		}
 		return this;
 	}
 	
-	public StoreItemBuilder images(final StoreImage images) {
-		this.images.add(images);
+	public StoreItemBuilder image(final StoreImage images) {
+		this.images.add(Objects.requireNonNull(images));
 		return this;
 	}
 	
 	public StoreItemBuilder comments(final Collection<Comment> comments) {
-		this.comments.addAll(comments);
+		for (final Comment c : comments) {
+			comment(c);
+		}
 		return this;
 	}
 	
 	public StoreItemBuilder comment(final Comment comment) {
-		this.comments.add(comment);
+		this.comments.add(Objects.requireNonNull(comment));
 		return this;
 	}
 	
@@ -75,7 +80,7 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 	 * @return #{this}
 	 */
 	public StoreItemBuilder created(final Date created) {
-		this.created = created;
+		this.created = Objects.requireNonNull(created);
 		return this;
 	}
 	
@@ -85,7 +90,7 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 	 * @return #{this}
 	 */
 	public StoreItemBuilder lastUpdated(final Date lastUpdated) {
-		this.lastUpdated = lastUpdated;
+		this.lastUpdated = Objects.requireNonNull(lastUpdated);
 		return this;
 	}
 	
@@ -109,6 +114,20 @@ public class StoreItemBuilder implements IBuilder<StoreItem> {
 	 */
 	public StoreItem build() {
 	
+		Objects.requireNonNull(name);
+		Objects.requireNonNull(description);
+		Objects.requireNonNull(price);
+		Objects.requireNonNull(category);
+		Objects.requireNonNull(owner);
+		
+		if (name.length() < 4 || name.length() > 100) {
+			throw new IllegalStateException("name should be between 4 and 100 chars");
+		}
+		
+		if (price.compareTo(new BigDecimal(1)) < 0 || price.compareTo(new BigDecimal(1000000000)) > 0) {
+			throw new IllegalStateException("price should be between 1 and 1000000000");
+		}
+		
 		return new StoreItem(this);
 		
 	}

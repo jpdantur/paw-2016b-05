@@ -1,6 +1,7 @@
 package edu.tp.paw.model;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class PurchaseReviewBuilder implements IBuilder<PurchaseReview> {
 
@@ -12,7 +13,7 @@ public class PurchaseReviewBuilder implements IBuilder<PurchaseReview> {
 	private float rating = 2.5f;
 	
 	public PurchaseReviewBuilder(final String comment) {
-		this.comment = comment;
+		this.comment = Objects.requireNonNull(comment);
 	}
 	
 	public PurchaseReviewBuilder rating(final float rating) {
@@ -44,6 +45,17 @@ public class PurchaseReviewBuilder implements IBuilder<PurchaseReview> {
 
 	@Override
 	public PurchaseReview build() {
+		
+		Objects.requireNonNull(comment);
+		
+		if (comment.length() == 0) {
+			throw new IllegalStateException("comment cant be empty");
+		}
+		
+		if (rating < 0 || rating > 5) {
+			throw new IllegalStateException("rating has to be between 0 and 5");
+		}
+		
 		return new PurchaseReview(this);
 	}
 

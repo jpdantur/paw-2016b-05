@@ -1,6 +1,7 @@
 package edu.tp.paw.model;
 
 import java.util.Date;
+import java.util.Objects;
 
 public class FavouriteBuilder implements IBuilder<Favourite> {
 
@@ -12,12 +13,12 @@ public class FavouriteBuilder implements IBuilder<Favourite> {
 	private final User user;
 	
 	public FavouriteBuilder(final StoreItem item, final User user) {
-		this.item = item;
-		this.user = user;
+		this.item = Objects.requireNonNull(item);
+		this.user = Objects.requireNonNull(user);
 	}
 	
 	public FavouriteBuilder created(final Date created) {
-		this.created = created;
+		this.created = Objects.requireNonNull(created);
 		return this;
 	}
 	
@@ -44,6 +45,11 @@ public class FavouriteBuilder implements IBuilder<Favourite> {
 
 	@Override
 	public Favourite build() {
+		
+		Objects.requireNonNull(item);
+		Objects.requireNonNull(created);
+		Objects.requireNonNull(user);
+		
 		return new Favourite(this);
 	}
 	

@@ -56,7 +56,7 @@ public class StoreItemController extends BaseController {
 		model.addAttribute("show", "details");
 		model.addAttribute("bindingResult", result);
 		model.addAttribute("item", item);
-		model.addAttribute("categories", categoryService.getCategories());
+		model.addAttribute("categories", categoryService.getCategoryTree());
 		
 		return "edit";
 	}
@@ -123,7 +123,7 @@ public class StoreItemController extends BaseController {
 			
 		}
 		model.addAttribute("show", "details");
-		model.addAttribute("categories", categoryService.getCategories());
+		model.addAttribute("categories", categoryService.getCategoryTree());
 		model.addAttribute("bindingResult", result);
 		if (!success) {
 			model.addAttribute("item", originalItem);

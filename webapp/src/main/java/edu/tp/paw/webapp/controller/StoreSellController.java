@@ -42,7 +42,7 @@ public class StoreSellController extends BaseController {
 			BindingResult bindingResult,
 			Model model) {
 		
-		model.addAttribute("categories", categoryService.getCategories());
+		model.addAttribute("categories", categoryService.getCategoryTree());
 		model.addAttribute("bindingResult", bindingResult);
 		model.addAttribute("item", form);
 		

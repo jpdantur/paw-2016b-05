@@ -3,6 +3,7 @@ package edu.tp.paw.model;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 public class CategoryBuilder implements IBuilder<Category> {
@@ -27,8 +28,8 @@ public class CategoryBuilder implements IBuilder<Category> {
 	 */
 	public CategoryBuilder(final String name, final Category parent) {
 		
-		this.name = name;
-		this.parent = parent;
+		this.name = Objects.requireNonNull(name);
+		this.parent = Objects.requireNonNull(parent);
 		
 	}
 	
@@ -38,7 +39,7 @@ public class CategoryBuilder implements IBuilder<Category> {
 	 * @return #{this}
 	 */
 	public CategoryBuilder created(final Timestamp created) {
-		this.created = created;
+		this.created = Objects.requireNonNull(created);
 		return this;
 	}
 	
@@ -48,7 +49,7 @@ public class CategoryBuilder implements IBuilder<Category> {
 	 * @return #{this}
 	 */
 	public CategoryBuilder lastUpdated(final Timestamp lastUpdated) {
-		this.lastUpdated = lastUpdated;
+		this.lastUpdated = Objects.requireNonNull(lastUpdated);
 		return this;
 	}
 	
@@ -63,6 +64,13 @@ public class CategoryBuilder implements IBuilder<Category> {
 	 */
 	@Override
 	public Category build() {
+		
+		Objects.requireNonNull(name);
+		Objects.requireNonNull(parent);
+		Objects.requireNonNull(created);
+		Objects.requireNonNull(lastUpdated);
+		
+		
 		return new Category(this);
 	}
 
