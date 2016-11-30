@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +24,8 @@ import edu.tp.paw.model.UserBuilder;
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(classes = TestConfig.class)
 public class UserServiceTest {
+	
+	@Autowired private PasswordEncoder encoder;
 	
 	@Autowired DataSource ds;
 	@Autowired private IUserService userService;
@@ -87,6 +90,6 @@ public class UserServiceTest {
 	public void testChangePassword() {
 		user = userService.createUser(userBuilder, role);
 		userService.changePassword(user, "newpass");
-		assertEquals("newpass",user.getPassword());
+		assertTrue(encoder.matches("newpass", user.getPassword()));
 	}
 }
