@@ -43,7 +43,7 @@ $(document).ready(function(){
     if (!$categoryInput.val() || $categoryInput.val() === '0') {
       $('#submit-button').removeClass('disabled');
       $.notify({
-        message: 'Por favor elija una categoria'
+        message: messages.editPickCategory
       }, {
         type: 'warning'
       });

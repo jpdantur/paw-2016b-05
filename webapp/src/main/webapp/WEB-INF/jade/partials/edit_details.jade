@@ -40,7 +40,7 @@ div.tab-content
 							div
 								+categories(categories, 0)
 								div.category-card.text-center#success-card
-									span.text-muted Usted Eligio:
+									span.text-muted #{messageSource.getMessage('edit.details.categoryChosen',[],locale)}
 									br
 									span.h4#category-name
 							+errors(bindingResult, 'category')

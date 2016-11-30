@@ -1,6 +1,10 @@
 extends layout
 
 block scripts
+	script.
+		var messages = {
+			sellPickCategory: 		"#{messageSource.getMessage('sell.pickCategory',[],locale)}"
+		};
 	script(src="#{context.url('/resources/js/sell.js')}", type="text/javascript")
 block styles
 	link(href="#{context.url('/resources/css/sell.css')}", rel="stylesheet")
@@ -47,7 +51,7 @@ block content
 								div
 									+categories(categories, 0)
 									div.category-card.text-center#success-card
-										span.text-muted Usted Eligio:
+										span.text-muted #{messageSource.getMessage('edit.details.categoryChosen',[],locale)}
 										br
 										span.h4#category-name
 							+errors(bindingResult, 'category')

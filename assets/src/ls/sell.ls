@@ -55,7 +55,7 @@ $ document .ready !->
 			$ \#submit-button .removeClass \disabled
 
 			$.notify {
-				message: 'Por favor elija una categoria'
+				message: messages.sellPickCategory
 			} , do
 				type: 'warning'
 
