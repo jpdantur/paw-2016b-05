@@ -50,7 +50,7 @@ public class RoleBuilder implements IBuilder<Role> {
 			throw new IllegalStateException("role name should be between 2 and 100 chars");
 		}
 		
-		if (slug.length() < 2 || slug.length() > 100 || !Pattern.matches("[A-Z0-9_-]+", slug)) {
+		if (slug.length() < 2 || slug.length() > 100 || !Pattern.matches("[A-Za-z0-9_-]+", slug)) {
 			throw new IllegalStateException("slug should be between 2 and 100 chars and match [A-Z0-9_-]+");
 		}
 		

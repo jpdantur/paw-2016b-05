@@ -68,7 +68,7 @@ public class StoreItemHibernateDaoTest {
 		jdbcTemplate.execute("insert into store_categories(category_id, category_name, parent) values (0, 'root', 0);");
 		categoryBuilder = new CategoryBuilder("Category", categoryDao.findById(0));
 		category = categoryDao.create(categoryBuilder);
-		userBuilder = new UserBuilder("Username");
+		userBuilder = new UserBuilder("Username").firstName("test").lastName("user").password("passsss");
 		user = userDao.create(userBuilder);
 		itemBuilder = new StoreItemBuilder(NAME, DESCRIPTION, PRICE, false).category(category).owner(user).status(StoreItemStatus.ACTIVE);
 		logger.trace("setUp end");

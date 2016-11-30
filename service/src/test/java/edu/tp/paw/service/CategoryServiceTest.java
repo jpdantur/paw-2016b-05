@@ -27,15 +27,12 @@ public class CategoryServiceTest {
 
 	
 	private static final String CATEGORY_NAME = "Testing is fun :D";
-
 	private static final String BROTHER_NAME = "Shut up brother!";
-
 	private static final String SON_NAME = "Daddy, buy me Effective Java!";
 
-	private CategoryService categoryService;
+	@Autowired private CategoryService categoryService;
 	
-	@Autowired
-	DataSource ds;
+	@Autowired DataSource ds;
 	
 	private JdbcTemplate jdbcTemplate;
 	private Category root;
@@ -53,7 +50,7 @@ public class CategoryServiceTest {
 	public void setUp() throws Exception {
 		jdbcTemplate = new JdbcTemplate(ds);
 		jdbcTemplate.execute("insert into store_categories(category_id, category_name, parent) values (0, 'root', 0);");
-		categoryService = new CategoryService();
+//		categoryService = new CategoryService();
 		//rootBuilder = new CategoryBuilder("ROOT", root);
 		root = categoryService.findById(0);
 		//System.out.println(categoryDao.categoryExists(0));

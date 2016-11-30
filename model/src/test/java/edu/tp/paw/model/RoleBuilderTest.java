@@ -18,7 +18,7 @@ public class RoleBuilderTest {
 	
 	@Test (expected = IllegalStateException.class)
 	public void testBuildInvalidSlug() {
-		Role role = new RoleBuilder(NAME,"slug").id(0).build();
+		Role role = new RoleBuilder(NAME,"slug slug").id(0).build();
 		assertEquals(NAME,role.getRoleName());
 		assertEquals(SLUG,role.getSlug());
 	}

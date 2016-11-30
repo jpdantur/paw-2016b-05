@@ -14,13 +14,16 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.transaction.PlatformTransactionManager;
 
-@ComponentScan({"edu.tp.paw.service","edu.tp.paw.persistence"})
-
+@ComponentScan({"edu.tp.paw.service","edu.tp.paw.persistence", })
 @Configuration
 public class TestConfig {
 	
+	private static final int BCRYPT_ROUNDS = 10;
+
 	@Bean
     public DataSource dataSource() {
         final SimpleDriverDataSource ds = new SimpleDriverDataSource();
@@ -50,10 +53,15 @@ public class TestConfig {
         properties.setProperty("hibernate.dialect", "org.hibernate.dialect.HSQLDialect");
 
         properties.setProperty("hibernate.show_sql", "true");
-    	properties.setProperty("hibernate.format_sql", "true");
+        properties.setProperty("hibernate.format_sql", "true");
 
         factoryBean.setJpaProperties(properties);
 
         return factoryBean;
+    }
+    
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+    	return new BCryptPasswordEncoder(BCRYPT_ROUNDS);
     }
 } 

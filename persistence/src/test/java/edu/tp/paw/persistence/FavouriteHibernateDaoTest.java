@@ -64,7 +64,7 @@ public class FavouriteHibernateDaoTest {
 	public void setUp() throws Exception {
 		jdbcTemplate = new JdbcTemplate(ds);
 		jdbcTemplate.execute("insert into store_categories(category_id, category_name, parent) values (0, 'root', 0);");
-		userBuilder = new UserBuilder("pepe");
+		userBuilder = new UserBuilder("pepego").firstName("pepe").lastName("gonzalez").password("shhhhh");
 		user = userDao.create(userBuilder);
 		categoryBuilder = new CategoryBuilder("Category", categoryDao.findById(0));
 		category = categoryDao.create(categoryBuilder);

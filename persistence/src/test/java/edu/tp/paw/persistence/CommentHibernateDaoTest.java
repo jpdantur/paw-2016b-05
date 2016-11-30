@@ -77,9 +77,9 @@ public class CommentHibernateDaoTest {
 		jdbcTemplate.execute("insert into store_categories(category_id, category_name, parent) values (0, 'root', 0);");
 		categoryBuilder = new CategoryBuilder("Category", categoryDao.findById(0));
 		category = categoryDao.create(categoryBuilder);
-		userBuilder = new UserBuilder("Pepe");
+		userBuilder = new UserBuilder("PepeGo").firstName("Pepe").lastName("Gonzalez").password("secret");
 		user = userDao.create(userBuilder);
-		otherUserBuilder = new UserBuilder("Paco");
+		otherUserBuilder = new UserBuilder("PacoGerlo").firstName("Paco").lastName("Gerlo").password("shhhh");
 		otherUser = userDao.create(otherUserBuilder);
 		
 		itemBuilder = new StoreItemBuilder("Nombre", "Desc", new BigDecimal(100), false).category(category).owner(user).status(StoreItemStatus.ACTIVE);

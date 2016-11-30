@@ -46,7 +46,7 @@ public class RoleHibernateDaoTest {
 	@Transactional
 	public void setUp() throws Exception {
 		jdbcTemplate = new JdbcTemplate(ds);
-		userBuilder = new UserBuilder("pepe");
+		userBuilder = new UserBuilder("pepego").firstName("pepe").lastName("gonzalez").password("secret");
 		user = userDao.create(userBuilder);
 		roleBuilder = new RoleBuilder("name","slug").id(0).makeDefault(true);
 		otherRoleBuilder = new RoleBuilder("otherN","otherS").id(0);

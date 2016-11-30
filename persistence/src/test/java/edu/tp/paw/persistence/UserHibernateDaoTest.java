@@ -20,7 +20,9 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
+import edu.tp.paw.interfaces.dao.ICategoryDao;
 import edu.tp.paw.interfaces.dao.IUserDao;
+import edu.tp.paw.model.Category;
 import edu.tp.paw.model.Purchase;
 import edu.tp.paw.model.PurchaseBuilder;
 import edu.tp.paw.model.Role;
@@ -36,21 +38,23 @@ public class UserHibernateDaoTest {
 
 	private final static Logger logger = LoggerFactory.getLogger(UserHibernateDaoTest.class);
 	
-	private static final String USER_NAME = "Chuck Norris";
+	
+	private static final String FIRST_NAME = "Chuck";
+	private static final String LAST_NAME = "Norris";
+	private static final String USER_NAME = "ChuckNorris";
 	private static final String EMAIL = "PresidentTrump@WhiteHouse.gov";
 	private static final String PASSWORD = "12345";
 	private static final String ROLENAME = "Rol";
-	private static final String SLUG = "Slug";
+	private static final String SLUG = "slug";
 	private static final String ITEM_NAME = "Paw TEST";
 	private static final String DESCRIPTION = "Very Fun and Challenging!";
 	private static final BigDecimal PRICE = new BigDecimal(100);
 
 	@Autowired private IUserDao userDao;
+	@Autowired private ICategoryDao categoryDao;
 	
 	private User user;
 	private Purchase purchase;
-	private StoreItem item;
-	private StoreItemBuilder itemBuilder;
 	private PurchaseBuilder purchaseBuilder;
 	private UserBuilder userBuilder;
 	private Role role;
@@ -65,12 +69,9 @@ public class UserHibernateDaoTest {
 	@Transactional
 	public void setUp() throws Exception {
 		jdbcTemplate = new JdbcTemplate(ds);
-		userBuilder = new UserBuilder(USER_NAME).email(EMAIL).password(PASSWORD);
+		userBuilder = new UserBuilder(USER_NAME).email(EMAIL).password(PASSWORD).firstName(FIRST_NAME).lastName(LAST_NAME);
 		roleBuilder = new RoleBuilder(ROLENAME, SLUG).id(6);
 		role = roleBuilder.build();
-		itemBuilder = new StoreItemBuilder(ITEM_NAME, DESCRIPTION, PRICE, false);
-		item = itemBuilder.build();
-		
 	}
 	
 	@Test

@@ -50,6 +50,11 @@ public class CommentService implements ICommentService {
 	
 	@Override
 	public List<Comment> commentsForItem(final StoreItem item) {
+		
+		if (!storeItemService.itemExists(item)) {
+			throw new IllegalArgumentException("comment item must exist");
+		}
+		
 		return commentDao.commentsForItem(item);
 	}
 
