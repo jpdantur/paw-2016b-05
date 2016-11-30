@@ -165,7 +165,7 @@ block content
 							else
 								b #{messageSource.getMessage('item.new', [], locale)}
 						br
-						span Vendedor:&nbsp;&nbsp;
+						span #{messageSource.getMessage('item.seller', [], locale)}:&nbsp;&nbsp;
 						a(href=context.url('/id/'+storeItem.owner.username))
 							i.fa.fa-user
 							span &nbsp;#{storeItem.owner.username}&nbsp;
@@ -234,7 +234,7 @@ block content
 										div.col-sm-10
 											p #{comment.content}
 					div.col-sm-12(style="margin-bottom:30px")
-						h3.h1 Publicaciones del mismo vendedor
+						h3.h1 #{messageSource.getMessage('item.seller.publications', [], locale)}
 						div.row
 							div.col-sm-12
 								each item in relatedItems.results

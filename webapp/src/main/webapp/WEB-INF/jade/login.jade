@@ -36,5 +36,5 @@ block content
 								span #{messageSource.getMessage('login.form.noUserQuestion', [], locale)}&nbsp;
 								a(href=context.url('/auth/register')) #{messageSource.getMessage('login.form.register', [], locale)}
 								br
-								span Olvido su contraseña?&nbsp;
-								a(href=context.url('/auth/forgot-pass')) Recuperela
+								span #{messageSource.getMessage('login.recover.question', [], locale)}&nbsp;
+								a(href=context.url('/auth/forgot-pass')) #{messageSource.getMessage('login.recover.recoverIt', [], locale)}

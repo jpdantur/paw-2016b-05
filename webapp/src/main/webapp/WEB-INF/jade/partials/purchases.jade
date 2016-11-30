@@ -24,7 +24,7 @@ div.tab-pane-content
 						th #{messageSource.getMessage('profile.purchases.table.seller',[],locale)}
 						th(colspan=2) #{messageSource.getMessage('profile.purchases.table.item',[],locale)}
 						if !status.toString().equals('PENDING')
-							th Puntaje
+							th #{messageSource.getMessage('profile.purchases.table.score',[],locale)}
 				tbody
 					if items.numberOfTotalResults == 0
 						tr.info
@@ -52,7 +52,7 @@ div.tab-pane-content
 								span(style="color:#900") $#{purchase.item.price}
 							if !status.toString().equals('PENDING')
 								td.center-vertical
-									button.btn.btn-default.btn-xs.show-scores(data-s-rating=purchase.sellerReview, data-b-rating=purchase.buyerReview) Ver puntajes
+									button.btn.btn-default.btn-xs.show-scores(data-s-rating=purchase.sellerReview, data-b-rating=purchase.buyerReview) #{messageSource.getMessage('profile.purchases.seeScores', [], locale)}
 			ul.pager#filter-page(data-page="#{items.currentPage}", data-last-page="#{items.numberOfTotalResults/items.pageSize}")
 				li.previous(class="#{items.currentPage==0?'disabled':''}")
 					a.filter-page-action(href="#")

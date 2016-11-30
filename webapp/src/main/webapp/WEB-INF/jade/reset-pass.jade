@@ -12,11 +12,11 @@ block content
 					if tokenValidity.toString().equals("EXPIRED")
 						div.alert.alert-danger
 							b #{messageSource.getMessage('login.error.error', [], locale)}&nbsp;
-							span El tiempo maximo para renovar su contraseña es de 3 horas.
+							span #{messageSource.getMessage('login.recover.maxTime', [], locale)}
 					else if tokenValidity.toString().startsWith("INVALID")
 						div.alert.alert-danger
 							b #{messageSource.getMessage('login.error.error', [], locale)}&nbsp;
-							span El link es invalido
+							span #{messageSource.getMessage('login.recover.invalidLink', [], locale)}
 					else
 						form.form-horizontal(action="#{context.url('/auth/reset-pass')}", method="POST")
 							div.form-group(class="#{result.hasFieldErrors('password')?'has-error':''}")
