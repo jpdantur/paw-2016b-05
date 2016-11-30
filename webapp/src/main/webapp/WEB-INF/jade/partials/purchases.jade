@@ -37,10 +37,11 @@ div.tab-pane-content
 								if purchase.status.toString().equals('APPROVED')
 									b #{purchase.item.owner.firstName} #{purchase.item.owner.lastName}
 									br
-								span.text-muted #{purchase.item.owner.username}
+								span.text-muted
+									a(href=context.url('/id/'+purchase.item.owner.username+'/seller')) #{purchase.item.owner.username}
 								if purchase.status.toString().equals('APPROVED')
 									| &nbsp;
-									span (#{purchase.item.owner.email})
+									a (#{purchase.item.owner.email})
 							td(style="width:40px")
 								if purchase.item.images.isEmpty()
 									img.table-img(style="width:40px;height:40px" src="http://placehold.it/40?text=Sin+Imagen")

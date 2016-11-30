@@ -46,7 +46,8 @@ div.tab-pane-content
 							td.center-vertical
 								i.fa.fa-3x.fa-long-arrow-right(class=status.toString().equals('APPROVED')?'text-success':(status.toString().equals('DECLINED')?'text-danger':''))
 							td
-								b #{transaction.buyer.firstName} #{transaction.buyer.lastName}
+								b
+									a(href=context.url('/id/'+transaction.buyer.username+'/buyer')) #{transaction.buyer.firstName} #{transaction.buyer.lastName}
 								br
 								span.text-muted #{transaction.buyer.username} (#{transaction.buyer.email})
 							if transaction.status.toString().equals('PENDING')

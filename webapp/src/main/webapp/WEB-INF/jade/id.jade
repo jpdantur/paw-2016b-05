@@ -30,19 +30,23 @@ block content
 											div.rating.static(style="margin-left:40px;display:inline-block;line-height:2em" ,data-rate-value=sellerRating)
 						div.col-sm-12
 							div.row.text-center#stats-container
-								div.col-sm-4
-									span.text-muted #{messageSource.getMessage('profile.public.score.seller.recommendation', [], locale)}
-									br
-									span.h1#approved-sales(data-end=100*approvedSales/(approvedSales+rejectedSales)) #{approvedSales/(approvedSales+rejectedSales)}
-									span.h1 %
-								div.col-sm-4
-									span.text-muted #{messageSource.getMessage('profile.public.score.seller.approvedSales', [], locale)}
-									br
-									span.h1#approved-sales(data-end=approvedSales) #{approvedSales}
-								div.col-sm-4
-									span.text-muted #{messageSource.getMessage('profile.public.score.seller.rejectedSales', [], locale)}
-									br
-									span.h1#rejected-sales(data-end=rejectedSales) #{rejectedSales}
+								if approvedSales+rejectedSales == 0
+									div.col-sm-12
+										span.h1 #{user.username} #{messageSource.getMessage('profile.public.nosales', [], locale)}
+								else
+									div.col-sm-4
+										span.text-muted #{messageSource.getMessage('profile.public.score.seller.recommendation', [], locale)}
+										br
+										span.h1#approved-sales(data-end=100*approvedSales/(approvedSales+rejectedSales)) #{approvedSales/(approvedSales+rejectedSales)}
+										span.h1 %
+									div.col-sm-4
+										span.text-muted #{messageSource.getMessage('profile.public.score.seller.approvedSales', [], locale)}
+										br
+										span.h1#approved-sales(data-end=approvedSales) #{approvedSales}
+									div.col-sm-4
+										span.text-muted #{messageSource.getMessage('profile.public.score.seller.rejectedSales', [], locale)}
+										br
+										span.h1#rejected-sales(data-end=rejectedSales) #{rejectedSales}
 						hr.col-sm-12
 					if view.equals("buyer")
 						div.col-sm-12
@@ -55,19 +59,22 @@ block content
 											div.rating.static(style="margin-left:40px;display:inline-block;line-height:2em" ,data-rate-value=buyerRating)
 						div.col-sm-12
 							div.row.text-center#stats-container
-								div.col-sm-4
-									span.text-muted #{messageSource.getMessage('profile.public.score.buyer.acceptance', [], locale)}
-									br
-									span.h1#approved-sales(data-end=100*approvedSales/(approvedSales+rejectedSales)) #{approvedSales/(approvedSales+rejectedSales)}
-									span.h1 %
-								div.col-sm-4
-									span.text-muted #{messageSource.getMessage('profile.public.score.buyer.rejectedPurchases', [], locale)}
-									br
-									span.h1#rejected-sales(data-end=rejectedSales) #{rejectedSales}
-								div.col-sm-4
-									span.text-muted #{messageSource.getMessage('profile.public.score.buyer.acceptedPurchases', [], locale)}
-									br
-									span.h1#approved-sales(data-end=approvedSales) #{approvedSales}
+								if approvedSales+rejectedSales == 0
+									span.h1 #{user.username} #{messageSource.getMessage('profile.public.nopurchases', [], locale)}
+								else
+									div.col-sm-4
+										span.text-muted #{messageSource.getMessage('profile.public.score.buyer.acceptance', [], locale)}
+										br
+										span.h1#approved-sales(data-end=100*approvedSales/(approvedSales+rejectedSales)) #{approvedSales/(approvedSales+rejectedSales)}
+										span.h1 %
+									div.col-sm-4
+										span.text-muted #{messageSource.getMessage('profile.public.score.buyer.rejectedPurchases', [], locale)}
+										br
+										span.h1#rejected-sales(data-end=rejectedSales) #{rejectedSales}
+									div.col-sm-4
+										span.text-muted #{messageSource.getMessage('profile.public.score.buyer.acceptedPurchases', [], locale)}
+										br
+										span.h1#approved-sales(data-end=approvedSales) #{approvedSales}
 					if view.equals("seller")
 						div.col-sm-12
 							h2.h1 #{messageSource.getMessage('profile.public.seller.items', [], locale)}
