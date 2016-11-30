@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import edu.tp.paw.interfaces.service.*;
@@ -75,13 +76,6 @@ public class StoreItemServiceTest {
 	
 	@Test
 	@Transactional
-	public void getUserItemsTest() {
-		item = itemService.create(itemBuilder);
-		assertTrue(itemService.getUserItems(user).contains(item));
-	}
-	
-	@Test
-	@Transactional
 	public void getNumberOfItemsTest() {
 		item = itemService.create(itemBuilder);
 		assertEquals(1,itemService.getNumberOfItems());
@@ -93,7 +87,9 @@ public class StoreItemServiceTest {
 		item = itemService.create(itemBuilder);
 		long count = item.getSold();
 		itemService.increaseSellCount(item);
-		assertEquals(count+1,item.getSold());
+		assertTrue(JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "store_items",
+				String.format("item_id = %d and sold = %d",item.getId(), item.getSold()+1))== 1);
+//		assertEquals(count+1,item.getSold());
 	}
 	
 	@Test
