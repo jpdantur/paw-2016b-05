@@ -7,6 +7,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
 
 import edu.tp.paw.interfaces.dao.IRoleDao;
@@ -17,12 +19,16 @@ import edu.tp.paw.model.User;
 @Repository
 public class RoleHibernateDao implements IRoleDao {
 
+	private final static Logger logger = LoggerFactory.getLogger(RoleHibernateDao.class);
+	
 	@PersistenceContext
 	private EntityManager entityManager;
 	
 	@Override
-	public Role createRole(final RoleBuilder buider) {
-		final Role role = buider.build();
+	public Role createRole(final RoleBuilder builder) {
+		logger.trace("builder is {}", builder);
+		final Role role = builder.build();
+		logger.debug("persisting {}", role);
 		entityManager.persist(role);
 		return role;
 	}

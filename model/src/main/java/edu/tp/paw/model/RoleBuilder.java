@@ -57,6 +57,13 @@ public class RoleBuilder implements IBuilder<Role> {
 		return new Role(this);
 	}
 
+	@Override
+	public String toString() {
+		return "RoleBuilder [id=" + id + ", roleName=" + roleName + ", slug="
+				+ slug + ", _default=" + _default + "]";
+	}
+
+	
 	
 	
 }

@@ -36,7 +36,7 @@ public class Role {
 		this._default = builder.isDefault();
 	}
 
-	public long getId() {
+	public Long getId() {
 		return id;
 	}
 

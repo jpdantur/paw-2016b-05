@@ -167,6 +167,18 @@
 						<groupId>org.javassist</groupId>
 						<artifactId>javassist</artifactId>
 					</exclusion>
+					<exclusion>
+						<artifactId>jta</artifactId>
+						<groupId>javax.transaction</groupId>
+					</exclusion>
+					<exclusion>
+						<groupId>org.slf4j</groupId>
+						<artifactId>slf4j-api</artifactId>
+					</exclusion>
+					<exclusion>
+						<groupId>dom4j</groupId>
+						<artifactId>dom4j</artifactId>
+					</exclusion>
 				</exclusions>
 			</dependency>
 			<dependency>
