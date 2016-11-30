@@ -123,7 +123,11 @@ public class Purchase {
 
 	@Override
 	public String toString() {
-		return "Purchase [id=" + id + ", buyer=" + buyer.getId() + ", item=" + item.getId() + ", status=" + status + "]";
+		return "Purchase [id=" + id + ", buyer=" + buyer + ", item=" + item
+				+ ", status=" + status + ", created=" + created + ", buyerReview="
+				+ buyerReview + ", sellerReview=" + sellerReview + "]";
 	}
+
+	
 	
 }

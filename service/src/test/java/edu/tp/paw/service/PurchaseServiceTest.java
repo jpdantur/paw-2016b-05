@@ -10,10 +10,13 @@ import javax.sql.DataSource;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
+import org.springframework.test.jdbc.JdbcTestUtils;
 import org.springframework.transaction.annotation.Transactional;
 
 import edu.tp.paw.interfaces.service.ICategoryService;
@@ -38,6 +41,8 @@ import edu.tp.paw.model.UserBuilder;
 @ContextConfiguration(classes = TestConfig.class)
 public class PurchaseServiceTest {
 
+	private final static Logger logger = LoggerFactory.getLogger(PurchaseServiceTest.class);
+	
 	@Autowired private IPurchaseService purchaseService;
 	@Autowired private ICategoryService categoryService;
 	@Autowired private IStoreItemService storeItemService;
@@ -84,7 +89,9 @@ public class PurchaseServiceTest {
 	@Transactional
 	public void testApprovePurchase() {
 		purchaseService.approvePurchase(purchase);
-		assertEquals(PurchaseStatus.APPROVED,purchase.getStatus());
+		assertTrue(JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "sales",
+				String.format("sale_id = %d and status ='APPROVED'",purchase.getId()))== 1);
+//		assertEquals(PurchaseStatus.APPROVED,purchase.getStatus());
 	}
 
 	@Test
@@ -92,7 +99,9 @@ public class PurchaseServiceTest {
 	public void testDeclinePurchase() {
 
 		purchaseService.declinePurchase(purchase);
-		assertEquals(PurchaseStatus.DECLINED,purchase.getStatus());
+		assertTrue(JdbcTestUtils.countRowsInTableWhere(jdbcTemplate, "sales",
+				String.format("sale_id = %d and status ='DECLINED'",purchase.getId()))== 1);
+//		assertEquals(PurchaseStatus.DECLINED,purchase.getStatus());
 	}
 
 	@Test
@@ -113,11 +122,11 @@ public class PurchaseServiceTest {
 
 		purchaseReview = purchaseService.createPurchaseReview(purchaseReviewBuilder);
 		PurchaseBuilder pb = new PurchaseBuilder(user,item).sellerReview(purchaseReview);
-		PurchaseReviewBuilder otherb = new PurchaseReviewBuilder("other review");
-		PurchaseReview other = purchaseService.createPurchaseReview(otherb);
+		PurchaseReviewBuilder otherReviewBuilder = new PurchaseReviewBuilder("other review");
+		PurchaseReview otherReview = purchaseService.createPurchaseReview(otherReviewBuilder);
 		Purchase p = userService.purchase(pb);
-		purchaseService.updateSellerReview(p, other);
-		assertEquals(other,p.getSellerReview());
+		purchaseService.updateSellerReview(p, otherReview);
+		assertEquals(otherReview,p.getSellerReview());
 	}
 
 	@Test
@@ -134,7 +143,8 @@ public class PurchaseServiceTest {
 		purchaseReview = purchaseService.createPurchaseReview(purchaseReviewBuilder);
 		PurchaseBuilder pb = new PurchaseBuilder(user,item).buyerReview(purchaseReview);
 		Purchase p = userService.purchase(pb);
-		assertTrue(purchaseService.getAverageAsBuyer(user)==2);
+		
+		assertTrue(purchaseService.getAverageAsSeller(user)==2);
 	}
 
 	@Test
@@ -144,7 +154,7 @@ public class PurchaseServiceTest {
 		purchaseReview = purchaseService.createPurchaseReview(purchaseReviewBuilder);
 		PurchaseBuilder pb = new PurchaseBuilder(user,item).sellerReview(purchaseReview);
 		Purchase p = userService.purchase(pb);
-		assertTrue(purchaseService.getAverageAsSeller(user)==2);
+		assertTrue(purchaseService.getAverageAsBuyer(user)==2);
 	}
 
 }

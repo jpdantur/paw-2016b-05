@@ -43,7 +43,11 @@ public class PurchaseHibernateDao implements IPurchaseDao {
 		final Query query = entityManager.createQuery("update Purchase set buyerReview = :review where id = :id");
 		query.setParameter("id", purchase.getId());
 		query.setParameter("review", review);
-		return query.executeUpdate() == 1;
+		boolean ok = query.executeUpdate() == 1;
+		
+		entityManager.refresh(purchase);
+		
+		return ok;
 		
 	}
 
@@ -53,7 +57,11 @@ public class PurchaseHibernateDao implements IPurchaseDao {
 		final Query query = entityManager.createQuery("update Purchase set sellerReview = :review where id = :id");
 		query.setParameter("id", purchase.getId());
 		query.setParameter("review", review);
-		return query.executeUpdate() == 1;
+		boolean ok = query.executeUpdate() == 1;
+		
+		entityManager.refresh(purchase);
+		
+		return ok;
 	}
 
 	@Override
