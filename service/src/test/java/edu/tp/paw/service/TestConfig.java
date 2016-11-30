@@ -16,7 +16,8 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.transaction.PlatformTransactionManager;
 
-@ComponentScan({ "edu.tp.paw.service", "edu.tp.paw.persistence" })
+@ComponentScan({"edu.tp.paw.service","edu.tp.paw.persistence"})
+
 @Configuration
 public class TestConfig {
 	
