@@ -86,7 +86,6 @@ $(document).ready(function(){
         ? buyerRating.rating
         : sellerRating.rating;
       $rater.removeClass('great good ok bad worst');
-      console.log(rateValue);
       $rater.rate({
         max_value: 5,
         step_size: 0.1,

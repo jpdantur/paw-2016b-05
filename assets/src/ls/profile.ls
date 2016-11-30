@@ -113,8 +113,6 @@ $ document .ready !->
 
 			$rater .removeClass 'great good ok bad worst'
 
-			console.log rate-value
-
 			$rater
 			.rate do
 				max_value: 5,
