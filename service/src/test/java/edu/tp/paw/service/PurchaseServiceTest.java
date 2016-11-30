@@ -18,9 +18,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import edu.tp.paw.interfaces.service.ICategoryService;
 import edu.tp.paw.interfaces.service.IPurchaseService;
+import edu.tp.paw.interfaces.service.IRoleService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.Category;
+import edu.tp.paw.model.Purchase;
 import edu.tp.paw.model.PurchaseBuilder;
 import edu.tp.paw.model.PurchaseReview;
 import edu.tp.paw.model.PurchaseReviewBuilder;
@@ -39,12 +41,14 @@ public class PurchaseServiceTest {
 	@Autowired private ICategoryService categoryService;
 	@Autowired private IStoreItemService storeItemService;
 	@Autowired private IUserService userService;
+	@Autowired private IRoleService roleService;
 	private JdbcTemplate jdbcTemplate;
 	
 	@Autowired DataSource ds;
 	private Category category;
 	private User user;
 	private StoreItem item;
+	private Purchase purchase;
 	private PurchaseBuilder purchaseBuilder;
 	private PurchaseReviewBuilder purchaseReviewBuilder;
 	private PurchaseReview purchaseReview;
@@ -54,21 +58,24 @@ public class PurchaseServiceTest {
 	public void setUp() throws Exception {
 		jdbcTemplate = new JdbcTemplate(ds);
 		jdbcTemplate.execute("insert into store_categories(category_id, category_name, parent) values (0, 'root', 0);");
-		//category = categoryService.findById(0);
-		//user = userService.createUser(new UserBuilder("pepe"), new RoleBuilder("name","slug").id(0).build());
-		//item = storeItemService.create(new StoreItemBuilder("name","desc",new BigDecimal(100),false).category(category).owner(user));
-		//purchase = 
+		jdbcTemplate.execute("insert into roles (role_id, role_name, role_slug, default_role) values (1, 'Store User', 'USER', true);");
+		category = categoryService.findById(0);
+		UserBuilder userBuilder = new UserBuilder("pepepe").firstName("pepe").lastName("gil").password("allala");
+		user = userService.createUser(userBuilder, roleService.findRoleById(1));
+		item = storeItemService.create(new StoreItemBuilder("name","desc",new BigDecimal(100),false).category(category).owner(user));
+		
+		purchaseBuilder = new PurchaseBuilder(user, item);
+		
+		purchase = userService.purchase(purchaseBuilder);
 		
 		purchaseReviewBuilder = new PurchaseReviewBuilder("comment");
-		purchaseReview = purchaseService.createPurchaseReview(purchaseReviewBuilder);
-		
-		
 	}
 
 	@Test
 	@Transactional
 	public void testFindById() {
-		assertEquals(purchaseReview,purchaseService.findById(purchaseReview.getId()));
+		assertEquals(purchase,purchaseService.findById(purchase.getId()));
+//		assertEquals(purchaseReview,purchaseService.findById(purchaseReview.getId()));
 	}
 
 	@Test

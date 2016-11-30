@@ -79,8 +79,6 @@ public class PurchaseBuilder  implements IBuilder<Purchase> {
 		
 		Objects.requireNonNull(buyer);
 		Objects.requireNonNull(item);
-		Objects.requireNonNull(sellerReview);
-		Objects.requireNonNull(buyerReview);
 		Objects.requireNonNull(created);
 		
 		return new Purchase(this);
