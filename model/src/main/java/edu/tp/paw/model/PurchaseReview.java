@@ -26,7 +26,7 @@ public class PurchaseReview {
 	@Column(precision=20, scale=1, nullable = false)
 	private float rating;
 	
-	@Column(nullable = false, insertable = false, updatable = false)
+	@Column(nullable = false, insertable = false, updatable = false, columnDefinition = "timestamp default now()")
 	private Date created;
 	
 //	@OneToOne( optional = true, fetch = FetchType.LAZY )

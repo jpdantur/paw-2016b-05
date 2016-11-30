@@ -38,7 +38,7 @@ public class Purchase {
 	@Enumerated(EnumType.STRING)
 	private PurchaseStatus status;
 
-	@Column( name = "created", insertable = false, updatable = false )
+	@Column( name = "created", insertable = false, updatable = false, columnDefinition = "timestamp default now()" )
 	private Date created;
 	
 	@JoinColumn(name = "buyer_review", foreignKey = @ForeignKey( name = "buyer_review_fk" ), nullable = true, updatable = false)
