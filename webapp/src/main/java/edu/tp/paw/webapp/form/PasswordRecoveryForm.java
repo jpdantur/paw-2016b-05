@@ -5,8 +5,8 @@ import org.hibernate.validator.constraints.NotEmpty;
 
 public class PasswordRecoveryForm {
 
-	@NotEmpty
-	@Email
+	@NotEmpty(message = "{NotEmpty.RegisterForm.email}")
+	@Email(message = "{Email.RegisterForm.email}")
 	private String email;
 
 	public String getEmail() {

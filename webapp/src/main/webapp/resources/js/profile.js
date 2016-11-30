@@ -79,12 +79,14 @@ $(document).ready(function(){
       $modal.find(".r" + idx + ".help-block, .r" + idx + ".l").show();
     }
     idx = isSale ? 1 : 2;
-    $modal.find('.rating').rate('destroy').each(function(){
+    $modal.find('.rating').rate('destroy').empty().each(function(){
       var $rater, rateValue;
       $rater = $(this);
       rateValue = $rater.hasClass("r" + idx)
         ? buyerRating.rating
         : sellerRating.rating;
+      $rater.removeClass('great good ok bad worst');
+      console.log(rateValue);
       $rater.rate({
         max_value: 5,
         step_size: 0.1,

@@ -8,11 +8,11 @@ block scripts
 		script.
 			$.notify({
 				icon: 'fa fa-pencil',
-				title: 'Esto es un borrador',
-				message: 'Este articulo es un borrador. Haga click aqui para editarlo',
+				title: "#{messageSource.getMessage('item.notifications.draft.title',[],locale)}",
+				message: "#{messageSource.getMessage('item.notifications.draft.message',[],locale)}",
 				url : "#{context.url('/store/item/'+storeItem.id+'/details')}"
 			}, {
-				allow_dismiss: false,
+				allow_dismiss: true,
 				type: 'warning',
 				delay: 0,
 				offset: {
@@ -34,11 +34,11 @@ block scripts
 		script.
 			$.notify({
 				icon: 'fa fa-hand-paper-o',
-				title: 'Esta publicacion esta pausada',
-				message: 'Esta publicacion esta pausada. Haga click aqui para reanudarla',
+				title: "#{messageSource.getMessage('item.notifications.paused.title',[],locale)}",
+				message: "#{messageSource.getMessage('item.notifications.paused.message',[],locale)}",
 				url : "#{context.url('/profile/items/paused')}"
 			}, {
-				allow_dismiss: false,
+				allow_dismiss: true,
 				type: 'info',
 				delay: 0,
 				offset: {
@@ -58,10 +58,10 @@ block scripts
 			})
 			$.notify({
 				icon: 'fa fa-pencil',
-				title: 'O haga click aqui para editarla',
+				title: "#{messageSource.getMessage('item.notifications.paused.alternative',[],locale)}",
 				url : "#{context.url('/store/item/'+storeItem.id+'/details')}"
 			}, {
-				allow_dismiss: false,
+				allow_dismiss: true,
 				type: 'success',
 				delay: 0,
 				offset: {

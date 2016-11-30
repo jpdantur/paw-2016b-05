@@ -105,11 +105,15 @@ $ document .ready !->
 
 		idx = if isSale then 1 else 2
 
-		$modal .find \.rating .rate \destroy
+		$modal .find \.rating .rate \destroy .empty!
 		.each !->
 			$rater = $ this
 
 			rate-value = if $rater.hasClass "r#idx" then buyer-rating.rating else seller-rating.rating
+
+			$rater .removeClass 'great good ok bad worst'
+
+			console.log rate-value
 
 			$rater
 			.rate do
