@@ -42,7 +42,7 @@
 	<body>
 		<div id="container">
 			<h2>Hola ${user.firstName}, le informamos que se ha aprobado su compra de:</h2>
-      <table style="margin-top:50px;margin-bottom:50px;">
+      <table style="margin-top:50px;margin-bottom:50px; width: 100%">
         <tr>
 
           <td style="width:80px">

@@ -45,7 +45,11 @@ public class PurchaseHibernateDao implements IPurchaseDao {
 		query.setParameter("review", review);
 		boolean ok = query.executeUpdate() == 1;
 		
-		entityManager.refresh(purchase);
+		logger.trace("update {}", ok);
+		
+		if (entityManager.contains(purchase)) {
+			entityManager.refresh(purchase);
+		}
 		
 		return ok;
 		
@@ -59,7 +63,13 @@ public class PurchaseHibernateDao implements IPurchaseDao {
 		query.setParameter("review", review);
 		boolean ok = query.executeUpdate() == 1;
 		
-		entityManager.refresh(purchase);
+		logger.trace("update {}", ok);
+		
+		if (entityManager.contains(purchase)) {
+			entityManager.refresh(purchase);
+		}
+		
+//		entityManager.refresh(purchase);
 		
 		return ok;
 	}

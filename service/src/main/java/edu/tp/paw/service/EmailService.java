@@ -171,14 +171,28 @@ public class EmailService implements IEmailService {
 	@Override
 	public boolean notifySellerAboutReview(final User user, final Purchase purchase, final PurchaseReview review) {
 		
+		final Map<String, Object> model = new HashMap<>();
+		model.put("user", user);
+		model.put("item", purchase.getItem());
+		model.put("review", review);
+		model.put("url", URL);
 		
+		final String body = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "templates/seller-review.vm", "utf-8", model);
 		
-		return false;
+		return sendRawEmail(user, "Le han calificado en Siglas Commerce", body);
 	}
 
 	@Override
 	public boolean notifyBuyerAboutReview(final User user, final Purchase purchase, final PurchaseReview review) {
-		return false;
+		final Map<String, Object> model = new HashMap<>();
+		model.put("user", user);
+		model.put("item", purchase.getItem());
+		model.put("review", review);
+		model.put("url", URL);
+		
+		final String body = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "templates/buyer-review.vm", "utf-8", model);
+		
+		return sendRawEmail(user, "Le han calificado en Siglas Commerce", body);
 	}
 
 	@Override

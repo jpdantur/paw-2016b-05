@@ -37,12 +37,25 @@
 .price {
   color: #900
 }
+h1, .h1 {
+  font-size: 36px;
+}
+h1, .h1, h2, .h2, h3, .h3 {
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
+  font-family: inherit;
+  font-weight: 500;
+  line-height: 1.1;
+  color: inherit;
+}
 		</style>
 	</head>
 	<body>
 		<div id="container">
-			<h2>Hola ${user.firstName}, le informamos que se ha rechazado su compra de:</h2>
-      <table style="margin-top:50px;margin-bottom:50px;width: 100%">
+			<h2>Hola ${user.firstName}, le han calificado sobre la venta de:</h2>
+      <table style="margin-top:50px;margin-bottom:50px; width: 100%">
         <tr>
 
           <td style="width:80px">
@@ -57,11 +70,31 @@
           </td>
         </tr>
       </table>
+      <p>
+        <table style="width: 100%">
+          <thead>
+            <tr>
+              <th>Puntuación</th>
+              <th>Comentario</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="text-align: center">
+                <span class="h1">${review.rating}</span>
+              </td>
+              <td style="text-align: center">
+                ${review.comment}
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </p>
 			<p>
-				Acceda a la informacion de la compra haciendo click aquí<br/>
-        <a href="${url}/profile/purchases" class="btn btn-primary">Ver Compra</a>
+				Acceda a la informacion de la venta haciendo click aquí<br/>
+        <a href="${url}/profile/sales" class="btn btn-primary">Ver Venta</a>
 			</p>
-      <p>Si no puede acceder, copie y pegue el siguiente link en su navegador <a href="${url}/profile/purchases">${url}/profile/purchases</a></p>
+      <p>Si no puede acceder, copie y pegue el siguiente link en su navegador <a href="${url}/profile/sales">${url}/profile/sales</a></p>
 		</div>
 	</body>
 

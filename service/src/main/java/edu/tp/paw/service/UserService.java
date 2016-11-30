@@ -568,7 +568,7 @@ public class UserService implements IUserService {
 		
 		purchaseService.approvePurchase(purchase);
 		
-		emailService.notifyPurchaseApproval(user, purchase);
+		emailService.notifyPurchaseApproval(purchase.getBuyer(), purchase);
 		
 		return itemService.increaseSellCount(purchase.getItem()); 
 	}
@@ -576,7 +576,7 @@ public class UserService implements IUserService {
 	@Override
 	public boolean declinePurchase(final User user, final Purchase purchase) {
 		
-		emailService.notifyPurchaseDeclined(user, purchase);
+		emailService.notifyPurchaseDeclined(purchase.getBuyer(), purchase);
 		
 		return purchaseService.declinePurchase(purchase);
 	}
@@ -586,7 +586,7 @@ public class UserService implements IUserService {
 		
 		final PurchaseReview review = purchaseService.createPurchaseReview(builderReview);
 		
-		emailService.notifySellerAboutReview(user, purchase, review);
+		emailService.notifySellerAboutReview(purchase.getItem().getOwner(), purchase, review);
 		
 		return purchaseService.updateBuyerReview(purchase, review);
 	}
@@ -596,7 +596,7 @@ public class UserService implements IUserService {
 		
 		final PurchaseReview review = purchaseService.createPurchaseReview(builderReview);
 		
-		emailService.notifyBuyerAboutReview(user, purchase, review);
+		emailService.notifyBuyerAboutReview(purchase.getBuyer(), purchase, review);
 		
 		return purchaseService.updateSellerReview(purchase, review);
 		
