@@ -171,7 +171,7 @@ block content
 							span &nbsp;#{storeItem.owner.username}&nbsp;
 						span.puntaje
 							| (
-							div.rating.static(style="font-size:9px;display:inline-block", data-rate-value=storeItem.owner.buyerRating)
+							div.rating.static(style="font-size:9px;display:inline-block", data-rate-value=ownerRating)
 							| )
 						h3.price $#{storeItem.price}
 						- var publishedItem = false

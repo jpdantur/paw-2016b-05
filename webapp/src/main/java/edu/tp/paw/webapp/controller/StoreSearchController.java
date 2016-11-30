@@ -128,6 +128,7 @@ public class StoreSearchController extends BaseController {
 		modelAndView.addObject("saved", saved);
 		modelAndView.addObject("commentError", commentError);
 		modelAndView.addObject("comments", storeItemService.getComments(storeItem));
+		modelAndView.addObject("ownerRating", userService.getSellerRating(storeItem.getOwner()));
 		if (user != null) {
 			modelAndView.addObject("allFavourites", userService.getAllFavourites(user));
 			modelAndView.addObject("publishedItems", userService.getAllPublishedItems(user));
