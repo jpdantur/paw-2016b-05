@@ -40,6 +40,7 @@ public class EmailService implements IEmailService {
 	private final static String FROM = "siglas.commerce.paw@gmail.com";
 	private final static String USER = "siglas.commerce.paw@gmail.com";
 	private final static String PASS = "SiglasCommercePaw.1";
+	private final static String URL = "http://pawserver.it.itba.edu.ar/paw-2016b-05";
 	
 	private Session session;
 	private Properties props = new Properties();
@@ -118,6 +119,7 @@ public class EmailService implements IEmailService {
 		
 		final Map<String, Object> model = new HashMap<>();
 		model.put("user", user);
+		model.put("url", URL);
 		
 		final String body = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "templates/greeting.vm", "utf-8", model);
 		
@@ -127,25 +129,50 @@ public class EmailService implements IEmailService {
 	@Override
 	public boolean notifySale(final User user, final Purchase sale) {
 		
-		return sendRawEmail(user, "Nueva Venta", String.format("Hola %s %s, le informamos que ha vendido un articulo. Puede acceder <a href=\"http://pawserver.it.itba.edu.ar/paw-2016b-05/\">aqui</a>", user.getFirstName(), user.getLastName()));
+		final Map<String, Object> model = new HashMap<>();
+		model.put("user", user);
+		model.put("item", sale.getItem());
+		model.put("url", URL);
+		
+		final String body = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "templates/sale.vm", "utf-8", model);
+		
+		return sendRawEmail(user, "Nueva Venta en Siglas Commerce", body);
 	}
 
 	@Override
 	public boolean notifyPurchaseApproval(final User user, final Purchase purchase) {
 		
-		return sendRawEmail(user, "Se ha aprobado su compra", String.format("Hola %s %s, le informamos que se ha confirmado su compra. Puede acceder <a href=\"http://pawserver.it.itba.edu.ar/paw-2016b-05/\">aqui</a>", user.getFirstName(), user.getLastName()));
+		final Map<String, Object> model = new HashMap<>();
+		model.put("user", user);
+		model.put("item", purchase.getItem());
+		model.put("url", URL);
+		
+		final String body = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "templates/purchase.vm", "utf-8", model);
+		
+		return sendRawEmail(user, "Aprobación de Compra en Siglas Commerce", body);
 		
 	}
 
 	@Override
 	public boolean notifyPurchaseDeclined(final User user, final Purchase purchase) {
 		
-		return sendRawEmail(user, "Se ha rechazado su compra", String.format("Hola %s %s, le informamos que se ha rechazado su compra. Puede acceder <a href=\"http://pawserver.it.itba.edu.ar/paw-2016b-05/\">aqui</a>", user.getFirstName(), user.getLastName()));
+		
+		final Map<String, Object> model = new HashMap<>();
+		model.put("user", user);
+		model.put("item", purchase.getItem());
+		model.put("url", URL);
+		
+		final String body = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "templates/purchase-declined.vm", "utf-8", model);
+		
+		return sendRawEmail(user, "Compra denegada en Siglas Commerce", body);
 		
 	}
 
 	@Override
 	public boolean notifySellerAboutReview(final User user, final Purchase purchase, final PurchaseReview review) {
+		
+		
+		
 		return false;
 	}
 
@@ -164,6 +191,7 @@ public class EmailService implements IEmailService {
 		final Map<String, Object> model = new HashMap<>();
 		model.put("user", user);
 		model.put("token", token);
+		model.put("url", URL);
 		
 		final String body = VelocityEngineUtils.mergeTemplateIntoString(velocityEngine, "templates/password-recovery.vm", "utf-8", model);
 		

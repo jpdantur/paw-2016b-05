@@ -1,8 +1,9 @@
 <html>
 	<head>
 		<style>
-		body{background-color:#F5F5F5}
-    #container {width:600px;margin:0 auto;background-color: white}
+		html,body{margin:0;padding:0}
+    body{background-color:#F5F5F5}
+    #container {width:600px;margin:0 auto;background-color: white;padding: 20px}
 		a {
   color: #337ab7;
   text-decoration: none;
@@ -37,10 +38,11 @@
 	</head>
 	<body>
 		<div id="container">
-			<h3>Hola ${user.firstName}, le damos la bienvenida a Siglas Commerce</h3>
+			<h2>Hola ${user.firstName}, le damos la bienvenida a Siglas Commerce</h2>
 			<p>
-				Acceda a mas informacion aqui <a href="http://pawserver.it.itba.edu.ar/paw-2016b-05/" class="btn btn-primary">Siglas Commerce</a>
+				Acceda a nuestro sitio haciendo click aquí<br/> <a href="${url}" class="btn btn-primary">Siglas Commerce</a>
 			</p>
+      <p>Si no puede acceder, copie y pegue el siguiente link en su navegador <a href="${url}">${url}</a></p>
 		</div>
 	</body>
 
