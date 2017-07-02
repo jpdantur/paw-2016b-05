@@ -9,8 +9,8 @@ define([], function() {
 				controller: 'HomeCtrl',
 				controllerAs: 'home'
 			},
-			'/login': {
-				templateUrl: 'views/login/LoginCtrl.html',
+			'/auth/login': {
+				templateUrl: 'views/LoginCtrl.html',
 				controller: 'LoginCtrl',
 				controllerAs: 'login'
 			},

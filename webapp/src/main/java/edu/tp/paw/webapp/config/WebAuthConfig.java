@@ -45,7 +45,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 	@Autowired private SiglasUserDetailsService userDetailsService;
 	@Autowired private ItemOwnerBasedVoter itemOwnerVoter;
 	
-//	@Autowired private SiglasJWTFilter jwtFilter;
+	@Autowired private SiglasJWTFilter jwtFilter;
 	@Autowired private SiglasCORSFilter corsFilter;
 	
 	@Autowired
@@ -68,6 +68,8 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(final HttpSecurity http) throws Exception {
 		
+		jwtFilter.setWhitelist("/api/auth/login", "/api/auth/register", "/api/auth/renew", "/api/store/most-sold", "/api/store/category-tree");
+		
 		http
 			.addFilterBefore(corsFilter, ChannelProcessingFilter.class)
 			.csrf()
@@ -81,10 +83,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 				.antMatchers("/api/auth**").permitAll()
 				.antMatchers("/api**").authenticated()
 			.and()
-				.addFilterBefore(
-						new SiglasJWTFilter("/api/auth/login", "/api/auth/register", "/api/auth/renew", "/api/store/most-sold", "/api/store/category-tree"),
-						UsernamePasswordAuthenticationFilter.class
-				);
+				.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
 	}
 	
 //	@Override

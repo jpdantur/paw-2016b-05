@@ -16,7 +16,7 @@ define([
 		Auth.isTokenValid = isTokenValid;
 
 
-		var HOST = 'localhost:8081';
+		var HOST = 'localhost:8081/webapp';
 
 		var api = function api(path) {
 			return 'http://' + HOST + path;
@@ -26,6 +26,7 @@ define([
 
 		function setDefaultAuthorizationHeader(token) {
 			$http.defaults.headers.common.Authorization = 'Bearer ' + token;
+			$http.defaults.headers.common['X-Token'] = 'Bearer ' + token;
 		}
 
 		function removeDefaultAuthorizationHeader() {
@@ -38,7 +39,7 @@ define([
 
 			$http({
 				method: 'POST',
-				url: api('/v1/auth/login'),
+				url: api('/api/auth/login'),
 				data: {
 					username: username,
 					password: password
@@ -53,14 +54,16 @@ define([
 					return defer.reject(response.data);
 				}
 
-				setDefaultAuthorizationHeader(response.data.tokens.accessToken);
+				console.log(response.data);
+
+				setDefaultAuthorizationHeader(response.data.idToken);
 
 				console.log($http.defaults.headers.common.Authorization);
 
 				console.log('setting local storage');
-				localStorageService.set('tokens', response.data.tokens);
+				localStorageService.set('tokens', response.data);
 
-				defer.resolve(response.data.user);
+				defer.resolve(response.data);
 			}, function (error) {
 				console.log(error);
 				defer.reject(error.data);
@@ -138,15 +141,17 @@ define([
 			return defer.promise;
 		}
 
-		function fetchProfile(tokens) {
+		function fetchProfile() {
 
 			var defer = $q.defer();
 
 			console.log('fetching profile');
 
+			console.log($http.defaults.headers.common.Authorization);
+
 			$http({
 				method: 'GET',
-				url: api('/v1/auth/profile')
+				url: api('/api/auth/profile')
 			})
 			.then(function (response) {
 				if (response.status >= 400) {
@@ -177,17 +182,17 @@ define([
 			console.log('current token is', tokens);
 
 			if (tokens) {
-				if (jwtHelper.isTokenExpired(tokens.accessToken)) {
+				if (jwtHelper.isTokenExpired(tokens.idToken)) {
 					console.log('token is expired');
 					return renewToken(tokens);
 				}
 
 				console.log('token is ok');
-				console.log('setting default $http Authorization header');
+				console.log('setting default $http Authorization header to ' + tokens.idToken);
 
-				setDefaultAuthorizationHeader(tokens.accessToken);
+				setDefaultAuthorizationHeader(tokens.idToken);
 
-				return fetchProfile(tokens);
+				return fetchProfile();
 			}
 
 			defer.resolve();

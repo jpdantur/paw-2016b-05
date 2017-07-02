@@ -3,12 +3,15 @@ define([
 	'siglasApp'
 ], function(siglasApp) {
 
-	siglasApp.controller('IndexCtrl', function($scope, $rootScope, $location) {
+	siglasApp.controller('IndexCtrl', function($scope, $rootScope, $location, $route) {
 
 		console.log('IndexCtrl');
 
 		var self = this;
 
-		self.hola = 'hola';
+		console.log($route);
+
+		self.$route = $route;
+		self.$location = $location;
 	});
 });

@@ -29,6 +29,8 @@ import io.jsonwebtoken.SignatureException;
 @Component
 public class SiglasCORSFilter extends GenericFilterBean {
 	
+	private static final Logger logger = LoggerFactory.getLogger(SiglasCORSFilter.class);
+	
 	@Override
 	public void doFilter(final ServletRequest req, final ServletResponse res, final FilterChain chain)
 			throws IOException, ServletException {
@@ -38,7 +40,16 @@ public class SiglasCORSFilter extends GenericFilterBean {
 		response.setHeader("Access-Control-Allow-Origin", request.getHeader("Origin"));
 		response.setHeader("Access-Control-Allow-Methods", "POST, GET, PUT, OPTIONS, DELETE");
 		response.setHeader("Access-Control-Max-Age", "3600");
-		response.setHeader("Access-Control-Allow-Headers", "x-requested-with");
+		response.setHeader("Access-Control-Allow-Headers", request.getHeader("Access-Control-Request-Headers"));
+		
+		if (request.getMethod().toUpperCase().trim().equals("OPTIONS")) {
+			
+			response.setStatus(HttpServletResponse.SC_OK);
+			response.getWriter().flush();
+			response.getWriter().close();
+			return;
+		}
+		
 		chain.doFilter(request, response);
 	}
 }

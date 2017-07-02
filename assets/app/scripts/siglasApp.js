@@ -111,14 +111,10 @@ define([
 			amMoment.changeLocale('es');
 
 			$rootScope.$on('$routeChangeStart', function (event, next, current) {
-				console.log('$routeChangeStart', next, current);
+				console.log('$routeChangeStart ' + (current || {loadedTemplateUrl: 'none'}).loadedTemplateUrl + ' -> ' + next.loadedTemplateUrl);
 			});
 			$rootScope.$on('$routeChangeSuccess', function (event, next, current) {
-				console.log('$routeChangeSuccess', next, current);
-
-				// if (!$rootScope.loggedUser) {
-
-				// }
+				console.log('$routeChangeSuccess ' + (current || {loadedTemplateUrl: 'none'}).loadedTemplateUrl + ' -> ' + next.loadedTemplateUrl);
 			});
 
 			function onSync(profile) {
@@ -127,11 +123,11 @@ define([
 					$rootScope.loggedUser = profile;
 				}
 
-				if (profile && $location.path() === '/') {
-					$location.path('/dashboard');
-				} else if (!profile) {
-					$location.path('/');
-				}
+				// if (profile && $location.path() === '/') {
+				// 	$location.path('/dashboard');
+				// } else if (!profile) {
+				// 	$location.path('/');
+				// }
 
 				$rootScope.loading = false;
 

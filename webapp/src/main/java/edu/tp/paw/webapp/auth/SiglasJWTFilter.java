@@ -13,6 +13,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.DatatypeConverter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,7 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureException;
 
-//@Component
+@Component
 public class SiglasJWTFilter extends GenericFilterBean {
 
 	private static final Logger logger = LoggerFactory.getLogger(SiglasJWTFilter.class);
@@ -45,13 +46,23 @@ public class SiglasJWTFilter extends GenericFilterBean {
 	@Value("${siglas.token.secret}") private String secret;
 	@Value("${siglas.token.audience}") private String audience;
 	
-	private final String[] whitelist;
-	private final RequestMatcher requestMatcher;
+	private String[] whitelist;
+	private RequestMatcher requestMatcher;
 	
 	@Autowired UserDetailsService userDetailsService;
 	
-	public SiglasJWTFilter(String... whitelist) {
-		super();
+	public SiglasJWTFilter() {
+		whitelist = new String[0];
+		requestMatcher = new RequestMatcher() {
+			
+			@Override
+			public boolean matches(HttpServletRequest request) {
+				return false;
+			}
+		};
+	}
+	
+	public void setWhitelist(String... whitelist) {
 		this.whitelist = whitelist;
 		
 		final SiglasJWTFilter self = this;
@@ -105,12 +116,18 @@ public class SiglasJWTFilter extends GenericFilterBean {
 
     Claims claims;
     
+    logger.trace("decoding " + token);
+    logger.trace(secret);
+    logger.trace(DatatypeConverter.parseBase64Binary(secret).toString());
+    
     try {
-        claims = Jwts.parser().setSigningKey(secret).parseClaimsJws(token).getBody();
+        claims = Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(secret)).parseClaimsJws(token).getBody();
 //        request.setAttribute("claims", claims);
     }
     catch (final Exception e) {
     	logger.trace("invalid token");
+    	logger.trace(e.getMessage());
+    	e.printStackTrace();
     	response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
     	response.getWriter().write("Invalid token.");
     	response.getWriter().flush();
