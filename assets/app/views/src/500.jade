@@ -1,0 +1,11 @@
+extends layouts/layout
+
+block content
+	+navbar(true)
+	div.container
+		div.col-sm-12.text-center
+			h1  500 - #{messageSource.getMessage('500.headline', [], locale)}
+			a.btn.btn-primary.btn-lg(href="#{context.url('/')}")
+				i.fa.fa-home
+				span &nbsp;#{messageSource.getMessage('500.home', [], locale)}
+	

@@ -1,0 +1,34 @@
+extends layouts/layout
+
+block styles
+	link(href=context.url('/resources/css/login.css'), rel="stylesheet")
+
+block content
+	+navbar(true)
+	div.container
+		div.row
+			div.col-sm-6.col-sm-offset-3
+				div.well.login-box
+					if tokenValidity.toString().equals("EXPIRED")
+						div.alert.alert-danger
+							b #{messageSource.getMessage('login.error.error', [], locale)}&nbsp;
+							span #{messageSource.getMessage('login.recover.maxTime', [], locale)}
+					else if tokenValidity.toString().startsWith("INVALID")
+						div.alert.alert-danger
+							b #{messageSource.getMessage('login.error.error', [], locale)}&nbsp;
+							span #{messageSource.getMessage('login.recover.invalidLink', [], locale)}
+					else
+						form.form-horizontal(action="#{context.url('/auth/reset-pass')}", method="POST")
+							div.form-group(class="#{result.hasFieldErrors('password')?'has-error':''}")
+								label.col-sm-3.control-label #{messageSource.getMessage('profile.password.form.new',[],locale)}
+								div.col-sm-9
+									input.form-control(type="password", placeholder="#{messageSource.getMessage('profile.password.form.new',[],locale)}", name="password")
+									+errors(result, 'password')
+							div.form-group(class="#{result.hasFieldErrors('repeatPassword')?'has-error':''}")
+								label.col-sm-3.control-label #{messageSource.getMessage('profile.password.form.repeat',[],locale)}
+								div.col-sm-9
+									input.form-control(type="password", placeholder="#{messageSource.getMessage('profile.password.form.repeat',[],locale)}", name="repeatPassword")
+									+errors(result, 'repeatPassword')
+							div.form-group
+								div.col-sm-12
+									button.btn.btn-success.btn-block(type="submit") #{messageSource.getMessage('profile.account.form.update',[],locale)}

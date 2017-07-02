@@ -1,0 +1,24 @@
+<div class="divider"></div>
+<div data-ng-controller="HomeGenresCtrl as genres">
+	<div class="row music-genres-listing" style="padding-bottom:52px">
+		<div data-ng-repeat="genre in genres.genres | orderBy:'name'" class="col-md-3">
+			<div class="list-item__wrap">
+				<a href="#!/dashboard/genre/{{genre._id}}/{{genre.slug}}">
+					<div class="list-item__image">
+						<img ng-src="{{genre.image.replace('dist/', '')}}" alt="genre image" />
+						<div class="list-item__name">
+							<div class="genre-icon">
+								<i class="{{genre.icon}}">
+
+								</i>
+							</div>
+							<h5>
+								{{genre.name}}
+							</h5>
+						</div>
+					</div>
+				</a>
+			</div>
+		</div>
+	</div>
+</div>

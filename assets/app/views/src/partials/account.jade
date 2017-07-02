@@ -1,0 +1,34 @@
+div.tab-pane-content
+	if success == true || success == false
+		div.col-sm-12
+			if success == true
+				div.alert.alert-success
+					b #{messageSource.getMessage('successMessages.changePassword.title', [], locale)}!&nbsp;
+					span #{messageSource.getMessage('successMessages.changePassword.content', [], locale)}
+			else
+				div.alert.alert-danger
+					b #{messageSource.getMessage('successMessages.changePassword.titleFail', [], locale)}!&nbsp;
+					span #{messageSource.getMessage('successMessages.changePassword.contentFail', [], locale)}
+	div.col-sm-12
+		h1.page-header #{messageSource.getMessage('profile.account.title', [], locale)}
+		form.form-horizontal(action="#{context.url('/profile/details')}", method="POST")
+			div.form-group
+				label.col-sm-2.control-label #{messageSource.getMessage('profile.account.form.name',[],locale)}
+				div.col-sm-10
+					p.form-control-static #{loggedUser.firstName}
+			div.form-group
+				label.col-sm-2.control-label #{messageSource.getMessage('profile.account.form.lastName',[],locale)}
+				div.col-sm-10
+					p.form-control-static #{loggedUser.lastName}
+			div.form-group
+				label.col-sm-2.control-label #{messageSource.getMessage('profile.account.form.username',[],locale)}
+				div.col-sm-10
+					p.form-control-static #{loggedUser.username}
+			div.form-group(class="#{result.hasFieldErrors('email')?'has-error':''}")
+				label.col-sm-2.control-label(for="email") #{messageSource.getMessage('profile.account.form.email',[],locale)}
+				div.col-sm-10
+					input.form-control#email(type="text", placeholder="#{messageSource.getMessage('profile.account.form.email',[],locale)}", name="email", value="#{loggedUser.email}")
+					+errors(result, 'email')
+			div.form-group
+				div.col-sm-4.col-sm-offset-8
+					button.btn.btn-success.btn-block(type="submit") #{messageSource.getMessage('profile.account.form.update',[],locale)}

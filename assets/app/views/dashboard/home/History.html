@@ -1,0 +1,42 @@
+<div class="divider"></div>
+<div data-ng-controller="HistoryCtrl as historyCtrl">
+	<div class="row music-genres-listing">
+		<div style="text-align:center;position:relative;">
+			<h3>
+				{{historyCtrl.start | amDateFormat: 'DD [de] MMMM [de] YYYY'}}
+			</h3>
+			<div style="position:absolute;top:0">
+				<button title="Dia Anterior" class="btn btn-default btn-round btn-circle" ng-click="historyCtrl.prevDay()">
+					<i class="fa fa-chevron-left"></i>
+				</button>
+				<button title="Proximo Dia" class="btn btn-default btn-round btn-circle" ng-click="historyCtrl.nextDay()">
+					<i class="fa fa-chevron-right"></i>
+				</button>
+			</div>
+		</div>
+		<timeline>
+			<timeline-event ng-repeat="event in historyCtrl.history" side="{{$index%2===0?'right':'left'}}" class="text-{{$index%2?'right':'left'}}">
+				<timeline-badge class="{{event.badgeClass}}">
+					<i class="glyphicon {{event.badgeIconClass}}"></i>
+				</timeline-badge>
+				<timeline-panel class="{{event.badgeClass}}">
+					<timeline-heading>
+						<h4>{{event.title}}</h4>
+					</timeline-heading>
+					<p ng-if="event.content">{{event.content}}</p>
+					<p ng-if="event.when">
+						<i class="glyphicon glyphicon-time"></i>
+						{{event.when | amDateFormat: 'HH:mm'}}
+						<span ng-if="event.end">{{event.end | amDateFormat: ' [a] HH:mm'}}</span>
+					</p>
+				</timeline-panel>
+			</timeline-event>
+		</timeline>
+		<!--<ul class="list-group">
+			<li class="list-group-item" ng-repeat="h in activity.history">
+				<h4 class="list-group-item-heading">{{h.s.name}}</h4>
+				<p>{{h.created | date: 'd MMM, y HH:mm'}}</p>
+			</li>
+		</ul>-->
+	</div>
+</div>

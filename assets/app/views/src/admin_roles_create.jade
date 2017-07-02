@@ -1,0 +1,31 @@
+extends layouts/layout
+
+block scripts
+
+block styles
+	link(href="#{context.url('/resources/css/admin.css')}", rel="stylesheet")
+
+block content
+	+navbar(false)
+	div.container-fluid
+		div.row
+			div.col-sm-3
+				include partials/admin_sidebar
+			div.col-sm-9
+				h1 #{messageSource.getMessage('admin.roles.create.headline',[],locale)}
+				div.row
+					div.col-sm-11
+						form.form-horizontal(action="#{context.url('/admin/roles/create')}", method="POST", role="form")
+							div.form-group(class="#{result.hasFieldErrors('name')?'has-error':''}")
+								label.col-sm-2.control-label(for="name") #{messageSource.getMessage('admin.roles.create.name',[],locale)}
+								div.col-sm-10
+									input.form-control#name(name="name", placeholder="#{messageSource.getMessage('admin.roles.create.name',[],locale)}", value="#{role.name?role.name:''}")
+									+errors(result, 'name')
+							div.form-group(class="#{result.hasFieldErrors('slug')?'has-error':''}")
+								label.col-sm-2.control-label(for="slug") Slug
+								div.col-sm-10
+									input.form-control#slug(name="slug", placeholder="Slug", value="#{role.slug?role.slug:''}")
+									+errors(result, 'slug')
+							div.form-group
+								div.col-sm-10.col-sm-offset-2
+									button.btn.btn-block.btn-primary(type="submit") #{messageSource.getMessage('admin.roles.create.headline',[],locale)}

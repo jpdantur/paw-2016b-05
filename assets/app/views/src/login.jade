@@ -1,0 +1,40 @@
+extends layouts/layout
+
+block styles
+	link(href=context.url('/resources/css/login.css'), rel="stylesheet")
+
+block content
+	+navbar(true)
+	div.container
+		div.row
+			div.col-sm-6.col-sm-offset-3
+				div.well.login-box
+					if error
+						div.alert.alert-danger
+							b #{messageSource.getMessage('login.error.error', [], locale)}&nbsp;
+							span #{messageSource.getMessage('login.error.wrongData', [], locale)}
+					form.form-horizontal(action="#{context.url('/auth/login'+(next?'?next='+next:''))}", method="POST")
+						div.form-group
+							label.control-label.col-sm-3(for="username") #{messageSource.getMessage('login.field.user', [], locale)}
+							div.col-sm-9
+								input.form-control#username(type="text", placeholder="#{messageSource.getMessage('login.field.user', [], locale)}", name="username")
+						div.form-group
+							label.control-label.col-sm-3(for="password") #{messageSource.getMessage('login.field.password', [], locale)}
+							div.col-sm-9
+								input.form-control#password(type="password", placeholder="#{messageSource.getMessage('login.field.password', [], locale)}", name="password")
+						div.form-group
+							div.col-sm-offset-3.col-sm-9
+								div.checkbox
+									label(for="remember-me")
+										input#remember-me(type="checkbox", name="rememberMe")
+										span &nbsp;#{messageSource.getMessage('login.field.rememberMe', [], locale)}
+						div.form-group
+								div.col-sm-12
+									button.btn.btn-success.btn-block(type="submit") #{messageSource.getMessage('login.submit.login', [], locale)}
+						div.form-group
+							div.col-sm-12
+								span #{messageSource.getMessage('login.form.noUserQuestion', [], locale)}&nbsp;
+								a(href=context.url('/auth/register')) #{messageSource.getMessage('login.form.register', [], locale)}
+								br
+								span #{messageSource.getMessage('login.recover.question', [], locale)}&nbsp;
+								a(href=context.url('/auth/forgot-pass')) #{messageSource.getMessage('login.recover.recoverIt', [], locale)}

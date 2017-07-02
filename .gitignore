@@ -174,3 +174,4 @@ jspm_packages
 node_modules
 node
 bower_components
+.sass-cache

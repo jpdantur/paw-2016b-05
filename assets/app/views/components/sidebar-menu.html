@@ -1,0 +1,50 @@
+<div class="nav-user-menu sidebar-nav-content">
+	<ul class="sidebar-nav-menu" data-highlight-active>
+		<li id="user-menu" class="nav-item">
+			<a class="nav-link profile">
+				<i class="icon fa fa-headphones"></i>
+				<span class="label helper-tooltip-measured">PIMIX Media</span>
+			</a>
+		</li>
+		<li id="home-menu" class="nav-item" ng-if="!loggedUser.musicScheduling">
+			<a class="nav-link profile" href="#!/dashboard/home">
+				<i class="icon fa fa-inbox"></i>
+				<span class="label helper-tooltip-measured">Inicio</span>
+			</a>
+		</li>
+	</ul>
+</div>
+<div class="nav-user-menu sidebar-nav-content">
+	<ul class="sidebar-nav-menu" data-highlight-active data-collapse-nav>
+		<li id="genre-menu" class="nav-item" ng-if="!loggedUser.musicScheduling">
+			<a class="nav-link profile" href="#!/dashboard/genres">
+				<i class="icon musicicon-radio42"></i>
+				<span class="label helper-tooltip-measured">G&eacute;neros</span>
+			</a>
+		</li>
+		<li id="channel-menu" class="nav-item" ng-if="!loggedUser.musicScheduling">
+			<a class="nav-link profile" href="#!/dashboard/channels">
+				<i class="icon musicicon-radio43"></i>
+				<span class="label helper-tooltip-measured">Canales</span>
+			</a>
+		</li>
+		<li id="channel-menu" class="nav-item" ng-if="loggedUser.isAdmin && loggedUser.musicScheduling">
+			<a class="nav-link profile" href="#!/dashboard/schedule">
+				<i class="icon fa fa-clock-o"></i>
+				<span class="label helper-tooltip-measured">Programación por Horario</span>
+			</a>
+		</li>
+		<li id="user-menu" class="nav-item" ng-if="loggedUser.isMasterAdmin">
+			<a class="nav-link profile" href="#!/dashboard/clients">
+				<i class="icon fa fa-user"></i>
+				<span class="label helper-tooltip-measured">Clientes y Usuarios</span>
+			</a>
+		</li>
+		<li id="activity-menu" class="nav-item" ng-if="loggedUser.isAdmin">
+			<a class="nav-link profile" href="#!/dashboard/activity">
+				<i class="icon fa fa-bar-chart"></i>
+				<span class="label helper-tooltip-measured">Control de Actividad</span>
+			</a>
+		</li>
+	</ul>
+</div>

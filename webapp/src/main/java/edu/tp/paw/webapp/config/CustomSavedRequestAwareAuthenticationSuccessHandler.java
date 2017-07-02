@@ -22,8 +22,10 @@ public class CustomSavedRequestAwareAuthenticationSuccessHandler extends SavedRe
 	private RequestCache requestCache = new HttpSessionRequestCache();
 	
 	@Override
-	public void onAuthenticationSuccess(HttpServletRequest request,
-			HttpServletResponse response, Authentication authentication)
+	public void onAuthenticationSuccess(
+			final HttpServletRequest request,
+			final HttpServletResponse response,
+			final Authentication authentication)
 			throws ServletException, IOException {
 		SavedRequest savedRequest = requestCache.getRequest(request, response);
 
@@ -39,8 +41,7 @@ public class CustomSavedRequestAwareAuthenticationSuccessHandler extends SavedRe
 		}
 		
 		if (isAlwaysUseDefaultTargetUrl()
-				|| (targetUrlParameter != null && StringUtils.hasText(request
-						.getParameter(targetUrlParameter)))) {
+				|| (targetUrlParameter != null && StringUtils.hasText(request.getParameter(targetUrlParameter)))) {
 			requestCache.removeRequest(request, response);
 			super.onAuthenticationSuccess(request, response, authentication);
 

@@ -1,0 +1,130 @@
+@mixin border-radius($property) {
+	border-radius: $property;
+	-o-border-radius: $property;
+	-moz-border-radius: $property;
+	-webkit-border-radius: $property;
+}
+
+@mixin box-shadow($top, $left, $blur, $color, $inset: false) {
+	@if $inset {
+		-webkit-box-shadow:inset $top $left $blur $color;
+		-moz-box-shadow:inset $top $left $blur $color;
+		box-shadow:inset $top $left $blur $color;
+	} @else {
+		-webkit-box-shadow: $top $left $blur $color;
+		-moz-box-shadow: $top $left $blur $color;
+		box-shadow: $top $left $blur $color;
+	}
+}
+
+html body {
+	background-color: #eaeaea;
+}
+
+table {
+	background-color: white;
+}
+
+#review-modal {
+	z-index: 1070;
+}
+
+.tab-pane-content {
+	position: relative;
+}
+
+#profile-container {
+	background-color: white;
+	@include box-shadow(2px, 1px, 1px, #ccc);
+	padding-top: 30px;
+	min-height: 90%;
+}
+
+h1 {
+	border-bottom: 1px solid #ddd;
+	
+	&.page-header {
+		margin-top: 0;
+		// background-color: #222;
+		// color: white;
+	}
+}
+
+.tabs-left {
+  border-bottom: none;
+  padding-top: 2px;
+  border-right: 1px solid #ddd;
+
+  > li {
+  	float: none;
+	  margin-bottom: 2px;
+	  margin-right: -1px;
+
+	  > a {
+	  	border-radius: 4px 0 0 4px;
+		  margin-right: 0;
+		  display:block;
+	  }
+
+	  &.active > a,
+	  &.active > a:hover,
+	  &.active > a:focus {
+	  	border-bottom-color: #ddd;
+		  border-right-color: transparent;
+	  }
+  }
+}
+
+th span {
+	height: 30px;
+	line-height: 30px;
+}
+
+.input-xs {
+	height: 22px;
+	padding: 5px 5px;
+	font-size: 12px;
+	line-height: 1.5;
+	border-radius: 3px;
+}
+
+.input-group-xs>.form-control,
+.input-group-xs>.input-group-addon,
+.input-group-xs>.input-group-btn>.btn {
+	height: 22px;
+	padding: 1px 5px;
+	font-size: 12px;
+	line-height: 1.5;
+}
+
+.modifier {
+
+	margin-left: 6px;
+	padding-right: 6px;
+	display: inline-block;
+	border-right: 1px solid #ddd;
+	font-weight: normal;
+
+	&:last-child {
+		border-right: none;
+	}
+
+	.space {
+		display: inline-block;
+		width: 5px;
+	}
+
+	.modifier-title {
+		font-size: 12px;
+		color: #999
+	}
+
+	.form-control.input-xs {
+		width: auto;
+		display: inline-block;
+	}
+}
+
+.table > tbody > tr > td.center-vertical {
+	vertical-align: middle;
+}

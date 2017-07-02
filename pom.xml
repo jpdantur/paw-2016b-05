@@ -33,6 +33,8 @@
 		<apache.velocity-tools.version>2.0</apache.velocity-tools.version>
 		<mockito.version>1.10.19</mockito.version>
 		<dom4j-version>1.6.1</dom4j-version>
+		<jersey.version>3.0-SNAPSHOT</jersey.version>
+		<io-jsonwebtoken.version>0.7.0</io-jsonwebtoken.version>
 	</properties>
 
 	<build>
@@ -218,6 +220,11 @@
 				<artifactId>spring-security-crypto</artifactId>
 				<version>${spring-security.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.springframework.security</groupId>
+				<artifactId>spring-security-jwt</artifactId>
+				<version>${spring-security.version}</version>
+			</dependency>
 			<!-- Bean validation -->
 			<dependency>
 				<groupId>javax.validation</groupId>
@@ -332,8 +339,67 @@
 				<artifactId>dom4j</artifactId>
 				<version>${dom4j-version}</version>
 			</dependency>
+
+			<dependency>
+				<groupId>org.glassfish.jersey.containers</groupId>
+				<artifactId>jersey-container-servlet-core</artifactId>
+				<version>${jersey.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jersey.ext</groupId>
+				<artifactId>jersey-spring4</artifactId>
+				<version>${jersey.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jersey.core</groupId>
+				<artifactId>jersey-server</artifactId>
+				<version>${jersey.version}</version>
+				<exclusions>
+					<exclusion>
+						<groupId>javax.validation</groupId>
+						<artifactId>validation-api</artifactId>
+					</exclusion>
+				</exclusions>
+			</dependency>
+			<!-- JERSEY JSON -->
+			<dependency>
+				<groupId>org.glassfish.jersey.media</groupId>
+				<artifactId>jersey-media-moxy</artifactId>
+				<version>${jersey.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jersey.media</groupId>
+				<artifactId>jersey-media-jaxb</artifactId>
+				<version>${jersey.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jersey.media</groupId>
+				<artifactId>jersey-media-json-jackson</artifactId>
+				<version>${jersey.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jersey.ext</groupId>
+				<artifactId>jersey-bean-validation</artifactId>
+				<version>${jersey.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>io.jsonwebtoken</groupId>
+				<artifactId>jjwt</artifactId>
+				<version>${io-jsonwebtoken.version}</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
+
+	<repositories>
+		<repository>
+			<id>jersey-snapshot</id>
+			<url>https://maven.java.net/content/repositories/snapshots/</url>
+			<name>Jersey Snapshots</name>
+			<snapshots>
+				<enabled>true</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
 
 
 	<modules>

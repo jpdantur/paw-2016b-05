@@ -1,0 +1,89 @@
+extends layouts/layout
+
+block scripts
+	script.
+		var messages = {
+			sellPickCategory: 		"#{messageSource.getMessage('sell.pickCategory',[],locale)}"
+		};
+	script(src="#{context.url('/resources/js/sell.js')}", type="text/javascript")
+block styles
+	link(href="#{context.url('/resources/css/sell.css')}", rel="stylesheet")
+
+block content
+	+navbar(true)
+	div.container
+		div.row
+			div.col-sm-10.col-sm-offset-1#sell-container
+				h1.page-header.text-center #{messageSource.getMessage('sell.headline',[],locale)}
+				form.form-horizontal(method="POST", action="#{context.url('/store/sell/details')}")
+					input(type="hidden", name="owner", value="#{loggedUser.id}")
+					div.form-group(class="#{bindingResult.hasFieldErrors('name')?'has-error':''}")
+						label.col-sm-2.control-label(for="name") #{messageSource.getMessage('sell.field.name',[],locale)}
+						div.col-sm-10
+							input.form-control(type="text", id="name", name="name", placeholder="#{messageSource.getMessage('sell.field.name',[],locale)}", value="#{item.name?item.name:''}")
+							+errors(bindingResult, 'name')
+					div.form-group(class="#{bindingResult.hasFieldErrors('description')?'has-error':''}")
+						label.col-sm-2.control-label(for="description") #{messageSource.getMessage('sell.field.description',[],locale)}
+						div.col-sm-10
+							textarea.form-control(name="description", id="description", placeholder="#{messageSource.getMessage('sell.field.description',[],locale)}", value="#{item.description?item.description:''}", rows="12") #{item.description?item.description:''}
+							+errors(bindingResult, 'description')
+					div.form-group(class="#{bindingResult.hasFieldErrors('price')?'has-error':''}")
+						label.col-sm-2.control-label(for="price") #{messageSource.getMessage('sell.field.price',[],locale)}
+						div.col-sm-10
+							div.input-group
+								span.input-group-addon $
+								input.form-control(type="number", id="price", name="price", placeholder="#{messageSource.getMessage('sell.field.price',[],locale)}", min="0", step="0.01", value="!{item.price}")
+							+errors(bindingResult, 'price')
+					div.form-group
+						label.col-sm-2.control-label(for="category") #{messageSource.getMessage('sell.field.category',[],locale)}
+						div.col-sm-10
+							input#category-input(type="hidden", name="categoryId", value=(item?item.categoryId:''))
+							//-mixin categories(categories, depth)
+								if !categories.isEmpty()
+									div.category-card(class=(depth==0?' visible':''), data-parent=categories.iterator().next().parent.id)
+										ul.list-unstyled
+											each category in categories
+												li(class=(item && item.categoryId == category.id ? 'active': ''))
+													a(href="#", data-id=category.id, class=category.id) #{category.name}
+								each category in categories
+									+categories(category.children, depth+1)
+							div#category-browser
+								div
+									//-+categories(categories, 0)
+									div.category-card.text-center#success-card
+										span.text-muted #{messageSource.getMessage('edit.details.categoryChosen',[],locale)}
+										br
+										span.h4#category-name
+							+errors(bindingResult, 'category')
+					div.form-group(class="#{bindingResult.hasFieldErrors('used')?'has-error':''}")
+						label.col-sm-2.control-label(for="used") #{messageSource.getMessage('sell.field.status.title',[],locale)}
+						div.col-sm-10
+							div.btn-group(data-toggle="buttons")
+								label.btn.btn-primary(class="#{item.used?'active':''}")
+									input(type="radio", name="used", id="used", value="1", checked=item.used)
+									span #{messageSource.getMessage('sell.field.status.used',[],locale)}
+								label.btn.btn-primary(class="#{item.used?'':'active'}")
+									input(type="radio", name="used", value="0", checked=!item.used)
+									span #{messageSource.getMessage('sell.field.status.new',[],locale)}
+							+errors(bindingResult, 'used')
+					div.form-group(class="#{bindingResult.hasFieldErrors('status')?'has-error':''}")
+						label.col-sm-2.control-label(for="status") #{messageSource.getMessage('sell.field.publish',[],locale)}
+						div.col-sm-10
+							label.radio-inline
+								input#status(type="radio", name="itemStatus", value="ACTIVE", checked=item.status.toString().equals('ACTIVE'))
+								| #{messageSource.getMessage('sell.field.radio.yes',[],locale)}
+							label.radio-inline
+								input#status1(type="radio", name="itemStatus", value="UNPUBLISHED", checked=item.status.toString().equals('UNPUBLISHED'))
+								| #{messageSource.getMessage('sell.field.radio.no',[],locale)}
+					div.form-group
+						div.col-sm-2.col-sm-offset-2
+							a.btn.btn-default.btn-block(href="#{context.url('/')}")
+								i.fa.fa-chevron-left
+								| &nbsp;#{messageSource.getMessage('sell.back',[],locale)}
+						div.col-sm-4.col-sm-offset-4
+							button.btn.btn-success.btn-block#submit-button(type="submit")
+								span #{messageSource.getMessage('sell.ok',[],locale)}&nbsp;
+								i.fa.fa-chevron-right
+
+					
+					

@@ -1,0 +1,44 @@
+extends layouts/layout
+
+block scripts
+	script.
+		var messages = {
+			fail: "#{messageSource.getMessage('admin.roles.defaultFail',[],locale)}",
+			success: "#{messageSource.getMessage('admin.roles.defaultSuccess',[],locale)}"
+		};
+	script(type="text/javascript", src="#{context.url('/resources/js/admin_roles.js')}")
+
+block styles
+	link(href="#{context.url('/resources/css/admin.css')}", rel="stylesheet")
+
+block content
+	+navbar(false)
+	div.container-fluid
+		div.row
+			div.col-sm-3
+				include partials/admin_sidebar
+			div.col-sm-9
+				h1 #{messageSource.getMessage('admin.roles.headline',[],locale)}&nbsp;
+					a.pull-right(href="#{context.url('/admin/roles/create')}")
+						i.fa.fa-plus
+						span &nbsp;#{messageSource.getMessage('admin.roles.add',[],locale)}
+				div.row
+					table.table.table-striped
+						thead
+							tr
+								th #{messageSource.getMessage('admin.roles.name',[],locale)}
+								th Slug
+								th #{messageSource.getMessage('admin.roles.default',[],locale)}
+						tbody
+							each role in roles
+								tr(data-id="#{role.id}", class="#{role.isDefault() ? 'default-role' : ''}")
+									td #{role.roleName}
+									td #{role.slug}
+									td
+										if role.isDefault()
+											a.text-success.toggle-default(href="#", title="#{messageSource.getMessage('admin.roles.isDefault',[],locale)}")
+												i.fa.fa-check
+										else
+											a.text-muted.toggle-default(href="#", title="#{messageSource.getMessage('admin.roles.makeDefault',[],locale)}")
+												i.fa.fa-minus
+

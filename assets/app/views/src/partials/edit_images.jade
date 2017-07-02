@@ -1,0 +1,17 @@
+div.tab-content
+	if success
+		div.alert.alert-success #{messageSource.getMessage('sell.edit.details.success',[],locale)}
+	h1.page-header.text-center #{messageSource.getMessage('sell.image.upload.headline',[],locale)} `#{item.name}`
+	div.row
+		div.col-sm-11
+			form.form-horizontal(method="POST", action="#{context.url('/images/upload/'+item.id)}", enctype="multipart/form-data")
+				div.form-group
+					label.col-sm-2.control-label #{messageSource.getMessage('sell.field.pictures',[],locale)}
+					div.col-sm-10
+						div#dropzone
+							div.dz-message #{messageSource.getMessage('sell.image.upload.drag',[],locale)}
+							div.fallback
+								input(name="images", type="file", multiple)
+				div.form-group
+					div.col-sm-4.col-sm-offset-8
+						button.btn.btn-success.btn-block#uploadImages(type="submit") #{messageSource.getMessage('sell.okImages',[],locale)}

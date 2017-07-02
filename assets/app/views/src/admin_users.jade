@@ -1,0 +1,38 @@
+extends layouts/layout
+
+block scripts
+
+block styles
+	link(href="#{context.url('/resources/css/admin.css')}", rel="stylesheet")
+
+block content
+	+navbar(false)
+	div.container-fluid
+		div.row
+			div.col-sm-3
+				include partials/admin_sidebar
+			div.col-sm-9
+				h1 #{messageSource.getMessage('admin.users.headline',[],locale)}
+					a.pull-right(href="#{context.url('/admin/users/create')}")
+						i.fa.fa-plus
+						span &nbsp;#{messageSource.getMessage('admin.users.add',[],locale)}
+				div.row
+					table.table.table-striped
+						thead
+							tr
+								th id
+								th #{messageSource.getMessage('admin.users.name',[],locale)}
+								th #{messageSource.getMessage('admin.users.lastName',[],locale)}
+								th #{messageSource.getMessage('admin.users.username',[],locale)}
+								th #{messageSource.getMessage('admin.users.email',[],locale)}
+								th #{messageSource.getMessage('admin.users.roles',[],locale)}
+						tbody
+							each user in users
+								tr
+									td #{user.id}
+									td #{user.firstName}
+									td #{user.lastName}
+									td #{user.username}
+									td #{user.email}
+									td
+										a(href="#{context.url('/admin/users/'+user.id+'/roles')}") #{messageSource.getMessage('admin.users.editRoles',[],locale)}

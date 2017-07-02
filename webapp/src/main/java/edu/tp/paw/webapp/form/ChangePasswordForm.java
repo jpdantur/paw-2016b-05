@@ -8,18 +8,14 @@ public class ChangePasswordForm {
 	@Min(0)
 	private long userId;
 	
-	
-	private String oldPassword;
 	@Size(min = 4, max = 100, message = "{Size.RegisterForm.password}")
 	private String password;
+	
+	private String oldPassword;
+	
 	//@Size(min = 4, max = 100)
 	private String repeatPassword;
-	public String getOldPassword() {
-		return oldPassword;
-	}
-	public void setOldPassword(String oldPassword) {
-		this.oldPassword = oldPassword;
-	}
+	
 	public String getPassword() {
 		return password;
 	}
@@ -32,6 +28,12 @@ public class ChangePasswordForm {
 	public void setRepeatPassword(String repeatPassword) {
 		this.repeatPassword = repeatPassword;
 	}
+	public String getOldPassword() {
+		return oldPassword;
+	}
+	public void setOldPassword(String oldPassword) {
+		this.oldPassword = oldPassword;
+	}
 	public long getUserId() {
 		return userId;
 	}
@@ -40,7 +42,7 @@ public class ChangePasswordForm {
 	}
 	@Override
 	public String toString() {
-		return "ChangePasswordForm [oldPassword=" + oldPassword + ", password=" + password + ", repeatPassword="
+		return "ChangePasswordForm [password=" + password + ", repeatPassword="
 				+ repeatPassword + "]";
 	}
 	

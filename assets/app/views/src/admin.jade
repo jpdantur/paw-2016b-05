@@ -1,0 +1,47 @@
+extends layouts/layout
+
+block scripts
+
+block styles
+	link(href="#{context.url('/resources/css/admin.css')}", rel="stylesheet")
+
+block content
+	+navbar(false)
+	div.container-fluid
+		div.row
+			div.col-sm-3
+				include partials/admin_sidebar
+			div.col-sm-9
+				h1 #{messageSource.getMessage('admin.index.headline',[],locale)}
+				div.row
+					div.col-sm-4
+						div.panel.panel-primary
+							div.panel-heading
+								div.row
+									div.col-sm-4
+										i.fa.fa-user.fa-5x
+									div.col-sm-8.text-right
+										span(style="font-size:30px") #{numberOfUsers}
+										br
+										span #{messageSource.getMessage('admin.index.users',[],locale)}
+					div.col-sm-4
+						div.panel.panel-success
+							div.panel-heading
+								div.row
+									div.col-sm-8
+										span(style="font-size:30px") #{numberOfItems}
+										br
+										span #{messageSource.getMessage('admin.index.items',[],locale)}
+									div.col-sm-4.text-right
+										i.fa.fa-shopping-bag.fa-5x
+					div.col-sm-4
+						div.panel.panel-default
+							div.panel-heading
+								div.row
+									div.col-sm-8
+										span(style="font-size:30px") #{numberOfCategories}
+										br
+										span #{messageSource.getMessage('admin.index.categories',[],locale)}
+									div.col-sm-4.text-right
+										i.fa.fa-list.fa-5x
+									

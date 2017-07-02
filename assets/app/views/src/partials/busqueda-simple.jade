@@ -1,0 +1,46 @@
+include ../mixins/home.jade
+div.row
+	div.col-sm-12.text-center
+		div.row
+			div.col-sm-12
+				h1.main-headline #{messageSource.getMessage("index.headline", [], locale)}
+				form.col-sm-offset-3#simple-search-form(action="#{context.url('/store/items/all')}")
+					div.form-group.col-sm-8
+						input.form-control.input-lg#simple-search-input(type="text", placeholder="#{messageSource.getMessage('index.search', [], locale)}...", name="query")
+					div.form-group.col-sm-2
+						button.btn.btn-default.btn-lg#quick-search(type="submit")
+							i.fa.fa-search
+							| &nbsp; #{messageSource.getMessage("index.search", [], locale)} &nbsp;
+			//-a#link-busqueda-compleja(href="#busqueda-compleja") #{messageSource.getMessage("index.categories", [], locale)}
+				br
+				span.fa-stack.fa-lg
+					i.fa.fa-circle-thin.fa-stack-2x
+					i.fa.fa-angle-double-down.fa-stack-1x
+div.row.well#promociones
+	div.col-sm-12
+		h4(style="font-size:32px") #{messageSource.getMessage("index.promoted", [], locale)}
+		div.carousel.slide(data-ride="carousel")#promotion-carousel
+			div.carousel-inner#carousel-content
+				each k, i in mostSoldItems
+					if i % 6 ==0
+						div.item(class="#{i/6==0?'active':''}")
+							each item, j in mostSoldItems
+								if i/6*6 <= j && j < (i/6+1)*6
+									div.col-sm-2
+										a(href="#{context.url('/store/items/'+item.id)}")
+											div.promotion-image-container
+												a(href="#{context.url('/store/items/'+item.id)}")
+													if item.images.isEmpty()
+														img(src="http://placehold.it/200?text=Sin+Imagen", style="width:100%;height:auto")
+													else
+														img(src="#{context.url('/images/get/'+item.images.iterator().next().id)}", style="width:100%;height:auto")
+										a(href="#{context.url('/store/items/'+item.id)}")
+											b #{item.name}
+										br
+										span $#{item.price}
+			a.left.carousel-control(href="#promotion-carousel", data-slide="prev", style='left:-30px')
+				span.glyphicon.glyphicon-chevron-left
+				span.sr-only Anterior
+			a.right.carousel-control(href="#promotion-carousel", data-slide="next", style='right:-30px')
+				span.glyphicon.glyphicon-chevron-right
+				span.sr-only Anterior

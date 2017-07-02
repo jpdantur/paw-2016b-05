@@ -18,7 +18,10 @@ import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
@@ -43,10 +46,11 @@ import de.neuland.jade4j.spring.template.SpringTemplateLoader;
 import de.neuland.jade4j.spring.view.JadeViewResolver;
 
 @EnableWebMvc
-@ComponentScan({"edu.tp.paw.webapp.controller", "edu.tp.paw.webapp.form.validator", "edu.tp.paw.service", "edu.tp.paw.persistence"})
+@ComponentScan({"edu.tp.paw.webapp.restcontroller", "edu.tp.paw.webapp.form.validator", "edu.tp.paw.service", "edu.tp.paw.persistence"})
 @Configuration
 @EnableTransactionManagement
 @EnableScheduling
+@PropertySource("classpath:siglas.properties")
 public class WebConfig extends WebMvcConfigurerAdapter {
 
 	private final static Logger logger = LoggerFactory.getLogger(WebConfig.class);
@@ -189,4 +193,8 @@ public class WebConfig extends WebMvcConfigurerAdapter {
 		return new JpaTransactionManager(emf);
 	}
 	
+	@Bean
+	public static PropertySourcesPlaceholderConfigurer properties() {
+	    return new PropertySourcesPlaceholderConfigurer();
+	}
 }

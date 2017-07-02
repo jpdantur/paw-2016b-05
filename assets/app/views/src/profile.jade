@@ -1,0 +1,137 @@
+extends layouts/layout
+
+block styles
+	link(href="#{context.url('/resources/css/profile.css')}", rel="stylesheet")
+
+block scripts
+	script.
+		var messages = {
+			sellConfirmation:   "!{messageSource.getMessage('profile.sales.sell.confirmation',[],locale)} ",
+			sellApprove:        "#{messageSource.getMessage('profile.sales.sell.approve',[],locale)}",
+			sellReject:         "#{messageSource.getMessage('profile.sales.sell.reject',[],locale)}",
+			sellPause:          "#{messageSource.getMessage('profile.sales.sell.pause',[],locale)}",
+			sellResume:         "#{messageSource.getMessage('profile.sales.sell.resume',[],locale)}",
+			sellConfirmation2:  " #{messageSource.getMessage('profile.sales.sell.confirmation2',[],locale)}",
+			sellSuccess:        "!{messageSource.getMessage('profile.sales.sell.success',[],locale)}",
+			sellError:          "#{messageSource.getMessage('profile.sales.sell.error',[],locale)}",
+			sellApproved:       "#{messageSource.getMessage('profile.sales.sell.approved',[],locale)}",
+			sellRejected:       "#{messageSource.getMessage('profile.sales.sell.rejected',[],locale)}",
+			sellResumeBtn:      "!{messageSource.getMessage('profile.sales.sell.resumeBtn',[],locale)}",
+			sellPauseBtn:       "!{messageSource.getMessage('profile.sales.sell.pauseBtn',[],locale)}",
+			sellPublishConfirm: "!{messageSource.getMessage('profile.sales.sell.publishConfirmation',[],locale)}",
+			sellPublished:      "#{messageSource.getMessage('profile.sales.sell.published',[],locale)}",
+			approving: 			"#{messageSource.getMessage('profile.sales.sell.approving',[],locale)}",
+			pausing: 			"#{messageSource.getMessage('profile.sales.sell.pausing',[],locale)}",
+			publishing: 		"#{messageSource.getMessage('profile.sales.sell.publishing',[],locale)}",
+			rejecting: 			"#{messageSource.getMessage('profile.sales.sell.rejecting',[],locale)}",
+			resuming: 			"#{messageSource.getMessage('profile.sales.sell.resuming',[],locale)}",
+			scoreBuyer: 		"#{messageSource.getMessage('profile.modal.scores.buyer',[],locale)}",
+			scoreSeller: 		"#{messageSource.getMessage('profile.modal.scores.seller',[],locale)}",
+			scorebuyer: 		"#{messageSource.getMessage('profile.modal.scores.lowerBuyer',[],locale)}",
+			scoreseller: 		"#{messageSource.getMessage('profile.modal.scores.lowerSeller',[],locale)}",
+			scoreScoreBuyer: 	"#{messageSource.getMessage('profile.modal.scores.scoreBuyer',[],locale)}",
+			scoreStillNoScore: 	"!{messageSource.getMessage('profile.modal.scores.stillNoScore',[],locale)}",
+			scoreVoidContent: 	"#{messageSource.getMessage('profile.modal.scores.voidContent',[],locale)}",
+			scoreError: 		"#{messageSource.getMessage('profile.modal.scores.error',[],locale)}",
+			scoreSuccess: 		"#{messageSource.getMessage('profile.modal.scores.success',[],locale)}"
+		};
+	script(src="#{context.url('/resources/js/profile.js')}", type="text/javascript")
+
+
+block content
+	+navbar(true)
+	div.container#profile-container
+		div.row
+			div.col-sm-3
+				ul.nav.nav-tabs.tabs-left#myTab
+					li(class=show.equals("account")?'active':'')
+						a(href=context.url('/profile/details')) #{messageSource.getMessage('profile.account.title',[],locale)}
+					li(class=show.equals("password")?'active':'')
+						a(href=context.url('/profile/password')) #{messageSource.getMessage('profile.password.title',[],locale)}
+					li(class=show.equals("items")?'active':'')
+						a(href=context.url('/profile/items')) #{messageSource.getMessage('profile.items.title',[],locale)}
+					li(class=show.equals("sales")?'active':'')
+						a(href=context.url('/profile/sales')) #{messageSource.getMessage('profile.sales.title',[],locale)}
+					li(class=show.equals("purchases")?'active':'')
+						a(href=context.url('/profile/purchases')) #{messageSource.getMessage('profile.purchases.title',[],locale)}
+					li(class=show.equals("favourites")?'active':'')
+						a(href=context.url('/profile/favourites')) #{messageSource.getMessage('profile.favourites.title',[],locale)}
+			div.col-sm-9(style="padding: 0")
+				div.tab-content
+					div.tab-pane.fade(class=show.equals("account")?'in active':'')#account
+						if show.equals('account')
+							include partials/account
+					div.tab-pane.fade(class=show.equals("password")?'in active':'')#password
+						if show.equals('password')
+							include partials/password
+					div.tab-pane.fade(class=show.equals("items")?'in active':'')#items
+						if show.equals('items')
+							include partials/items
+					div.tab-pane.fade(class=show.equals("sales")?'in active':'')#sales
+						if show.equals('sales')
+							include partials/sales
+					div.tab-pane.fade(class=show.equals("purchases")?'in active':'')#purchases
+						if show.equals('purchases')
+							include partials/purchases
+					div.tab-pane.fade(class=show.equals("favourites")?'in active':'')#favourites
+						if show.equals('favourites')
+							include partials/favourites
+	#review-modal.modal.fade
+		.modal-dialog
+			.modal-content
+				.modal-header
+					button.close(type="button", data-dismiss="modal")
+						span(aria-hidden="true") &times;
+						span.sr-only Close
+					h4.modal-title #{messageSource.getMessage('profile.modal.scores.scoringTo', [], locale)}&nbsp;
+						span.what #{messageSource.getMessage('profile.modal.scores.lowerBuyer', [], locale)}
+				.modal-body
+					form.form-horizontal#comment-form(role="form")
+						div.form-group
+							div.col-sm-12
+								label.col-sm-2.control-label(for="score") #{messageSource.getMessage('profile.modal.scores.score', [], locale)}
+								div.col-sm-10
+									input#score-input(type="hidden", value="2.5", name="rating")
+									div#score.rating(style="font-size:1.5em", data-rate-value="2.5")
+						div.form-group
+							label.col-sm-2.control-label(for="content") #{messageSource.getMessage('item.comment', [], locale)}
+							div.col-sm-10
+								textarea.form-control#content(name="comment", placeholder="#{messageSource.getMessage('item.comment', [], locale)}")
+				.modal-footer
+					button.btn.btn-default(type="button", data-dismiss="modal") #{messageSource.getMessage('profile.modal.scores.close', [], locale)}
+					button.btn.btn-primary#rate-action(type="button") #{messageSource.getMessage('profile.modal.scores.toScore', [], locale)}
+	#review-modal-readonly.modal.fade
+		.modal-dialog
+			.modal-content
+				.modal-header
+					button.close(type="button", data-dismiss="modal")
+						span(aria-hidden="true") &times;
+						span.sr-only Close
+					h4.modal-title #{messageSource.getMessage('profile.modal.scores.title', [], locale)}
+				.modal-body
+					form.form-horizontal.i(role="form")
+						legend #{messageSource.getMessage('profile.modal.scores.scoresFrom', [], locale)}&nbsp;
+							span.what #{messageSource.getMessage('profile.modal.scores.seller', [], locale)}
+						div.form-group
+							label.col-sm-2.control-label(for="score") #{messageSource.getMessage('profile.modal.scores.score', [], locale)}
+							div.col-sm-10
+								div.rating.static.r1(style="font-size:1.5em")
+								p.help-block.r1 #{messageSource.getMessage('profile.modal.scores.stillNoScore', [], locale)}
+						div.form-group
+							label.col-sm-2.control-label(for="content") #{messageSource.getMessage('item.comment', [], locale)}
+							div.col-sm-10
+								p.form-control-static.r1.l
+					form.form-horizontal.j(role="form")
+						legend #{messageSource.getMessage('profile.modal.scores.yourScore', [], locale)}
+						div.form-group
+							label.col-sm-2.control-label(for="score") #{messageSource.getMessage('profile.modal.scores.score', [], locale)}
+							div.col-sm-10
+								div.rating.static.r2(style="font-size:1.5em")
+								p.help-block.r2 #{messageSource.getMessage('profile.modal.scores.stillNoScore', [], locale)}&nbsp;
+									button.btn-xs.btn-default.btn.rate-button #{messageSource.getMessage('profile.modal.scores.toScore', [], locale)}
+						div.form-group
+							label.col-sm-2.control-label(for="content") #{messageSource.getMessage('item.comment', [], locale)}
+							div.col-sm-10
+								p.form-control-static.r2.l
+				.modal-footer
+					button.btn.btn-default(type="button", data-dismiss="modal") #{messageSource.getMessage('profile.modal.scores.close', [], locale)}

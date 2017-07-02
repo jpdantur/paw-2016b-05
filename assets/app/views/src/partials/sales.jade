@@ -1,0 +1,92 @@
+div.tab-pane-content
+	h1.page-header #{messageSource.getMessage('profile.sales.title',[],locale)}
+	ul.nav.nav-tabs#salesTab
+		li(class=status.toString().equals('PENDING')?'active':'')
+			a(href=context.url('/profile/sales/pending')) #{messageSource.getMessage('profile.sales.pending',[],locale)}
+		li(class=status.toString().equals('APPROVED')?'active':'')
+			a(href=context.url('/profile/sales/approved')) #{messageSource.getMessage('profile.sales.approved',[],locale)}
+		li(class=status.toString().equals('DECLINED')?'active':'')
+			a(href=context.url('/profile/sales/declined')) #{messageSource.getMessage('profile.sales.declined',[],locale)}
+	div.tab-content
+		div.tab-pane.fade.in.active(id='sales-'+status.toString().toLowerCase())
+			table.table.table-striped.table-condensed
+				thead
+					tr
+						th(colspan=5)
+							include profile_modifiers_sales
+						th(colspan=1)
+							div.input-group.input-group-sm(style="width:100%")
+								span.input-group-addon
+									i.fa.fa-search
+								input.form-control#query-input(type="text", placeholder="#{messageSource.getMessage('profile.sales.table.search',[],locale)}", value=filter.termFilter.term.orElse(''))
+					tr
+						th #{messageSource.getMessage('profile.sales.table.date',[],locale)}
+						th #{messageSource.getMessage('profile.sales.table.item',[],locale)}
+						th 
+						th
+						th #{messageSource.getMessage('profile.sales.table.buyer',[],locale)}
+						th #{status.toString().equals('PENDING') ? "" : messageSource.getMessage('profile.sales.table.score',[],locale)}
+				tbody
+					if items.numberOfTotalResults == 0
+						tr.info
+							td(colspan=status.toString().equals('PENDING')?6:5)
+								div.alert #{messageSource.getMessage('profile.sales.nothing',[],locale)}
+					each transaction in items.results
+						tr.p(data-id=transaction.id)
+							td.center-vertical #{dateFormatter.format(transaction.created)}
+							td(style="width:40px")
+								if transaction.item.images.isEmpty()
+									img.table-img(style="width:40px;height:40px" src="http://placehold.it/40?text=Sin+Imagen")
+								else
+									img.table-img(style="width:40px;height:40px" src="#{context.url('/images/get/'+transaction.item.images.iterator().next().id)}")
+							td
+								a(href=context.url('/store/items/'+transaction.item.id)) #{transaction.item.name}
+								br
+								span(style="color:#900") $#{transaction.item.price}
+							td.center-vertical
+								i.fa.fa-3x.fa-long-arrow-right(class=status.toString().equals('APPROVED')?'text-success':(status.toString().equals('DECLINED')?'text-danger':''))
+							td
+								b
+									a(href=context.url('/id/'+transaction.buyer.username+'/buyer')) #{transaction.buyer.firstName} #{transaction.buyer.lastName}
+								br
+								span.text-muted #{transaction.buyer.username} (#{transaction.buyer.email})
+							if transaction.status.toString().equals('PENDING')
+								td.center-vertical
+									button.btn.btn-success.decide-transaction.btn-xs
+										i.fa-2x.glyphicon.glyphicon-ok
+									// #{messageSource.getMessage('profile.sales.success',[],locale)}
+									| &nbsp;
+									button.btn.btn-danger.decide-transaction.btn-xs
+										i.fa-2x.glyphicon.glyphicon-remove
+									// #{messageSource.getMessage('profile.sales.danger',[],locale)}
+							else
+								td.center-vertical
+									button.btn.btn-default.btn-xs.show-scores(data-s-rating=transaction.sellerReview, data-b-rating=transaction.buyerReview) #{messageSource.getMessage('profile.sales.seeScores',[],locale)}
+									//-if !transaction.sellerReview
+										button.btn.btn-default.btn-xs Puntuar
+										else
+											span(data-toggle="tooltip", data-placement="top", title=transaction.sellerReview.comment) #{transaction.sellerReview.rating}
+									//-td.center-vertical
+										if !transaction.buyerReview
+											span -
+										else
+											button.btn-xs.btn.btn-default Ver Puntaje
+											span(data-toggle="tooltip", data-placement="top", title=transaction.sellerReview.comment) #{transaction.buyerReview.rating}
+							//-td #{item.sold} #{messageSource.getMessage('profile.items.table.sold',[],locale)}
+							//-td #{item.created}
+							//-td #{item.lastUpdated}
+							//-td
+								a(href="#{context.url('/store/item/'+item.id+'/details')}", title="#{messageSource.getMessage('profile.items.table.edit',[],locale)}") #{messageSource.getMessage('profile.items.table.edit',[],locale)}
+			ul.pager#filter-page(data-page="#{items.currentPage}", data-last-page="#{items.numberOfTotalResults/items.pageSize}")
+					li.previous(class="#{items.currentPage==0?'disabled':''}")
+						a.filter-page-action(href="#")
+							span &larr;
+							span #{messageSource.getMessage('search.filters.pagination.pagers.first', [], locale)}
+					li.pre(class="#{items.currentPage==0?'disabled':''}")
+						a.filter-page-action(href="#") #{messageSource.getMessage('search.filters.pagination.pagers.previous', [], locale)}
+					li.ne(class="#{items.currentPage==items.numberOfTotalResults/items.pageSize?'disabled':''}")
+						a.filter-page-action(href="#") #{messageSource.getMessage('search.filters.pagination.pagers.next', [], locale)}
+					li.next(class="#{items.currentPage==items.numberOfTotalResults/items.pageSize?'disabled':''}")
+						a.filter-page-action(href="#")
+							span #{messageSource.getMessage('search.filters.pagination.pagers.last', [], locale)}
+							span &rarr;

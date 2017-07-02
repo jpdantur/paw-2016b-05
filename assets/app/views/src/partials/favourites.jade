@@ -1,0 +1,56 @@
+div.tab-pane-content
+	h1.page-header #{messageSource.getMessage('profile.favourites.title',[],locale)}
+	div.tab-content
+		div.tab-pane.fade.in.active(id='favourites')
+			if items.numberOfTotalResults == 0
+				div.alert.alert-info #{messageSource.getMessage('profile.sales.nothing',[],locale)}
+			else
+				table.table.table-striped.table-condensed
+					thead
+						tr
+							th(colspan=2)
+								include profile_modifiers
+							th(colspan=1)
+								div.input-group.input-group-sm(style="width:100%")
+									span.input-group-addon
+										i.fa.fa-search
+									input.form-control#query-input(type="text", placeholder="#{messageSource.getMessage('profile.favourites.table.search',[],locale)}", value=filter.termFilter.term.orElse(''))
+						tr
+							th(colspan=2) #{messageSource.getMessage('profile.favourites.table.item',[],locale)}
+							th
+							//-th #{messageSource.getMessage('profile.favourites.table.seller',[],locale)}
+					tbody
+						each fav in items.results
+							tr(data-id=item.id)
+								td(style="width:40px")
+									a(href=context.url('/store/items/'+fav.item.id))
+										if fav.item.images.isEmpty()
+											img.table-img(style="width:40px;height:40px" src="http://placehold.it/40?text=Sin+Imagen")
+										else
+											img.table-img(style="width:40px;height:40px" src="#{context.url('/images/get/'+fav.item.images.iterator().next().id)}")
+								td
+									a(href=context.url('/store/items/'+fav.item.id)) #{fav.item.name}
+									br
+									span(style="color:#900;font-weight:500") $ #{fav.item.price}
+									span &nbsp;- 
+									span.text-muted #{fav.item.sold} #{messageSource.getMessage('profile.items.table.sold',[],locale)}
+								th.center-vertical
+									button.btn.btn-xs.btn-danger.remove-fav.pull-right(data-id=fav.id)
+										i.fa.fa-trash
+										span &nbsp;Eliminar
+
+								//-td.center-vertical
+									span #{fav.item.owner.username}
+				ul.pager#filter-page(data-page="#{items.currentPage}", data-last-page="#{items.numberOfTotalResults/items.pageSize}")
+					li.previous(class="#{items.currentPage==0?'disabled':''}")
+						a.filter-page-action(href="#")
+							span &larr;
+							span #{messageSource.getMessage('search.filters.pagination.pagers.first', [], locale)}
+					li.pre(class="#{items.currentPage==0?'disabled':''}")
+						a.filter-page-action(href="#") #{messageSource.getMessage('search.filters.pagination.pagers.previous', [], locale)}
+					li.ne(class="#{items.currentPage==items.numberOfTotalResults/items.pageSize?'disabled':''}")
+						a.filter-page-action(href="#") #{messageSource.getMessage('search.filters.pagination.pagers.next', [], locale)}
+					li.next(class="#{items.currentPage==items.numberOfTotalResults/items.pageSize?'disabled':''}")
+						a.filter-page-action(href="#")
+							span #{messageSource.getMessage('search.filters.pagination.pagers.last', [], locale)}
+							span &rarr;

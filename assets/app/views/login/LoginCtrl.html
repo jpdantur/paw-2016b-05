@@ -1,0 +1,44 @@
+<div class="page-signin">
+	<div class="signin-header">
+		<div class="container text-center">
+			<section class="logo-signin">
+				<a href="#!"><img style="height:36px;width:auto" src="images/logo-pimix.png" alt="PIMIX Logo" /></a>
+			</section>
+		</div>
+	</div>
+	<div class="main-body">
+		<div class="container">
+			<div class="form-container">
+				<form class="form-horizontal" ng-submit="login.logIn()">
+					<fieldset>
+						<div class="form-group">
+							<div class="input-group">
+								<span class="input-group-addon">
+									<span class="glyphicon glyphicon-user"></span>
+								</span>
+								<input type="text" name="user" ng-model="login.user" class="form-control" placeholder="Usuario">
+							</div>
+						</div>
+						<div class="form-group">
+							<div class="input-group">
+								<span class="input-group-addon">
+									<span class="glyphicon glyphicon-lock"></span>
+								</span>
+								<input type="password" name="pass" ng-model="login.pass" class="form-control" placeholder="Contraseña">
+							</div>
+						</div>
+						<div class="form-group">
+						</div>
+						<div class="form-group">
+							<button type="submit" class="btn btn-pimix btn-lg btn-block">Ingresar</button>
+						</div>
+					</fieldset>
+				</form>
+				<section>
+					<p class="text-center"><a href="mailto:soporte@pimixmedia.com">Olvid&oacute; su contrase&ntilde;a?</a></p>
+				</section>
+			</div>
+		</div>
+	</div>
+</div>
+

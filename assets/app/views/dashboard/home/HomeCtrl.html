@@ -1,0 +1,27 @@
+<div class="page page-full page-dashboard two-column">
+	<section class="inner-wrapper scrollable">
+		<div class="inner-page">
+			<section>
+				<section class="panel panel-default panel-default-clean">
+					<div class="panel-body panel-body--dashboard">
+						<uib-tabset class="ui-tab">
+							<uib-tab heading="Nuevos Canales">
+								<div ng-include="'views/dashboard/home/NewChannels.html'"></div>
+							</uib-tab>
+							<uib-tab heading="G&eacute;neros">
+								<div ng-include="'views/dashboard/home/Genres.html'"></div>
+							</uib-tab>
+							<uib-tab ng-if="!loggedUser.isAdmin && !loggedUser.isMasterAdmin" heading="Historial">
+								<div ng-include="'views/dashboard/home/History.html'"></div>
+							</uib-tab>
+							<uib-tab heading="Programaci&oacute;n - Calendario" disable="true">
+								<div ng-include="'views/dashboard/home/Calendar.html'"></div>
+							</uib-tab>
+						</uib-tabset>
+					</div>
+				</section>
+			</section>
+		</div>
+	</section>
+</div>
+

@@ -1,0 +1,84 @@
+<div class="page page-list" id="channels-page" data-ng-controller="ChannelsCtrl as channelCtrl">
+	<div class="row">
+		<h1>Canales</h1>
+		<div class="panel panel-default" ng-show="loggedUser.isMasterAdmin">
+			<div class="panel-body">
+				<h4 ng-if="channelCtrl.editing">
+					<i class="fa fa-music color-pimix"></i>&nbsp;&nbsp; Editando {{channelCtrl.activeChannel.name}}
+					&nbsp;&nbsp;&nbsp;<a href ng-click="channelCtrl.cancelEditing()" ng-show="channelCtrl.editing">Cancelar</a>
+					<!-- <a class="btn btn-pimix" href ng-click="genres.editGenre(null)"><i class="fa fa-plus"></i>&nbsp;&nbsp; Agregar Género</a> -->
+				</h4>
+				<h4 ng-if="!channelCtrl.editing">
+					<i class="fa fa-music color-pimix"></i>&nbsp;&nbsp; Creando {{channelCtrl.activeChannel.name}}
+					<!-- <a class="btn btn-pimix" href ng-click="genres.editGenre(null)"><i class="fa fa-plus"></i>&nbsp;&nbsp; Agregar Género</a> -->
+				</h4>
+				<uib-tabset class="ui-tab" active="channelCtrl.tabIndex">
+					<uib-tab heading="Informacion" index="0">
+						<div ng-include="'views/dashboard/channels/EditChannelInfo.html'"></div>
+					</uib-tab>
+					<uib-tab heading="Imagen" ng-show="channelCtrl.editing" index="1">
+						<div ng-include="'views/dashboard/channels/EditChannelFiles.html'"></div>
+					</uib-tab>
+					<uib-tab heading="Canciones" ng-show="channelCtrl.editing" index="2">
+						<div ng-include="'views/dashboard/channels/EditChannelSongs.html'"></div>
+					</uib-tab>
+				</uib-tabset>
+			</div>
+		</div>
+		<div class="divider-md"></div>
+		<div class="panel panel-default">
+			<div class="panel-body">
+
+				<div class="row music-covers-listing minified">
+					<div ng-repeat="channel in channelCtrl.channels | orderBy:'-lastUpdated'" class="col-md-3">
+						<div class="list-item__wrap">
+							<div class="play-button">
+								<div class="list-item__image">
+									<img ng-src="{{channel.image.replace('dist/', '')}}" />
+									<div class="list-item__play">
+										<a class="list-item__play-button" href ng-click="playerCtrl.addChannelToPlaylist(channel)">
+											<i class="fa fa-2x fa-plus">
+
+											</i>
+										</a>
+									</div>
+								</div>
+							</div>
+							<div class="list-item__name">
+								<h6>
+									{{channel.name}}
+								</h6>
+								<a ng-show="loggedUser.isMasterAdmin" href ng-click="channelCtrl.setEditing(channel)"><i class="fa fa-pencil"></i>&nbsp; Editar</a>
+								<!-- <a ng-show="loggedUser.isMasterAdmin" href ng-click="channelCtrl.removeChannel(channel)"><i class="fa fa-remove"></i>Eliminar</a> -->
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+				<!-- <div class="row music-genres-listing">
+					<div data-ng-repeat="channel in channelCtrl.channels | orderBy:'name'" class="col-md-3">
+						<div class="list-item__wrap">
+							<a href="#!/dashboard/channel/{{channel._id}}/{{channel.slug}}">
+								<div class="list-item__image">
+									<img ng-src="{{channel.image.replace('dist/', '')}}" alt="channel image" />
+									<div class="list-item__name">
+										<div class="channel-icon">
+											<i class="{{channel.icon}}"></i>
+										</div>
+										<h5>
+											{{channel.name}}
+										</h5>
+										<a ng-show="loggedUser.isMasterAdmin" href ng-click="channelCtrl.setEditing(channel)"><i class="fa fa-pencil"></i>&nbsp; Editar</a>
+										<a ng-show="loggedUser.isMasterAdmin" href ng-click="channelCtrl.removeChannel(channel)"><i class="fa fa-remove"></i>Eliminar</a>
+									</div>
+								</div>
+							</a>
+						</div>
+					</div>
+				</div> -->
+			</div>
+		</div>
+	</div>
+</div>
+

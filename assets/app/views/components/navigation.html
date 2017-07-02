@@ -1,0 +1,54 @@
+<!-- Logo -->
+<div class="logo">
+	<a class="logo-link" href="#!/dashboard">
+		<!--     <i class="logo-icon fa fa-stumbleupon"></i> -->
+		<img class="logo-icon" src="images/logo-pimix.png" />
+		<!--<span>{{info.theme_name}}</span>-->
+	</a>
+	<!-- Navbar Search -->
+	<!-- <div class="form-group logo-search">
+		<div>
+			<input type="text" class="form-control" placeholder="Buscar">
+			<span class="icon glyphicon glyphicon-search"></span>
+		</div>
+	</div> -->
+</div>
+<div id="nav-wrapper" ng-controller="SidebarCtrl as sidebar">
+	<div class="sidebar-nav-switch">
+		<div class="btn-group switch">
+			<a class="btn main-nav-link home" data-nav-section="home" ng-class="{active:sidebar.selectedTab==='menu'}" ng-click="sidebar.switchToMenu()">
+				<span class="label">MEN&Uacute;</span>
+			</a>
+			<a class="btn main-nav-link queue" ng-if="!loggedUser.musicScheduling" data-nav-section="queue" ng-class="{active:sidebar.selectedTab==='queue'}" ng-click="sidebar.switchToQueue()">
+				<span class="label queue-label">
+					<span>COLA</span><span class="songs" ng-show="playerCtrl.queue.length > 0"> <span class="badge badge-pimix">{{playerCtrl.queue.length}}</span></span>
+				</span>
+			</a>
+			<a class="btn main-nav-link queue" style="width:100%" ng-if="loggedUser.isAdmin && sidebar.$location.path() === '/dashboard/schedule'" data-nav-section="queue" ng-class="{active:sidebar.selectedTab==='schedule'}" ng-click="sidebar.switchToSchedule()">
+				<span class="label queue-label">
+					<span>PROGRAMACION POR HORARIO</span><span class="songs" ng-show="playerCtrl.queue.length > 0"> <span class="badge badge-pimix">{{playerCtrl.queue.length}}</span></span>
+				</span>
+			</a>
+		</div>
+	</div>
+	<div class="sidebar-nav-main navigation-menu-container" data-slim-scroll data-ng-class="{minified:mediaPlayer.currentTrack}">
+		<div class="menu-navigation-menus" ng-show="sidebar.selectedTab==='menu'">
+			<div ng-include="'views/components/sidebar-menu.html'"></div>
+		</div>
+		<div class="playlist-item-list music-listing--queue" ng-show="sidebar.selectedTab==='queue'">
+			<div ng-include="'views/components/sidebar-queue.html'"></div>
+		</div>
+		<div class="playlist-item-list music-listing--queue" ng-show="sidebar.selectedTab==='schedule'">
+			<div ng-include="'views/components/sidebar-schedule.html'"></div>
+		</div>
+	</div>
+	<div class="player-image-region" ng-show="mediaPlayer.currentTrack" style="background:url({{generalPlaylist.getSongImage(mediaPlayer.currentTrack)}}) no-repeat;">
+		<div class="song-info">
+			<div class="song-info__text">
+				<div class="song-info__title">{{playerCtrl.aux.getCurrentTrackInfo().title}}</div>
+				<div>{{playerCtrl.aux.getCurrentTrackInfo().artist}}</div>
+			</div>
+		</div>
+	</div>
+</div>
+

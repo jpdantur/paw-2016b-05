@@ -1,0 +1,123 @@
+<div ng-controller="GenreCtrl as genreCtrl">
+	<div class="artist-banner" data-ng-show="genreCtrl.genre.banner" style="background-image:url({{genreCtrl.genre.banner.replace('dist/', '')}});">
+		<div class="artist-inner">
+			<div class="artist-img" data-ng-show="genreCtrl.genre.image">
+				<img ng-src="{{genreCtrl.genre.image.replace('dist/', '')}}" class="img-circle img-polaroid" />
+			</div>
+			<h3>
+					{{genreCtrl.genre.name}}
+				</h3>
+			<h5>
+					{{genreCtrl.genre.description}}
+				</h5>
+			<!--<div class="artist-style">
+				<div class="artist-genre" ng-repeat="genre in artistGenre">
+					<span>{{genre}}</span>
+				</div>
+			</div>-->
+		</div>
+	</div>
+	<div class="page page-artist">
+		<div class="row">
+			<div ng-class="{'col-md-offset-2': !loggedUser.isMasterAdmin }" class="col-md-8">
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<div class="music-listing">
+							<div class="music-listing__header">
+								<div class="music-listing__actions-top">
+									<a href="/#!/dashboard/genres">
+										<button class="btn btn-pimix"><i class="fa fa-chevron-left"></i>&nbsp;&nbsp;G&eacute;neros</button>
+									</a>
+									<button ng-click="playerCtrl.addTracksToPlaylist(genreCtrl.sets)" class="btn btn-pimix"><i class="fa fa-headphones"></i>&nbsp;&nbsp;Cargar Todo</button>
+								</div>
+								<div class="music-listing__filter">
+									<input type="text" class="form-control" ng-model="searchText" placeholder="Buscar">
+								</div>
+								<!--<div class="music-listing__switch">
+									<a class="btn btn-switch" href="javascript:;" data-ng-click="artist.toggleFullList();" tooltip-placement="bottom" tooltip="View all songs" tooltip-append-to-body="true">
+										<i class="fa fa-sliders">
+
+										</i>
+									</a>
+								</div>-->
+							</div>
+							<div class="music-listing__songs fulllist">
+								<div class="music-listing__row full-songs-wrapper" ng-repeat="set in genreCtrl.sets | orderBy:'-created' | filter:searchText">
+									<div class="music-listing__number">
+										{{ $index+1 }}
+										<div class="play-button">
+											<button ng-click="playerCtrl.addTrackToPlaylist(set)" class="btn btn-pimix"><i class="fa fa-plus-circle"></i></button>
+										</div>
+									</div>
+									<div class="music-listing__row-actions" ng-show="loggedUser.isMasterAdmin">
+										<a href ng-click="genreCtrl.setEditing(set)" title="Editar Set"><i class="fa fa-pencil action"></i>&nbsp;&nbsp;</a>
+										<a href ng-click="genreCtrl.removeSet(set)" title="Eliminar Set"><i class="fa fa-remove action"></i>&nbsp;&nbsp;</a>
+									</div>
+									<div class="music-listing__name">
+										<div class="music-listing__thumbnail">
+											<img ng-src="{{set.image.replace('dist/', '/')}}" alt="song__image" />
+										</div>
+										<div class="music-listing__artist-name">
+											{{ set.name }}
+										</div>
+										<div class="music-listing__song-name">
+											{{ set.description }}
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-4" ng-show="loggedUser.isMasterAdmin">
+				<div class="panel panel-default">
+					<div class="panel-body">
+						<!--<a class="btn btn-pimix" href ng-click="artist.editSet(null)">
+							<i class="fa fa-plus"></i>&nbsp;&nbsp; Agregar Set</a>-->
+							<h4 ng-if="!genreCtrl.editing">
+								<i class="fa fa-plus color-pimix"></i>&nbsp;&nbsp; Agregar Set
+							</h4>
+							<h4 ng-if="genreCtrl.editing">
+								<i class="fa fa-pencil color-pimix"></i>&nbsp;&nbsp; Editar Set
+							</h4>
+						<form class="form form-horizontal" ng-submit="saveSet()">
+							<div class="form-group">
+								<div class="col-sm-12">
+									<input class="form-control" placeholder="Nombre" ng-model="genreCtrl.activeSet.name" />
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-sm-12">
+									<textarea class="form-control" placeholder="Descripcion" ng-model="genreCtrl.activeSet.description" />
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-sm-12">
+									<input class="form-control" placeholder="S3" ng-model="genreCtrl.activeSet.url" />
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-sm-12">
+									<input class="form-control" placeholder="Imagen" ng-model="genreCtrl.activeSet.image" />
+								</div>
+							</div>
+							<div class="form-group">
+								<div class="col-sm-12">
+									<button type="button" ng-click="genreCtrl.submitForm()" class="btn btn-pimix btn-block">
+										<span ng-if="!genreCtrl.editing">
+											<i class="fa fa-plus"></i>&nbsp;&nbsp; Agregar
+										</span>
+										<span ng-if="genreCtrl.editing">
+											<i class="fa fa-pencil"></i>&nbsp;&nbsp; Editar
+										</span>
+									</button>
+								</div>
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>

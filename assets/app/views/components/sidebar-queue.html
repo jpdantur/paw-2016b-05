@@ -1,0 +1,47 @@
+<div class="music-listing__songs">
+	<div
+		class="music-listing__row"
+		ng-repeat="channel in playerCtrl.queue track by $index"
+		ng-class="{ active: mediaPlayer.playing && channel.start <= mediaPlayer.currentTrack-1 && mediaPlayer.currentTrack-1 < channel.start + channel.sets.length }"
+		ui-draggable="true"
+		drag="channel"
+		on-drop-success="playerCtrl.onDropSuccess($index)"
+		ui-on-drop="playerCtrl.dropTrack($data, $index)">
+		<div class="music-listing__number">
+			{{ $index+1 }}
+		</div>
+		<div class="music-listing__row-actions">
+			<i
+				class="fa fa-times action"
+				ng-click="playerCtrl.removeChannelFromPlaylist($index)"
+				title="Eliminar Canal"></i>
+		</div>
+		<div class="music-listing__name">
+			<div
+				class="music-listing__thumbnail"
+				ng-click="mediaPlayer.playPause($index)">
+				<img ng-src="{{channel.image.replace('dist/', '')}}" alt="song__image" />
+			</div>
+			<div class="music-listing__artist-name" ng-click="playerCtrl.playAtIndex(mediaPlayer, $index)">
+				{{ channel.artist }}
+			</div>
+			<div class="music-listing__song-name" ng-click="playerCtrl.playAtIndex(mediaPlayer, $index)">
+				{{ channel.title }}
+			</div>
+		</div>
+	</div>
+	<div class="empty-listing" ng-hide="playerCtrl.queue.length">
+		<div class="empty-listing-icon">
+			<i class="musicicon-dj4">
+
+			</i>
+		</div>
+		<div class="empty-listing-message">
+			No ten&eacute;s m&uacute;sica en la cola de espera
+		</div>
+		<div class="empty-listing-message">
+			<a ng-href="#!/dashboard/channels" class="btn btn-pimix btn-block btn-sm">Buscar</a>
+		</div>
+	</div>
+</div>
+

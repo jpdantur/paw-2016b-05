@@ -1,0 +1,53 @@
+<div class="page page-list" id="genres-page" data-ng-controller="GenresCtrl as genresCtrl">
+	<div class="row">
+		<h1>Géneros</h1>
+		<div class="panel panel-default" ng-show="loggedUser.isMasterAdmin">
+			<div class="panel-body">
+				<h4 ng-if="genresCtrl.editing">
+					<i class="fa fa-music color-pimix"></i>&nbsp;&nbsp; Editando {{genresCtrl.activeGenre.name}}
+					&nbsp;&nbsp;&nbsp;<a href ng-click="genresCtrl.cancelEditing()" ng-show="genresCtrl.editing">Cancelar</a>
+					<!-- <a class="btn btn-pimix" href ng-click="genres.editGenre(null)"><i class="fa fa-plus"></i>&nbsp;&nbsp; Agregar Género</a> -->
+				</h4>
+				<h4 ng-if="!genresCtrl.editing">
+					<i class="fa fa-music color-pimix"></i>&nbsp;&nbsp; Creando {{genresCtrl.activeGenre.name}}
+					<!-- <a class="btn btn-pimix" href ng-click="genres.editGenre(null)"><i class="fa fa-plus"></i>&nbsp;&nbsp; Agregar Género</a> -->
+				</h4>
+				<uib-tabset class="ui-tab">
+					<uib-tab heading="Informacion">
+						<div ng-include="'views/dashboard/genres/EditGenreInfo.html'"></div>
+					</uib-tab>
+					<uib-tab heading="Archivos" ng-show="genresCtrl.editing">
+						<div ng-include="'views/dashboard/genres/EditGenreFiles.html'"></div>
+					</uib-tab>
+				</uib-tabset>
+			</div>
+		</div>
+		<div class="divider-md"></div>
+		<div class="panel panel-default">
+			<div class="panel-body">
+				<div class="row music-genres-listing">
+					<div data-ng-repeat="genre in genresCtrl.genres | orderBy:'name'" class="col-md-3">
+						<div class="list-item__wrap">
+							<a href="#!/dashboard/genre/{{genre._id}}/{{genre.slug}}">
+								<div class="list-item__image">
+									<img ng-src="{{genre.image.replace('dist/', '')}}" alt="genre image" />
+									<div class="list-item__name">
+										<div class="genre-icon">
+											<i class="{{genre.icon}}"></i>
+										</div>
+										<h5>
+											{{genre.name}}
+										</h5>
+										<a ng-show="loggedUser.isMasterAdmin" href ng-click="genresCtrl.setEditing(genre)"><i class="fa fa-pencil"></i>&nbsp; Editar</a>
+										<!-- <a ng-show="loggedUser.isMasterAdmin" href ng-click="genresCtrl.removeGenre(genre)"><i class="fa fa-remove"></i>Eliminar</a> -->
+									</div>
+								</div>
+							</a>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+

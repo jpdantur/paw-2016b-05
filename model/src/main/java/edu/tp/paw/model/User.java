@@ -44,6 +44,9 @@ public class User {
 	@Column(length = 100)
 	private String email;
 	
+	@Column
+	private String refreshToken;
+	
 	@OneToMany( fetch = FetchType.LAZY, mappedBy = "user" )
 	private Set<Favourite> favourites = new HashSet<>();
 	
@@ -89,6 +92,7 @@ public class User {
 		this.email = builder.getEmail();
 		this.favourites = builder.getFavourites();
 		this.roles = builder.getRoles();
+		this.refreshToken = builder.getRefreshToken();
 	}
 
 	public long getId() {
@@ -133,6 +137,10 @@ public class User {
 
 	public float getBuyerRating() {
 		return buyerRating;
+	}
+	
+	public String getRefreshToken() {
+		return refreshToken;
 	}
 
 	@Override

@@ -1,0 +1,241 @@
+extends layouts/layout
+
+block styles
+	link(href=context.url('/resources/css/product.css'), rel="stylesheet")
+
+block scripts
+	if storeItem.status.toString().equals('UNPUBLISHED')
+		script.
+			$.notify({
+				icon: 'fa fa-pencil',
+				title: "#{messageSource.getMessage('item.notifications.draft.title',[],locale)}",
+				message: "#{messageSource.getMessage('item.notifications.draft.message',[],locale)}",
+				url : "#{context.url('/store/item/'+storeItem.id+'/details')}"
+			}, {
+				allow_dismiss: true,
+				type: 'warning',
+				delay: 0,
+				offset: {
+					y: 60,
+					x: 20
+				},
+				template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+					'<button type="button" aria-hidden="true" class="close" data-notify="dismiss">×</button>' +
+					'<span data-notify="icon"></span> ' +
+					'<b data-notify="title">{1}</b><br/> ' +
+					'<span data-notify="message">{2}</span>' +
+					'<div class="progress" data-notify="progressbar">' +
+						'<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+					'</div>' +
+					'<a href="{3}" target="{4}" data-notify="url"></a>' +
+				'</div>'
+			})
+	if storeItem.status.toString().equals('PAUSED')
+		script.
+			$.notify({
+				icon: 'fa fa-hand-paper-o',
+				title: "#{messageSource.getMessage('item.notifications.paused.title',[],locale)}",
+				message: "#{messageSource.getMessage('item.notifications.paused.message',[],locale)}",
+				url : "#{context.url('/profile/items/paused')}"
+			}, {
+				allow_dismiss: true,
+				type: 'info',
+				delay: 0,
+				offset: {
+					y: 60,
+					x: 20
+				},
+				template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+					'<button type="button" aria-hidden="true" class="close" data-notify="dismiss">×</button>' +
+					'<span data-notify="icon"></span> ' +
+					'<b data-notify="title">{1}</b><br/> ' +
+					'<span data-notify="message">{2}</span>' +
+					'<div class="progress" data-notify="progressbar">' +
+						'<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+					'</div>' +
+					'<a href="{3}" target="{4}" data-notify="url"></a>' +
+				'</div>'
+			})
+			$.notify({
+				icon: 'fa fa-pencil',
+				title: "#{messageSource.getMessage('item.notifications.paused.alternative',[],locale)}",
+				url : "#{context.url('/store/item/'+storeItem.id+'/details')}"
+			}, {
+				allow_dismiss: true,
+				type: 'success',
+				delay: 0,
+				offset: {
+					y: 60,
+					x: 20
+				},
+				template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
+					'<button type="button" aria-hidden="true" class="close" data-notify="dismiss">×</button>' +
+					'<span data-notify="icon"></span> ' +
+					'<b data-notify="title">{1}</b><br/> ' +
+					'<div class="progress" data-notify="progressbar">' +
+						'<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
+					'</div>' +
+					'<a href="{3}" target="{4}" data-notify="url"></a>' +
+				'</div>'
+			})
+	script.
+		var messages = {
+			addError: "#{messageSource.getMessage('successMessages.toggleFavourite.addError',[],locale)}",
+			addSuccess: "#{messageSource.getMessage('successMessages.toggleFavourite.addSuccess',[],locale)}",
+			removeError: "#{messageSource.getMessage('successMessages.toggleFavourite.removeError',[],locale)}",
+			removeSuccess: "#{messageSource.getMessage('successMessages.toggleFavourite.removeSuccess',[],locale)}",
+			buySuccess: "#{messageSource.getMessage('successMessages.buyItem.success',[],locale)}",
+			buyError: "#{messageSource.getMessage('successMessages.buyItem.error',[],locale)}",
+			purchaseInRevision: "#{messageSource.getMessage('item.bought.underRevision',[],locale)}",
+			seeStatus: "#{messageSource.getMessage('item.bought.viewStatus',[],locale)}"
+		};
+	script(type="text/javascript", src=context.url('/resources/js/product.js'))
+
+
+block content
+	include mixins/product
+	+navbar(true)
+	div.container
+		div.row
+			div.col-sm-10.col-sm-offset-1#item-container
+				div.row#product-title
+					div.col-sm-12
+						h1 #{storeItem.name}
+				if published
+					div.row
+						div.col-sm-12
+							div.alert.alert-success.alert-dismissable
+								button.close(type="button", data-dismiss="alert")
+									span &times;
+								strong #{messageSource.getMessage('successMessages.publishItem.title', [], locale)}!
+								if saved
+									span &nbsp; #{messageSource.getMessage('successMessages.publishItem.content', [], locale)}
+								else
+									span &nbsp; #{messageSource.getMessage('successMessages.publishItem.content2', [], locale)}
+								br
+								a.btn.btn-success(href=context.url('/store/sell/details')) #{messageSource.getMessage('successMessages.publishItem.action', [], locale)}
+				div.row#product-container
+					//- carousel
+					div.col-sm-5
+						if storeItem.images.isEmpty()
+							img(src="http://placehold.it/400?text=Sin+Imagen", style="width:100%;height:auto")
+						else
+							div.carousel.slide#carousel(data-ride="carousel")
+								ol.carousel-indicators
+									each image, i in storeItem.images
+										li(data-target="#carousel", data-slide-to="#{i}", class="#{i==0?'active':''}")
+
+								div.carousel-inner
+									each image, i in storeItem.images
+										div.item(class="#{i==0?'active':''}")
+											img(src="#{context.url('/images/get/'+image.id)}", alt="Imagen #{(i+1)}")
+								if storeItem.images.size() > 1
+									a.left.carousel-control(href="#carousel", data-slide="prev")
+										span.glyphicon.glyphicon-chevron-left
+										span.sr-only Previous
+									a.right.carousel-control(href="#carousel", data-slide="next")
+										span.glyphicon.glyphicon-chevron-right
+										span.sr-only Next
+					//- item info
+					div.col-sm-7
+						h1 #{storeItem.name}&nbsp;
+							if loggedUser
+								if !publishedItems.contains(storeItem)
+									- var contains = {a:false, id:0}
+									span(style="display:none") #{allFavourites}
+									each fav in allFavourites
+										span(style="display:none") #{fav.id}
+										if fav.item.id == storeItem.id
+											- contains.a = true
+											- contains.id = fav.id
+											- break
+									if contains.a
+										a.text-danger.add-favourite(href="#", data-favid=contains.id)
+											i.fa.fa-heart
+									else
+										a.text-muted.add-favourite(href="#", data-item=storeItem.id)
+											i.fa.fa-heart
+						div.rating.static(style="font-size:32px", data-rate-value=storeItem.rating)
+						span #{storeItem.sold} #{messageSource.getMessage('item.sold', [], locale)}
+						br
+						br
+						span #{messageSource.getMessage('item.item', [], locale)}:&nbsp;
+							if storeItem.used
+								b #{messageSource.getMessage('item.used', [], locale)}
+							else
+								b #{messageSource.getMessage('item.new', [], locale)}
+						br
+						span #{messageSource.getMessage('item.seller', [], locale)}:&nbsp;&nbsp;
+						a(href=context.url('/id/'+storeItem.owner.username))
+							i.fa.fa-user
+							span &nbsp;#{storeItem.owner.username}&nbsp;
+						span.puntaje
+							| (
+							div.rating.static(style="font-size:9px;display:inline-block", data-rate-value=ownerRating)
+							| )
+						h3.price $#{storeItem.price}
+						- var publishedItem = false
+						- var purchasedItem = false
+						if loggedUser
+							if publishedItems.contains(storeItem)
+								- publishedItem = true
+							if purchasedItems.contains(storeItem)
+								- purchasedItem = true
+								div.alert.alert-info
+									p #{messageSource.getMessage('item.bought.underRevision', [], locale)}
+									a.btn.btn-success.btn-sm(href=context.url('/profile/purchases')) #{messageSource.getMessage('item.bought.viewStatus', [], locale)}
+						if loggedUser && !publishedItem && !purchasedItem
+							button.btn.btn-success.btn-lg#purchase(data-buyer-email="#{storeItem.owner.email}", data-item="#{storeItem.id}") #{messageSource.getMessage('item.buy', [], locale)}
+						if !loggedUser
+							a.btn.btn-success.btn-lg#purchase(href=context.url('/auth/login?next='+currentURI)) #{messageSource.getMessage('item.buy', [], locale)}
+					div.col-sm-12
+						h3 #{messageSource.getMessage('item.description', [], locale)}
+						p #{storeItem.description}
+					div.col-sm-12
+						div.well
+							h3 #{messageSource.getMessage('item.comments', [], locale)}
+							if loggedUser
+								if !publishedItems.contains(storeItem)
+									form.form-horizontal#comment-form(action=context.url('/store/item/'+storeItem.id+'/comment'), method="POST")
+										div.form-group
+											label.col-sm-2.control-label(for="score") Puntaje
+											div.col-sm-10
+												input#score-input(type="hidden", value="2.5", name="rating")
+												div#score.rating(style="font-size:1.5em", data-rate-value="2.5")
+												p.help-block
+										div.form-group(class="#{commentError?'has-error':''}")
+											label.col-sm-2.control-label(for="content") #{messageSource.getMessage('item.comment', [], locale)}
+											div.col-sm-10
+												textarea.form-control#content(name="content", placeholder="#{messageSource.getMessage('item.comment', [], locale)}")
+												if commentError
+													span.help-block #{messageSource.getMessage('NotEmpty.CommentForm.content',[],locale)}
+													span.help-block #{messageSource.getMessage('Size.CommentForm.contentFixed',[],locale)}
+										div.form-group
+											div.col-sm-offset-8.col-sm-4
+												button.btn.btn-block.btn-success#submit-comment(type="submit")
+													i.fa.fa-comment
+													span &nbsp;#{messageSource.getMessage('item.commentAction', [], locale)}
+							else
+								a.btn.btn-success(href=context.url('/auth/login?next='+currentURI))
+									i.fa.fa-comment
+									span &nbsp;#{messageSource.getMessage('item.commentAction', [], locale)}
+							//-if comments.isEmpty()
+								p.lead #{messageSource.getMessage('item.commentEmpty', [], locale)}
+							each comment in comments
+								div.comment
+									b.comment-author #{comment.user.firstName}
+									span.pull-right
+										i.fa.fa-clock-o
+										span &nbsp;#{dateFormatter.format(comment.created)}
+									div.row
+										div.col-sm-2.text-center
+											span.user-score #{comment.rating}
+											div.rating.static(style="font-size:1.5em" data-rate-value=comment.rating)
+										div.col-sm-10
+											p #{comment.content}
+					div.col-sm-12(style="margin-bottom:30px")
+						h3.h1 #{messageSource.getMessage('item.seller.publications', [], locale)}
+						div.row
+							div.col-sm-12
+								each item in relatedItems.results
+									+product(item)

@@ -1,0 +1,14 @@
+extends layouts/layout
+
+block scripts
+	script(src="#{context.url('/resources/js/index.js')}")
+
+block content
+	+navbar(false)
+	include partials/noscript
+	section.section#busqueda-simple
+		div.container
+			include partials/busqueda-simple
+	section.section#busqueda-compleja
+		div.container
+			include partials/categories

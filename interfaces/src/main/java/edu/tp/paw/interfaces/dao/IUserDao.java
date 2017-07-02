@@ -69,6 +69,8 @@ public interface IUserDao {
 	public int getNumberOfPurchases(final User user);
 	public int getNumberOfPurchases(final User user, final PurchaseStatus status);
 
+//	public boolean updateRefreshToken(final User user, final String refreshToken);
+
 
 	
 }

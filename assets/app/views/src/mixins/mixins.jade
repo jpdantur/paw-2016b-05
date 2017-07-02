@@ -1,0 +1,7 @@
+mixin url(url, text)
+	a(href="#{appContext.applicationName + url}")&attributes(attributes) #{text}
+		block
+
+mixin errors(result, path)
+	each error in result.getFieldErrors(path)
+		span.help-block #{error.defaultMessage}

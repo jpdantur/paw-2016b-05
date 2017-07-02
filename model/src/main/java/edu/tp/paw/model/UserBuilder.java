@@ -13,6 +13,7 @@ public class UserBuilder implements IBuilder<User> {
 	private String firstName;
 	private String lastName;
 	private String email;
+	private String refreshToken;
 	
 	private Long id;
 	private String password;
@@ -28,6 +29,7 @@ public class UserBuilder implements IBuilder<User> {
 		this.password = user.getPassword();
 		this.id = user.getId();
 		this.roles = user.getRoles();
+		this.refreshToken = user.getRefreshToken();
 	}
 	
 	public UserBuilder(final String username) {
@@ -51,6 +53,11 @@ public class UserBuilder implements IBuilder<User> {
 	
 	public UserBuilder password(final String password) {
 		this.password = Objects.requireNonNull(password);
+		return this;
+	}
+	
+	public UserBuilder refreshToken(final String refreshToken) {
+		this.refreshToken = Objects.requireNonNull(refreshToken);
 		return this;
 	}
 	
@@ -114,6 +121,10 @@ public class UserBuilder implements IBuilder<User> {
 	
 	public Long getId() {
 		return id;
+	}
+	
+	public String getRefreshToken() {
+		return refreshToken;
 	}
 
 	@Override

@@ -1,0 +1,38 @@
+extends layouts/layout
+
+block scripts
+
+block styles
+	link(href="#{context.url('/resources/css/admin.css')}", rel="stylesheet")
+	link(href="#{context.url('/resources/css/admin_users_roles.css')}", rel="stylesheet")
+
+block content
+	+navbar(false)
+	div.container-fluid
+		div.row
+			div.col-sm-3
+				include partials/admin_sidebar
+			div.col-sm-9
+				h1
+					i.fa.fa-user
+					span &nbsp;#{user.firstName} #{user.lastName}
+				h3.role-heading #{messageSource.getMessage('admin.users.edit.headline',[],locale)}:
+				div.row
+					div.col-sm-6
+						div.tag-container(style="font-size:36px")
+							each role in roles
+								span.label.label-default.tag #{role.roleName}
+				hr
+				div.row
+					div.col-sm-11
+						form.form-horizontal(action="#{context.url('/admin/users/'+user.id+'/roles')}", method="POST", role="form")
+							div.form-group
+								label.control-label.col-sm-2(for="role") #{messageSource.getMessage('admin.users.edit.addRole',[],locale)}
+								div.col-sm-10
+									select.form-control#role(name="role")
+										each role in allRoles
+											if !roles.contains(role)
+												option(value="#{role.id}") #{role.roleName}
+							div.form-group
+								div.col-sm-10.col-sm-offset-2
+									button.btn.btn-primary(type="submit") #{messageSource.getMessage('admin.users.edit.add',[],locale)}

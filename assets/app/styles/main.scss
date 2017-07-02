@@ -1,0 +1,15 @@
+/*
+* Import all styling to be exported to dist folder with grunt
+*/
+
+$fa-font-path: "../bower_components/font-awesome/fonts";
+
+// bower:scss
+@import 'bootstrap-sass-official/assets/stylesheets/_bootstrap.scss';
+@import 'font-awesome/scss/font-awesome.scss';
+// endbower
+
+@import "settings/colors";
+
+@import "helpers";
+@import "animations";

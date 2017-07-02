@@ -1,0 +1,87 @@
+mixin vuelo(vuelo)
+	div.row.vuelo
+		if vuelo.idayvuelta
+			div.col-sm-5
+				div.ida
+					div.vuelo-header
+						i.fa.fa-plane
+						b &nbsp;IDA:&nbsp;
+						span.fecha #{vuelo.ida.fecha}
+					div.vuelo-content
+						div.graphic
+							div
+								div.col-sm-2.text-center.horario-container
+									span.horario-salida #{vuelo.ida.salida.horario}
+								div.col-sm-2.col-sm-offset-8.text-center.horario-container
+									span.horario-llegada #{vuelo.ida.salida.horario}
+							div.clearfix
+							//- div.row
+							div.origen-container.col-sm-4
+								span.origen #{vuelo.ida.salida.aeropuerto}
+							div.escala-container.col-sm-4
+								span.horas 25hs
+								br
+								span.escalas 1 escala
+							div.destino-container.col-sm-4
+								span.destino #{vuelo.ida.salida.aeropuerto}
+					div.vuelo-footer
+
+
+
+			div.col-sm-5
+				div.vuelta
+					div.vuelo-header
+						i.fa.fa-plane
+						b &nbsp;VUELTA:&nbsp;
+						span.fecha #{vuelo.vuelta.fecha}
+					div.vuelo-content
+						div.graphic
+							div
+								div.col-sm-2.text-left.horario-container
+									span.horario-salida #{vuelo.vuelta.salida.horario}
+								div.col-sm-2.col-sm-offset-8.text-right.horario-container
+									span.horario-llegada #{vuelo.vuelta.salida.horario}
+							div.clearfix
+							//- div.row
+							div.origen-container.col-sm-4
+								span.origen #{vuelo.vuelta.salida.aeropuerto}
+							div.escala-container.col-sm-4
+								span.horas 25hs
+								br
+								span.escalas 1 escala
+							div.destino-container.col-sm-4
+								span.destino #{vuelo.vuelta.salida.aeropuerto}
+					div.vuelo-footer
+
+
+			div.col-sm-2
+				span.precio $7.199,00
+		
+
+
+		else
+			div.col-sm-12.ida
+				div.vuelo-header
+					i.fa.fa-plane
+					b IDA:&nbsp;
+					span #{vuelo.ida.fecha}
+				div.vuelo-content
+					table.table.table-condensed
+						tbody
+							tr
+								td
+									b Salida
+								td #{vuelo.ida.salida.horario}
+							tr
+								td
+									b Aeropuerto de Salida
+								td #{vuelo.ida.salida.aeropuerto}
+							tr
+								td
+									b Llegada
+								td #{vuelo.ida.llegada.horario}
+							tr
+								td
+									b Aeropuerto de Llegada
+								td #{vuelo.ida.llegada.aeropuerto}
+				div.vuelo-footer

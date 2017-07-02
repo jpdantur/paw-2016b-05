@@ -181,4 +181,23 @@ public class AuthenticationController extends BaseController {
 		return "reset-pass";
 	}
 	
+	@RequestMapping( value = "/reset-pass", method = RequestMethod.POST)
+	public String resetPassPost(
+			@RequestParam( value = "token", required = false) final String token,
+			@RequestParam( value = "username", required = false) final String username,
+			@ModelAttribute("registerForm") final RegisterForm form,
+			final BindingResult result,
+			final Model model
+			) {
+		
+		final User user = userService.findByUsername(username);
+		
+		model.addAttribute("tokenValidity", passwordService.checkTokenValidity(user, token));
+		model.addAttribute("result", result);
+		model.addAttribute("user", form);
+		
+		
+		return "reset-pass";
+	}
+	
 }

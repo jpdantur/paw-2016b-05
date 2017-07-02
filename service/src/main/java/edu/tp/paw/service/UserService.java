@@ -619,4 +619,5 @@ public class UserService implements IUserService {
 		
 		return emailService.sendPasswordRecovery(user);
 	}
+	
 }
