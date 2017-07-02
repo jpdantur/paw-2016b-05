@@ -8,14 +8,9 @@
 
  	return function(dependencies) {
  		console.log('dependencyResolverFor', dependencies);
- 		var allDependencies = _.map(['ActivityCtrl', 'DashboardCtrl', 'GenresCtrl', 'HomeGenresCtrl', 'MediaPlayerCtrl', 'NotFoundCtrl', 'ChannelsCtrl', 'ForbiddenCtrl', 'HistoryCtrl', 'IndexCtrl', 'NewChannelsCtrl', 'SidebarCtrl', 'ClientsCtrl', 'GenreCtrl', 'HomeCtrl', 'LoginCtrl'], function (c) {
- 			return 'controllers/' + c;
- 		});
  		var definition = {
- 			resolver: ['$q', '$rootScope', 'LOCAL_FILE', function($q, $rootScope, LOCAL_FILE) {
- 				console.log('LOCAL_FILE', LOCAL_FILE);
+ 			resolver: ['$q', '$rootScope', function($q, $rootScope) {
  				var deferred = $q.defer();
- 				dependencies = LOCAL_FILE ? allDependencies : dependencies;
  				// dependencies = allDependencies;
  				require(dependencies, function() {
  					console.log('resolving', dependencies);

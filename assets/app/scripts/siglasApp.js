@@ -45,11 +45,14 @@ define([
 				siglasApp.factory = $provide.factory;
 				siglasApp.service = $provide.service;
 
+				console.log(config);
+				console.log(protectedRoute);
+
 				if (config.routes !== undefined) {
 					angular.forEach(config.routes, function(route, path) {
 						var controllers = _.map([route.controller].concat(route.controllers || []), function (controller) {
-								return 'controllers/' + controller;
-							});
+							return 'controllers/' + controller;
+						});
 						$routeProvider.when(path, {
 							templateUrl: route.templateUrl,
 							resolve: {
@@ -57,8 +60,7 @@ define([
 								protected: protectedRoute(route).resolver
 							},
 							controller: route.controller,
-							controllerAs: route.controllerAs,
-							gaPageTitle: route.gaPageTitle
+							controllerAs: route.controllerAs
 						});
 					});
 				}
@@ -109,10 +111,10 @@ define([
 			amMoment.changeLocale('es');
 
 			$rootScope.$on('$routeChangeStart', function (event, next, current) {
-				console.log('$routeChangeStart');
+				console.log('$routeChangeStart', next, current);
 			});
 			$rootScope.$on('$routeChangeSuccess', function (event, next, current) {
-				console.log('$routeChangeSuccess');
+				console.log('$routeChangeSuccess', next, current);
 
 				// if (!$rootScope.loggedUser) {
 

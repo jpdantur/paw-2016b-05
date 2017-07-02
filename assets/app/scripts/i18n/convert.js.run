@@ -1,0 +1,28 @@
+const _ = require('lodash')
+	, fs  = require('fs')
+	, async = require('async');
+
+fs.readdir('./', (err, files) => {
+	if (err) throw err;
+	async.each(_.filter(files, file => _.endsWith(file, 
+'.properties')), (file, cb) => {
+		fs.readFile(file, { encoding: 'utf-8' } , (err, data) => {
+			if (err) return cb(err);
+			const obj = _.chain(data).split('\n').map((line) => {
+				if (_.startsWith(line, '#') || _.trim(line) === "") return null;
+				return _.map(line.split('='), _.trim);
+			}).compact().reduce((memo, val) => {
+				memo[val[0]] = val[1];
+				return memo;
+			}, {}).value();
+			fs.writeFile(`${file}.js`, `use strict;
+define([], function () {
+
+	return ${JSON.stringify(obj, null, 2)};
+};`, { encoding: 'utf-8' }, cb);
+		});
+	}, (err) => {
+		if (err) throw err;
+		console.log('done');
+	});
+});

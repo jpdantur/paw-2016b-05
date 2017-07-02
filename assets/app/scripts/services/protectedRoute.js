@@ -11,6 +11,8 @@
  			resolver: ['$q', '$rootScope', '$location', 'AuthService', function($q, $rootScope, $location, AuthService) {
  				var deferred = $q.defer();
 
+ 				console.log('protected route');
+
  				if (!route.protected) {
  					console.log('route is not protected');
  					return deferred.resolve();

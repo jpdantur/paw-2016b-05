@@ -5,9 +5,9 @@ define([], function() {
 		defaultRoutePath: '/404',
 		routes: {
 			'/': {
-				templateUrl: 'views/IndexCtrl.html',
-				controller: 'IndexCtrl',
-				controllerAs: 'login'
+				templateUrl: 'views/HomeCtrl.html',
+				controller: 'HomeCtrl',
+				controllerAs: 'home'
 			},
 			'/login': {
 				templateUrl: 'views/login/LoginCtrl.html',

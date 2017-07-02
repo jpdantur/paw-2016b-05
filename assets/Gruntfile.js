@@ -71,6 +71,13 @@ module.exports = function (grunt) {
           livereload: '<%= connect.options.livereload %>'
         }
       },
+      pug: {
+        files: ['<%= yeoman.app %>/views/src/**/*.jade'],
+        tasks: ['pug:dist'],
+        options: {
+          livereload: '<%= connect.options.livereload %>'
+        }
+      },
       compass: {
         files: ['<%= yeoman.app %>/styles/**/*.{scss,sass}'],
         tasks: ['compass:server', 'autoprefixer']
@@ -456,13 +463,13 @@ module.exports = function (grunt) {
           },
           messageSource: {
             getMessage: function (msg) {
-              return msg;
+              return "{{ '" + msg + "' | translate }}";
             }
           },
           categories: [],
           result: {
             hasFieldErrors: function (name) {
-              return false
+              return false;
             },
             getFieldErrors: function (path) {
               return [];
@@ -470,7 +477,7 @@ module.exports = function (grunt) {
           },
           bindingResult: {
             hasFieldErrors: function (name) {
-              return false
+              return false;
             },
             getFieldErrors: function (path) {
               return [];
@@ -500,23 +507,23 @@ module.exports = function (grunt) {
             images: (function () {
               var result = [];
               result.isEmpty = function () {
-                return true
+                return true;
               };
-              return result
+              return result;
             })(),
             status: {
               toString: function () {
                 return {
                   equals: function () {
-                    return false
+                    return false;
                   }
-                }
+                };
               }
             }
           },
           view: {
             equals: function () {
-              return false
+              return false;
             }
           },
           mostSoldItems: [],
@@ -539,9 +546,9 @@ module.exports = function (grunt) {
                   equals: function () {
                     return false;
                   }
-                }
+                };
               }
-            },
+            }
           },
           comments: [],
           relatedItems: {
@@ -556,22 +563,22 @@ module.exports = function (grunt) {
                 lowerBound: function () {
                   return {
                     isPresent: function () {
-                      return true
+                      return true;
                     },
                     get: function () {
-                      return 1
+                      return 1;
                     }
-                  }
+                  };
                 },
-                upperBound:  function () {
+                upperBound: function () {
                   return {
                     isPresent: function () {
                       return true;
                     },
                     get: function () {
-                      return 1
+                      return 1;
                     }
-                  }
+                  };
                 }
               }
             }
@@ -599,7 +606,7 @@ module.exports = function (grunt) {
                   return false;
                 },
                 startsWith: function () {
-                  return false
+                  return false;
                 }
               };
             }
@@ -610,8 +617,8 @@ module.exports = function (grunt) {
           userFavourites: {
             results: {
               isEmpty: function () {
-                return true
-              },
+                return true;
+              }
             }
           },
           publishedItems: {
@@ -624,12 +631,7 @@ module.exports = function (grunt) {
               return false;
             }
           },
-          allFavourites: [],
-          categories: {
-            isEmpty: function () {
-              return true
-            }
-          }
+          allFavourites: []
         }
       },
       dist: {
@@ -777,6 +779,8 @@ module.exports = function (grunt) {
       'htmlmin'
     ]);
   });
+
+  grunt.registerTask('none', []);
 
   grunt.registerTask('default', [
     'newer:eslint',

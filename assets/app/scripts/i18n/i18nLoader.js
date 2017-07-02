@@ -1,7 +1,7 @@
 'use strict';
 define(function() {
 	// Add languages here
-	var userLang, listOfSupportedLanguages = ['en'];
+	var userLang, listOfSupportedLanguages = ['en', 'es'];
 
 	// to avoid being called in non browser environments
 	if (typeof navigator === 'object') {
@@ -15,7 +15,7 @@ define(function() {
 	}
 	return {
 		load: function (name, require, load) {
-			require(['i18n/translations.' + userLang], function (value) {
+			require(['i18n/messages_' + userLang], function (value) {
 				load(value);
 				return value;
 			});
