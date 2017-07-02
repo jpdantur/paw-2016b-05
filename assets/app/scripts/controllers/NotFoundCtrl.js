@@ -1,6 +1,6 @@
 'use strict';
 define([
-	'pimixApp'
+	'siglasApp'
 ], function(siglasApp) {
 
 	siglasApp.controller('NotFoundCtrl', function($scope, $rootScope) {

@@ -1,7 +1,10 @@
 div.row
 	div.col-sm-12
 		h2.category-heading.text-center #{messageSource.getMessage('index.categories',[],locale)}
-		mixin children(categories, depth)
+		div.row
+			div.col-sm-4.category-link-container(ng-repeat="category in home.categories")
+				a.category-link(ng-href="#!/store/items/all?categories={{category.id}}") {{category.name}}
+		//-mixin children(categories, depth)
 			if depth <= 1
 				if depth == 0
 					div.row
@@ -25,4 +28,4 @@ div.row
 							if i == MAX_DISPLAYED
 								a(href="#") Ver Más
 
-		+children(categories, 0)
+		//-+children(categories, 0)

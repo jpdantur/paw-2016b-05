@@ -11,33 +11,22 @@ div.row
 						button.btn.btn-default.btn-lg#quick-search(type="submit")
 							i.fa.fa-search
 							| &nbsp; #{messageSource.getMessage("index.search", [], locale)} &nbsp;
-			//-a#link-busqueda-compleja(href="#busqueda-compleja") #{messageSource.getMessage("index.categories", [], locale)}
-				br
-				span.fa-stack.fa-lg
-					i.fa.fa-circle-thin.fa-stack-2x
-					i.fa.fa-angle-double-down.fa-stack-1x
 div.row.well#promociones
 	div.col-sm-12
 		h4(style="font-size:32px") #{messageSource.getMessage("index.promoted", [], locale)}
 		div.carousel.slide(data-ride="carousel")#promotion-carousel
 			div.carousel-inner#carousel-content
-				each k, i in mostSoldItems
-					if i % 6 ==0
-						div.item(class="#{i/6==0?'active':''}")
-							each item, j in mostSoldItems
-								if i/6*6 <= j && j < (i/6+1)*6
-									div.col-sm-2
-										a(href="#{context.url('/store/items/'+item.id)}")
-											div.promotion-image-container
-												a(href="#{context.url('/store/items/'+item.id)}")
-													if item.images.isEmpty()
-														img(src="http://placehold.it/200?text=Sin+Imagen", style="width:100%;height:auto")
-													else
-														img(src="#{context.url('/images/get/'+item.images.iterator().next().id)}", style="width:100%;height:auto")
-										a(href="#{context.url('/store/items/'+item.id)}")
-											b #{item.name}
-										br
-										span $#{item.price}
+				div.item(ng-class="{active: $index == 0}", ng-repeat="(key, items) in home.compartments")
+					div.col-sm-2(ng-repeat="item in items")
+						a(ng-href="#!/store/items/{{item.id}}")
+							div.promotion-image-container
+								a(ng-href="#!/store/items/{{item.id}}")
+									img(ng-src="http://placehold.it/200?text=Sin+Imagen", style="width:100%;height:auto", ng-if="!item.images.length")
+									img(ng-src="data:image/png;base64,{{item.images[0].content}}", style="width:100%;height:auto", ng-if="item.images")
+						a(ng-href="#!/store/items/{{item.id}}")
+							b {{item.name}}
+						br
+						span ${{item.price.toFixed(2)}}
 			a.left.carousel-control(href="#promotion-carousel", data-slide="prev", style='left:-30px')
 				span.glyphicon.glyphicon-chevron-left
 				span.sr-only Anterior

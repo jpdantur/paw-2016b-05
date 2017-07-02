@@ -1,6 +1,6 @@
 'use strict';
 define([
-	'pimixApp'
+	'siglasApp'
 ], function(siglasApp) {
 
 	siglasApp.controller('ForbiddenCtrl', function($scope, $rootScope) {

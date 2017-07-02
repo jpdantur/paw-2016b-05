@@ -458,7 +458,7 @@ module.exports = function (grunt) {
         data: {
           context: {
             url: function (url) {
-              return url;
+              return 'http://localhost:8081/webapp' + url;
             }
           },
           messageSource: {

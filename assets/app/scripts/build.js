@@ -44,7 +44,9 @@ require.config({
 		q: '../../bower_components/q/q',
 		rater: '../../bower_components/rater/rater',
 		'remarkable-bootstrap-notify': '../../bower_components/remarkable-bootstrap-notify/bootstrap-notify',
-		underscore: '../../bower_components/underscore/underscore'
+		underscore: '../../bower_components/underscore/underscore',
+		'angular-socket-io': '../../bower_components/angular-socket-io/socket',
+		'jquery-treegrid': '../../bower_components/jquery-treegrid/index'
 	},
 	shim: {
 		angular: {
