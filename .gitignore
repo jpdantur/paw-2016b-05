@@ -175,3 +175,4 @@ node_modules
 node
 bower_components
 .sass-cache
+assets/dist
