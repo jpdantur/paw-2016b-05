@@ -18,62 +18,63 @@ mixin navbar(search)
 						a(href="#!/auth/login?next={{index.$location.path()}}") #{messageSource.getMessage('index.login', [], locale)}
 					li
 						a(href="#{context.url('/store/sell/details')}") #{messageSource.getMessage('index.sell', [], locale)}
-						li#favourite-dropdown(ng-if="loggedUser")
-							a.dropdown-toggle(href="#", data-toggle="dropdown", title="#{messageSource.getMessage('index.favourite.title',[],locale)}")
-								i.fa.fa-heart
-								span.caret
-							ul.dropdown-menu.dropdown-favourite
-								if !userFavourites.results.isEmpty()
-									li
-										span.fav-title #{messageSource.getMessage('index.favourite.title',[],locale)}
-								else
-									li
-										a #{messageSource.getMessage('index.favourite.empty',[],locale)}
-								//-each favourite in userFavourites.results
-									li
-										span.item
-											span.item-left
+					li#favourite-dropdown(ng-if="loggedUser")
+						a.dropdown-toggle(href="#", data-toggle="dropdown", title="#{messageSource.getMessage('index.favourite.title',[],locale)}")
+							i.fa.fa-heart
+							| &nbsp;
+							span.caret
+						ul.dropdown-menu.dropdown-favourite
+							if !userFavourites.results.isEmpty()
+								li
+									span.fav-title #{messageSource.getMessage('index.favourite.title',[],locale)}
+							else
+								li
+									a #{messageSource.getMessage('index.favourite.empty',[],locale)}
+							//-each favourite in userFavourites.results
+								li
+									span.item
+										span.item-left
+										a(href="#{context.url('/store/items/'+favourite.item.id)}")
+												if favourite.item.images.isEmpty()
+													img(src="http://placehold.it/80x80")
+												else
+													img(src="#{context.url('/images/get/'+favourite.item.images.iterator().next().id)}")
+											span.item-info
 												a(href="#{context.url('/store/items/'+favourite.item.id)}")
-													if favourite.item.images.isEmpty()
-														img(src="http://placehold.it/80x80")
-													else
-														img(src="#{context.url('/images/get/'+favourite.item.images.iterator().next().id)}")
-												span.item-info
-													a(href="#{context.url('/store/items/'+favourite.item.id)}")
-														span #{favourite.item.name}
-													span.price $#{favourite.item.price}
-											span.item-right(title="#{messageSource.getMessage('index.favourite.remove',[],locale)}")
-												button.btn.btn-xs.btn-danger.pull-right.remove-fav(data-id="#{favourite.id}") x
-								if userFavourites.numberOfTotalResults >= 8
-									li.separator
-									li.text-center
-										a(href=context.url('/profile/favourites')) #{messageSource.getMessage('index.favourite.viewAll',[],locale)}
+													span #{favourite.item.name}
+												span.price $#{favourite.item.price}
+										span.item-right(title="#{messageSource.getMessage('index.favourite.remove',[],locale)}")
+											button.btn.btn-xs.btn-danger.pull-right.remove-fav(data-id="#{favourite.id}") x
+							//-if userFavourites.numberOfTotalResults >= 8
+								li.separator
+								li.text-center
+									a(href=context.url('/profile/favourites')) #{messageSource.getMessage('index.favourite.viewAll',[],locale)}
+					li(ng-if="loggedUser")
+						a.dropdown-toggle(href="#", data-toggle="dropdown")
+							span {{loggedUser.firstName}} {{loggedUser.lastName}}&nbsp;
+							span.caret
+						ul.dropdown-menu
 							li
-								a.dropdown-toggle(href="#", data-toggle="dropdown")
-									span #{loggedUser.firstName} #{loggedUser.lastName}&nbsp;
-									span.caret
-								ul.dropdown-menu
-									li
-										a(href=context.url('/profile/details'))
-											i.fa.fa-user
-											span &nbsp;#{messageSource.getMessage('index.user.profile',[],locale)}
-									li
-										a(href=context.url('/profile/items'))
-											i.fa.fa-list
-											span &nbsp;#{messageSource.getMessage('index.user.items',[],locale)}
-									li
-										a(href=context.url('/profile/sales'))
-											i.fa.fa-suitcase
-											span &nbsp;#{messageSource.getMessage('index.user.sales',[],locale)}
-									li
-										a(href=context.url('/profile/purchases'))
-											i.fa.fa-shopping-bag
-											span &nbsp;#{messageSource.getMessage('index.user.purchases',[],locale)}
-									li.separator
-									li
-										a(href=context.url('/auth/logout'))
-											i.fa.fa-sign-out
-											span &nbsp;#{messageSource.getMessage('index.user.logout',[],locale)}
+								a(href=context.url('/profile/details'))
+									i.fa.fa-user
+									span &nbsp;#{messageSource.getMessage('index.user.profile',[],locale)}
+							li
+								a(href=context.url('/profile/items'))
+									i.fa.fa-list
+									span &nbsp;#{messageSource.getMessage('index.user.items',[],locale)}
+							li
+								a(href=context.url('/profile/sales'))
+									i.fa.fa-suitcase
+									span &nbsp;#{messageSource.getMessage('index.user.sales',[],locale)}
+							li
+								a(href=context.url('/profile/purchases'))
+									i.fa.fa-shopping-bag
+									span &nbsp;#{messageSource.getMessage('index.user.purchases',[],locale)}
+							li.separator
+							li
+								a(ng-click="index.logout()")
+									i.fa.fa-sign-out
+									span &nbsp;#{messageSource.getMessage('index.user.logout',[],locale)}
 				if search
 					form.navbar-form#navbar-search(action="#{context.url('/store/items/all')}")
 						div.form-group(style="width:50%")

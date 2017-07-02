@@ -33,6 +33,10 @@ define([
 				console.error(err);
 			}).then(function (profile) {
 				$rootScope.loggedUser = profile;
+
+				console.log($location);
+
+				$location.path($location.$$search.next);
 			}, function (err) {
 				console.error(err);
 			});

@@ -1,9 +1,10 @@
 'use strict';
 define([
-	'siglasApp'
+	'siglasApp',
+	'services/AuthService'
 ], function(siglasApp) {
 
-	siglasApp.controller('IndexCtrl', function($scope, $rootScope, $location, $route) {
+	siglasApp.controller('IndexCtrl', function($scope, $rootScope, $location, $route, AuthService, toastr, $translate) {
 
 		console.log('IndexCtrl');
 
@@ -13,5 +14,18 @@ define([
 
 		self.$route = $route;
 		self.$location = $location;
+
+		self.logout = logout;
+
+		// /////////////////////////////
+	
+		// /////////////////////////////
+
+		function logout() {
+			AuthService.logout().then(function () {
+				$rootScope.loggedUser = null;
+				toastr.success('Logout successful');
+			});
+		}
 	});
 });

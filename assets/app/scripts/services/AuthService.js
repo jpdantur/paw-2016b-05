@@ -222,29 +222,35 @@ define([
 
 			console.log('logout');
 
-			$http({
-				method: 'POST',
-				url: api('/v1/auth/logout')
-			})
-			.then(function (response) {
-				if (response.status >= 400) {
-					console.log(response.status);
-					if (response.status >= 500) {
-						return defer.reject(response.data);
-					}
-					return defer.reject(response.data);
-				}
+			removeDefaultAuthorizationHeader();
+			localStorageService.remove('tokens');
 
-				removeDefaultAuthorizationHeader();
-				localStorageService.remove('tokens');
-
-				defer.resolve();
-			}, function (error) {
-				console.log(error);
-				defer.reject(error.data);
-			});
+			defer.resolve();
 
 			return defer.promise;
+
+			// $http({
+			// 	method: 'POST',
+			// 	url: api('/v1/auth/logout')
+			// })
+			// .then(function (response) {
+			// 	if (response.status >= 400) {
+			// 		console.log(response.status);
+			// 		if (response.status >= 500) {
+			// 			return defer.reject(response.data);
+			// 		}
+			// 		return defer.reject(response.data);
+			// 	}
+
+				
+
+			// 	defer.resolve();
+			// }, function (error) {
+			// 	console.log(error);
+			// 	defer.reject(error.data);
+			// });
+
+			// return defer.promise;
 		}
 
 		return Auth;
