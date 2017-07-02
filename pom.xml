@@ -35,6 +35,7 @@
 		<dom4j-version>1.6.1</dom4j-version>
 		<jersey.version>3.0-SNAPSHOT</jersey.version>
 		<io-jsonwebtoken.version>0.7.0</io-jsonwebtoken.version>
+		<spring-security-jwt.version>1.0.8.RELEASE</spring-security-jwt.version>
 	</properties>
 
 	<build>
@@ -58,6 +59,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.6.1</version>
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
@@ -81,8 +83,8 @@
 							<goal>install-node-and-npm</goal>
 						</goals>
 						<configuration>
-							<nodeVersion>v0.12.7</nodeVersion>
-							<npmVersion>2.11.3</npmVersion>
+							<nodeVersion>v7.4.0</nodeVersion>
+							<npmVersion>4.0.5</npmVersion>
 						</configuration>
 					</execution>
 
@@ -108,6 +110,9 @@
 						<goals>
 							<goal>grunt</goal>
 						</goals>
+						<configuration>
+							<arguments>none</arguments>
+						</configuration>
 					</execution>
 
 				</executions>
@@ -220,11 +225,11 @@
 				<artifactId>spring-security-crypto</artifactId>
 				<version>${spring-security.version}</version>
 			</dependency>
-			<dependency>
+			<!-- <dependency>
 				<groupId>org.springframework.security</groupId>
 				<artifactId>spring-security-jwt</artifactId>
-				<version>${spring-security.version}</version>
-			</dependency>
+				<version>${spring-security-jwt.version}</version>
+			</dependency> -->
 			<!-- Bean validation -->
 			<dependency>
 				<groupId>javax.validation</groupId>
@@ -377,11 +382,11 @@
 				<artifactId>jersey-media-json-jackson</artifactId>
 				<version>${jersey.version}</version>
 			</dependency>
-			<dependency>
+			<!-- <dependency>
 				<groupId>org.glassfish.jersey.ext</groupId>
 				<artifactId>jersey-bean-validation</artifactId>
 				<version>${jersey.version}</version>
-			</dependency>
+			</dependency> -->
 			<dependency>
 				<groupId>io.jsonwebtoken</groupId>
 				<artifactId>jjwt</artifactId>
