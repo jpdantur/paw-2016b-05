@@ -28,7 +28,19 @@ define([
 			self.selectedTab = tab;
 		}
 
-		function changeEmail() {
+		function changeEmail(isValid) {
+
+			if (isValid) {
+				
+			}
+		}
+
+		function changePassword(isValid) {
+
+			if (isValid) {
+
+			}
+
 		}
 	});
 });

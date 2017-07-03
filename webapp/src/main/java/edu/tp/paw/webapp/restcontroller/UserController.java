@@ -20,6 +20,7 @@ import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
 import edu.tp.paw.webapp.dto.UserDTO;
+import edu.tp.paw.webapp.form.SearchForm;
 
 @Path("/api/users")
 @Component
@@ -51,6 +52,10 @@ public class UserController {
 		
 		final User u = userService.findById(id);
 		
+		if (u == null) {
+			return Response.status(Status.NOT_FOUND).build();
+		}
+		
 		if (!context.getUserPrincipal().getName().equals(u.getUsername())) {
 			return Response.status(Status.FORBIDDEN).build();
 		}
@@ -63,5 +68,25 @@ public class UserController {
 		
 		return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 		
+	}
+	
+	@GET
+	@Path("{id}/favourites")
+	@Produces(value = { MediaType.APPLICATION_JSON })
+	public Response userFavs(@PathParam("id") final long id, @Context SecurityContext context, final SearchForm form) {
+		
+		final User user = userService.findById(id);
+		
+		if (user == null) {
+			return Response.status(Status.NOT_FOUND).build();
+		}
+		
+		if (!context.getUserPrincipal().getName().equals(user.getUsername())) {
+			return Response.status(Status.FORBIDDEN).build();
+		}
+		
+		userService.getFavourites(user, null);
+		
+		return Response.ok(UserDTO.fromUser(user)).build();
 	}
 }
