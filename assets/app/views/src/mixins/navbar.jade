@@ -13,11 +13,11 @@ mixin navbar(search)
 			nav.collapse.navbar-collapse#navbar-content
 				ul.nav.navbar-nav.navbar-right
 					li(ng-if="!loggedUser")
-						a(href="#{context.url('/auth/register')}") #{messageSource.getMessage('index.register', [], locale)}
+						a(ng-href="#!/auth/register?next={{index.$location.path()}}") #{messageSource.getMessage('index.register', [], locale)}
 					li(ng-if="!loggedUser")
-						a(href="#!/auth/login?next={{index.$location.path()}}") #{messageSource.getMessage('index.login', [], locale)}
+						a(ng-href="#!/auth/login?next={{index.$location.path()}}") #{messageSource.getMessage('index.login', [], locale)}
 					li
-						a(href="#{context.url('/store/sell/details')}") #{messageSource.getMessage('index.sell', [], locale)}
+						a(ng-href="{{loggedUser ? '#!/store/sell/details' : '#!/auth/register?next=/store/sell/details'}}") #{messageSource.getMessage('index.sell', [], locale)}
 					li#favourite-dropdown(ng-if="loggedUser")
 						a.dropdown-toggle(href="#", data-toggle="dropdown", title="#{messageSource.getMessage('index.favourite.title',[],locale)}")
 							i.fa.fa-heart
@@ -55,7 +55,7 @@ mixin navbar(search)
 							span.caret
 						ul.dropdown-menu
 							li
-								a(href=context.url('/profile/details'))
+								a(href='#!/profile/details')
 									i.fa.fa-user
 									span &nbsp;#{messageSource.getMessage('index.user.profile',[],locale)}
 							li

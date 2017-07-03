@@ -25,6 +25,7 @@ define([
 			AuthService.logout().then(function () {
 				$rootScope.loggedUser = null;
 				toastr.success('Logout successful');
+				$location.path('/');
 			});
 		}
 	});

@@ -9,6 +9,7 @@ define([
 		var Auth = {};
 
 		Auth.logIn = logIn;
+		Auth.register = register;
 		Auth.syncWithLocalStorage = syncWithLocalStorage;
 		Auth.fetchProfile = fetchProfile;
 		Auth.logout = logout;
@@ -44,6 +45,42 @@ define([
 					username: username,
 					password: password
 				}
+			})
+			.then(function (response) {
+				if (response.status >= 400) {
+					console.log(response.status);
+					if (response.status >= 500) {
+						return defer.reject(response.data);
+					}
+					return defer.reject(response.data);
+				}
+
+				console.log(response.data);
+
+				setDefaultAuthorizationHeader(response.data.idToken);
+
+				console.log($http.defaults.headers.common.Authorization);
+
+				console.log('setting local storage');
+				localStorageService.set('tokens', response.data);
+
+				defer.resolve(response.data);
+			}, function (error) {
+				console.log(error);
+				defer.reject(error.data);
+			});
+
+			return defer.promise;
+		}
+
+		function register(user) {
+
+			var defer = $q.defer();
+
+			$http({
+				method: 'POST',
+				url: api('/api/auth/register'),
+				data: JSON.stringify(user)
 			})
 			.then(function (response) {
 				if (response.status >= 400) {

@@ -1,0 +1,76 @@
+extends layouts/layout
+
+block styles
+	link(href=context.url('/resources/css/register.css'), rel="stylesheet")
+
+block content
+	+navbar(true)
+	div.container
+		div.row
+			div.col-sm-6.col-sm-offset-3
+				div.register-box
+					div.load_circle_wrapper.well-fake(ng-show="register.loading")
+						div.loading_spinner
+							div.wrap_spinner
+								div.loading.outer
+									div.loading.inner
+					div.well(ng-show="!register.loading")
+						form.form-horizontal(name="registerForm", ng-submit="register.submit(registerForm.$valid)", novalidate)
+							div.form-group(ng-class="{ 'has-error': registerForm.firstName.$invalid && !registerForm.firstName.$pristine }")
+								label.control-label.col-sm-3(for="firstName") #{messageSource.getMessage('register.form.name', [], locale)}
+								div.col-sm-9
+									input.form-control#firstName(type="text", placeholder="#{messageSource.getMessage('register.form.name', [], locale)}", name="firstName", ng-model="register.user.firstName", required, ng-minlength="2", ng-maxlength="100", ng-pattern="/^[a-zA-ZáéíóúÁÉÍÓÚ ]+$/")
+									p.help-block(ng-show="registerForm.firstName.$error.required") Name is required
+									p.help-block(ng-show="registerForm.firstName.$error.minlength") Name is too short
+									p.help-block(ng-show="registerForm.firstName.$error.maxlength") Name is too long
+									p.help-block(ng-show="registerForm.firstName.$error.pattern") Name should only contain letters
+							
+							div.form-group(ng-class="{ 'has-error': registerForm.lastName.$invalid && !registerForm.lastName.$pristine }")
+								label.control-label.col-sm-3(for="lastName") #{messageSource.getMessage('register.form.surname', [], locale)}
+								div.col-sm-9
+									input.form-control#lastName(type="text", placeholder="#{messageSource.getMessage('register.form.surname', [], locale)}", name="lastName", ng-model="register.user.lastName", required, ng-minlength="2", ng-maxlength="100", ng-pattern="/^[a-zA-ZáéíóúÁÉÍÓÚ ]+$/")
+									p.help-block(ng-show="registerForm.lastName.$error.required") Surname is required
+									p.help-block(ng-show="registerForm.lastName.$error.minlength") Surname is too short
+									p.help-block(ng-show="registerForm.lastName.$error.maxlength") Surname is too long
+									p.help-block(ng-show="registerForm.lastName.$error.pattern") Surname should only contain letters
+							
+							div.form-group(ng-class="{ 'has-error': registerForm.email.$invalid && !registerForm.email.$pristine }")
+								label.control-label.col-sm-3(for="email") #{messageSource.getMessage('register.form.mail', [], locale)}
+								div.col-sm-9
+									input.form-control#email(type="email", placeholder="#{messageSource.getMessage('register.form.mail', [], locale)}", name="email", ng-model="register.user.email", required)
+									p.help-block(ng-show="registerForm.email.$error.required") Email is required
+									p.help-block(ng-show="registerForm.email.$invalid && !registerForm.email.$pristine") Enter a valid email
+							
+							div.form-group(ng-class="{ 'has-error': registerForm.username.$invalid && !registerForm.username.$pristine }")
+								label.control-label.col-sm-3(for="username") #{messageSource.getMessage('login.field.user', [], locale)}
+								div.col-sm-9
+									input.form-control#username(type="text", placeholder="#{messageSource.getMessage('login.field.user', [], locale)}", name="username", required, ng-minlength="6", ng-maxlength="100", ng-pattern="/^[a-zA-Z0-9_-]+$/", ng-model="register.user.username")
+									p.help-block(ng-show="registerForm.username.$error.required") Username is required
+									p.help-block(ng-show="registerForm.username.$error.minlength") Username is too short
+									p.help-block(ng-show="registerForm.username.$error.maxlength") Username is too long
+									p.help-block(ng-show="registerForm.username.$error.pattern") Username should only contain letters, numbers, '-' or '_'
+							
+							div.form-group(ng-class="{ 'has-error': registerForm.password.$invalid && !registerForm.password.$pristine }")
+								label.control-label.col-sm-3(for="password") #{messageSource.getMessage('login.field.password', [], locale)}
+								div.col-sm-9
+									input.form-control#password(type="password", placeholder="#{messageSource.getMessage('login.field.password', [], locale)}", name="password", required, ng-minlength="4", ng-maxlength="100", ng-model="register.user.password")
+									p.help-block(ng-show="registerForm.password.$error.required") Password is required
+									p.help-block(ng-show="registerForm.password.$error.minlength") Password is too short
+									p.help-block(ng-show="registerForm.password.$error.maxlength") Password is too long
+							
+							div.form-group(ng-class="{ 'has-error': registerForm.repeatPassword.$invalid && !registerForm.repeatPassword.$pristine }")
+								label.control-label.col-sm-3(for="repeatPassword") #{messageSource.getMessage('register.form.repeatPassword', [], locale)}
+								div.col-sm-9
+									input.form-control#repeatPassword(type="password", placeholder="#{messageSource.getMessage('register.form.repeatPassword', [], locale)}", name="repeatPassword", pw-check='password', ng-model="register.user.repeatPassword")
+									p.help-block(ng-show="registerForm.repeatPassword.$error.pwmatch") Password does not match
+							
+							div.form-group
+									div.col-sm-12
+										button.btn.btn-success.btn-block(type="submit") #{messageSource.getMessage('register.form.createAccount', [], locale)}
+							div.form-group
+								div.col-sm-12
+									span #{messageSource.getMessage('register.form.hasAccount', [], locale)}&nbsp;
+									a(href="#!/auth/login") #{messageSource.getMessage('register.form.login', [], locale)}
+									br
+									span #{messageSource.getMessage('login.recover.question', [], locale)}&nbsp;
+									a(href=context.url('/auth/forgot-pass')) #{messageSource.getMessage('login.recover.recoverIt', [], locale)}

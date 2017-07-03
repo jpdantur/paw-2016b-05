@@ -20,10 +20,6 @@ define([
 		// ///////
 		
 		function signIn() {
-			console.log({
-				password: self.password,
-				username: self.username
-			});
 
 			AuthService.logIn(self.username, self.password).then(function (data) {
 				console.log(data);

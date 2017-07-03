@@ -1,34 +1,23 @@
 div.tab-pane-content
-	if success == true || success == false
-		div.col-sm-12
-			if success == true
-				div.alert.alert-success
-					b #{messageSource.getMessage('successMessages.changePassword.title', [], locale)}!&nbsp;
-					span #{messageSource.getMessage('successMessages.changePassword.content', [], locale)}
-			else
-				div.alert.alert-danger
-					b #{messageSource.getMessage('successMessages.changePassword.titleFail', [], locale)}!&nbsp;
-					span #{messageSource.getMessage('successMessages.changePassword.contentFail', [], locale)}
 	div.col-sm-12
 		h1.page-header #{messageSource.getMessage('profile.account.title', [], locale)}
-		form.form-horizontal(action="#{context.url('/profile/details')}", method="POST")
+		form.form-horizontal(name="changeEmailForm", ng-submit="profile.changeEmail(changeEmailForm.$valid)", novalidate)
 			div.form-group
 				label.col-sm-2.control-label #{messageSource.getMessage('profile.account.form.name',[],locale)}
-				div.col-sm-10
-					p.form-control-static #{loggedUser.firstName}
+				div.col-sm-6
+					p.form-control-static {{loggedUser.firstName}}
 			div.form-group
 				label.col-sm-2.control-label #{messageSource.getMessage('profile.account.form.lastName',[],locale)}
-				div.col-sm-10
-					p.form-control-static #{loggedUser.lastName}
+				div.col-sm-6
+					p.form-control-static {{loggedUser.lastName}}
 			div.form-group
 				label.col-sm-2.control-label #{messageSource.getMessage('profile.account.form.username',[],locale)}
-				div.col-sm-10
-					p.form-control-static #{loggedUser.username}
-			div.form-group(class="#{result.hasFieldErrors('email')?'has-error':''}")
+				div.col-sm-6
+					p.form-control-static {{loggedUser.username}}
+			div.form-group(ng-class="{ 'has-error': registerForm.firstName.$invalid && !registerForm.firstName.$pristine }")
 				label.col-sm-2.control-label(for="email") #{messageSource.getMessage('profile.account.form.email',[],locale)}
-				div.col-sm-10
-					input.form-control#email(type="text", placeholder="#{messageSource.getMessage('profile.account.form.email',[],locale)}", name="email", value="#{loggedUser.email}")
-					+errors(result, 'email')
-			div.form-group
-				div.col-sm-4.col-sm-offset-8
+				div.col-sm-6
+					input.form-control#email(type="text", placeholder="#{messageSource.getMessage('profile.account.form.email',[],locale)}", name="email", ng-model="profile.user.email")
+			div.form-group(style="margin-top:40px")
+				div.col-sm-4.col-sm-offset-2
 					button.btn.btn-success.btn-block(type="submit") #{messageSource.getMessage('profile.account.form.update',[],locale)}

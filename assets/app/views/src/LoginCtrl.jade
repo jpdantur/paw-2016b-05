@@ -6,11 +6,12 @@ block content
 		div.row
 			div.col-sm-6.col-sm-offset-3
 				div.well.login-box
-					if error
-						div.alert.alert-danger
-							b #{messageSource.getMessage('login.error.error', [], locale)}&nbsp;
-							span #{messageSource.getMessage('login.error.wrongData', [], locale)}
-					form.form-horizontal(ng-submit="login.signIn()")
+					div.load_circle_wrapper(ng-if="register.loading")
+						div.loading_spinner
+							div.wrap_spinner
+								div.loading.outer
+									div.loading.inner
+					form.form-horizontal(ng-submit="login.signIn()", ng-if="!register.loading")
 						div.form-group
 							label.control-label.col-sm-3(for="username") #{messageSource.getMessage('login.field.user', [], locale)}
 							div.col-sm-9
@@ -31,7 +32,7 @@ block content
 						div.form-group
 							div.col-sm-12
 								span #{messageSource.getMessage('login.form.noUserQuestion', [], locale)}&nbsp;
-								a(href=context.url('/auth/register')) #{messageSource.getMessage('login.form.register', [], locale)}
+								a(href='#!/auth/register')) #{messageSource.getMessage('login.form.register', [], locale)}
 								br
 								span #{messageSource.getMessage('login.recover.question', [], locale)}&nbsp;
 								a(href=context.url('/auth/forgot-pass')) #{messageSource.getMessage('login.recover.recoverIt', [], locale)}

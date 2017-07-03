@@ -14,6 +14,16 @@ define([], function() {
 				controller: 'LoginCtrl',
 				controllerAs: 'login'
 			},
+			'/auth/register': {
+				templateUrl: 'views/RegisterCtrl.html',
+				controller: 'RegisterCtrl',
+				controllerAs: 'register'
+			},
+			'/profile/details': {
+				templateUrl: 'views/ProfileCtrl.html',
+				controller: 'ProfileCtrl',
+				controllerAs: 'profile'
+			},
 			'/403': {
 				templateUrl: 'views/403.html',
 				controller: 'ForbiddenCtrl',
