@@ -180,9 +180,9 @@
                       <td><a href="#!/store/items/{{item.id}}">{{item.name}}</a><br/><span style="color:#900;font-weight:500">$ {{item.price.toFixed(2)}}</span><span ng-if="item.status !== 'UNPUBLISHED'"><span>&nbsp;- </span><span class="text-muted">{{item.sold}} {{ 'profile.items.table.sold' | translate }}</span></span></td>
                       <td class="center-vertical"><a ng-href="#!/store/item/{{item.id}}/details" title="{{ 'profile.items.table.edit' | translate }}"><i class="fa fa-pencil"></i><span>&nbsp;{{ 'profile.items.table.edit' | translate }}</span></a></td>
                       <td class="center-vertical">
-                        <button ng-if="item.status === 'PAUSED'" ng-bootbox-confirm="Are you sure you want to resume this publication" ng-bootbox-confirm-action="profile.setPublicationStatus(attr1, attr2)" class="btn btn-success btn-xs toggle-item-state"><i class="fa fa-play"></i><span>&nbsp;{{ 'profile.items.table.resume' | translate }}</span></button>
-                        <button ng-if="item.status === 'UNPUBLISHED'" class="btn btn-success btn-xs publish">{{ 'profile.items.table.publish' | translate }}</button>
-                        <button ng-if="item.status !== 'PAUSED' &amp;&amp; item.status !== 'UNPUBLISHED'" class="btn btn-default btn-xs toggle-item-state"><i class="fa fa-pause"></i><span>&nbsp;{{ 'profile.items.table.pause' | translate }}</span></button>
+                        <button ng-if="item.status === 'PAUSED'" ng-bootbox-confirm="Are you sure you want to resume this publication" ng-bootbox-confirm-action="profile.setPublicationStatus(item, 'ACTIVE')" class="btn btn-success btn-xs toggle-item-state"><i class="fa fa-play"></i><span>&nbsp;{{ 'profile.items.table.resume' | translate }}</span></button>
+                        <button ng-if="item.status === 'UNPUBLISHED'" ng-bootbox-confirm="Are you sure you want to activate this publication" ng-bootbox-confirm-action="profile.setPublicationStatus(item, 'ACTIVE')" class="btn btn-success btn-xs publish">{{ 'profile.items.table.publish' | translate }}</button>
+                        <button ng-if="item.status === 'ACTIVE'" ng-bootbox-confirm="Are you sure you want to pause this publication" ng-bootbox-confirm-action="profile.setPublicationStatus(item, 'PAUSED')" class="btn btn-default btn-xs toggle-item-state"><i class="fa fa-pause"></i><span>&nbsp;{{ 'profile.items.table.pause' | translate }}</span></button>
                       </td>
                     </tr>
                   </tbody>

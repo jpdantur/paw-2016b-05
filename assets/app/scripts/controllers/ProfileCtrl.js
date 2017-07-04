@@ -187,8 +187,20 @@ define([
 			});
 		}
 
-		function setPublicationStatus(a, b) {
-			console.log(a, b);
+		function setPublicationStatus(originalItem, status) {
+			var i = _.extend({}, originalItem, {
+				category: originalItem.category.id,
+				owner: originalItem.owner.id,
+				status: status
+			});
+			console.log(i);
+			ItemService.update(i).then(function (item) {
+				console.log(item);
+				angular.extend(originalItem, item);
+				toastr.success('Successfully updated publication');
+			}, function (err) {
+				console.error(err);
+			});
 		}
 
 
