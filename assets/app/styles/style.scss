@@ -1,3 +1,5 @@
+@import "compass/css3";
+
 @import url(https://fonts.googleapis.com/css?family=Raleway:400,100,700);
 
 $light-gray: #f6f6f8;
@@ -380,4 +382,51 @@ footer {
 		}
 	}
 	
+}
+
+[star-rating] {
+
+	.star-rating {
+		margin: 0;
+		padding: 0;
+		display: inline-block;
+		
+		.star {
+			padding: 1px;
+			color: #ddd;
+			font-size: 20px;
+			text-shadow: .05em .05em #aaa;
+			list-style-type: none;
+			display: inline-block;
+			cursor: pointer;
+
+			&.filled {
+				color: #fd0;
+			}
+		}
+
+		// &.readonly .star.filled {
+		// 	color: #666;
+		// }
+	}
+
+	&.worst .star.filled {
+		color: #991619;
+	}
+
+	&.bad .star.filled {
+		color: #E16E01;	
+	}
+
+	&.ok .star.filled {
+		color: #8DB75F;	
+	}
+
+	&.good .star.filled {
+		color: #67A22A;	
+	}
+
+	&.great .star.filled {
+		color: #016900;
+	}
 }

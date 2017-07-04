@@ -22,7 +22,8 @@ define([], function() {
 			'/profile/details': {
 				templateUrl: 'views/ProfileCtrl.html',
 				controller: 'ProfileCtrl',
-				controllerAs: 'profile'
+				controllerAs: 'profile',
+				controllers: ['ScoreCtrl']
 			},
 			'/403': {
 				templateUrl: 'views/403.html',

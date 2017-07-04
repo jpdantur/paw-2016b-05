@@ -1,0 +1,40 @@
+div(ng-controller="ScoreCtrl as score")
+	form.form-horizontal.i(role="form")
+		legend #{messageSource.getMessage('profile.modal.scores.scoresFrom', [], locale)}&nbsp;
+			span.what(ng-if="score.role === 'buyer'") #{messageSource.getMessage('profile.modal.scores.seller', [], locale)}
+			span.what(ng-if="score.role === 'seller'") #{messageSource.getMessage('profile.modal.scores.buyer', [], locale)}
+		div.form-group
+			label.col-sm-2.control-label(for="score") #{messageSource.getMessage('profile.modal.scores.score', [], locale)}
+			div.col-sm-10
+				div(ng-if="score.role === 'buyer' && score.tx.sellerReview", star-rating, ng-model="score.tx.sellerReview.rating", on-rating-select="score.rateTop()", readonly="true", ng-class='{worst: score.tx.sellerReview.rating <= 1, bad: 1 < score.tx.sellerReview.rating && score.tx.sellerReview.rating <= 2, ok: 2 < score.tx.sellerReview.rating && score.tx.sellerReview.rating <= 3, good: 3 < score.tx.sellerReview.rating && score.tx.sellerReview.rating <= 4, great: 4 < score.tx.sellerReview.rating && score.tx.sellerReview.rating <= 5}')
+				div(ng-if="score.role === 'seller' && score.tx.buyerReview", star-rating, ng-model="score.tx.buyerReview.rating", on-rating-select="score.rateTop()", readonly="true", ng-class='{worst: score.tx.buyerReview.rating <= 1, bad: 1 < score.tx.buyerReview.rating && score.tx.buyerReview.rating <= 2, ok: 2 < score.tx.buyerReview.rating && score.tx.buyerReview.rating <= 3, good: 3 < score.tx.buyerReview.rating && score.tx.buyerReview.rating <= 4, great: 4 < score.tx.buyerReview.rating && score.tx.buyerReview.rating <= 5}')
+				//- div.rating.static.r1(style="font-size:1.5em")
+				p.help-block.r1(ng-if="score.role === 'buyer' ? !score.tx.sellerReview : !score.tx.buyerReview") #{messageSource.getMessage('profile.modal.scores.stillNoScore', [], locale)}
+		div.form-group
+			label.col-sm-2.control-label(for="content") #{messageSource.getMessage('item.comment', [], locale)}
+			div.col-sm-10
+				p.form-control-static.r1.l {{score.role === 'buyer' ? score.tx.sellerReview.comment : score.tx.buyerReview.comment}}
+
+	form.form-horizontal.j(role="form", ng-submit="score.rateSale(reviewForm.$valid)", name="reviewForm", novalidate)
+		legend #{messageSource.getMessage('profile.modal.scores.yourScore', [], locale)}
+		div.form-group(ng-if="score.role === 'seller' ? !score.tx.sellerReview.id : !score.tx.buyerReview.id")
+			div.col-sm-10.col-sm-offset-2
+				p.help-block.r2 #{messageSource.getMessage('profile.modal.scores.stillNoScore', [], locale)}
+		div.form-group
+			label.col-sm-2.control-label(for="score") #{messageSource.getMessage('profile.modal.scores.score', [], locale)}
+			div.col-sm-10
+				div(ng-if="score.role === 'seller' && score.tx", star-rating, ng-model="score.tx.sellerReview.rating", on-rating-select="score.rateTop()", readonly="score.tx.sellerReview.id", ng-class='{worst: score.tx.sellerReview.rating <= 1, bad: 1 < score.tx.sellerReview.rating && score.tx.sellerReview.rating <= 2, ok: 2 < score.tx.sellerReview.rating && score.tx.sellerReview.rating <= 3, good: 3 < score.tx.sellerReview.rating && score.tx.sellerReview.rating <= 4, great: 4 < score.tx.sellerReview.rating && score.tx.sellerReview.rating <= 5}')
+				div(ng-if="score.role === 'buyer' && score.tx", star-rating, ng-model="score.tx.buyerReview.rating", on-rating-select="score.rateTop()", readonly="score.tx.buyerReview.id", ng-class='{worst: score.tx.buyerReview.rating <= 1, bad: 1 < score.tx.buyerReview.rating && score.tx.buyerReview.rating <= 2, ok: 2 < score.tx.buyerReview.rating && score.tx.buyerReview.rating <= 3, good: 3 < score.tx.buyerReview.rating && score.tx.buyerReview.rating <= 4, great: 4 < score.tx.buyerReview.rating && score.tx.buyerReview.rating <= 5}')
+				//- div.rating.static.r2(style="font-size:1.5em")
+				//-p.help-block.r2 #{messageSource.getMessage('profile.modal.scores.stillNoScore', [], locale)}&nbsp;
+					button.btn-xs.btn-default.btn.rate-button #{messageSource.getMessage('profile.modal.scores.toScore', [], locale)}
+		div.form-group(ng-class="{ 'has-error': reviewForm.comment.$invalid && !reviewForm.comment.$pristine }")
+			label.col-sm-2.control-label(for="content") #{messageSource.getMessage('item.comment', [], locale)}
+			div.col-sm-10
+				p.form-control-static.r2.l(ng-if="score.role === 'seller' ? score.tx.sellerReview.id : score.tx.buyerReview.id") {{score.role === 'seller' ? score.tx.sellerReview.comment : score.tx.buyerReview.comment}}
+				textarea.form-control(ng-if="score.role === 'seller' ? !score.tx.sellerReview.id : !score.tx.buyerReview.id", required, name="comment", ng-model="score.comment", ng-minlength="4")
+				p.help-block(ng-show="reviewForm.comment.$error.required") Comment is required
+				p.help-block(ng-show="reviewForm.comment.$error.minlength") Comment is too short
+		div.form-group(ng-if="score.role === 'seller' ? !score.tx.sellerReview.id : !score.tx.buyerReview.id")
+			div.col-sm-10.col-sm-offset-2
+				button.btn-default.btn.rate-button(type="submit", ng-disabled="!reviewForm.$valid") #{messageSource.getMessage('profile.modal.scores.toScore', [], locale)}

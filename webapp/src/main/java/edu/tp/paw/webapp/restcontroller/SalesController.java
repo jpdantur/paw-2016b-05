@@ -31,11 +31,13 @@ import edu.tp.paw.interfaces.service.IStoreService;
 import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.Purchase;
+import edu.tp.paw.model.PurchaseReviewBuilder;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.model.User;
 import edu.tp.paw.service.PurchaseService;
 import edu.tp.paw.webapp.dto.PurchaseDTO;
+import edu.tp.paw.webapp.dto.PurchaseReviewWriteDTO;
 import edu.tp.paw.webapp.dto.StoreItemDTO;
 import edu.tp.paw.webapp.dto.StoreItemWriteDTO;
 
@@ -149,6 +151,89 @@ public class SalesController {
 		
 		if (userService.approvePurchase(user, purchase)) {
 			return Response.ok().build();
+		}
+		
+		return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+	}
+	
+	@PUT
+	@Path("/{id}/decline")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response decline(@PathParam("id") long id, @Context SecurityContext context) {
+		
+		final Purchase purchase = purchaseService.findById(id);
+		
+		if (purchase == null) {
+			return Response.status(Status.NOT_FOUND).build();
+		}
+		
+		final UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken)context.getUserPrincipal(); 
+		final User user = userService.findByUsername(userDetails.getName());
+		
+		if (user == null) {
+			return Response.status(Status.FORBIDDEN).build();
+		}
+		
+		if (userService.approvePurchase(user, purchase)) {
+			return Response.ok().build();
+		}
+		
+		return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+	}
+	
+	@POST
+	@Path("/{id}/buyer-review")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response buyerReview(@PathParam("id") long id, PurchaseReviewWriteDTO form, @Context SecurityContext context) {
+		
+		final Purchase purchase = purchaseService.findById(id);
+		
+		if (purchase == null) {
+			return Response.status(Status.NOT_FOUND).build();
+		}
+		
+		final UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken)context.getUserPrincipal(); 
+		final User user = userService.findByUsername(userDetails.getName());
+		
+		if (user == null) {
+			return Response.status(Status.FORBIDDEN).build();
+		}
+		
+		final PurchaseReviewBuilder builder = new PurchaseReviewBuilder(form.getComment()).rating(form.getRating());
+		
+		if (userService.reviewPurchaseAsBuyer(user, purchase, builder)) {
+			return Response.status(Status.CREATED).build();
+		}
+		
+		return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+	}
+	
+	@POST
+	@Path("/{id}/seller-review")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response sellerReview(@PathParam("id") long id, PurchaseReviewWriteDTO form, @Context SecurityContext context) {
+		
+		final Purchase purchase = purchaseService.findById(id);
+		
+		if (purchase == null) {
+			return Response.status(Status.NOT_FOUND).build();
+		}
+		
+		final UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken)context.getUserPrincipal(); 
+		final User user = userService.findByUsername(userDetails.getName());
+		
+		if (user == null) {
+			return Response.status(Status.FORBIDDEN).build();
+		}
+		
+		logger.trace(form.toString());
+		
+		final PurchaseReviewBuilder builder = new PurchaseReviewBuilder(form.getComment()).rating(form.getRating());
+		
+		if (userService.reviewPurchaseAsSeller(user, purchase, builder)) {
+			return Response.status(Status.CREATED).build();
 		}
 		
 		return Response.status(Status.INTERNAL_SERVER_ERROR).build();

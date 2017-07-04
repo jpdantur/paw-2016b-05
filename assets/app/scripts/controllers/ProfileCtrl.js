@@ -10,7 +10,7 @@ define([
 	'ngBootbox'
 ], function(siglasApp) {
 
-	siglasApp.controller('ProfileCtrl', function($scope, $rootScope, $route, $location, toastr, UserService, ItemService, SalesService, PurchasesService, FavouritesService) {
+	siglasApp.controller('ProfileCtrl', function($scope, $rootScope, $route, $location, $ngBootbox, toastr, UserService, ItemService, SalesService, PurchasesService, FavouritesService) {
 
 		console.log('ProfileCtrl');
 
@@ -65,6 +65,11 @@ define([
 		self.salesResult = {};
 
 		self.salesOrder = 'PRICE-ASC';
+
+		self.approveSale = approveSale;
+		self.declineSale = declineSale;
+
+		self.showScoresAsSeller = showScoresAsSeller;
 
 		// purchases tab
 
@@ -226,6 +231,32 @@ define([
 			}, function (err) {
 				console.error(err);
 			});
+		}
+
+		function approveSale(item) {
+			SalesService.approve(item.id).then(function (result) {
+				console.log(result);
+				item.status = 'APPROVED';
+				toastr.success('Purchase successfully approved');
+			}, function (err) {
+				console.error(err);
+				toastr.error('There was an error approving your sale');
+			});
+		}
+
+		function declineSale(item) {
+			SalesService.decline(item.id).then(function (result) {
+				console.log(result);
+				item.status = 'DECLINED';
+				toastr.success('Purchase successfully declined');
+			}, function (err) {
+				console.error(err);
+				toastr.error('There was an error declining your sale');
+			});
+		}
+
+		function showScoresAsSeller(transaction) {
+			$location.search(angular.extend({}, $route.current.params, {txId: transaction.id, role: 'seller'}));
 		}
 
 		// purchases

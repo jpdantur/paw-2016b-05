@@ -254,13 +254,13 @@
                       <td class="center-vertical"><i ng-class="{&quot;text-success&quot;: profile.salesQuery.status === &quot;APPROVED&quot;, &quot;text-danger&quot;: profile.salesQuery.status === &quot;DECLINED&quot;}" class="fa fa-3x fa-long-arrow-right"></i></td>
                       <td><b><a href="#!/id/{{transaction.buyer.username}}/buyer">{{transaction.buyer.firstName}} {{transaction.buyer.lastName}}</a></b><br/><span class="text-muted">{{transaction.buyer.username}} ({{transaction.buyer.email}})</span></td>
                       <td ng-show="transaction.status === 'PENDING'" class="center-vertical">
-                        <button class="btn btn-success decide-transaction btn-xs"><i class="fa-2x glyphicon glyphicon-ok"></i></button>
+                        <button ng-bootbox-confirm="Are you sure you want to approve this sale?" ng-bootbox-confirm-action="profile.approveSale(transaction)" ng-show="transaction.status !== 'DECLINED'" class="btn btn-success decide-transaction btn-xs"><i class="fa-2x glyphicon glyphicon-ok"></i><span ng-show="transaction.status === 'APPROVED'">&nbsp;{{ 'profile.sales.sell.approved' | translate }}</span></button>
                         <!-- #{messageSource.getMessage('profile.sales.success',[],locale)}-->&nbsp;
-                        <button class="btn btn-danger decide-transaction btn-xs"><i class="fa-2x glyphicon glyphicon-remove"></i></button>
+                        <button ng-bootbox-confirm="Are you sure you want to decline this sale?" ng-bootbox-confirm-action="profile.declineSale(transaction)" ng-show="transaction.status !== 'APPROVED'" class="btn btn-danger decide-transaction btn-xs"><i class="fa-2x glyphicon glyphicon-remove"></i><span ng-show="transaction.status === 'DECLINED'">&nbsp;{{ 'profile.sales.sell.rejected' | translate }}</span></button>
                         <!-- #{messageSource.getMessage('profile.sales.danger',[],locale)}-->
                       </td>
                       <td ng-show="transaction.status !== 'PENDING'" class="center-vertical">
-                        <button class="btn btn-default btn-xs show-scores">{{ 'profile.sales.seeScores' | translate }}</button>
+                        <button ng-bootbox-title="{{ 'profile.modal.scores.title' | translate }}" ng-bootbox-custom-dialog="ng-bootbox-custom-dialog" ng-bootbox-custom-dialog-template="/views/ScoreCtrl.html" ng-click="profile.showScoresAsSeller(transaction)" class="btn btn-default btn-xs show-scores">{{ 'profile.sales.seeScores' | translate }}</button>
                       </td>
                     </tr>
                   </tbody>

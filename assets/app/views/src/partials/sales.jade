@@ -49,16 +49,18 @@ div.tab-pane-content
 							span.text-muted {{transaction.buyer.username}} ({{transaction.buyer.email}})
 						//-if transaction.status.toString().equals('PENDING')
 						td.center-vertical(ng-show="transaction.status === 'PENDING'")
-							button.btn.btn-success.decide-transaction.btn-xs
+							button.btn.btn-success.decide-transaction.btn-xs(ng-bootbox-confirm="Are you sure you want to approve this sale?", ng-bootbox-confirm-action="profile.approveSale(transaction)", ng-show="transaction.status !== 'DECLINED'")
 								i.fa-2x.glyphicon.glyphicon-ok
+								span(ng-show="transaction.status === 'APPROVED'") &nbsp;#{messageSource.getMessage('profile.sales.sell.approved')}
 							// #{messageSource.getMessage('profile.sales.success',[],locale)}
 							| &nbsp;
-							button.btn.btn-danger.decide-transaction.btn-xs
+							button.btn.btn-danger.decide-transaction.btn-xs(ng-bootbox-confirm="Are you sure you want to decline this sale?", ng-bootbox-confirm-action="profile.declineSale(transaction)", ng-show="transaction.status !== 'APPROVED'")
 								i.fa-2x.glyphicon.glyphicon-remove
+								span(ng-show="transaction.status === 'DECLINED'") &nbsp;#{messageSource.getMessage('profile.sales.sell.rejected')}
 							// #{messageSource.getMessage('profile.sales.danger',[],locale)}
 						//-else
 						td.center-vertical(ng-show="transaction.status !== 'PENDING'")
-							button.btn.btn-default.btn-xs.show-scores #{messageSource.getMessage('profile.sales.seeScores',[],locale)}
+							button.btn.btn-default.btn-xs.show-scores(ng-bootbox-title="#{messageSource.getMessage('profile.modal.scores.title', [], locale)}", ng-bootbox-custom-dialog, ng-bootbox-custom-dialog-template="/views/ScoreCtrl.html", ng-click="profile.showScoresAsSeller(transaction)") #{messageSource.getMessage('profile.sales.seeScores',[],locale)}
 							//- button.btn.btn-default.btn-xs.show-scores(data-s-rating=transaction.sellerReview, data-b-rating=transaction.buyerReview) #{messageSource.getMessage('profile.sales.seeScores',[],locale)}
 								//-if !transaction.sellerReview
 									button.btn.btn-default.btn-xs Puntuar
