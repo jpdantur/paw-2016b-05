@@ -25,6 +25,11 @@ define([], function() {
 				controllerAs: 'profile',
 				controllers: ['ScoreCtrl']
 			},
+			'/store/sell/details': {
+				templateUrl: 'views/SellCtrl.html',
+				controller: 'SellCtrl',
+				controllerAs: 'sell'
+			},
 			'/403': {
 				templateUrl: 'views/403.html',
 				controller: 'ForbiddenCtrl',

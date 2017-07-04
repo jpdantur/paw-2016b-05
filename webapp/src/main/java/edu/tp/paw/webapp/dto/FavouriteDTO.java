@@ -2,10 +2,11 @@ package edu.tp.paw.webapp.dto;
 
 import java.util.Date;
 
-import edu.tp.paw.model.Favourite;
-import edu.tp.paw.model.StoreItem;
-import edu.tp.paw.model.User;
+import javax.xml.bind.annotation.XmlRootElement;
 
+import edu.tp.paw.model.Favourite;
+
+@XmlRootElement
 public class FavouriteDTO {
 
 	private Long id;

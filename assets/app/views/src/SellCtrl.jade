@@ -5,9 +5,7 @@ block scripts
 		var messages = {
 			sellPickCategory: 		"#{messageSource.getMessage('sell.pickCategory',[],locale)}"
 		};
-	script(src="#{context.url('/resources/js/sell.js')}", type="text/javascript")
-block styles
-	link(href="#{context.url('/resources/css/sell.css')}", rel="stylesheet")
+	//-script(src="#{context.url('/resources/js/sell.js')}", type="text/javascript")
 
 block content
 	+navbar(true)
@@ -15,25 +13,31 @@ block content
 		div.row
 			div.col-sm-10.col-sm-offset-1#sell-container
 				h1.page-header.text-center #{messageSource.getMessage('sell.headline',[],locale)}
-				form.form-horizontal(method="POST", action="#{context.url('/store/sell/details')}")
-					input(type="hidden", name="owner", value="#{loggedUser.id}")
-					div.form-group(class="#{bindingResult.hasFieldErrors('name')?'has-error':''}")
+				form.form-horizontal(name="sellForm", ng-submit="sell.submit(sellForm.$valid)", novalidate)
+					
+					div.form-group(ng-class="{ 'has-error': sellForm.name.$invalid && !sellForm.name.$pristine }")
 						label.col-sm-2.control-label(for="name") #{messageSource.getMessage('sell.field.name',[],locale)}
 						div.col-sm-10
-							input.form-control(type="text", id="name", name="name", placeholder="#{messageSource.getMessage('sell.field.name',[],locale)}", value="#{item.name?item.name:''}")
-							+errors(bindingResult, 'name')
-					div.form-group(class="#{bindingResult.hasFieldErrors('description')?'has-error':''}")
+							input.form-control#name(type="text", name="name", placeholder="#{messageSource.getMessage('sell.field.name',[],locale)}", ng-model="sell.item.name", required, ng-minlength="4", ng-maxlength="100")
+							p.help-block(ng-show="sellForm.name.$error.required") Name is required
+							p.help-block(ng-show="sellForm.name.$error.minlength") Name is too short
+							p.help-block(ng-show="sellForm.name.$error.maxlength") Name is too long
+					
+					div.form-group
 						label.col-sm-2.control-label(for="description") #{messageSource.getMessage('sell.field.description',[],locale)}
 						div.col-sm-10
-							textarea.form-control(name="description", id="description", placeholder="#{messageSource.getMessage('sell.field.description',[],locale)}", value="#{item.description?item.description:''}", rows="12") #{item.description?item.description:''}
-							+errors(bindingResult, 'description')
-					div.form-group(class="#{bindingResult.hasFieldErrors('price')?'has-error':''}")
+							textarea.form-control#description(name="description", placeholder="#{messageSource.getMessage('sell.field.description',[],locale)}", ng-model="sell.item.description", rows="12") #{item.description?item.description:''}
+					
+					div.form-group(ng-class="{ 'has-error': sellForm.price.$invalid && !sellForm.price.$pristine }")
 						label.col-sm-2.control-label(for="price") #{messageSource.getMessage('sell.field.price',[],locale)}
 						div.col-sm-10
 							div.input-group
 								span.input-group-addon $
-								input.form-control(type="number", id="price", name="price", placeholder="#{messageSource.getMessage('sell.field.price',[],locale)}", min="0", step="0.01", value="!{item.price}")
-							+errors(bindingResult, 'price')
+								input.form-control#price(type="number", name="price", placeholder="#{messageSource.getMessage('sell.field.price',[],locale)}", ng-min="0", ng-step="0.01", ng-model="sell.item.price", required)
+							p.help-block(ng-show="sellForm.price.$error.required") Price is required
+							p.help-block(ng-show="sellForm.price.$error.min") Price can't be negative
+							p.help-block(ng-show="sellForm.price.$error.step") Price should have up to 2 decimal places
+					
 					div.form-group
 						label.col-sm-2.control-label(for="category") #{messageSource.getMessage('sell.field.category',[],locale)}
 						div.col-sm-10
@@ -55,6 +59,7 @@ block content
 										br
 										span.h4#category-name
 							+errors(bindingResult, 'category')
+					
 					div.form-group(class="#{bindingResult.hasFieldErrors('used')?'has-error':''}")
 						label.col-sm-2.control-label(for="used") #{messageSource.getMessage('sell.field.status.title',[],locale)}
 						div.col-sm-10
@@ -66,6 +71,7 @@ block content
 									input(type="radio", name="used", value="0", checked=!item.used)
 									span #{messageSource.getMessage('sell.field.status.new',[],locale)}
 							+errors(bindingResult, 'used')
+					
 					div.form-group(class="#{bindingResult.hasFieldErrors('status')?'has-error':''}")
 						label.col-sm-2.control-label(for="status") #{messageSource.getMessage('sell.field.publish',[],locale)}
 						div.col-sm-10
@@ -75,6 +81,7 @@ block content
 							label.radio-inline
 								input#status1(type="radio", name="itemStatus", value="UNPUBLISHED", checked=item.status.toString().equals('UNPUBLISHED'))
 								| #{messageSource.getMessage('sell.field.radio.no',[],locale)}
+					
 					div.form-group
 						div.col-sm-2.col-sm-offset-2
 							a.btn.btn-default.btn-block(href="#{context.url('/')}")

@@ -1,7 +1,5 @@
 package edu.tp.paw.webapp.dto;
 
-import java.util.Date;
-
 import javax.xml.bind.annotation.XmlRootElement;
 
 import edu.tp.paw.model.PurchaseReview;
