@@ -407,7 +407,7 @@ public class ProfileController extends BaseController {
 				FilterBuilder
 				.create()
 				.query()
-					.text(form.getQuery())
+					.text(form.getQuery())	
 				.and().purchaseStatus()
 					.status(PurchaseStatus.DECLINED)
 				.and().page()

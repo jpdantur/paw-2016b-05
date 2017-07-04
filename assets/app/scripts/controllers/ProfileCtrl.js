@@ -1,46 +1,267 @@
 'use strict';
 define([
 	'siglasApp',
-	'services/AuthService'
+	'services/UserService',
+	'services/ItemService',
+	'services/SalesService',
+	'services/PurchasesService',
+	'services/FavouritesService',
+	'directives/password-check',
+	'ngBootbox'
 ], function(siglasApp) {
 
-	siglasApp.controller('ProfileCtrl', function($scope, $rootScope, $location, AuthService) {
+	siglasApp.controller('ProfileCtrl', function($scope, $rootScope, $route, $location, toastr, UserService, ItemService, SalesService, PurchasesService, FavouritesService) {
 
 		console.log('ProfileCtrl');
 
+		$scope.Math = window.Math;
+
 		var self = this;
 
-		self.selectedTab = 'account';
+		console.log($route);
+
+		self.selectedTab = $route.current.params.tab || 'account';
 
 		self.switchToTab = switchToTab;
 
+		// email tab
 		self.user = {
+			firstName: $rootScope.loggedUser.firstName,
+			lastName: $rootScope.loggedUser.lastName,
 			email: $rootScope.loggedUser.email
 		};
 
-		self.changeEmail = changeEmail;
+		// password tab
+		self.pass = {};
 
-		// ///////
+		// items tab
 
-		// ///////
+		self.itemsQuery = {
+			pageNumber: 0,
+			pageSize: 20,
+			query: '',
+			status: 'ANY',
+			sortOrder: 'ASC',
+			sortField: 'PRICE'
+		};
+
+		self.itemsLoading = false;
+		self.itemResult = {};
+
+		self.itemsOrder = 'PRICE-ASC';
+
+		// sales tab
 		
+		self.salesQuery = {
+			pageNumber: 0,
+			pageSize: 20,
+			query: '',
+			status: 'PENDING',
+			sortOrder: 'ASC',
+			sortField: 'PRICE'
+		};
+
+		self.salesLoading = false;
+		self.salesResult = {};
+
+		self.salesOrder = 'PRICE-ASC';
+
+		// purchases tab
+
+		self.purchasesQuery = {
+			pageNumber: 0,
+			pageSize: 20,
+			query: '',
+			status: 'PENDING',
+			sortOrder: 'ASC',
+			sortField: 'PRICE'
+		};
+
+		self.purchasesLoading = false;
+		self.purchasesResult = {};
+
+		self.purchasesOrder = 'PRICE-ASC';
+
+		// favs tab
+
+		self.favouritesQuery = {
+			pageNumber: 0,
+			pageSize: 20,
+			query: '',
+			sortOrder: 'ASC',
+			sortField: 'PRICE'
+		};
+
+		self.favouritesLoading = false;
+		self.favouritesResult = {};
+
+		self.favouritesOrder = 'PRICE-ASC';
+
+		// methods
+		
+		self.changeEmail = changeEmail;
+		self.changePassword = changePassword;
+		self.publishedItems = publishedItems;
+
+		self.updateItemsQuery = _.debounce(updateItemsQuery, 400);
+		self.onItemsOrderChange = onItemsOrderChange;
+
+		self.setPublicationStatus = setPublicationStatus;
+
+
+
+		self.updateSalesQuery = _.debounce(updateSalesQuery, 400);
+		self.onSalesOrderChange = onSalesOrderChange;
+
+
+
+		self.updatePurchasesQuery = _.debounce(updatePurchasesQuery, 400);
+		self.onPurchasesOrderChange = onPurchasesOrderChange;
+
+		// ///////
+
+		publishedItems();
+		sales();
+		purchases();
+		favourites();
+
+		// ///////
+
 		function switchToTab(tab) {
+			$location.search({tab: tab});
 			self.selectedTab = tab;
 		}
 
 		function changeEmail(isValid) {
 
+			console.log(self.user);
+			console.log($rootScope.loggedUser.email);
+
 			if (isValid) {
-				
+				UserService.update(self.user).then(function (user) {
+					console.log(user);
+					$rootScope.loggedUser.email = user.email;
+					toastr.success('Email was successfully updated');
+				}, function (err) {
+					toastr.error('There was an error updating your email. Please try again');
+				});
 			}
 		}
 
 		function changePassword(isValid) {
 
-			if (isValid) {
+			// return console.log(self.pass);
 
+			if (isValid) {
+				UserService.changePassword(self.pass).then(function () {
+					// console.log(user);
+					// $rootScope.loggedUser.email = user.email;
+					toastr.success('Password was successfully updated');
+				}, function (err) {
+					toastr.error('There was an error changing your password. Please try again');
+				});
 			}
 
 		}
+
+		// items
+
+		function updateItemsQuery(delta) {
+			_.extend(self.itemsQuery, delta);
+			publishedItems();
+		}
+
+		function onItemsOrderChange() {
+			var parts = self.itemsOrder.split('-');
+			updateItemsQuery({pageNumber: 0, sortOrder: parts[1], sortField: parts[0]});
+		}
+
+		function publishedItems() {
+			self.itemsLoading = true;
+			ItemService.published(self.itemsQuery).then(function (result) {
+				console.log(result);
+				self.itemResult = result;
+				self.itemsLoading = false;
+			}, function (err) {
+				console.error(err);
+			});
+		}
+
+		function setPublicationStatus(a, b) {
+			console.log(a, b);
+		}
+
+
+
+		// sales
+	
+		function updateSalesQuery(delta) {
+			_.extend(self.salesQuery, delta);
+			sales();
+		}
+
+		function onSalesOrderChange() {
+			var parts = self.salesOrder.split('-');
+			updateSalesQuery({pageNumber: 0, sortOrder: parts[1], sortField: parts[0]});
+		}
+
+		function sales() {
+			self.salesLoading = true;
+			SalesService.mine(self.salesQuery).then(function (result) {
+				console.log(result);
+				self.salesResult = result;
+				self.salesLoading = false;
+			}, function (err) {
+				console.error(err);
+			});
+		}
+
+		// purchases
+
+		function updatePurchasesQuery(delta) {
+			_.extend(self.purchasesQuery, delta);
+			purchases();
+		}
+
+		function onPurchasesOrderChange() {
+			var parts = self.purchasesOrder.split('-');
+			updatePurchasesQuery({pageNumber: 0, sortOrder: parts[1], sortField: parts[0]});
+		}
+
+		function purchases() {
+			self.purchasesLoading = true;
+			PurchasesService.mine(self.purchasesQuery).then(function (result) {
+				console.log(result);
+				self.purchasesResult = result;
+				self.purchasesLoading = false;
+			}, function (err) {
+				console.error(err);
+			});
+		}
+
+		// favourites
+		
+		function updateFavouritesQuery(delta) {
+			_.extend(self.favouritesQuery, delta);
+			favourites();
+		}
+
+		function onFavouritesOrderChange() {
+			var parts = self.favouritesOrder.split('-');
+			updateFavouritesQuery({pageNumber: 0, sortOrder: parts[1], sortField: parts[0]});
+		}
+
+		function favourites() {
+			self.favouritesLoading = true;
+			FavouritesService.mine(self.favouritesQuery).then(function (result) {
+				console.log(result);
+				self.favouritesResult = result;
+				self.favouritesLoading = false;
+			}, function (err) {
+				console.error(err);
+			});
+		}
+
+
 	});
 });

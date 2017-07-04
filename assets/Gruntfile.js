@@ -455,6 +455,7 @@ module.exports = function (grunt) {
 
     pug: {
       options: {
+        pretty: true,
         data: {
           context: {
             url: function (url) {
@@ -520,6 +521,10 @@ module.exports = function (grunt) {
                 };
               }
             }
+          },
+          items: {
+            numberOfAvailableResults: 0,
+            results: []
           },
           view: {
             equals: function () {

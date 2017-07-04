@@ -4,7 +4,7 @@ define([
 	'services/AuthService'
 ], function(siglasApp) {
 
-	siglasApp.controller('LoginCtrl', function($scope, $rootScope, $location, AuthService) {
+	siglasApp.controller('LoginCtrl', function($scope, $rootScope, $location, toastr, AuthService) {
 
 		console.log('LoginCtrl');
 
@@ -25,8 +25,6 @@ define([
 				console.log(data);
 
 				return AuthService.fetchProfile();
-			}, function (err) {
-				console.error(err);
 			}).then(function (profile) {
 				$rootScope.loggedUser = profile;
 
@@ -34,6 +32,7 @@ define([
 
 				$location.path($location.$$search.next);
 			}, function (err) {
+				toastr.error('Incorrect username or password');
 				console.error(err);
 			});
 		}

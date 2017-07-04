@@ -1,16 +1,16 @@
 div.tab-pane-content
 	h1.page-header #{messageSource.getMessage('profile.items.title',[],locale)}
 	ul.nav.nav-tabs#itemsTab
-		li(class=status.toString().equals('ANY')?'active':'')
-			a(href=context.url('/profile/items/all')) #{messageSource.getMessage('profile.items.all',[],locale)}
-		li(class=status.toString().equals('ACTIVE')?'active':'')
-			a(href=context.url('/profile/items/active')) #{messageSource.getMessage('profile.items.active',[],locale)}
-		li(class=status.toString().equals('PAUSED')?'active':'')
-			a(href=context.url('/profile/items/paused')) #{messageSource.getMessage('profile.items.paused',[],locale)}
-		li(class=status.toString().equals('UNPUBLISHED')?'active':'')
-			a(href=context.url('/profile/items/drafts')) #{messageSource.getMessage('profile.items.drafts',[],locale)}
+		li(ng-class='{active: profile.itemsQuery.status === "ANY"}')
+			a(ng-click="profile.updateItemsQuery({pageNumber: 0, status:'ANY'})") #{messageSource.getMessage('profile.items.all',[],locale)}
+		li(ng-class='{active: profile.itemsQuery.status === "ACTIVE"}')
+			a(ng-click="profile.updateItemsQuery({pageNumber: 0, status:'ACTIVE'})") #{messageSource.getMessage('profile.items.active',[],locale)}
+		li(ng-class='{active: profile.itemsQuery.status === "PAUSED"}')
+			a(ng-click="profile.updateItemsQuery({pageNumber: 0, status:'PAUSED'})") #{messageSource.getMessage('profile.items.paused',[],locale)}
+		li(ng-class='{active: profile.itemsQuery.status === "UNPUBLISHED"}')
+			a(ng-click="profile.updateItemsQuery({pageNumber: 0, status:'UNPUBLISHED'})") #{messageSource.getMessage('profile.items.drafts',[],locale)}
 	div.tab-content
-		div.tab-pane.fade.in.active(id='items-'+status.toString().toLowerCase())
+		div.tab-pane.fade.in.active(id='items-active')
 			table.table.table-striped.table-condensed
 				thead
 					tr
@@ -20,56 +20,52 @@ div.tab-pane-content
 							div.input-group.input-group-sm(style="width:100%")
 								span.input-group-addon
 									i.fa.fa-search
-								input.form-control#query-input(type="text", placeholder="#{messageSource.getMessage('profile.items.table.search',[],locale)}", value=filter.termFilter.term.orElse(''))
+								input.form-control#query-input(type="text", placeholder="#{messageSource.getMessage('profile.items.table.search',[],locale)}", ng-model="profile.itemsQuery.query", ng-change="profile.updateItemsQuery({})")
 					tr
 						th(colspan=2) #{messageSource.getMessage('profile.items.table.item',[],locale)}
 						th #{messageSource.getMessage('profile.items.table.edit',[],locale)}
 						th #{messageSource.getMessage('profile.items.table.status',[],locale)}
 				tbody
-					if items.numberOfTotalResults == 0
-						tr.info
-							td(colspan=4)
-								div.alert #{messageSource.getMessage('profile.sales.nothing',[],locale)}
-					each item in items.results
-						tr(data-id=item.id)
-							td(style="width:40px")
-								a(href=context.url('/store/items/'+item.id))
-									if item.images.isEmpty()
-										img.table-img(style="width:40px;height:40px" src="http://placehold.it/40?text=Sin+Imagen")
-									else
-										img.table-img(style="width:40px;height:40px" src="#{context.url('/images/get/'+item.images.iterator().next().id)}")
-							td
-								a(href=context.url('/store/items/'+item.id)) #{item.name}
-								br
-								span(style="color:#900;font-weight:500") $ #{item.price}
-								if !item.status.toString().equals('UNPUBLISHED')
-									span &nbsp;- 
-									span.text-muted #{item.sold} #{messageSource.getMessage('profile.items.table.sold',[],locale)}
-							td.center-vertical
-								a(href="#{context.url('/store/item/'+item.id+'/details')}", title="#{messageSource.getMessage('profile.items.table.edit',[],locale)}")
-									i.fa.fa-pencil
-									span &nbsp;#{messageSource.getMessage('profile.items.table.edit',[],locale)}
-							td.center-vertical
-								if item.status.toString() == 'PAUSED'
-									button.btn.btn-success.btn-xs.toggle-item-state
-										i.fa.fa-play
-										span &nbsp;#{messageSource.getMessage('profile.items.table.resume',[],locale)}
-								else if item.status.toString() == 'UNPUBLISHED'
-									button.btn.btn-success.btn-xs.publish #{messageSource.getMessage('profile.items.table.publish',[],locale)}
-								else
-									button.btn.btn-default.btn-xs.toggle-item-state
-										i.fa.fa-pause
-										span &nbsp;#{messageSource.getMessage('profile.items.table.pause',[],locale)}
-			ul.pager#filter-page(data-page="#{items.currentPage}", data-last-page="#{items.numberOfTotalResults/items.pageSize}")
-				li.previous(class="#{items.currentPage==0?'disabled':''}")
-					a.filter-page-action(href="#")
+					tr.info(ng-show="profile.itemResult.numberOfTotalResults === 0")
+						td(colspan=4)
+							div.alert #{messageSource.getMessage('profile.sales.nothing',[],locale)}
+					tr(ng-repeat="item in profile.itemResult.results")
+						td(style="width:40px")
+							a(ng-href='#!/store/items/{{item.id}}')
+								img.table-img(ng-if="!item.images.length", style="width:40px;height:40px", ng-src="http://placehold.it/40?text=Sin+Imagen")
+								img.table-img(ng-if="item.images.length", style="width:40px;height:40px", ng-src="data:image/png;base64,{{item.images[0].content}}")
+						td
+							a(href='#!/store/items/{{item.id}}') {{item.name}}
+							br
+							span(style="color:#900;font-weight:500") $ {{item.price.toFixed(2)}}
+							span(ng-if="item.status !== 'UNPUBLISHED'")
+								span &nbsp;- 
+								span.text-muted {{item.sold}} #{messageSource.getMessage('profile.items.table.sold',[],locale)}
+						td.center-vertical
+							a(ng-href="#!/store/item/{{item.id}}/details", title="#{messageSource.getMessage('profile.items.table.edit',[],locale)}")
+								i.fa.fa-pencil
+								span &nbsp;#{messageSource.getMessage('profile.items.table.edit',[],locale)}
+						td.center-vertical
+							button.btn.btn-success.btn-xs.toggle-item-state(ng-if="item.status === 'PAUSED'", ng-bootbox-confirm="Are you sure you want to resume this publication", ng-bootbox-confirm-action="profile.setPublicationStatus(attr1, attr2)")
+								i.fa.fa-play
+								span &nbsp;#{messageSource.getMessage('profile.items.table.resume',[],locale)}
+							button.btn.btn-success.btn-xs.publish(ng-if="item.status === 'UNPUBLISHED'") #{messageSource.getMessage('profile.items.table.publish',[],locale)}
+							button.btn.btn-default.btn-xs.toggle-item-state(ng-if="item.status !== 'PAUSED' && item.status !== 'UNPUBLISHED'")
+								i.fa.fa-pause
+								span &nbsp;#{messageSource.getMessage('profile.items.table.pause',[],locale)}
+			ul.pager#filter-page
+				li.previous(ng-class="{disabled: profile.itemResult.currentPage === 0}")
+					a.filter-page-action(ng-click="profile.updateItemsQuery({ pageNumber: 0 })")
 						span &larr;
 						span #{messageSource.getMessage('search.filters.pagination.pagers.first', [], locale)}
-				li.pre(class="#{items.currentPage==0?'disabled':''}")
-					a.filter-page-action(href="#") #{messageSource.getMessage('search.filters.pagination.pagers.previous', [], locale)}
-				li.ne(class="#{items.currentPage==items.numberOfTotalResults/items.pageSize?'disabled':''}")
-					a.filter-page-action(href="#") #{messageSource.getMessage('search.filters.pagination.pagers.next', [], locale)}
-				li.next(class="#{items.currentPage==items.numberOfTotalResults/items.pageSize?'disabled':''}")
-					a.filter-page-action(href="#")
+				
+				li.pre(ng-class="{disabled: profile.itemResult.currentPage === 0}")
+					a.filter-page-action(ng-click="profile.updateItemsQuery({ pageNumber: profile.itemResult.currentPage - 1 })") #{messageSource.getMessage('search.filters.pagination.pagers.previous', [], locale)}
+				
+				li.ne(ng-class="{disabled: profile.itemResult.currentPage === Math.floor(profile.itemResult.numberOfTotalResults / profile.itemResult.pageSize)}")
+					a.filter-page-action(ng-click="profile.updateItemsQuery({ pageNumber: profile.itemResult.currentPage + 1 })") #{messageSource.getMessage('search.filters.pagination.pagers.next', [], locale)}
+				
+				li.next(ng-class="{disabled: profile.itemResult.currentPage === Math.floor(profile.itemResult.numberOfTotalResults / profile.itemResult.pageSize)}")
+					a.filter-page-action(ng-click="profile.updateItemsQuery({ pageNumber: Math.floor(profile.itemResult.numberOfTotalResults / profile.itemResult.pageSize) })")
 						span #{messageSource.getMessage('search.filters.pagination.pagers.last', [], locale)}
 						span &rarr;

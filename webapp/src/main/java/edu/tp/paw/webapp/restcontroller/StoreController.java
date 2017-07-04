@@ -13,8 +13,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import com.sun.org.apache.bcel.internal.generic.NEW;
-
 import edu.tp.paw.interfaces.service.ICategoryService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.webapp.dto.CategoryListDTO;

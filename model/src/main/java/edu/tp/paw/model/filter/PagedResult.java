@@ -2,6 +2,9 @@ package edu.tp.paw.model.filter;
 
 import java.util.List;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement
 public class PagedResult<T> {
 
 	private int numberOfTotalResults;
@@ -81,6 +84,13 @@ public class PagedResult<T> {
 
 	public void setResults(List<T> results) {
 		this.results = results;
+	}
+
+	@Override
+	public String toString() {
+		return "PagedResult [numberOfTotalResults=" + numberOfTotalResults + ", numberOfAvailableResults="
+				+ numberOfAvailableResults + ", pageSize=" + pageSize + ", currentPage=" + currentPage + ", results=" + results
+				+ "]";
 	}
 	
 	

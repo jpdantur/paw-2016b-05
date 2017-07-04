@@ -1,0 +1,31 @@
+div.modifier
+	span.modifier-title #{messageSource.getMessage('search.filters.pagination.modifiers.amount', [], locale)}:&nbsp;
+	span.modifier-content {{profile.favouritesResult.numberOfAvailableResults != 0 ? profile.favouritesResult.currentPage * profile.favouritesResult.pageSize + 1 : 0}} - {{profile.favouritesResult.currentPage * profile.favouritesResult.pageSize + profile.favouritesResult.numberOfAvailableResults}}
+	span.modifier-title &nbsp;#{messageSource.getMessage('search.filters.pagination.modifiers.of', [], locale)}&nbsp;
+	b {{profile.favouritesResult.numberOfTotalResults}}
+div.modifier#modifier-page-size
+	span.modifier-title #{messageSource.getMessage('search.filters.pagination.modifiers.showing', [], locale)}&nbsp;
+	a.modifier-option(ng-class="{selected: profile.favouritesResult.pageSize === 20}", ng-click="profile.updateFavouritesQuery({pageNumber: 0, pageSize: 20})")
+		b(ng-show="profile.favouritesResult.pageSize === 20") 20
+		span(ng-show="profile.favouritesResult.pageSize !== 20") 20
+	div.space
+	a.modifier-option(ng-class="{selected: profile.favouritesResult.pageSize === 40}", ng-click="profile.updateFavouritesQuery({pageNumber: 0, pageSize: 40})")
+		b(ng-show="profile.favouritesResult.pageSize === 40") 40
+		span(ng-show="profile.favouritesResult.pageSize !== 40") 40
+	div.space
+	a.modifier-option(ng-class="{selected: profile.favouritesResult.pageSize === 100}", ng-click="profile.updateFavouritesQuery({pageNumber: 0, pageSize: 100})")
+		b(ng-show="profile.favouritesResult.pageSize === 100") 100
+		span(ng-show="profile.favouritesResult.pageSize !== 100") 100
+	div.space
+	a.modifier-option(ng-class="{selected: profile.favouritesResult.pageSize === 200}", ng-click="profile.updateFavouritesQuery({pageNumber: 0, pageSize: 200})")
+		b(ng-show="profile.favouritesResult.pageSize === 200") 200
+		span(ng-show="profile.favouritesResult.pageSize !== 200") 200
+	span.modifier-title &nbsp; #{messageSource.getMessage('search.filters.pagination.modifiers.perPage', [], locale)}
+div.modifier#modifier-order
+	span.modifier-title #{messageSource.getMessage('search.filters.order.by', [], locale)}:&nbsp;
+	select.form-control.input-xs#modifier-order-input(ng-model="profile.favouritesOrder", ng-change="profile.onFavouritesOrderChange()")
+		option(value="PRICE-ASC") #{messageSource.getMessage('search.filters.order.priceAsc', [], locale)}
+		option(value="PRICE-DESC") #{messageSource.getMessage('search.filters.order.priceDesc', [], locale)}
+		option(value="NAME-ASC") #{messageSource.getMessage('search.filters.order.alphabetic', [], locale)}
+		option(value="SOLD-ASC") #{messageSource.getMessage('search.filters.order.soldAsc', [], locale)}
+		option(value="SOLD-DESC") #{messageSource.getMessage('search.filters.order.soldDesc', [], locale)}

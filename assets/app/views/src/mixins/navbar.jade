@@ -55,19 +55,19 @@ mixin navbar(search)
 							span.caret
 						ul.dropdown-menu
 							li
-								a(href='#!/profile/details')
+								a(ng-href='#!/profile/details', ng-click="profile.switchToTab('account')")
 									i.fa.fa-user
 									span &nbsp;#{messageSource.getMessage('index.user.profile',[],locale)}
 							li
-								a(href=context.url('/profile/items'))
+								a(ng-href='#!/profile/details?tab=items', ng-click="profile.switchToTab('items')")
 									i.fa.fa-list
 									span &nbsp;#{messageSource.getMessage('index.user.items',[],locale)}
 							li
-								a(href=context.url('/profile/sales'))
+								a(ng-href='#!/profile/details?tab=sales', ng-click="profile.switchToTab('sales')")
 									i.fa.fa-suitcase
 									span &nbsp;#{messageSource.getMessage('index.user.sales',[],locale)}
 							li
-								a(href=context.url('/profile/purchases'))
+								a(ng-href='#!/profile/details?tab=purchases', ng-click="profile.switchToTab('purchases')")
 									i.fa.fa-shopping-bag
 									span &nbsp;#{messageSource.getMessage('index.user.purchases',[],locale)}
 							li.separator

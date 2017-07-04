@@ -27,7 +27,6 @@ define([
 
 		function setDefaultAuthorizationHeader(token) {
 			$http.defaults.headers.common.Authorization = 'Bearer ' + token;
-			$http.defaults.headers.common['X-Token'] = 'Bearer ' + token;
 		}
 
 		function removeDefaultAuthorizationHeader() {
@@ -188,7 +187,7 @@ define([
 
 			$http({
 				method: 'GET',
-				url: api('/api/auth/profile')
+				url: api('/api/me/profile')
 			})
 			.then(function (response) {
 				if (response.status >= 400) {

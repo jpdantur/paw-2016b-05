@@ -6,6 +6,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -40,6 +42,8 @@ import edu.tp.paw.model.filter.PagedResult;
 @Service
 @Transactional
 public class UserService implements IUserService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(UserService.class);
 	
 	@Autowired private IUserDao userDao;
 	@Autowired private IStoreItemService itemService;
@@ -141,7 +145,11 @@ public class UserService implements IUserService {
 			throw new IllegalArgumentException("user must exist");
 		}
 		
-		return userDao.changePassword(user, passwordEncoder.encode(password));
+		final String pass= passwordEncoder.encode(password);
+		
+		logger.trace("hashed password is: " + pass);
+		
+		return userDao.changePassword(user, pass);
 	}
 
 	@Override

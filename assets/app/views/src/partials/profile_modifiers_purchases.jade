@@ -1,51 +1,30 @@
-- pageSize = filter.pageFilter.pageSize;
 div.modifier
 	span.modifier-title #{messageSource.getMessage('search.filters.pagination.modifiers.amount', [], locale)}:&nbsp;
-	span.modifier-content #{items.numberOfAvailableResults!=0?items.currentPage*pageSize+1:0} - #{items.currentPage*pageSize+items.numberOfAvailableResults}
+	span.modifier-content {{profile.purchasesResult.numberOfAvailableResults != 0 ? profile.purchasesResult.currentPage * profile.purchasesResult.pageSize + 1 : 0}} - {{profile.purchasesResult.currentPage * profile.purchasesResult.pageSize + profile.purchasesResult.numberOfAvailableResults}}
 	span.modifier-title &nbsp;#{messageSource.getMessage('search.filters.pagination.modifiers.of', [], locale)}&nbsp;
-	b #{items.numberOfTotalResults}
+	b {{profile.purchasesResult.numberOfTotalResults}}
 div.modifier#modifier-page-size
 	span.modifier-title #{messageSource.getMessage('search.filters.pagination.modifiers.showing', [], locale)}&nbsp;
-	a.modifier-option(href="#", class="#{pageSize == 20 ? 'selected' : ''}")
-		if pageSize == 20
-			b 20
-		else
-			span 20
+	a.modifier-option(ng-class="{selected: profile.purchasesResult.pageSize === 20}", ng-click="profile.updatePurchasesQuery({pageNumber: 0, pageSize: 20})")
+		b(ng-show="profile.purchasesResult.pageSize === 20") 20
+		span(ng-show="profile.purchasesResult.pageSize !== 20") 20
 	div.space
-	a.modifier-option(href="#", class="#{pageSize == 40 ? 'selected' : ''}")
-		if pageSize == 40
-			b 40
-		else
-			span 40
+	a.modifier-option(ng-class="{selected: profile.purchasesResult.pageSize === 40}", ng-click="profile.updatePurchasesQuery({pageNumber: 0, pageSize: 40})")
+		b(ng-show="profile.purchasesResult.pageSize === 40") 40
+		span(ng-show="profile.purchasesResult.pageSize !== 40") 40
 	div.space
-	a.modifier-option(href="#", class="#{pageSize == 100 ? 'selected' : ''}")
-		if pageSize == 100
-			b 100
-		else
-			span 100
+	a.modifier-option(ng-class="{selected: profile.purchasesResult.pageSize === 100}", ng-click="profile.updatePurchasesQuery({pageNumber: 0, pageSize: 100})")
+		b(ng-show="profile.purchasesResult.pageSize === 100") 100
+		span(ng-show="profile.purchasesResult.pageSize !== 100") 100
 	div.space
-	a.modifier-option(href="#", class="#{pageSize == 200 ? 'selected' : ''}")
-		if pageSize == 200
-			b 200
-		else
-			span 200
+	a.modifier-option(ng-class="{selected: profile.purchasesResult.pageSize === 200}", ng-click="profile.updatePurchasesQuery({pageNumber: 0, pageSize: 200})")
+		b(ng-show="profile.purchasesResult.pageSize === 200") 200
+		span(ng-show="profile.purchasesResult.pageSize !== 200") 200
 	span.modifier-title &nbsp; #{messageSource.getMessage('search.filters.pagination.modifiers.perPage', [], locale)}
 div.modifier#modifier-order
 	span.modifier-title #{messageSource.getMessage('search.filters.order.by', [], locale)}:&nbsp;
-	select.form-control.input-xs#modifier-order-input
-		if sort.equals('PRICE-ASC')
-			option(value="PRICE-ASC", selected) #{messageSource.getMessage('search.filters.order.priceAsc', [], locale)}
-		else
-			option(value="PRICE-ASC") #{messageSource.getMessage('search.filters.order.priceAsc', [], locale)}
-		if sort.equals('PRICE-DESC')
-			option(value="PRICE-DESC", selected) #{messageSource.getMessage('search.filters.order.priceDesc', [], locale)}
-		else
-			option(value="PRICE-DESC") #{messageSource.getMessage('search.filters.order.priceDesc', [], locale)}
-		if sort.equals('CREATED-ASC')
-			option(value="CREATED-ASC", selected) #{messageSource.getMessage('search.filters.order.recentAsc', [], locale)}
-		else
-			option(value="CREATED-ASC") #{messageSource.getMessage('search.filters.order.recentAsc', [], locale)}
-		if sort.equals('CREATED-DESC')
-			option(value="CREATED-DESC", selected) #{messageSource.getMessage('search.filters.order.recentDesc', [], locale)}
-		else
-			option(value="CREATED-DESC") #{messageSource.getMessage('search.filters.order.recentDesc', [], locale)}
+	select.form-control.input-xs#modifier-order-input(ng-model="profile.purchasesOrder", ng-change="profile.onPurchasesOrderChange()")
+		option(value="PRICE-ASC") #{messageSource.getMessage('search.filters.order.priceAsc', [], locale)}
+		option(value="PRICE-DESC") #{messageSource.getMessage('search.filters.order.priceDesc', [], locale)}
+		option(value="CREATED-ASC") #{messageSource.getMessage('search.filters.order.recentAsc', [], locale)}
+		option(value="CREATED-DESC") #{messageSource.getMessage('search.filters.order.recentDesc', [], locale)}

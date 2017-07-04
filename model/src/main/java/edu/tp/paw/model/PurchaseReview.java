@@ -55,6 +55,10 @@ public class PurchaseReview {
 	public float getRating() {
 		return rating;
 	}
+	
+	public Date getCreated() {
+		return created;
+	}
 
 	@Override
 	public String toString() {

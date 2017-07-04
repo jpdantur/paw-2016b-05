@@ -46,7 +46,8 @@ require.config({
 		'remarkable-bootstrap-notify': '../../bower_components/remarkable-bootstrap-notify/bootstrap-notify',
 		underscore: '../../bower_components/underscore/underscore',
 		'angular-socket-io': '../../bower_components/angular-socket-io/socket',
-		'jquery-treegrid': '../../bower_components/jquery-treegrid/index'
+		'jquery-treegrid': '../../bower_components/jquery-treegrid/index',
+		ngBootbox: '../../bower_components/ngBootbox/dist/ngBootbox'
 	},
 	shim: {
 		angular: {
@@ -55,6 +56,11 @@ require.config({
 			]
 		},
 		'angular-route': {
+			deps: [
+				'angular'
+			]
+		},
+		'angular-sanitize': {
 			deps: [
 				'angular'
 			]
@@ -119,6 +125,14 @@ require.config({
 			deps: [
 				'angular',
 				'moment'
+			]
+		},
+		ngBootbox: {
+			deps: [
+				'bootbox',
+				'angular',
+				'jquery',
+				'bootstrap'
 			]
 		}
 	},

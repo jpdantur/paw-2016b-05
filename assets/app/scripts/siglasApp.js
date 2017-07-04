@@ -15,17 +15,21 @@ define([
 	'angular-bootstrap',
 	'lodash',
 	'async',
-	'angular-moment'
+	'angular-moment',
+	'angular-sanitize',
+	'ngBootbox'
 ], function(config, dependencyResolverFor, protectedRoute, i18n) {
 		var siglasApp = angular.module('siglasApp', [
 			'ngRoute',
+			'ngSanitize',
 			'pascalprecht.translate',
 			'LocalStorageModule',
 			'ngAnimate',
 			'toastr',
 			'angular-jwt',
 			'ui.bootstrap',
-			'angularMoment'
+			'angularMoment',
+			'ngBootbox'
 		]);
 		siglasApp
 		.config([
@@ -45,9 +49,6 @@ define([
 				siglasApp.factory = $provide.factory;
 				siglasApp.service = $provide.service;
 
-				console.log(config);
-				console.log(protectedRoute);
-
 				if (config.routes !== undefined) {
 					angular.forEach(config.routes, function(route, path) {
 						var controllers = _.map([route.controller].concat(route.controllers || []), function (controller) {
@@ -60,7 +61,8 @@ define([
 								protected: protectedRoute(route).resolver
 							},
 							controller: route.controller,
-							controllerAs: route.controllerAs
+							controllerAs: route.controllerAs,
+							reloadOnSearch: false
 						});
 					});
 				}
@@ -72,6 +74,7 @@ define([
 
 				$translateProvider.translations('preferredLanguage', i18n);
 				$translateProvider.preferredLanguage('preferredLanguage');
+				$translateProvider.useSanitizeValueStrategy('sanitize');
 
 				$httpProvider.defaults.headers.common['Content-Type'] = 'application/json';
 

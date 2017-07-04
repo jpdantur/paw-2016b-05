@@ -1,1 +1,20 @@
-<div class="container"><div class="col-sm-12"><h1 class="page-header">{{ 'admin.categories.rename.headline' | translate }}</h1><form action="http://localhost:8081/webapp/admin/categories/undefined/edit" method="POST" class="form-horizontal"><input type="hidden" name="parent" value="1"/><div class="form-group"><label for="name" class="col-sm-2 control-label">{{ 'admin.categories.rename.name' | translate }}</label><div class="col-sm-10"><input id="name" name="name" placeholder="{{ 'admin.categories.rename.name' | translate }}" value="" class="form-control"/></div></div><div class="form-group"><div class="col-sm-4 col-sm-offset-8"><button type="submit" class="btn btn-success btn-block">{{ 'admin.categories.rename.action' | translate }}</button></div></div></form></div></div>
+
+<div class="container">
+  <div class="col-sm-12">
+    <h1 class="page-header">{{ 'admin.categories.rename.headline' | translate }}</h1>
+    <form action="http://localhost:8081/webapp/admin/categories/undefined/edit" method="POST" class="form-horizontal">
+      <input type="hidden" name="parent" value="1"/>
+      <div class="form-group">
+        <label for="name" class="col-sm-2 control-label">{{ 'admin.categories.rename.name' | translate }}</label>
+        <div class="col-sm-10">
+          <input id="name" name="name" placeholder="{{ 'admin.categories.rename.name' | translate }}" value="" class="form-control"/>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-sm-4 col-sm-offset-8">
+          <button type="submit" class="btn btn-success btn-block">{{ 'admin.categories.rename.action' | translate }}</button>
+        </div>
+      </div>
+    </form>
+  </div>
+</div>

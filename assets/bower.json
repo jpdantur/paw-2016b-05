@@ -29,7 +29,7 @@
     "angular-animate": "^1.6.2",
     "angular-moment": "^1.0.1",
     "angular-bootstrap": "^2.5.0",
-    "angular-sanitize": "^1.6.2",
+    "angular-sanitize": "^1.6.4",
     "angular-socket-io": "^0.7.0",
     "angular-ui-tree": "^2.22.5",
     "angular-wizard": "^0.10.0",
@@ -56,7 +56,8 @@
     "rater": "*",
     "requirejs": "~2.3.3",
     "lodash": "^4.17.4",
-    "ng-dropzone": "ngdropzone#^2.0.2"
+    "ng-dropzone": "ngdropzone#^2.0.2",
+    "ngBootbox": "^0.2.0"
   },
   "devDependencies": {
     "bootstrap": "~3.3.7"

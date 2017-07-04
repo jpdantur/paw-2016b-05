@@ -28,8 +28,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Component;
 
-import com.sun.media.jfxmedia.Media;
-
 import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
@@ -63,6 +61,7 @@ public class AuthenticationController {
 		final User user = userService.findByUsername(login.getUsername());
 		
 		if (user == null) {
+			logger.trace("username not found");
 			return Response.status(Status.UNAUTHORIZED).build();
 		}
 		
@@ -79,6 +78,8 @@ public class AuthenticationController {
 			}
 			
 		}
+		
+		logger.trace("password does not match");
 		
 		return Response.status(Status.UNAUTHORIZED).build();
 	}
@@ -110,21 +111,6 @@ public class AuthenticationController {
 		}
 		
 		return Response.status(Status.UNAUTHORIZED).build();
-	}
-	
-	@GET
-	@Path("/profile")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response profile(@Context SecurityContext context) {
-		
-		final UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken)context.getUserPrincipal(); 
-		final User user = userService.findByUsername(userDetails.getName());
-		
-		if (user == null) {
-			return Response.status(Status.NOT_FOUND).build();
-		}
-		
-		return Response.ok(UserDTO.fromUser(user)).build();
 	}
 	
 	@POST

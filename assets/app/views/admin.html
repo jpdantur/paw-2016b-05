@@ -1,1 +1,77 @@
-<header id="top-navbar" class="navbar navbar-fixed-top"><div class="container"><div class="navbar-header"><button data-toggle="collapse" data-target="#main-navbar" class="navbar-toggle collapsed"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a href="#!/" style="font-size:2em" class="navbar-brand"><i class="fa fa-shopping-basket"></i>&nbsp;SIGLAS</a></div><nav id="navbar-content" class="collapse navbar-collapse"><ul class="nav navbar-nav navbar-right"><li ng-if="!loggedUser"><a ng-href="#!/auth/register?next={{index.$location.path()}}">{{ 'index.register' | translate }}</a></li><li ng-if="!loggedUser"><a ng-href="#!/auth/login?next={{index.$location.path()}}">{{ 'index.login' | translate }}</a></li><li><a ng-href="{{loggedUser ? '#!/store/sell/details' : '#!/auth/register?next=/store/sell/details'}}">{{ 'index.sell' | translate }}</a></li><li id="favourite-dropdown" ng-if="loggedUser"><a href="#" data-toggle="dropdown" title="{{ 'index.favourite.title' | translate }}" class="dropdown-toggle"><i class="fa fa-heart"></i>&nbsp;<span class="caret"></span></a><ul class="dropdown-menu dropdown-favourite"><li><a>{{ 'index.favourite.empty' | translate }}</a></li></ul></li><li ng-if="loggedUser"><a href="#" data-toggle="dropdown" class="dropdown-toggle"><span>{{loggedUser.firstName}} {{loggedUser.lastName}}&nbsp;</span><span class="caret"></span></a><ul class="dropdown-menu"><li><a href="#!/profile/details"><i class="fa fa-user"></i><span>&nbsp;{{ 'index.user.profile' | translate }}</span></a></li><li><a href="http://localhost:8081/webapp/profile/items"><i class="fa fa-list"></i><span>&nbsp;{{ 'index.user.items' | translate }}</span></a></li><li><a href="http://localhost:8081/webapp/profile/sales"><i class="fa fa-suitcase"></i><span>&nbsp;{{ 'index.user.sales' | translate }}</span></a></li><li><a href="http://localhost:8081/webapp/profile/purchases"><i class="fa fa-shopping-bag"></i><span>&nbsp;{{ 'index.user.purchases' | translate }}</span></a></li><li class="separator"></li><li><a ng-click="index.logout()"><i class="fa fa-sign-out"></i><span>&nbsp;{{ 'index.user.logout' | translate }}</span></a></li></ul></li></ul></nav></div></header><div class="container-fluid"><div class="row"><div class="col-sm-3"><ul id="sidebar" class="nav in"><li class="sidebar-item"><a href="http://localhost:8081/webapp/admin">{{ 'admin.index.headline' | translate }}</a></li><li class="sidebar-item"><a href="http://localhost:8081/webapp/admin/categories">{{ 'admin.index.categories' | translate }}</a></li><li class="sidebar-item"><a href="http://localhost:8081/webapp/admin/users">{{ 'admin.index.users' | translate }}</a></li><li class="sidebar-item"><a href="http://localhost:8081/webapp/admin/roles">{{ 'admin.sidebar.roles' | translate }}</a></li></ul></div><div class="col-sm-9"><h1>{{ 'admin.index.headline' | translate }}</h1><div class="row"><div class="col-sm-4"><div class="panel panel-primary"><div class="panel-heading"><div class="row"><div class="col-sm-4"><i class="fa fa-user fa-5x"></i></div><div class="col-sm-8 text-right"><span style="font-size:30px"></span><br/><span>{{ 'admin.index.users' | translate }}</span></div></div></div></div></div><div class="col-sm-4"><div class="panel panel-success"><div class="panel-heading"><div class="row"><div class="col-sm-8"><span style="font-size:30px"></span><br/><span>{{ 'admin.index.items' | translate }}</span></div><div class="col-sm-4 text-right"><i class="fa fa-shopping-bag fa-5x"></i></div></div></div></div></div><div class="col-sm-4"><div class="panel panel-default"><div class="panel-heading"><div class="row"><div class="col-sm-8"><span style="font-size:30px"></span><br/><span>{{ 'admin.index.categories' | translate }}</span></div><div class="col-sm-4 text-right"><i class="fa fa-list fa-5x"></i></div></div></div></div></div></div></div></div></div>
+
+<header id="top-navbar" class="navbar navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button data-toggle="collapse" data-target="#main-navbar" class="navbar-toggle collapsed"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a href="#!/" style="font-size:2em" class="navbar-brand"><i class="fa fa-shopping-basket"></i>&nbsp;SIGLAS</a>
+    </div>
+    <nav id="navbar-content" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav navbar-right">
+        <li ng-if="!loggedUser"><a ng-href="#!/auth/register?next={{index.$location.path()}}">{{ 'index.register' | translate }}</a></li>
+        <li ng-if="!loggedUser"><a ng-href="#!/auth/login?next={{index.$location.path()}}">{{ 'index.login' | translate }}</a></li>
+        <li><a ng-href="{{loggedUser ? '#!/store/sell/details' : '#!/auth/register?next=/store/sell/details'}}">{{ 'index.sell' | translate }}</a></li>
+        <li id="favourite-dropdown" ng-if="loggedUser"><a href="#" data-toggle="dropdown" title="{{ 'index.favourite.title' | translate }}" class="dropdown-toggle"><i class="fa fa-heart"></i>&nbsp;<span class="caret"></span></a>
+          <ul class="dropdown-menu dropdown-favourite">
+            <li><a>{{ 'index.favourite.empty' | translate }}</a></li>
+          </ul>
+        </li>
+        <li ng-if="loggedUser"><a href="#" data-toggle="dropdown" class="dropdown-toggle"><span>{{loggedUser.firstName}} {{loggedUser.lastName}}&nbsp;</span><span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a ng-href="#!/profile/details" ng-click="profile.switchToTab('account')"><i class="fa fa-user"></i><span>&nbsp;{{ 'index.user.profile' | translate }}</span></a></li>
+            <li><a ng-href="#!/profile/details?tab=items" ng-click="profile.switchToTab('items')"><i class="fa fa-list"></i><span>&nbsp;{{ 'index.user.items' | translate }}</span></a></li>
+            <li><a ng-href="#!/profile/details?tab=sales" ng-click="profile.switchToTab('sales')"><i class="fa fa-suitcase"></i><span>&nbsp;{{ 'index.user.sales' | translate }}</span></a></li>
+            <li><a ng-href="#!/profile/details?tab=purchases" ng-click="profile.switchToTab('purchases')"><i class="fa fa-shopping-bag"></i><span>&nbsp;{{ 'index.user.purchases' | translate }}</span></a></li>
+            <li class="separator"></li>
+            <li><a ng-click="index.logout()"><i class="fa fa-sign-out"></i><span>&nbsp;{{ 'index.user.logout' | translate }}</span></a></li>
+          </ul>
+        </li>
+      </ul>
+    </nav>
+  </div>
+</header>
+<div class="container-fluid">
+  <div class="row">
+    <div class="col-sm-3">
+      <ul id="sidebar" class="nav in">
+        <li class="sidebar-item"><a href="http://localhost:8081/webapp/admin">{{ 'admin.index.headline' | translate }}</a></li>
+        <li class="sidebar-item"><a href="http://localhost:8081/webapp/admin/categories">{{ 'admin.index.categories' | translate }}</a></li>
+        <li class="sidebar-item"><a href="http://localhost:8081/webapp/admin/users">{{ 'admin.index.users' | translate }}</a></li>
+        <li class="sidebar-item"><a href="http://localhost:8081/webapp/admin/roles">{{ 'admin.sidebar.roles' | translate }}</a></li>
+      </ul>
+    </div>
+    <div class="col-sm-9">
+      <h1>{{ 'admin.index.headline' | translate }}</h1>
+      <div class="row">
+        <div class="col-sm-4">
+          <div class="panel panel-primary">
+            <div class="panel-heading">
+              <div class="row">
+                <div class="col-sm-4"><i class="fa fa-user fa-5x"></i></div>
+                <div class="col-sm-8 text-right"><span style="font-size:30px"></span><br/><span>{{ 'admin.index.users' | translate }}</span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div class="panel panel-success">
+            <div class="panel-heading">
+              <div class="row">
+                <div class="col-sm-8"><span style="font-size:30px"></span><br/><span>{{ 'admin.index.items' | translate }}</span></div>
+                <div class="col-sm-4 text-right"><i class="fa fa-shopping-bag fa-5x"></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <div class="panel panel-default">
+            <div class="panel-heading">
+              <div class="row">
+                <div class="col-sm-8"><span style="font-size:30px"></span><br/><span>{{ 'admin.index.categories' | translate }}</span></div>
+                <div class="col-sm-4 text-right"><i class="fa fa-list fa-5x"></i></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

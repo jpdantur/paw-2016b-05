@@ -1,69 +1,71 @@
 div.tab-pane-content
 	h1.page-header #{messageSource.getMessage('profile.purchases.title',[],locale)}
 	ul.nav.nav-tabs#purchasesTab
-		li(class=status.toString().equals('PENDING')?'active':'')
-			a(href=context.url('/profile/purchases/pending')) #{messageSource.getMessage('profile.purchases.pending',[],locale)}
-		li(class=status.toString().equals('APPROVED')?'active':'')
-			a(href=context.url('/profile/purchases/approved')) #{messageSource.getMessage('profile.purchases.approved',[],locale)}
-		li(class=status.toString().equals('DECLINED')?'active':'')
-			a(href=context.url('/profile/purchases/declined')) #{messageSource.getMessage('profile.purchases.declined',[],locale)}
+		li(ng-class='{active: profile.purchasesQuery.status === "PENDING"}')
+			a(ng-click="profile.updatePurchasesQuery({pageNumber: 0, status:'PENDING'})") #{messageSource.getMessage('profile.purchases.pending',[],locale)}
+		li(ng-class='{active: profile.purchasesQuery.status === "APPROVED"}')
+			a(ng-click="profile.updatePurchasesQuery({pageNumber: 0, status:'APPROVED'})") #{messageSource.getMessage('profile.purchases.approved',[],locale)}
+		li(ng-class='{active: profile.purchasesQuery.status === "DECLINED"}')
+			a(ng-click="profile.updatePurchasesQuery({pageNumber: 0, status:'DECLINED'})") #{messageSource.getMessage('profile.purchases.declined',[],locale)}
 	div.tab-content
-		div.tab-pane.fade.in.active(id='purchases-'+status.toString().toLowerCase())
+		div.tab-pane.fade.in.active(id='purchases-active')
 			table.table.table-striped.table-condensed
 				thead
 					tr
-						th(colspan=status.toString().equals('PENDING')?3:4)
+						th(colspan="{{profile.purchasesQuery.status === 'PENDING' ? 3 : 4 }}")
 							include profile_modifiers_purchases
 						th(colspan=1)
 							div.input-group.input-group-sm(style="width:100%")
 								span.input-group-addon
 									i.fa.fa-search
-								input.form-control#query-input(type="text", placeholder="#{messageSource.getMessage('profile.purchases.table.search',[],locale)}", value=filter.termFilter.term.orElse(''))
+								input.form-control#query-input(type="text", placeholder="#{messageSource.getMessage('profile.purchases.table.search',[],locale)}", ng-model="profile.purchasesQuery.query", ng-change="profile.updatePurchasesQuery({})")
 					tr
 						th #{messageSource.getMessage('profile.purchases.table.date',[],locale)}
 						th #{messageSource.getMessage('profile.purchases.table.seller',[],locale)}
 						th(colspan=2) #{messageSource.getMessage('profile.purchases.table.item',[],locale)}
-						if !status.toString().equals('PENDING')
-							th #{messageSource.getMessage('profile.purchases.table.score',[],locale)}
+						th(ng-if="profile.purchasesQuery.status !== 'PENDING'") #{messageSource.getMessage('profile.purchases.table.score',[],locale)}
 				tbody
-					if items.numberOfTotalResults == 0
-						tr.info
-							td(colspan=4)
-								div.alert #{messageSource.getMessage('profile.sales.nothing',[],locale)}
-					each purchase in items.results
-						tr(data-id=purchase.id)
-							td.center-vertical #{dateFormatter.format(purchase.created)}
-							td.center-vertical
-								if purchase.status.toString().equals('APPROVED')
-									b #{purchase.item.owner.firstName} #{purchase.item.owner.lastName}
-									br
-								span.text-muted
-									a(href=context.url('/id/'+purchase.item.owner.username+'/seller')) #{purchase.item.owner.username}
-								if purchase.status.toString().equals('APPROVED')
-									| &nbsp;
-									a (#{purchase.item.owner.email})
-							td(style="width:40px")
-								if purchase.item.images.isEmpty()
-									img.table-img(style="width:40px;height:40px" src="http://placehold.it/40?text=Sin+Imagen")
-								else
-									img.table-img(style="width:40px;height:40px" src="#{context.url('/images/get/'+purchase.item.images.iterator().next().id)}")
-							td
-								span #{purchase.item.name}
+					tr.info(ng-show="profile.purchasesResult.numberOfTotalResults === 0")
+						td(colspan="{{profile.purchasesQuery.status === 'PENDING' ? 4 : 5 }}")
+							div.alert #{messageSource.getMessage('profile.sales.nothing',[],locale)}
+					tr(ng-repeat="purchase in profile.purchasesResult.results")
+						td.center-vertical {{purchase.created | amDateFormat: 'L LT' }}
+						td.center-vertical
+							span(ng-show="purchase.status === 'APPROVED'")
+								b {{purchase.item.owner.firstName}} {{purchase.item.owner.lastName}}
 								br
-								span(style="color:#900") $#{purchase.item.price}
-							if !status.toString().equals('PENDING')
-								td.center-vertical
-									button.btn.btn-default.btn-xs.show-scores(data-s-rating=purchase.sellerReview, data-b-rating=purchase.buyerReview) #{messageSource.getMessage('profile.purchases.seeScores', [], locale)}
-			ul.pager#filter-page(data-page="#{items.currentPage}", data-last-page="#{items.numberOfTotalResults/items.pageSize}")
-				li.previous(class="#{items.currentPage==0?'disabled':''}")
-					a.filter-page-action(href="#")
+							//-if purchase.status.toString().equals('APPROVED')
+								
+							span.text-muted
+								a(href='#!/id/{{purchase.item.owner.username}}/seller') {{purchase.item.owner.username}}
+							span(ng-show="purchase.status === 'APPROVED'")
+								| &nbsp;
+								a ({{purchase.item.owner.email}})
+							//-if purchase.status.toString().equals('APPROVED')
+						td(style="width:40px")
+							img.table-img(ng-if="!purchases.item.images.length", style="width:40px;height:40px", ng-src="http://placehold.it/40?text=Sin+Imagen")
+							img.table-img(ng-if="purchases.item.images.length", style="width:40px;height:40px", ng-src="data:image/png;base64,{{purchase.item.images[0].content}}")
+						td
+							span {{purchase.item.name}}
+							br
+							span(style="color:#900") $ {{purchase.item.price}}
+						//-if !status.toString().equals('PENDING')
+						td.center-vertical(ng-if="!profile.purchasesQuery.status === 'PENDING'")
+							button.btn.btn-default.btn-xs.show-scores #{messageSource.getMessage('profile.purchases.seeScores', [], locale)}
+							//-button.btn.btn-default.btn-xs.show-scores(data-s-rating=purchase.sellerReview, data-b-rating=purchase.buyerReview) #{messageSource.getMessage('profile.purchases.seeScores', [], locale)}
+			ul.pager#filter-page
+				li.previous(ng-class="{disabled: profile.purchasesResult.currentPage === 0}")
+					a.filter-page-action(ng-click="profile.updateSalesQuery({ pageNumber: 0 })")
 						span &larr;
 						span #{messageSource.getMessage('search.filters.pagination.pagers.first', [], locale)}
-				li.pre(class="#{items.currentPage==0?'disabled':''}")
-					a.filter-page-action(href="#") #{messageSource.getMessage('search.filters.pagination.pagers.previous', [], locale)}
-				li.ne(class="#{items.currentPage==items.numberOfTotalResults/items.pageSize?'disabled':''}")
-					a.filter-page-action(href="#") #{messageSource.getMessage('search.filters.pagination.pagers.next', [], locale)}
-				li.next(class="#{items.currentPage==items.numberOfTotalResults/items.pageSize?'disabled':''}")
-					a.filter-page-action(href="#")
+				
+				li.pre(ng-class="{disabled: profile.purchasesResult.currentPage === 0}")
+					a.filter-page-action(ng-click="profile.updateSalesQuery({ pageNumber: profile.purchasesResult.currentPage - 1 })") #{messageSource.getMessage('search.filters.pagination.pagers.previous', [], locale)}
+				
+				li.ne(ng-class="{disabled: profile.purchasesResult.currentPage === Math.floor(profile.purchasesResult.numberOfTotalResults / profile.purchasesResult.pageSize)}")
+					a.filter-page-action(ng-click="profile.updateSalesQuery({ pageNumber: profile.purchasesResult.currentPage + 1 })") #{messageSource.getMessage('search.filters.pagination.pagers.next', [], locale)}
+				
+				li.next(ng-class="{disabled: profile.purchasesResult.currentPage === Math.floor(profile.purchasesResult.numberOfTotalResults / profile.purchasesResult.pageSize)}")
+					a.filter-page-action(ng-click="profile.updateSalesQuery({ pageNumber: Math.floor(profile.purchasesResult.numberOfTotalResults / profile.purchasesResult.pageSize) })")
 						span #{messageSource.getMessage('search.filters.pagination.pagers.last', [], locale)}
 						span &rarr;

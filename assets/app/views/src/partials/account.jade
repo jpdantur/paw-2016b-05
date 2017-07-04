@@ -14,10 +14,12 @@ div.tab-pane-content
 				label.col-sm-2.control-label #{messageSource.getMessage('profile.account.form.username',[],locale)}
 				div.col-sm-6
 					p.form-control-static {{loggedUser.username}}
-			div.form-group(ng-class="{ 'has-error': registerForm.firstName.$invalid && !registerForm.firstName.$pristine }")
+			div.form-group(ng-class="{ 'has-error': changeEmailForm.email.$invalid && !changeEmailForm.email.$pristine }")
 				label.col-sm-2.control-label(for="email") #{messageSource.getMessage('profile.account.form.email',[],locale)}
 				div.col-sm-6
-					input.form-control#email(type="text", placeholder="#{messageSource.getMessage('profile.account.form.email',[],locale)}", name="email", ng-model="profile.user.email")
+					input.form-control#email(type="email", placeholder="#{messageSource.getMessage('profile.account.form.email',[],locale)}", name="email", ng-model="profile.user.email", required)
+					p.help-block(ng-show="changeEmailForm.email.$error.required") Email is required
+					p.help-block(ng-show="changeEmailForm.email.$invalid && !changeEmailForm.email.$pristine") Enter a valid email
 			div.form-group(style="margin-top:40px")
 				div.col-sm-4.col-sm-offset-2
-					button.btn.btn-success.btn-block(type="submit") #{messageSource.getMessage('profile.account.form.update',[],locale)}
+					button.btn.btn-success.btn-block(ng-disabled="!changeEmailForm.$valid" type="submit") #{messageSource.getMessage('profile.account.form.update',[],locale)}
