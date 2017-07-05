@@ -35,19 +35,13 @@ require.config({
 		'angular-toastr': '../../bower_components/angular-toastr/dist/angular-toastr.tpls',
 		'angular-jwt': '../../bower_components/angular-jwt/dist/angular-jwt',
 		async: '../../bower_components/async/dist/async',
-		'ng-dropzone': '../../bower_components/ng-dropzone/dist/ng-dropzone',
-		dropzone: '../../bower_components/dropzone/dist/min/dropzone.min',
 		'angular-moment': '../../bower_components/angular-moment/angular-moment',
 		bootbox: '../../bower_components/bootbox.js/bootbox',
 		jqBootstrapValidation: '../../bower_components/jqBootstrapValidation/dist/jqBootstrapValidation-1.3.7.min',
 		'jquery.easing': '../../bower_components/jquery.easing/jquery.easing',
-		q: '../../bower_components/q/q',
-		rater: '../../bower_components/rater/rater',
-		'remarkable-bootstrap-notify': '../../bower_components/remarkable-bootstrap-notify/bootstrap-notify',
-		underscore: '../../bower_components/underscore/underscore',
-		'angular-socket-io': '../../bower_components/angular-socket-io/socket',
 		'jquery-treegrid': '../../bower_components/jquery-treegrid/index',
-		ngBootbox: '../../bower_components/ngBootbox/dist/ngBootbox'
+		ngBootbox: '../../bower_components/ngBootbox/dist/ngBootbox',
+		'ng-file-upload': '../../bower_components/ng-file-upload/ng-file-upload'
 	},
 	shim: {
 		angular: {

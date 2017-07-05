@@ -13,5 +13,7 @@ public interface IImageDao {
 	public List<StoreImage> imagesForItem(final StoreItem item);
 	
 	public StoreImage createImage(final StoreImageBuilder builder);
+
+	public void removeImagesForItem(final StoreItem item);
 	
 }

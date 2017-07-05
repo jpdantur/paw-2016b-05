@@ -1,6 +1,7 @@
 package edu.tp.paw.webapp.restcontroller;
 
 import java.net.URI;
+import java.util.List;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -17,18 +18,23 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import org.apache.commons.io.IOUtils;
+import org.glassfish.jersey.media.multipart.BodyPartEntity;
+import org.glassfish.jersey.media.multipart.FormDataBodyPart;
+import org.glassfish.jersey.media.multipart.FormDataMultiPart;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import edu.tp.paw.interfaces.service.ICategoryService;
+import edu.tp.paw.interfaces.service.IImageService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IStoreService;
 import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.Category;
+import edu.tp.paw.model.StoreImageBuilder;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.model.User;
@@ -45,6 +51,7 @@ public class StoreItemController {
 	@Autowired private IStoreService storeService;
 	@Autowired private IUserService userService;
 	@Autowired private ICategoryService categoryService;
+	@Autowired private IImageService imageService;
 	
 	@Context private UriInfo uriInfo;
 	
@@ -122,6 +129,55 @@ public class StoreItemController {
 		storeItemService.updateItem(storeItem);
 		
 		return Response.ok(new StoreItemDTO(storeItem)).build();
+	}
+	
+	@PUT
+	@Path("/{id}/images")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	public Response images(
+			@PathParam("id") long id,
+			final FormDataMultiPart multiPart,
+			@Context SecurityContext context) {
+		
+		final UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken)context.getUserPrincipal(); 
+		final User user = userService.findByUsername(userDetails.getName());
+		
+		if (user == null) {
+			return Response.status(Status.FORBIDDEN).build();
+		}
+		
+		final StoreItem item = storeItemService.findById(id);
+		
+		if (item == null) {
+			return Response.status(Status.NOT_FOUND).build();
+		}
+		
+		List<FormDataBodyPart> bodyParts = multiPart.getFields("images");
+
+		StringBuffer fileDetails = new StringBuffer("");
+
+		/* Save multiple files */
+		
+		imageService.removeImagesForItem(item);
+		
+		try {
+			for (int i = 0; i < bodyParts.size(); i++) {
+				BodyPartEntity bodyPartEntity = (BodyPartEntity) bodyParts.get(i).getEntity();
+				final StoreImageBuilder builder = new StoreImageBuilder(
+						bodyParts.get(i).getMediaType().toString(),
+						IOUtils.toByteArray(bodyPartEntity.getInputStream()
+				)).item(item);
+				
+				logger.trace("uploading file " + (i+1));
+				
+				imageService.uploadImage(builder);
+			}
+		} catch (Exception e) {
+			return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+		}
+		
+		return Response.noContent().build();
 	}
 	
 	@DELETE

@@ -15,6 +15,8 @@ define([
 		Item.update = update;
 		Item.create = create;
 
+		Item.uploadImage = uploadImage;
+
 
 		var HOST = 'localhost:8081/webapp';
 
@@ -95,7 +97,6 @@ define([
 					}
 					return defer.reject(response.data);
 				}
-				console.log(response);
 				defer.resolve(response.data);
 			}, function (error) {
 				console.log(error);
@@ -161,6 +162,31 @@ define([
 			return defer.promise;
 
 		}
+
+		function uploadImage(id, files) {
+			var defer = $q.defer();
+			var formData = new FormData();
+			_.each(files, function (file) {
+				formData.append('images', file);
+			});
+			$http({
+				method: 'PUT',
+				url: api('/api/store/item/' + id + '/images'),
+				data: formData,
+				headers: {
+					'Content-Type': undefined
+				},
+				transformRequest: angular.identity
+			})
+			.then(function (response) {
+				console.log(response);
+				defer.resolve(response.data);
+			}, function (error) {
+				defer.reject(error.data);
+			});
+
+			return defer.promise;
+		};
 
 		return Item;
 	});

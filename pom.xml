@@ -382,6 +382,16 @@
 				<artifactId>jersey-media-json-jackson</artifactId>
 				<version>${jersey.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.glassfish.jersey.media</groupId>
+				<artifactId>jersey-media-multipart</artifactId>
+				<version>${jersey.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.jvnet</groupId>
+				<artifactId>mimepull</artifactId>
+				<version>1.6</version>
+			</dependency>
 			<!-- <dependency>
 				<groupId>org.glassfish.jersey.ext</groupId>
 				<artifactId>jersey-bean-validation</artifactId>

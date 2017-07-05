@@ -4,6 +4,7 @@ import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.Query;
 import javax.persistence.TypedQuery;
 
 import org.springframework.stereotype.Repository;
@@ -54,6 +55,13 @@ public class StoreImageHibernateDao implements IImageDao {
 		entityManager.persist(storeImage);
 		
 		return storeImage;
+	}
+
+	@Override
+	public void removeImagesForItem(final StoreItem item) {
+		final Query q = entityManager.createQuery("delete StoreImage i where item = :item");
+		q.setParameter("item", item);
+		q.executeUpdate();
 	}
 	
 

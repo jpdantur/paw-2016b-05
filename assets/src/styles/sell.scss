@@ -58,19 +58,24 @@
 			display: block;
 		}
 
-		li {
+		ul.list-unstyled {
 
-			padding: {
-				left: 5px;
-				right: 15px;
-			}
+			margin-bottom: 0;
 
-			&:hover {
-				background-color: #f3f3f3;
-			}
+			li {
 
-			&.active {
-				background-color: #f5f5f5;
+				padding: {
+					left: 5px;
+					right: 15px;
+				}
+
+				&:hover {
+					background-color: #f3f3f3;
+				}
+
+				&.active {
+					background-color: #f5f5f5;
+				}
 			}
 		}
 	}

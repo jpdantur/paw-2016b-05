@@ -30,6 +30,11 @@ define([], function() {
 				controller: 'SellCtrl',
 				controllerAs: 'sell'
 			},
+			'/store/sell/images/:id': {
+				templateUrl: 'views/ImagesCtrl.html',
+				controller: 'ImagesCtrl',
+				controllerAs: 'images'
+			},
 			'/403': {
 				templateUrl: 'views/403.html',
 				controller: 'ForbiddenCtrl',

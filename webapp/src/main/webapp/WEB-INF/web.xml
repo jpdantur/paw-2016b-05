@@ -1,58 +1,62 @@
 <web-app id="PAW" version="2.4" xmlns="http://java.sun.com/xml/ns/j2ee"
- 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- 	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
- 	http://java.sun.com/xml/ns/j2ee/web-app 2 4.xsd">
-  <display-name>TP PAW 2016 Q2</display-name>
-  
-  <context-param>
-  	<param-name>contextClass</param-name>
-  	<param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
-  </context-param>
-  <context-param>
-  	<param-name>contextConfigLocation</param-name>
-  	<param-value>edu.tp.paw.webapp.config.WebConfig,edu.tp.paw.webapp.config.WebAuthConfig,</param-value>
-  </context-param>
-  
-  <listener>
-  	<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-  </listener>
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/j2ee
+	http://java.sun.com/xml/ns/j2ee/web-app 2 4.xsd">
+	<display-name>TP PAW 2016 Q2</display-name>
+	
+	<context-param>
+		<param-name>contextClass</param-name>
+		<param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
+	</context-param>
+	<context-param>
+		<param-name>contextConfigLocation</param-name>
+		<param-value>edu.tp.paw.webapp.config.WebConfig,edu.tp.paw.webapp.config.WebAuthConfig,</param-value>
+	</context-param>
+	
+	<listener>
+		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+	</listener>
 
-  <servlet>
-  	<servlet-name>jersey-servlet</servlet-name>
-  	<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
-  	<init-param>
-  		<param-name>jersey.config.server.provider.packages</param-name>
-  		<param-value>edu.tp.paw.webapp.restcontroller</param-value>
-  	</init-param>
-  	<load-on-startup>1</load-on-startup>
-  </servlet>
-  <servlet-mapping>
-  	<servlet-name>jersey-servlet</servlet-name>
-  	<url-pattern>/*</url-pattern>
-  </servlet-mapping>
-  <!-- <servlet>
-  	<servlet-name>dispatcher</servlet-name>
-  	<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
-  	<init-param>
-  		<param-name>contextClass</param-name>
-  		<param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
-  	</init-param>
-  	<load-on-startup>1</load-on-startup>
-  </servlet> -->
-  
-  <!-- <servlet-mapping>
-  	<servlet-name>dispatcher</servlet-name>
-  	<url-pattern>/</url-pattern>
-  </servlet-mapping> -->
-  
-  <filter>
-  	<filter-name>springSecurityFilterChain</filter-name>
-  	<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
-  </filter>
-  
-  <filter-mapping>
-  	<filter-name>springSecurityFilterChain</filter-name>
-  	<url-pattern>/*</url-pattern>
-  </filter-mapping>
-  
+	<servlet>
+		<servlet-name>jersey-servlet</servlet-name>
+		<servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+		<init-param>
+			<param-name>jersey.config.server.provider.packages</param-name>
+			<param-value>edu.tp.paw.webapp.restcontroller</param-value>
+		</init-param>
+		<init-param>
+			<param-name>jersey.config.server.provider.classnames</param-name>
+			<param-value>org.glassfish.jersey.media.multipart.MultiPartFeature</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>jersey-servlet</servlet-name>
+		<url-pattern>/*</url-pattern>
+	</servlet-mapping>
+	<!-- <servlet>
+		<servlet-name>dispatcher</servlet-name>
+		<servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+		<init-param>
+			<param-name>contextClass</param-name>
+			<param-value>org.springframework.web.context.support.AnnotationConfigWebApplicationContext</param-value>
+		</init-param>
+		<load-on-startup>1</load-on-startup>
+	</servlet> -->
+	
+	<!-- <servlet-mapping>
+		<servlet-name>dispatcher</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping> -->
+	
+	<filter>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<filter-class>org.springframework.web.filter.DelegatingFilterProxy</filter-class>
+	</filter>
+	
+	<filter-mapping>
+		<filter-name>springSecurityFilterChain</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
 </web-app>

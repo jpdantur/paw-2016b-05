@@ -52,5 +52,15 @@ public class StoreImageService implements IImageService {
 		}
 		return imageDao.createImage(builder);
 	}
+	
+	public void removeImagesForItem(final StoreItem item) {
+		if (item == null) {
+			throw new IllegalArgumentException("item cant be null");
+		}
+		if (!itemService.itemExists(item)) {
+			throw new IllegalArgumentException("item must exist");
+		}
+		imageDao.removeImagesForItem(item);
+	}
 
 }

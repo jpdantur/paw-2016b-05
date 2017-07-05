@@ -42,22 +42,16 @@
     "jquery": "^3.1.0",
     "bootstrap": "^3.3.7",
     "font-awesome": "^4.6.3",
-    "underscore": "^1.8.3",
     "jquery.easing": "jquery-easing-original#^1.4.1",
     "bootbox.js": "^4.4.0",
     "animate.css": "^3.5.2",
     "async": "^2.0.1",
-    "q": "1.0.1",
-    "jqBootstrapValidation": "^1.3.7",
     "moment": "^2.14.1",
-    "dropzone": "^4.3.0",
     "jquery-treegrid": "^0.3.0",
-    "remarkable-bootstrap-notify": "^3.1.3",
-    "rater": "*",
     "requirejs": "~2.3.3",
     "lodash": "^4.17.4",
-    "ng-dropzone": "ngdropzone#^2.0.2",
-    "ngBootbox": "^0.2.0"
+    "ngBootbox": "^0.2.0",
+    "ng-file-upload": "^12.2.13"
   },
   "devDependencies": {
     "bootstrap": "~3.3.7"

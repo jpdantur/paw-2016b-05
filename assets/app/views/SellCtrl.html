@@ -53,7 +53,7 @@
         <div class="form-group">
           <label for="description" class="col-sm-2 control-label">{{ 'sell.field.description' | translate }}</label>
           <div class="col-sm-10">
-            <textarea id="description" name="description" placeholder="{{ 'sell.field.description' | translate }}" ng-model="sell.item.description" rows="12" class="form-control"></textarea>
+            <textarea id="description" name="description" placeholder="{{ 'sell.field.description' | translate }}" ng-model="sell.item.description" rows="8" class="form-control"></textarea>
           </div>
         </div>
         <div ng-class="{ 'has-error': sellForm.price.$invalid &amp;&amp; !sellForm.price.$pristine }" class="form-group">
@@ -73,39 +73,42 @@
             <input id="category-input" type="hidden" name="categoryId"/>
             <div id="category-browser">
               <div>
-                <div id="success-card" class="category-card text-center"><span class="text-muted">{{ 'edit.details.categoryChosen' | translate }}</span><br/><span id="category-name" class="h4"></span></div>
+                <div ng-repeat="c in sell.categoryPath" class="category-card visible">
+                  <ul class="list-unstyled">
+                    <li ng-repeat="category in c" ng-class="{ active: _.includes(sell.highlighted, category.id) || sell.selectedCategory.id === category.id }"><a ng-click="sell.selectCategory(category, $parent.$index + 1)">{{category.name}}</a></li>
+                  </ul>
+                </div>
+                <div id="success-card" ng-class="{visible: sell.selectedCategory }" class="category-card text-center"><span class="text-muted">{{ 'edit.details.categoryChosen' | translate }}</span><br/><span id="category-name" class="h4">{{sell.selectedCategory.name}}	</span></div>
               </div>
             </div>
           </div>
         </div>
         <div class="form-group">
-          <label for="used" class="col-sm-2 control-label">{{ 'sell.field.status.title' | translate }}</label>
+          <label for="used" class="col-sm-2 control-label">{{ 'sell.field.publish' | translate }}</label>
           <div class="col-sm-10">
-            <div data-toggle="buttons" class="btn-group">
-              <label class="btn btn-primary">
-                <input type="radio" name="used" id="used" value="1"/><span>{{ 'sell.field.status.used' | translate }}</span>
-              </label>
-              <label class="btn btn-primary active">
-                <input type="radio" name="used" value="0" checked="checked"/><span>{{ 'sell.field.status.new' | translate }}</span>
-              </label>
-            </div>
+            <label class="radio-inline">
+              <input id="used" type="radio" name="used" ng-value="true" ng-model="sell.item.used"/>{{ 'sell.field.status.used' | translate }}
+            </label>
+            <label class="radio-inline">
+              <input id="new" type="radio" name="used" ng-value="false" ng-model="sell.item.used"/>{{ 'sell.field.status.new' | translate }}
+            </label>
           </div>
         </div>
         <div class="form-group">
-          <label for="status" class="col-sm-2 control-label">{{ 'sell.field.publish' | translate }}</label>
+          <label for="itemStatus" class="col-sm-2 control-label">{{ 'sell.field.publish' | translate }}</label>
           <div class="col-sm-10">
             <label class="radio-inline">
-              <input id="status" type="radio" name="itemStatus" value="ACTIVE"/>{{ 'sell.field.radio.yes' | translate }}
+              <input id="itemStatus" type="radio" name="itemStatus" value="ACTIVE" ng-model="sell.item.itemStatus"/>{{ 'sell.field.radio.yes' | translate }}
             </label>
             <label class="radio-inline">
-              <input id="status1" type="radio" name="itemStatus" value="UNPUBLISHED"/>{{ 'sell.field.radio.no' | translate }}
+              <input id="itemStatus1" type="radio" name="itemStatus" value="UNPUBLISHED" ng-model="sell.item.itemStatus"/>{{ 'sell.field.radio.no' | translate }}
             </label>
           </div>
         </div>
         <div class="form-group">
           <div class="col-sm-2 col-sm-offset-2"><a href="http://localhost:8081/webapp/" class="btn btn-default btn-block"><i class="fa fa-chevron-left"></i>&nbsp;{{ 'sell.back' | translate }}</a></div>
           <div class="col-sm-4 col-sm-offset-4">
-            <button id="submit-button" type="submit" class="btn btn-success btn-block"><span>{{ 'sell.ok' | translate }}&nbsp;</span><i class="fa fa-chevron-right"></i></button>
+            <button id="submit-button" type="submit" ng-disabled="!sellForm.$valid || !sell.selectedCategory" class="btn btn-success btn-block"><span>{{ 'sell.ok' | translate }}&nbsp;</span><i class="fa fa-chevron-right"></i></button>
           </div>
         </div>
       </form>

@@ -14,4 +14,6 @@ public interface IImageService {
 	
 	public StoreImage uploadImage(final StoreImageBuilder builder);
 	
+	public void removeImagesForItem(final StoreItem item);
+	
 }

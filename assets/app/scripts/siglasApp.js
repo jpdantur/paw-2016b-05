@@ -17,7 +17,8 @@ define([
 	'async',
 	'angular-moment',
 	'angular-sanitize',
-	'ngBootbox'
+	'ngBootbox',
+	'ng-file-upload'
 ], function(config, dependencyResolverFor, protectedRoute, i18n) {
 		var siglasApp = angular.module('siglasApp', [
 			'ngRoute',
@@ -29,7 +30,8 @@ define([
 			'angular-jwt',
 			'ui.bootstrap',
 			'angularMoment',
-			'ngBootbox'
+			'ngBootbox',
+			'ngFileUpload'
 		]);
 		siglasApp
 		.config([

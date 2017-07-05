@@ -19,16 +19,13 @@ define([
 
 		// ///////
 
-		function tree(limit) {
+		function tree() {
 
 			var defer = $q.defer();
 
 			$http({
 				method: 'GET',
-				url: api('/api/store/category-tree'),
-				params: {
-					limit: limit
-				}
+				url: api('/api/store/category-tree')
 			})
 			.then(function (response) {
 				if (response.status >= 400) {

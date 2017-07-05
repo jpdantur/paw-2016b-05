@@ -26,7 +26,7 @@ block content
 					div.form-group
 						label.col-sm-2.control-label(for="description") #{messageSource.getMessage('sell.field.description',[],locale)}
 						div.col-sm-10
-							textarea.form-control#description(name="description", placeholder="#{messageSource.getMessage('sell.field.description',[],locale)}", ng-model="sell.item.description", rows="12") #{item.description?item.description:''}
+							textarea.form-control#description(name="description", placeholder="#{messageSource.getMessage('sell.field.description',[],locale)}", ng-model="sell.item.description", rows="8") #{item.description?item.description:''}
 					
 					div.form-group(ng-class="{ 'has-error': sellForm.price.$invalid && !sellForm.price.$pristine }")
 						label.col-sm-2.control-label(for="price") #{messageSource.getMessage('sell.field.price',[],locale)}
@@ -42,44 +42,34 @@ block content
 						label.col-sm-2.control-label(for="category") #{messageSource.getMessage('sell.field.category',[],locale)}
 						div.col-sm-10
 							input#category-input(type="hidden", name="categoryId", value=(item?item.categoryId:''))
-							//-mixin categories(categories, depth)
-								if !categories.isEmpty()
-									div.category-card(class=(depth==0?' visible':''), data-parent=categories.iterator().next().parent.id)
-										ul.list-unstyled
-											each category in categories
-												li(class=(item && item.categoryId == category.id ? 'active': ''))
-													a(href="#", data-id=category.id, class=category.id) #{category.name}
-								each category in categories
-									+categories(category.children, depth+1)
 							div#category-browser
 								div
-									//-+categories(categories, 0)
-									div.category-card.text-center#success-card
+									div.category-card.visible(ng-repeat="c in sell.categoryPath")
+										ul.list-unstyled
+											li(ng-repeat="category in c", ng-class='{ active: _.includes(sell.highlighted, category.id) || sell.selectedCategory.id === category.id }')
+												a(ng-click="sell.selectCategory(category, $parent.$index + 1)") {{category.name}}
+									div.category-card.text-center#success-card(ng-class='{visible: sell.selectedCategory }')
 										span.text-muted #{messageSource.getMessage('edit.details.categoryChosen',[],locale)}
 										br
-										span.h4#category-name
-							+errors(bindingResult, 'category')
-					
-					div.form-group(class="#{bindingResult.hasFieldErrors('used')?'has-error':''}")
-						label.col-sm-2.control-label(for="used") #{messageSource.getMessage('sell.field.status.title',[],locale)}
-						div.col-sm-10
-							div.btn-group(data-toggle="buttons")
-								label.btn.btn-primary(class="#{item.used?'active':''}")
-									input(type="radio", name="used", id="used", value="1", checked=item.used)
-									span #{messageSource.getMessage('sell.field.status.used',[],locale)}
-								label.btn.btn-primary(class="#{item.used?'':'active'}")
-									input(type="radio", name="used", value="0", checked=!item.used)
-									span #{messageSource.getMessage('sell.field.status.new',[],locale)}
-							+errors(bindingResult, 'used')
-					
-					div.form-group(class="#{bindingResult.hasFieldErrors('status')?'has-error':''}")
-						label.col-sm-2.control-label(for="status") #{messageSource.getMessage('sell.field.publish',[],locale)}
+										span.h4#category-name {{sell.selectedCategory.name}}	
+					div.form-group
+						label.col-sm-2.control-label(for="used") #{messageSource.getMessage('sell.field.publish',[],locale)}
 						div.col-sm-10
 							label.radio-inline
-								input#status(type="radio", name="itemStatus", value="ACTIVE", checked=item.status.toString().equals('ACTIVE'))
+								input#used(type="radio", name="used", ng-value="true", ng-model="sell.item.used")
+								| #{messageSource.getMessage('sell.field.status.used',[],locale)}
+							label.radio-inline
+								input#new(type="radio", name="used", ng-value="false", ng-model="sell.item.used")
+								| #{messageSource.getMessage('sell.field.status.new',[],locale)}
+
+					div.form-group
+						label.col-sm-2.control-label(for="itemStatus") #{messageSource.getMessage('sell.field.publish',[],locale)}
+						div.col-sm-10
+							label.radio-inline
+								input#itemStatus(type="radio", name="itemStatus", value="ACTIVE", ng-model="sell.item.itemStatus")
 								| #{messageSource.getMessage('sell.field.radio.yes',[],locale)}
 							label.radio-inline
-								input#status1(type="radio", name="itemStatus", value="UNPUBLISHED", checked=item.status.toString().equals('UNPUBLISHED'))
+								input#itemStatus1(type="radio", name="itemStatus", value="UNPUBLISHED", ng-model="sell.item.itemStatus")
 								| #{messageSource.getMessage('sell.field.radio.no',[],locale)}
 					
 					div.form-group
@@ -88,7 +78,7 @@ block content
 								i.fa.fa-chevron-left
 								| &nbsp;#{messageSource.getMessage('sell.back',[],locale)}
 						div.col-sm-4.col-sm-offset-4
-							button.btn.btn-success.btn-block#submit-button(type="submit")
+							button.btn.btn-success.btn-block#submit-button(type="submit", ng-disabled="!sellForm.$valid || !sell.selectedCategory")
 								span #{messageSource.getMessage('sell.ok',[],locale)}&nbsp;
 								i.fa.fa-chevron-right
 
