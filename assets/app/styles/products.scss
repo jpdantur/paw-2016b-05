@@ -17,160 +17,158 @@
 	}
 }
 
-html body {
-	// background-color: white;
-	// color: white;
-}
+html body.all {
 
-.input-xs {
-	height: 22px;
-	padding: 5px 5px;
-	font-size: 12px;
-	line-height: 1.5;
-	border-radius: 3px;
-}
+	.input-xs {
+		height: 22px;
+		padding: 5px 5px;
+		font-size: 12px;
+		line-height: 1.5;
+		border-radius: 3px;
+	}
 
-.input-group-xs>.form-control,
-.input-group-xs>.input-group-addon,
-.input-group-xs>.input-group-btn>.btn {
-	height: 22px;
-	padding: 1px 5px;
-	font-size: 12px;
-	line-height: 1.5;
-}
+	.input-group-xs>.form-control,
+	.input-group-xs>.input-group-addon,
+	.input-group-xs>.input-group-btn>.btn {
+		height: 22px;
+		padding: 1px 5px;
+		font-size: 12px;
+		line-height: 1.5;
+	}
 
-#modifiers {
+	#modifiers {
 
-	margin-bottom: 10px;
-	margin-top: 10px;
+		margin-bottom: 10px;
+		margin-top: 10px;
 
-	.modifier {
+		.modifier {
 
-		margin-left: 6px;
-		padding-right: 6px;
-		display: inline-block;
-		border-right: 1px solid #888;
-
-		&:last-child {
-			border-right: none;
-		}
-
-		.space {
+			margin-left: 6px;
+			padding-right: 6px;
 			display: inline-block;
-			width: 5px;
-		}
+			border-right: 1px solid #888;
 
-		.modifier-title {
-			font-size: 12px;
-			color: #999
-		}
-
-		.form-control.input-xs {
-			width: auto;
-			display: inline-block;
-		}
-	}
-
-}
-
-#search-container {
-
-	background-color: white;
-	@include box-shadow(2px, 1px, 1px, #ccc);
-	// @include border-radius(5px);
-
-	#search-title {
-		padding: {
-			top: 20px;
-			bottom: 20px;
-		}
-		color: white;
-		background-color: #222;
-	}
-
-}
-
-#product-grid {
-
-	// border: 2px solid #dfdfdf;
-	
-	
-
-
-	.store-item {
-
-		.product-container {
-			
-			border: {
-				top: 1px solid #dfdfdf;
-				left: 1px solid #dfdfdf;
-				bottom: 1px solid #dfdfdf;
-				right: none
-			}
-			
-		}
-	}
-}
-
-#filters {
-
-	.filter-content {
-
-		margin-bottom: 12px;
-
-		.row {
-			margin: 0;
-		}
-
-		@for $i from 1 through 12 {
-			.col-sm-#{$i} { padding: 0 }
-		}
-
-		.filter-header {
-			.filter-title {
-				font-size: 13px;
-				font-weight: 700
+			&:last-child {
+				border-right: none;
 			}
 
+			.space {
+				display: inline-block;
+				width: 5px;
+			}
+
+			.modifier-title {
+				font-size: 12px;
+				color: #999
+			}
+
+			.form-control.input-xs {
+				width: auto;
+				display: inline-block;
+			}
 		}
 
-		.filter-body {
+	}
 
-			font-size: 11px;
+	#search-container {
 
-			.checkbox {
+		background-color: white;
+		@include box-shadow(2px, 1px, 1px, #ccc);
+		// @include border-radius(5px);
+
+		#search-title {
+			padding: {
+				top: 20px;
+				bottom: 20px;
+			}
+			color: white;
+			background-color: #222;
+		}
+
+	}
+
+	#product-grid {
+
+		// border: 2px solid #dfdfdf;
+		
+		
+
+
+		.store-item {
+
+			.product-container {
+				
+				border: {
+					top: 1px solid #dfdfdf;
+					left: 1px solid #dfdfdf;
+					bottom: 1px solid #dfdfdf;
+					right: none
+				}
+				
+			}
+		}
+	}
+
+	#filters {
+
+		.filter-content {
+
+			margin-bottom: 12px;
+
+			.row {
 				margin: 0;
 			}
 
-			.checkbox.padding {
-				margin-left: 10px;
+			@for $i from 1 through 12 {
+				.col-sm-#{$i} { padding: 0 }
 			}
 
-			.separator {
-				line-height: 30px
-			}
-
-			.applied-filter {
-				background-color: #777;
-				padding: 5px;
-				color: white;
-				font-size: 10px;
-				font-weight: 700;
-				vertical-align: baseline;
-				margin-bottom: 3px;
-				@include border-radius(4px);
-
-				.close {
-					line-height: 75%;
+			.filter-header {
+				.filter-title {
+					font-size: 13px;
+					font-weight: 700
 				}
+
 			}
 
-		}
+			.filter-body {
 
-		.filter-footer {
+				font-size: 11px;
+
+				.checkbox {
+					margin: 0;
+				}
+
+				.checkbox.padding {
+					margin-left: 10px;
+				}
+
+				.separator {
+					line-height: 30px
+				}
+
+				.applied-filter {
+					background-color: #777;
+					padding: 5px;
+					color: white;
+					font-size: 10px;
+					font-weight: 700;
+					vertical-align: baseline;
+					margin-bottom: 3px;
+					@include border-radius(4px);
+
+					.close {
+						line-height: 75%;
+					}
+				}
+
+			}
+
+			.filter-footer {
+
+			}
 
 		}
 
 	}
-
 }

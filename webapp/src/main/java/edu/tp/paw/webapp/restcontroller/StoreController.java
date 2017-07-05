@@ -1,12 +1,22 @@
 package edu.tp.paw.webapp.restcontroller;
 
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.SecurityContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,7 +25,17 @@ import org.springframework.stereotype.Component;
 
 import edu.tp.paw.interfaces.service.ICategoryService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
+import edu.tp.paw.interfaces.service.IStoreService;
+import edu.tp.paw.model.Category;
+import edu.tp.paw.model.StoreItem;
+import edu.tp.paw.model.filter.FilterBuilder;
+import edu.tp.paw.model.filter.PagedResult;
+import edu.tp.paw.model.filter.OrderFilter.SortField;
+import edu.tp.paw.model.filter.OrderFilter.SortOrder;
+import edu.tp.paw.model.filter.StoreItemStatusFilter.ItemStatusFilter;
 import edu.tp.paw.webapp.dto.CategoryListDTO;
+import edu.tp.paw.webapp.dto.PurchaseDTO;
+import edu.tp.paw.webapp.dto.StoreItemDTO;
 import edu.tp.paw.webapp.dto.StoreItemListDTO;
 
 @Path("/api/store")
@@ -26,6 +46,8 @@ public class StoreController {
 	
 	@Autowired private IStoreItemService storeItemService;
 	@Autowired private ICategoryService categoryService;
+	
+	@Autowired private IStoreService storeService;
 	
 //	private final static int MOST_SOLD = 12;
 	
@@ -53,6 +75,76 @@ public class StoreController {
 	public Response categoryTree() {
 		
 		return Response.ok(new CategoryListDTO(categoryService.getCategoryTree())).build();
+	}
+	
+	@GET
+	@Path("/search")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response all(
+			@Context SecurityContext context,
+			@DefaultValue("0") @QueryParam("pageNumber") final int pageNumber,
+			@DefaultValue("20") @QueryParam("pageSize") final int pageSize,
+			@QueryParam("query") final String query,
+			@DefaultValue("ASC") @QueryParam("sortOrder") final SortOrder sortOrder,
+			@DefaultValue("PRICE") @QueryParam("sortField") final SortField sortField,
+			@QueryParam("minPrice") BigDecimal minPrice,
+			@QueryParam("maxPrice") BigDecimal maxPrice,
+			@QueryParam("categories") List<Long> categories
+	) {
+		
+		final FilterBuilder filter = FilterBuilder
+				.create()
+				.status()
+					.status(ItemStatusFilter.ACTIVE)
+				.end().price()
+					.between(minPrice, maxPrice)
+				.end().page()
+					.size(pageSize)
+					.take(pageNumber)
+				.end().query()
+					.text(query)
+				.end().sort()
+					.by(sortField)
+					.order(sortOrder)
+				.end();
+		
+		List<Category> selectedCategories = new ArrayList<>();
+		
+		if (categories != null) {
+			// map values
+			selectedCategories = categories.stream().map( id -> categoryService.findById(id.longValue())).collect(Collectors.toList());
+			// add values to filter
+			filter.category().in(selectedCategories).end();
+		}
+		
+		final PagedResult<StoreItem> pagedResults = storeService.search(filter);
+		
+		final PagedResult<StoreItemDTO> dto = new PagedResult<>(
+				pagedResults.getNumberOfTotalResults(),
+				pagedResults.getNumberOfAvailableResults(),
+				pagedResults.getPageSize(),
+				pagedResults.getCurrentPage(),
+				pagedResults.getResults().stream().map(v -> new StoreItemDTO(v)).collect(Collectors.toList())
+		);
+		
+		// if there is just one item just show it
+//		if (pagedResults.getNumberOfAvailableResults() == 1) {
+//			
+//			return "redirect:/store/items/"+pagedResults.getResults().get(0).getId();
+//		}
+		
+		final Set<Category> similarCategories = storeService
+				.getCategoriesForResultsInHigherDepthCategories(
+						filter.getCategoryFilter().getCategories(),
+						pagedResults.getResults()
+		);
+		
+		GenericEntity<PagedResult<StoreItemDTO>> e = new GenericEntity<PagedResult<StoreItemDTO>>(dto) {
+			
+		};
+		
+		return Response.ok(e).build();
 	}
 	
 }

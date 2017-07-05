@@ -30,10 +30,10 @@
           </ul>
         </li>
       </ul>
-      <form id="navbar-search" action="http://localhost:8081/webapp/store/items/all" class="navbar-form">
+      <form id="navbar-search" ng-submit="index.performQuery()" class="navbar-form">
         <div style="width:50%" class="form-group">
           <div class="input-group">
-            <input id="navbar-query-input" type="text" placeholder="{{ 'index.search' | translate }}..." style="width:100%" name="query" value="" class="form-control"/><span style="width:1%" class="input-group-btn">
+            <input id="navbar-query-input" type="text" placeholder="{{ 'index.search' | translate }}..." style="width:100%" name="query" ng-model="index.query" class="form-control"/><span style="width:1%" class="input-group-btn">
               <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button></span>
           </div>
         </div>

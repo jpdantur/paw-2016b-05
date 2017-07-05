@@ -166,7 +166,7 @@ block content
 							b(ng-show="!item.storeItem.used") #{messageSource.getMessage('item.new', [], locale)}
 						br
 						span #{messageSource.getMessage('item.seller', [], locale)}:&nbsp;&nbsp;
-						a(ng-href='#!/id/{{item.storeItem.owner.username}}')
+						a(ng-href='#!/id/{{item.storeItem.owner.username}}/seller')
 							i.fa.fa-user
 							span &nbsp;{{item.storeItem.owner.username}}&nbsp;
 						span.puntaje
@@ -248,5 +248,19 @@ block content
 						h3.h1 #{messageSource.getMessage('item.seller.publications', [], locale)}
 						div.row
 							div.col-sm-12
-								each item in relatedItems.results
-									+product(item)
+								div.col-sm-3.store-item(ng-repeat="item in item.related")
+									div.product-container
+										a(href="#!/store/items/{{item.id}}")
+											div.image-container
+												//-if item.images.isEmpty()
+												img(ng-if="!item.images.length", ng-src="http://placehold.it/200?text=Sin+Imagen", style="width:100%;height:auto")
+												//-else
+												img(ng-if="item.images.length", ng-src="data:image/png;base64,{{item.image[0].content}}", style="width:100%;height:auto")
+										a.product-title(href="#!/store/items/{{item.id}}", title="{{item.name}}")
+											b {{item.name}}
+										p.product-description(title="{{item.description}}") {{item.description}}
+										div(star-rating, ng-model="item.rating", readonly="true", ng-class='{worst: item.rating <= 1, bad: 1 < item.rating && item.rating <= 2, ok: 2 < item.rating && item.rating <= 3, good: 3 < item.rating && item.rating <= 4, great: 4 < item.rating && item.rating <= 5}')
+										//-div.rating.static(style="font-size:13px;", data-rate-value=item.rating)
+										span.product-price $ {{item.price.toFixed(2)}}
+									//-each item in relatedItems.results
+										+product(item)

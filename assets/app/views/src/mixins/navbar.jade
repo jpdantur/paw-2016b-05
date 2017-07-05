@@ -77,10 +77,10 @@ mixin navbar(search)
 									i.fa.fa-sign-out
 									span &nbsp;#{messageSource.getMessage('index.user.logout',[],locale)}
 				if search
-					form.navbar-form#navbar-search(action="#{context.url('/store/items/all')}")
+					form.navbar-form#navbar-search(ng-submit="index.performQuery()")
 						div.form-group(style="width:50%")
 							div.input-group
-								input.form-control#navbar-query-input(type="text", placeholder="#{messageSource.getMessage('index.search',[],locale)}...", style="width:100%", name="query", value="#{query!=null?query:''}")
+								input.form-control#navbar-query-input(type="text", placeholder="#{messageSource.getMessage('index.search',[],locale)}...", style="width:100%", name="query", ng-model="index.query")
 								span.input-group-btn(style="width:1%")
 									button.btn.btn-default(type="submit")
 										i.fa.fa-search

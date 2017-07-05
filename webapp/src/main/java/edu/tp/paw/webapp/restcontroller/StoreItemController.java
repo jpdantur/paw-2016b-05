@@ -6,12 +6,14 @@ import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
@@ -38,11 +40,20 @@ import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.Category;
 import edu.tp.paw.model.Comment;
 import edu.tp.paw.model.CommentBuilder;
+import edu.tp.paw.model.Purchase;
+import edu.tp.paw.model.PurchaseStatus;
 import edu.tp.paw.model.StoreImageBuilder;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.model.User;
+import edu.tp.paw.model.filter.Filter;
+import edu.tp.paw.model.filter.FilterBuilder;
+import edu.tp.paw.model.filter.PagedResult;
+import edu.tp.paw.model.filter.StoreItemStatusFilter.ItemStatusFilter;
+import edu.tp.paw.model.filter.OrderFilter.SortField;
+import edu.tp.paw.model.filter.OrderFilter.SortOrder;
 import edu.tp.paw.webapp.dto.CommentDTO;
+import edu.tp.paw.webapp.dto.PurchaseDTO;
 import edu.tp.paw.webapp.dto.StoreItemDTO;
 import edu.tp.paw.webapp.dto.StoreItemWriteDTO;
 import edu.tp.paw.webapp.form.CommentForm;
@@ -229,6 +240,63 @@ public class StoreItemController {
 		final Comment c = storeItemService.addComment(builder);
 		
 		return Response.status(Status.CREATED).entity(new CommentDTO(c)).build();
+	}
+	
+	@GET
+	@Path("/{id}/related")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response sales(
+			@PathParam("id") long id,
+			@Context SecurityContext context,
+			@DefaultValue("0") @QueryParam("pageNumber") final int pageNumber,
+			@DefaultValue("20") @QueryParam("pageSize") final int pageSize,
+			@QueryParam("query") final String query,
+			@DefaultValue("ASC") @QueryParam("sortOrder") final SortOrder sortOrder,
+			@DefaultValue("PRICE") @QueryParam("sortField") final SortField sortField) {
+		
+		logger.trace("published request");
+		
+		final StoreItem item = storeItemService.findById(id);
+		
+		if (item == null) {
+			return Response.status(Status.NOT_FOUND).build();
+		}
+		
+		final Filter filter =
+				FilterBuilder
+				.create()
+				.query()
+					.text(query)
+				.and().status()
+					.status(ItemStatusFilter.ACTIVE)
+				.and().page()
+					.size(pageSize)
+					.take(pageNumber)
+				.and().sort()
+					.by(sortField)
+					.order(sortOrder)
+				.end().build();
+		
+		final PagedResult<StoreItem> queryResult = userService.getPublishedItems(item.getOwner(), filter);
+		
+		logger.trace("filtered");
+		
+		final PagedResult<StoreItemDTO> dtoResult = new PagedResult<StoreItemDTO>(
+				queryResult.getNumberOfTotalResults(),
+				queryResult.getNumberOfAvailableResults(),
+				queryResult.getPageSize(),
+				queryResult.getCurrentPage(),
+				queryResult.getResults().stream().map(v -> new StoreItemDTO(v)).collect(Collectors.toList())
+		);
+		
+		GenericEntity<PagedResult<StoreItemDTO>> e = new GenericEntity<PagedResult<StoreItemDTO>>(dtoResult) {
+			
+		};
+		
+		logger.trace("converted result");
+		
+		return Response.ok(e).build();
 	}
 	
 	@DELETE

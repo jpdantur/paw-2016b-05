@@ -41,7 +41,6 @@ define([
 					}
 					return defer.reject(response.data);
 				}
-				console.log(response);
 				defer.resolve(response.data);
 			}, function (error) {
 				console.log(error);

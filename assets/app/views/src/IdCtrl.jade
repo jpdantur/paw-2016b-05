@@ -1,0 +1,113 @@
+extends layouts/layout
+
+
+block content
+	include mixins/product
+	+navbar(true)
+	div.container
+		div.row
+			div.col-sm-10.col-sm-offset-1#item-container
+				div.row#id-title
+					div.col-sm-12
+						h1 {{id.params.username}}
+						a(href='#!/id/{{id.params.username}}/{{id.params.role === "seller" ? "buyer" : "seller"}}')
+							span #{messageSource.getMessage('profile.public.viewProfileOf', [], locale)}&nbsp;
+							span(ng-if="id.params.role === 'seller'") #{messageSource.getMessage('profile.public.buyer', [], locale)}
+							span(ng-if="id.params.role === 'buyer'") #{messageSource.getMessage('profile.public.seller', [], locale)}
+				div.row#product-container
+					//-if view.equals("seller")
+					div.col-sm-12(ng-if="id.params.role === 'seller'")
+						table(style="width:100%")
+							tr
+								td
+									h2.h1(style="white-space:nowrap") #{messageSource.getMessage('profile.public.score.seller', [], locale)}
+								td.text-left(style="width:100%")
+									span.h1
+										div.rating.static(style="margin-left:40px;display:inline-block;line-height:2em" ,data-rate-value=sellerRating)
+					div.col-sm-12(ng-if="id.params.role === 'seller'")
+						div.row.text-center#stats-container
+							//-if approvedSales+rejectedSales == 0
+							div.col-sm-12(ng-if="id.user.totalTransactions === 0 ")
+								span.h1 {{id.params.username}} #{messageSource.getMessage('profile.public.nosales', [], locale)}
+							//-else
+							div.col-sm-4(ng-if="id.user.totalTransactions > 0 ")
+								span.text-muted #{messageSource.getMessage('profile.public.score.seller.recommendation', [], locale)}
+								br
+								span.h1#approved-sales {{100*id.user.approvedTransactions/id.user.totalTransactions}}
+								span.h1 %
+							div.col-sm-4(ng-if="id.user.totalTransactions > 0 ")
+								span.text-muted #{messageSource.getMessage('profile.public.score.seller.approvedSales', [], locale)}
+								br
+								span.h1#approved-sales {{id.user.approvedTransactions}}
+							div.col-sm-4(ng-if="id.user.totalTransactions > 0 ")
+								span.text-muted #{messageSource.getMessage('profile.public.score.seller.rejectedSales', [], locale)}
+								br
+								span.h1#rejected-sales {{id.user.declinedTransactions}}
+					hr.col-sm-12(ng-if="id.params.role === 'seller'")
+					//-if view.equals("buyer")
+					div.col-sm-12(ng-if="id.params.role === 'buyer'")
+						table(style="width:100%")
+							tr
+								td
+									h2.h1(style="white-space:nowrap") #{messageSource.getMessage('profile.public.score.buyer', [], locale)}
+								td.text-left(style="width:100%")
+									span.h1
+										div.rating.static(style="margin-left:40px;display:inline-block;line-height:2em" ,data-rate-value=buyerRating)
+					div.col-sm-12(ng-if="id.params.role === 'buyer'")
+						div.row.text-center#stats-container
+							//- if approvedSales+rejectedSales == 0
+							span.h1(ng-if="id.user.totalPurchases === 0") {{id.params.username}} #{messageSource.getMessage('profile.public.nopurchases', [], locale)}
+							//-else
+							div.col-sm-4(ng-if="id.user.totalPurchases > 0")
+								span.text-muted #{messageSource.getMessage('profile.public.score.buyer.acceptance', [], locale)}
+								br
+								span.h1#approved-sales {{100*id.user.approvedPurchases/id.user.totalPurchases}}
+								span.h1 %
+							div.col-sm-4(ng-if="id.user.totalPurchases > 0")
+								span.text-muted #{messageSource.getMessage('profile.public.score.buyer.rejectedPurchases', [], locale)}
+								br
+								span.h1#rejected-sales {{id.user.declinedPurchases}}
+							div.col-sm-4(ng-if="id.user.totalPurchases > 0")
+								span.text-muted #{messageSource.getMessage('profile.public.score.buyer.acceptedPurchases', [], locale)}
+								br
+								span.h1#approved-sales {{id.user.approvedPurchases}}
+					//- if view.equals("seller")
+					div.col-sm-12(ng-if="id.params.role === 'seller'")
+						h2.h1 #{messageSource.getMessage('profile.public.seller.items', [], locale)}
+						div.row.text-right
+							div.col-sm-12
+								include partials/id_modifiers
+						div.row
+							div.col-sm-3.store-item(ng-repeat="item in id.itemResult.results")
+								div.product-container
+									a(href="#!/store/items/{{item.id}}")
+										div.image-container
+											img(ng-if="!item.images.length", ng-src="http://placehold.it/200?text=Sin+Imagen", style="width:100%;height:auto")
+											img(ng-if="item.images.length", ng-src="data:image/png;base64,{{item.image[0].content}}", style="width:100%;height:auto")
+											//- if item.images.isEmpty()
+											//-img(src="http://placehold.it/200?text=Sin+Imagen", style="width:100%;height:auto")
+											//- else
+											//-img(src="#{context.url('/images/get/'+item.images.iterator().next().id)}", style="width:100%;height:auto")
+									a.product-title(href="#!/store/items/{{item.id}}", title="{{item.name}}")
+										b {{item.name}}
+									p.product-description(title="{{item.description}}") {{item.description}}
+									div(star-rating, ng-model="item.rating", readonly="true", ng-class='{worst: item.rating <= 1, bad: 1 < item.rating && item.rating <= 2, ok: 2 < item.rating && item.rating <= 3, good: 3 < item.rating && item.rating <= 4, great: 4 < item.rating && item.rating <= 5}')
+									//-div.rating.static(style="font-size:13px;", data-rate-value=item.rating)
+									span.product-price $ {{item.price.toFixed(2)}}
+						div.row
+							ul.pager#filter-page
+								li.previous(ng-class="{disabled: id.itemResult.currentPage === 0}")
+									a.filter-page-action(ng-click="id.updateItemsQuery({ pageNumber: 0 })")
+										span &larr;
+										span #{messageSource.getMessage('search.filters.pagination.pagers.first', [], locale)}
+								
+								li.pre(ng-class="{disabled: id.itemResult.currentPage === 0}")
+									a.filter-page-action(ng-click="id.updateItemsQuery({ pageNumber: id.itemResult.currentPage - 1 })") #{messageSource.getMessage('search.filters.pagination.pagers.previous', [], locale)}
+								
+								li.ne(ng-class="{disabled: id.itemResult.currentPage === Math.floor(id.itemResult.numberOfTotalResults / id.itemResult.pageSize)}")
+									a.filter-page-action(ng-click="id.updateItemsQuery({ pageNumber: id.itemResult.currentPage + 1 })") #{messageSource.getMessage('search.filters.pagination.pagers.next', [], locale)}
+								
+								li.next(ng-class="{disabled: id.itemResult.currentPage === Math.floor(id.itemResult.numberOfTotalResults / id.itemResult.pageSize)}")
+									a.filter-page-action(ng-click="id.updateItemsQuery({ pageNumber: Math.floor(id.itemResult.numberOfTotalResults / profile.itemResult.pageSize) })")
+										span #{messageSource.getMessage('search.filters.pagination.pagers.last', [], locale)}
+										span &rarr;

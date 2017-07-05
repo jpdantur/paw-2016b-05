@@ -4,9 +4,9 @@ div.row
 		div.row
 			div.col-sm-12
 				h1.main-headline #{messageSource.getMessage("index.headline", [], locale)}
-				form.col-sm-offset-3#simple-search-form(action="#{context.url('/store/items/all')}")
+				form.col-sm-offset-3#simple-search-form(ng-submit="index.performQuery()")
 					div.form-group.col-sm-8
-						input.form-control.input-lg#simple-search-input(type="text", placeholder="#{messageSource.getMessage('index.search', [], locale)}...", name="query")
+						input.form-control.input-lg#simple-search-input(type="text", placeholder="#{messageSource.getMessage('index.search', [], locale)}...", name="query", ng-model="index.query")
 					div.form-group.col-sm-2
 						button.btn.btn-default.btn-lg#quick-search(type="submit")
 							i.fa.fa-search

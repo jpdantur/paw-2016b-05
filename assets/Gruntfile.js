@@ -463,7 +463,10 @@ module.exports = function (grunt) {
             }
           },
           messageSource: {
-            getMessage: function (msg) {
+            getMessage: function (msg, params) {
+              if (_.isString(params)) {
+                return "{{ '" + msg + "' | translate:" + params + " }}";
+              }
               return "{{ '" + msg + "' | translate }}";
             }
           },

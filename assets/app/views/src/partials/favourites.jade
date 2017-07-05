@@ -26,7 +26,7 @@ div.tab-pane-content
 								img.table-img(ng-if="!fav.item.images.length", style="width:40px;height:40px", ng-src="http://placehold.it/40?text=Sin+Imagen")
 								img.table-img(ng-if="fav.item.images.length", style="width:40px;height:40px", ng-src="data:image/png;base64,{{fav.item.images[0].content}}")
 						td
-							a(href='/store/items/{{fav.item.id}}') {{fav.item.name}}
+							a(href='#!/store/items/{{fav.item.id}}') {{fav.item.name}}
 							br
 							span(style="color:#900;font-weight:500") $ {{fav.item.price}}
 							span &nbsp;- 

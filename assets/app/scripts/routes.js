@@ -35,10 +35,20 @@ define([], function() {
 				controller: 'ImagesCtrl',
 				controllerAs: 'images'
 			},
+			'/store/items/all': {
+				templateUrl: 'views/AllCtrl.html',
+				controller: 'AllCtrl',
+				controllerAs: 'all'
+			},
 			'/store/items/:id': {
 				templateUrl: 'views/ItemCtrl.html',
 				controller: 'ItemCtrl',
 				controllerAs: 'item'
+			},
+			'/id/:username/:role': {
+				templateUrl: 'views/IdCtrl.html',
+				controller: 'IdCtrl',
+				controllerAs: 'id'
 			},
 			'/403': {
 				templateUrl: 'views/403.html',

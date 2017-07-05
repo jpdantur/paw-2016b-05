@@ -22,6 +22,7 @@ define([
 		self.isFavourite = null;
 		self.isPublished = null;
 		self.isPurchased = null;
+		self.related = null;
 		self.comment = {
 			rating: 2.5
 		};
@@ -35,7 +36,11 @@ define([
 			favourites: $rootScope.loggedUser ? FavouritesService.all() : Promise.resolve([]),
 			published: $rootScope.loggedUser ? ItemService.allPublished() : Promise.resolve([]),
 			purchased: $rootScope.loggedUser ? ItemService.pendingPurchases() : Promise.resolve([]),
-			comments: ItemService.comments(id)
+			comments: ItemService.comments(id),
+			related: ItemService.related(id, {
+				pageNumber: 0,
+				pageSize: 4
+			})
 		}).then(function (results) {
 			self.storeItem = results.item;
 			// self.favs = results.favourites;
@@ -51,9 +56,12 @@ define([
 
 			self.storeItem.comments = results.comments;
 
+			self.related = results.related.results;
+
 			console.log(self.isFavourite);
 			console.log(self.isPublished);
 			console.log(self.isPurchased);
+			console.log(self.related);
 			// self.favouriteIds = _.map(results.favourites, function (fav) {
 				// return {itemId: fav.item.id, favId: fav.id};
 			// });

@@ -10,11 +10,6 @@ block scripts
 			cancel: '#{messageSource.getMessage('admin.categories.create.cancel',[],locale)}'
 		};
 
-block styles
-	link(href="#{context.url('/resources/css/jquery.treegrid.css')}", rel="stylesheet")
-	link(href="#{context.url('/resources/css/admin.css')}", rel="stylesheet")
-	link(href="#{context.url('/resources/css/admin_categories.css')}", rel="stylesheet")
-
 block content
 	+navbar(false)
 	div.container-fluid

@@ -8,17 +8,9 @@ define([
 
 		var Id = {};
 
-		Id.mostSold = mostSold;
-
+		Id.byUsername = byUsername;
+		Id.profile = profile;
 		Id.published = published;
-		Id.allPublished = allPublished;
-
-		Id.findById = findById;
-		Id.update = update;
-		Id.create = create;
-
-		Id.uploadImage = uploadImage;
-
 
 		var HOST = 'localhost:8081/webapp';
 
@@ -28,16 +20,12 @@ define([
 
 		// ///////
 
-		function mostSold(limit) {
-
+		function byUsername(username) {
 			var defer = $q.defer();
 
 			$http({
 				method: 'GET',
-				url: api('/api/store/most-sold'),
-				params: {
-					limit: limit
-				}
+				url: api('/api/id/' + username)
 			})
 			.then(function (response) {
 				if (response.status >= 400) {
@@ -47,8 +35,56 @@ define([
 					}
 					return defer.reject(response.data);
 				}
-				console.log(response);
-				defer.resolve(response.data.items);
+				defer.resolve(response.data);
+			}, function (error) {
+				console.log(error);
+				defer.reject(error.data);
+			});
+
+			return defer.promise;
+		}
+
+		function profile(username) {
+			var defer = $q.defer();
+
+			$http({
+				method: 'GET',
+				url: api('/api/id/' + username + '/profile')
+			})
+			.then(function (response) {
+				if (response.status >= 400) {
+					console.log(response.status);
+					if (response.status >= 500) {
+						return defer.reject(response.data);
+					}
+					return defer.reject(response.data);
+				}
+				defer.resolve(response.data);
+			}, function (error) {
+				console.log(error);
+				defer.reject(error.data);
+			});
+
+			return defer.promise;
+		}
+
+		function published(username, query) {
+			var defer = $q.defer();
+
+			$http({
+				method: 'GET',
+				url: api('/api/id/' + username + '/published'),
+				params: query
+			})
+			.then(function (response) {
+				if (response.status >= 400) {
+					console.log(response.status);
+					if (response.status >= 500) {
+						return defer.reject(response.data);
+					}
+					return defer.reject(response.data);
+				}
+				defer.resolve(response.data);
 			}, function (error) {
 				console.log(error);
 				defer.reject(error.data);

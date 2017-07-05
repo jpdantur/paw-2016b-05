@@ -17,6 +17,10 @@ define([
 
 		self.logout = logout;
 
+		self.query = null;
+
+		self.performQuery = performQuery;
+
 		// /////////////////////////////
 	
 		// /////////////////////////////
@@ -28,5 +32,15 @@ define([
 				$location.path('/');
 			});
 		}
+
+
+		function performQuery() {
+			if ($location.path() === '/store/items/all') {
+				$scope.$broadcast('query.update', self.query);
+			} else {
+				$location.path('/store/items/all').search({query:self.query});
+			}
+		}
+
 	});
 });

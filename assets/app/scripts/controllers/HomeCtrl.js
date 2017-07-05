@@ -13,8 +13,6 @@ define([
 
 		self.items = [];
 
-		console.log(ItemService);
-
 		// ///////
 
 		ItemService.mostSold().then(function (items) {
@@ -42,8 +40,6 @@ define([
 		});
 
 		// ///////
-		
-
 
 	});
 });
