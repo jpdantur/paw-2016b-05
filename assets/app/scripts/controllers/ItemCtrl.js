@@ -6,7 +6,7 @@ define([
 	'directives/star-rating'
 ], function(siglasApp) {
 
-	siglasApp.controller('ItemCtrl', function($scope, $rootScope, $location, $route, $q, ItemService, FavouritesService) {
+	siglasApp.controller('ItemCtrl', function($scope, $rootScope, $location, $route, $q, toastr, ItemService, FavouritesService) {
 
 		console.log('ItemCtrl');
 
@@ -25,6 +25,8 @@ define([
 		self.comment = {
 			rating: 2.5
 		};
+
+		self.postComment = postComment;
 
 		// ///////
 
@@ -70,11 +72,15 @@ define([
 		
 		function postComment(valid) {
 			if (valid) {
+				console.log(self.comment);
 				ItemService.addComment(self.storeItem.id, self.comment).then(function (result) {
 					console.log(result);
+					toastr.success('Your review has been submitted');
+					self.storeItem.comments.unshift(result);
 				}, function (err) {
+					toastr.error('An error ocurred posting your review');
 					console.error(err);
-				})
+				});
 			}
 		}
 

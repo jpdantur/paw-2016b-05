@@ -36,6 +36,7 @@ import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IStoreService;
 import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.Category;
+import edu.tp.paw.model.Comment;
 import edu.tp.paw.model.CommentBuilder;
 import edu.tp.paw.model.StoreImageBuilder;
 import edu.tp.paw.model.StoreItem;
@@ -225,15 +226,9 @@ public class StoreItemController {
 		}
 		
 		final CommentBuilder builder = new CommentBuilder(user, form.getContent(), form.getRating()).item(item);
-		storeItemService.addComment(builder);
+		final Comment c = storeItemService.addComment(builder);
 		
-//		List<CommentDTO> comments = storeItemService.getComments(item).stream().map(v -> new CommentDTO(v)).collect(Collectors.toList());
-//		
-//		GenericEntity<List<CommentDTO>> e = new GenericEntity<List<CommentDTO>>(comments) {
-//			
-//		};
-		
-		return Response.status(Status.CREATED).build();
+		return Response.status(Status.CREATED).entity(new CommentDTO(c)).build();
 	}
 	
 	@DELETE
