@@ -111,7 +111,7 @@ define([
 				}]);
 			}
 		])
-		.run(function ($rootScope, $location, $route, $q, $http, $window, AuthService, amMoment) {
+		.run(function ($rootScope, $location, $route, $q, $http, $window, AuthService, FavouritesService, amMoment) {
 
 			amMoment.changeLocale('es');
 
@@ -126,7 +126,20 @@ define([
 				console.log('profile', profile);
 				if (profile) {
 					$rootScope.loggedUser = profile;
+					$rootScope.loggedUser.favourites = [];
 				}
+
+				FavouritesService.mine({
+					pageNumber: 0,
+					pageSize: 8,
+					sortOrder: 'DESC',
+					sortField: 'CREATED'
+				}).then(function (result) {
+					$rootScope.loggedUser.favourites = result.results;
+					$rootScope.loggedUser.favourites.hasMore = result.numberOfTotalResults > result.numberOfAvailableResults;
+				}, function (error) {
+					console.error(error);
+				});
 
 				// if (profile && $location.path() === '/') {
 				// 	$location.path('/dashboard');

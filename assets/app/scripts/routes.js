@@ -35,6 +35,11 @@ define([], function() {
 				controller: 'ImagesCtrl',
 				controllerAs: 'images'
 			},
+			'/store/items/:id': {
+				templateUrl: 'views/ItemCtrl.html',
+				controller: 'ItemCtrl',
+				controllerAs: 'item'
+			},
 			'/403': {
 				templateUrl: 'views/403.html',
 				controller: 'ForbiddenCtrl',

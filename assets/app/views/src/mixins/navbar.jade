@@ -24,31 +24,32 @@ mixin navbar(search)
 							| &nbsp;
 							span.caret
 						ul.dropdown-menu.dropdown-favourite
-							if !userFavourites.results.isEmpty()
-								li
-									span.fav-title #{messageSource.getMessage('index.favourite.title',[],locale)}
-							else
-								li
-									a #{messageSource.getMessage('index.favourite.empty',[],locale)}
+							//-if !userFavourites.results.isEmpty()
+							li(ng-if="loggedUser.favourites.length")
+								span.fav-title #{messageSource.getMessage('index.favourite.title',[],locale)}
+							//-else
+							li(ng-if="!loggedUser.favourites.length")
+								a #{messageSource.getMessage('index.favourite.empty',[],locale)}
 							//-each favourite in userFavourites.results
-								li
-									span.item
-										span.item-left
-										a(href="#{context.url('/store/items/'+favourite.item.id)}")
-												if favourite.item.images.isEmpty()
-													img(src="http://placehold.it/80x80")
-												else
-													img(src="#{context.url('/images/get/'+favourite.item.images.iterator().next().id)}")
+							li(ng-repeat="favourite in loggedUser.favourites")
+								span.item
+									span.item-left
+										a(ng-href="#!/store/items/{{favourite.item.id)}")
+												//-if favourite.item.images.isEmpty()
+												img(ng-if="!favourite.item.images.length", ng-src="http://placehold.it/80x80")
+												//-else
+												img(ng-if="favourite.item.images.length", ng-src="data:image/png;base64,{{favourite.item.images[0].content}}")
+												//-img(src="#{context.url('/images/get/'+favourite.item.images.iterator().next().id)}")
 											span.item-info
-												a(href="#{context.url('/store/items/'+favourite.item.id)}")
-													span #{favourite.item.name}
-												span.price $#{favourite.item.price}
-										span.item-right(title="#{messageSource.getMessage('index.favourite.remove',[],locale)}")
-											button.btn.btn-xs.btn-danger.pull-right.remove-fav(data-id="#{favourite.id}") x
+												a(href="#!/store/items/{{favourite.item.id}}")
+													span {{favourite.item.name}}
+												span.price ${{favourite.item.price.toFixed(2)}}
+									span.item-right(title="#{messageSource.getMessage('index.favourite.remove',[],locale)}")
+										button.btn.btn-xs.btn-danger.pull-right.remove-fav x
 							//-if userFavourites.numberOfTotalResults >= 8
-								li.separator
-								li.text-center
-									a(href=context.url('/profile/favourites')) #{messageSource.getMessage('index.favourite.viewAll',[],locale)}
+							li.separator(ng-if="loggedUser.favourites.hasMore")
+							li.text-center(ng-if="loggedUser.favourites.hasMore")
+								a(ng-href='#!/profile/details?tab=favourites') #{messageSource.getMessage('index.favourite.viewAll',[],locale)}
 					li(ng-if="loggedUser")
 						a.dropdown-toggle(href="#", data-toggle="dropdown")
 							span {{loggedUser.firstName}} {{loggedUser.lastName}}&nbsp;

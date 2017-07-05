@@ -9,6 +9,7 @@ define([
 		var Favourites = {};
 
 		Favourites.mine = mine;
+		Favourites.all = all;
 
 		var HOST = 'localhost:8081/webapp';
 
@@ -34,7 +35,30 @@ define([
 					}
 					return defer.reject(response.data);
 				}
-				console.log(response);
+				defer.resolve(response.data);
+			}, function (error) {
+				console.log(error);
+				defer.reject(error.data);
+			});
+
+			return defer.promise;
+		}
+
+		function all() {
+			var defer = $q.defer();
+
+			$http({
+				method: 'GET',
+				url: api('/api/me/favourites/all')
+			})
+			.then(function (response) {
+				if (response.status >= 400) {
+					console.log(response.status);
+					if (response.status >= 500) {
+						return defer.reject(response.data);
+					}
+					return defer.reject(response.data);
+				}
 				defer.resolve(response.data);
 			}, function (error) {
 				console.log(error);

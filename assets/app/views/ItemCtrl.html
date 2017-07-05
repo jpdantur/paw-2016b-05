@@ -1,0 +1,137 @@
+
+<header id="top-navbar" class="navbar navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button data-toggle="collapse" data-target="#main-navbar" class="navbar-toggle collapsed"><span class="sr-only">Toggle navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span class="icon-bar"></span></button><a href="#!/" style="font-size:2em" class="navbar-brand"><i class="fa fa-shopping-basket"></i>&nbsp;SIGLAS</a>
+    </div>
+    <nav id="navbar-content" class="collapse navbar-collapse">
+      <ul class="nav navbar-nav navbar-right">
+        <li ng-if="!loggedUser"><a ng-href="#!/auth/register?next={{index.$location.path()}}">{{ 'index.register' | translate }}</a></li>
+        <li ng-if="!loggedUser"><a ng-href="#!/auth/login?next={{index.$location.path()}}">{{ 'index.login' | translate }}</a></li>
+        <li><a ng-href="{{loggedUser ? '#!/store/sell/details' : '#!/auth/register?next=/store/sell/details'}}">{{ 'index.sell' | translate }}</a></li>
+        <li id="favourite-dropdown" ng-if="loggedUser"><a href="#" data-toggle="dropdown" title="{{ 'index.favourite.title' | translate }}" class="dropdown-toggle"><i class="fa fa-heart"></i>&nbsp;<span class="caret"></span></a>
+          <ul class="dropdown-menu dropdown-favourite">
+            <li ng-if="loggedUser.favourites.length"><span class="fav-title">{{ 'index.favourite.title' | translate }}</span></li>
+            <li ng-if="!loggedUser.favourites.length"><a>{{ 'index.favourite.empty' | translate }}</a></li>
+            <li ng-repeat="favourite in loggedUser.favourites"><span class="item"><span class="item-left"><a ng-href="#!/store/items/{{favourite.item.id)}"><img ng-if="!favourite.item.images.length" ng-src="http://placehold.it/80x80"/><img ng-if="favourite.item.images.length" ng-src="data:image/png;base64,{{favourite.item.images[0].content}}"/></a><span class="item-info"><a href="#!/store/items/{{favourite.item.id}}"><span>{{favourite.item.name}}</span></a><span class="price">${{favourite.item.price.toFixed(2)}}</span></span></span><span title="{{ 'index.favourite.remove' | translate }}" class="item-right">
+                  <button class="btn btn-xs btn-danger pull-right remove-fav">x</button></span></span></li>
+            <li ng-if="loggedUser.favourites.hasMore" class="separator"></li>
+            <li ng-if="loggedUser.favourites.hasMore" class="text-center"><a ng-href="#!/profile/details?tab=favourites">{{ 'index.favourite.viewAll' | translate }}</a></li>
+          </ul>
+        </li>
+        <li ng-if="loggedUser"><a href="#" data-toggle="dropdown" class="dropdown-toggle"><span>{{loggedUser.firstName}} {{loggedUser.lastName}}&nbsp;</span><span class="caret"></span></a>
+          <ul class="dropdown-menu">
+            <li><a ng-href="#!/profile/details" ng-click="profile.switchToTab('account')"><i class="fa fa-user"></i><span>&nbsp;{{ 'index.user.profile' | translate }}</span></a></li>
+            <li><a ng-href="#!/profile/details?tab=items" ng-click="profile.switchToTab('items')"><i class="fa fa-list"></i><span>&nbsp;{{ 'index.user.items' | translate }}</span></a></li>
+            <li><a ng-href="#!/profile/details?tab=sales" ng-click="profile.switchToTab('sales')"><i class="fa fa-suitcase"></i><span>&nbsp;{{ 'index.user.sales' | translate }}</span></a></li>
+            <li><a ng-href="#!/profile/details?tab=purchases" ng-click="profile.switchToTab('purchases')"><i class="fa fa-shopping-bag"></i><span>&nbsp;{{ 'index.user.purchases' | translate }}</span></a></li>
+            <li class="separator"></li>
+            <li><a ng-click="index.logout()"><i class="fa fa-sign-out"></i><span>&nbsp;{{ 'index.user.logout' | translate }}</span></a></li>
+          </ul>
+        </li>
+      </ul>
+      <form id="navbar-search" action="http://localhost:8081/webapp/store/items/all" class="navbar-form">
+        <div style="width:50%" class="form-group">
+          <div class="input-group">
+            <input id="navbar-query-input" type="text" placeholder="{{ 'index.search' | translate }}..." style="width:100%" name="query" value="" class="form-control"/><span style="width:1%" class="input-group-btn">
+              <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button></span>
+          </div>
+        </div>
+      </form>
+    </nav>
+  </div>
+</header>
+<div class="container">
+  <div class="row">
+    <div id="item-container" class="col-sm-10 col-sm-offset-1">
+      <div id="product-title" class="row">
+        <div class="col-sm-12">
+          <h1>{{item.storeItem.name}}</h1>
+        </div>
+      </div>
+      <div id="product-container" class="row">
+        <div class="col-sm-5"><img ng-if="!item.storeItem.images.length" src="http://placehold.it/400?text=Sin+Imagen" style="width:100%;height:auto"/>
+          <div id="carousel" ng-if="item.storeItem.images.length" data-ride="carousel" class="carousel slide">
+            <ol class="carousel-indicators">
+              <li ng-repeat="image in item.storeItem.images" data-target="#carousel" data-slide-to="{{$index}}" ng-class="{ active: $first }"></li>
+            </ol>
+            <div class="carousel-inner">
+              <div ng-class="{ active: $first }" ng-repeat="image in item.storeItem.images" class="item"><img ng-src="data:image/png;base64,{{image.content}}" alt="Imagen {{$index}}"/></div>
+            </div><a href="#carousel" data-slide="prev" ng-if="item.storeItem.images.length &gt; 1" class="left carousel-control"><span class="glyphicon glyphicon-chevron-left"></span><span class="sr-only">Previous</span></a><a href="#carousel" data-slide="next" ng-if="item.storeItem.images.length &gt; 1" class="right carousel-control"><span class="glyphicon glyphicon-chevron-right"></span><span class="sr-only">Next</span></a>
+          </div>
+        </div>
+        <div class="col-sm-7">
+          <h1>{{item.storeItem.name}}&nbsp;<a ng-if="loggedUser &amp;&amp; !item.isPublished" ng-click="item.isFavourite ? item.removeFavourite(item.isFavourite.id) : item.addFavourite(item.storeItem.id)" ng-class="{&quot;text-muted&quot;: !item.isFavourite, &quot;text-danger&quot;: item.isFavourite}"><i class="fa fa-heart"></i></a>
+          </h1>
+          <div star-rating="star-rating" ng-model="item.storeItem.rating" readonly="true" ng-class="{worst: item.storeItem.rating &lt;= 1, bad: 1 &lt; item.storeItem.rating &amp;&amp; item.storeItem.rating &lt;= 2, ok: 2 &lt; item.storeItem.rating &amp;&amp; item.storeItem.rating &lt;= 3, good: 3 &lt; item.storeItem.rating &amp;&amp; item.storeItem.rating &lt;= 4, great: 4 &lt; item.storeItem.rating &amp;&amp; item.storeItem.rating &lt;= 5}"></div><span>{{item.storeItem.sold}} {{ 'item.sold' | translate }}</span><br/><br/><span>{{ 'item.item' | translate }}:&nbsp;<b ng-show="item.storeItem.used">{{ 'item.used' | translate }}</b><b ng-show="!item.storeItem.used">{{ 'item.new' | translate }}</b></span><br/><span>{{ 'item.seller' | translate }}:&nbsp;&nbsp;</span><a ng-href="#!/id/{{item.storeItem.owner.username}}"><i class="fa fa-user"></i><span>&nbsp;{{item.storeItem.owner.username}}&nbsp;</span></a><span class="puntaje">()</span>
+          <h3 class="price">${{item.storeItem.price.toFixed(2)}}</h3>
+          <div ng-if="loggedUser &amp;&amp; item.isPurchased" class="alert alert-info">
+            <p>{{ 'item.bought.underRevision' | translate }}</p><a href="#!/profile/details?tab=purchases" class="btn btn-success btn-sm">{{ 'item.bought.viewStatus' | translate }}</a>
+          </div>
+          <button id="purchase" ng-if="loggedUser &amp;&amp; !item.isPurchased &amp;&amp; !item.isPurchased" class="btn btn-success btn-lg">{{ 'item.buy' | translate }}</button><a id="purchase" ng-if="!loggedUser" href="#!/auth/login?next={{$location.path()}}" class="btn btn-success btn-lg">) {{ 'item.buy' | translate }}</a>
+        </div>
+        <div class="col-sm-12">
+          <h3>{{ 'item.description' | translate }}</h3>
+          <p>{{item.storeItem.description}}</p>
+        </div>
+        <div class="col-sm-12">
+          <div class="well">
+            <h3>{{ 'item.comments' | translate }}</h3>
+            <form id="comment-form" ng-if="loggedUser &amp;&amp; !item.isPublished" name="commentForm" ng-submit="item.postComment(commentForm.$valid)" class="form-horizontal">
+              <div class="form-group">
+                <label for="score" class="col-sm-2 control-label">Puntaje</label>
+                <div class="col-sm-10">
+                  <div star-rating="star-rating" ng-model="item.comment.rating" ng-class="{worst: item.comment.rating &lt;= 1, bad: 1 &lt; item.comment.rating &amp;&amp; item.comment.rating &lt;= 2, ok: 2 &lt; item.comment.rating &amp;&amp; item.comment.rating &lt;= 3, good: 3 &lt; item.comment.rating &amp;&amp; item.comment.rating &lt;= 4, great: 4 &lt; item.comment.rating &amp;&amp; item.comment.rating &lt;= 5}"></div>
+                  <p class="help-block"></p>
+                </div>
+              </div>
+              <div ng-class="{ 'has-error': commentForm.content.$invalid &amp;&amp; !commentForm.content.$pristine }" class="form-group">
+                <label for="content" class="col-sm-2 control-label">{{ 'item.comment' | translate }}</label>
+                <div class="col-sm-10">
+                  <textarea id="content" name="content" placeholder="{{ 'item.comment' | translate }}" required="required" ng-maxlength="300" ng-model="item.comment.content" class="form-control"></textarea><span ng-show="commentForm.content.$error.required" class="help-block">Review is required</span><span ng-show="commentForm.content.$error.maxlength" class="help-block">Review is too long</span>
+                </div>
+              </div>
+              <div class="form-group">
+                <div class="col-sm-offset-8 col-sm-4">
+                  <button id="submit-comment" type="submit" ng-disabled="!commentForm.$valid" class="btn btn-block btn-success"><i class="fa fa-comment"></i><span>&nbsp;{{ 'item.commentAction' | translate }}</span></button>
+                </div>
+              </div>
+            </form><a ng-if="!loggedUser" ng-href="#!/auth/login?next={{$location.path()}}" class="btn btn-success"><i class="fa fa-comment"></i><span>&nbsp;{{ 'item.commentAction' | translate }}</span></a>
+            <p ng-if="!item.storeItem.comments.length" class="lead">{{ 'item.commentEmpty' | translate }}</p>
+            <div ng-repeat="comment in item.storeItem.comments" class="comment"><b class="comment-author">{{comment.user.firstName}}</b><span class="pull-right"><i class="fa fa-clock-o"></i><span>&nbsp;{{comment.created | amDateFormat: 'L LT'}}</span></span>
+              <div class="row">
+                <div class="col-sm-2 text-center"><span class="user-score">{{comment.rating}}</span>
+                  <div star-rating="star-rating" ng-model="comment.rating" readonly="true" ng-class="{worst: comment.rating &lt;= 1, bad: 1 &lt; comment.rating &amp;&amp; comment.rating &lt;= 2, ok: 2 &lt; comment.rating &amp;&amp; comment.rating &lt;= 3, good: 3 &lt; comment.rating &amp;&amp; comment.rating &lt;= 4, great: 4 &lt; comment.rating &amp;&amp; comment.rating &lt;= 5}"></div>
+                </div>
+                <div class="col-sm-10">
+                  <p>{{comment.content}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div style="margin-bottom:30px" class="col-sm-12">
+          <h3 class="h1">{{ 'item.seller.publications' | translate }}</h3>
+          <div class="row">
+            <div class="col-sm-12">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+  var messages = {
+  	addError: "{{ 'successMessages.toggleFavourite.addError' | translate }}",
+  	addSuccess: "{{ 'successMessages.toggleFavourite.addSuccess' | translate }}",
+  	removeError: "{{ 'successMessages.toggleFavourite.removeError' | translate }}",
+  	removeSuccess: "{{ 'successMessages.toggleFavourite.removeSuccess' | translate }}",
+  	buySuccess: "{{ 'successMessages.buyItem.success' | translate }}",
+  	buyError: "{{ 'successMessages.buyItem.error' | translate }}",
+  	purchaseInRevision: "{{ 'item.bought.underRevision' | translate }}",
+  	seeStatus: "{{ 'item.bought.viewStatus' | translate }}"
+  };
+  
+  
+</script>

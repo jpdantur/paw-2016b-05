@@ -9,7 +9,10 @@ define([
 		var Item = {};
 
 		Item.mostSold = mostSold;
+
 		Item.published = published;
+		Item.allPublished = allPublished;
+		Item.pendingPurchases = pendingPurchases;
 
 		Item.findById = findById;
 		Item.update = update;
@@ -17,6 +20,8 @@ define([
 
 		Item.uploadImage = uploadImage;
 
+		Item.comments = comments;
+		Item.addComment = addComment;
 
 		var HOST = 'localhost:8081/webapp';
 
@@ -72,6 +77,54 @@ define([
 					return defer.reject(response.data);
 				}
 				console.log(response);
+				defer.resolve(response.data);
+			}, function (error) {
+				console.log(error);
+				defer.reject(error.data);
+			});
+
+			return defer.promise;
+		}
+
+		function allPublished(query) {
+			var defer = $q.defer();
+
+			$http({
+				method: 'GET',
+				url: api('/api/me/published/all')
+			})
+			.then(function (response) {
+				if (response.status >= 400) {
+					console.log(response.status);
+					if (response.status >= 500) {
+						return defer.reject(response.data);
+					}
+					return defer.reject(response.data);
+				}
+				defer.resolve(response.data);
+			}, function (error) {
+				console.log(error);
+				defer.reject(error.data);
+			});
+
+			return defer.promise;
+		}
+
+		function pendingPurchases(query) {
+			var defer = $q.defer();
+
+			$http({
+				method: 'GET',
+				url: api('/api/me/purchased/pending')
+			})
+			.then(function (response) {
+				if (response.status >= 400) {
+					console.log(response.status);
+					if (response.status >= 500) {
+						return defer.reject(response.data);
+					}
+					return defer.reject(response.data);
+				}
 				defer.resolve(response.data);
 			}, function (error) {
 				console.log(error);
@@ -186,7 +239,56 @@ define([
 			});
 
 			return defer.promise;
-		};
+		}
+
+		function comments(id) {
+			var defer = $q.defer();
+
+			$http({
+				method: 'GET',
+				url: api('/api/store/item/' + id + '/comments')
+			})
+			.then(function (response) {
+				if (response.status >= 400) {
+					console.log(response.status);
+					if (response.status >= 500) {
+						return defer.reject(response.data);
+					}
+					return defer.reject(response.data);
+				}
+				defer.resolve(response.data);
+			}, function (error) {
+				console.log(error);
+				defer.reject(error.data);
+			});
+
+			return defer.promise;
+		}
+
+		function addComment(id, comment) {
+			var defer = $q.defer();
+
+			$http({
+				method: 'POST',
+				url: api('/api/store/item/' + id + '/comments'),
+				data: comment
+			})
+			.then(function (response) {
+				if (response.status >= 400) {
+					console.log(response.status);
+					if (response.status >= 500) {
+						return defer.reject(response.data);
+					}
+					return defer.reject(response.data);
+				}
+				defer.resolve(response.data);
+			}, function (error) {
+				console.log(error);
+				defer.reject(error.data);
+			});
+
+			return defer.promise;
+		}
 
 		return Item;
 	});

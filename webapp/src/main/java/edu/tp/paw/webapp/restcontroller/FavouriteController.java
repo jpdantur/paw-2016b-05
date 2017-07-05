@@ -1,6 +1,7 @@
 package edu.tp.paw.webapp.restcontroller;
 
 import java.net.URI;
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
@@ -129,6 +130,32 @@ public class FavouriteController {
 		logger.trace("converted result");
 		
 		return Response.ok(e).build();
+	}
+	
+	@GET
+	@Path("/all")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response all(@Context SecurityContext context) {
+		
+		logger.trace("published request");
+		
+		final UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken)context.getUserPrincipal(); 
+		final User user = userService.findByUsername(userDetails.getName());
+		
+		if (user == null) {
+			return Response.status(Status.FORBIDDEN).build();
+		}
+		
+		List<FavouriteDTO> favs = userService.getAllFavourites(user).stream().map(v -> new FavouriteDTO(v)).collect(Collectors.toList());
+		
+		GenericEntity<List<FavouriteDTO>> e = new GenericEntity<List<FavouriteDTO>>(favs) {
+			
+		};
+		
+		return Response.ok(
+				e
+		).build();
 	}
 	
 	@POST

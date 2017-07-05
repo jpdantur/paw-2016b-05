@@ -41,7 +41,14 @@ require.config({
 		'jquery.easing': '../../bower_components/jquery.easing/jquery.easing',
 		'jquery-treegrid': '../../bower_components/jquery-treegrid/index',
 		ngBootbox: '../../bower_components/ngBootbox/dist/ngBootbox',
-		'ng-file-upload': '../../bower_components/ng-file-upload/ng-file-upload'
+		'ng-file-upload': '../../bower_components/ng-file-upload/ng-file-upload',
+		'angular-socket-io': '../../bower_components/angular-socket-io/socket',
+		dropzone: '../../bower_components/dropzone/dist/min/dropzone.min',
+		'ng-dropzone': '../../bower_components/ng-dropzone/dist/ng-dropzone',
+		q: '../../bower_components/q/q',
+		rater: '../../bower_components/rater/rater',
+		'remarkable-bootstrap-notify': '../../bower_components/remarkable-bootstrap-notify/bootstrap-notify',
+		underscore: '../../bower_components/underscore/underscore'
 	},
 	shim: {
 		angular: {
@@ -145,7 +152,8 @@ require([
 	'angular',
 	'siglasApp',
 	'controllers/IndexCtrl',
-	'services/AuthService'
+	'services/AuthService',
+	'services/FavouritesService'
 ], function() {
 	angular.bootstrap(document, ['siglasApp']);
 });

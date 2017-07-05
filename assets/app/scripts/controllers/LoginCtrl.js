@@ -27,10 +27,23 @@ define([
 				return AuthService.fetchProfile();
 			}).then(function (profile) {
 				$rootScope.loggedUser = profile;
+				$rootScope.loggedUser.favourites = [];
 
-				console.log($location);
+				FavouritesService.mine({
+					pageNumber: 0,
+					pageSize: 8,
+					sortOrder: 'DESC',
+					sortField: 'CREATED'
+				}).then(function (result) {
+					$rootScope.loggedUser.favourites = result.results;
+					$rootScope.loggedUser.favourites.hasMore = result.numberOfTotalResults > result.numberOfAvailableResults;
+				}, function (error) {
+					console.error(error);
+				});
 
-				$location.path($location.$$search.next);
+				toastr.success('Successfully logged in');
+
+				$location.path($location.$$search.next || '/');
 			}, function (err) {
 				toastr.error('Incorrect username or password');
 				console.error(err);

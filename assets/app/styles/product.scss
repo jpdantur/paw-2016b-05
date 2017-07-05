@@ -39,35 +39,38 @@
 
 }
 
-.carousel-inner {
-	height: 300px;
+body.item {
 
-	img {
-		width: 100%;
+	.carousel-inner {
+		height: 300px;
+
+		img {
+			width: 100%;
+		}
 	}
-}
 
-.price {
-	color: #900
-}
+	.price {
+		color: #900
+	}
 
-.comment {
+	.comment {
 
-	border-top: #ddd solid 1px;
-	padding: 5px;
-	padding-top: 10px;
-	
-	.user-score {
+		border-top: #ddd solid 1px;
+		padding: 5px;
+		padding-top: 10px;
 		
-		font-size: 32px;
-		display: block;
+		.user-score {
+			
+			font-size: 32px;
+			display: block;
+
+		}
 
 	}
 
-}
-
-.add-favourite {
-	&:hover, &:focus {
-		color: inherit;
+	.add-favourite {
+		&:hover, &:focus {
+			color: inherit;
+		}
 	}
 }

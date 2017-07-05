@@ -2,6 +2,7 @@ package edu.tp.paw.webapp.restcontroller;
 
 import java.net.URI;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -12,6 +13,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
@@ -34,12 +36,15 @@ import edu.tp.paw.interfaces.service.IStoreItemService;
 import edu.tp.paw.interfaces.service.IStoreService;
 import edu.tp.paw.interfaces.service.IUserService;
 import edu.tp.paw.model.Category;
+import edu.tp.paw.model.CommentBuilder;
 import edu.tp.paw.model.StoreImageBuilder;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.model.User;
+import edu.tp.paw.webapp.dto.CommentDTO;
 import edu.tp.paw.webapp.dto.StoreItemDTO;
 import edu.tp.paw.webapp.dto.StoreItemWriteDTO;
+import edu.tp.paw.webapp.form.CommentForm;
 
 @Path("/api/store/item")
 @Component
@@ -178,6 +183,57 @@ public class StoreItemController {
 		}
 		
 		return Response.noContent().build();
+	}
+	
+	@GET
+	@Path("/{id}/comments")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response comments(@PathParam("id") long id) {
+		
+		final StoreItem item = storeItemService.findById(id);
+		
+		if (item == null) {
+			return Response.status(Status.NOT_FOUND).build();
+		}
+		
+		List<CommentDTO> comments = storeItemService.getComments(item).stream().map(v -> new CommentDTO(v)).collect(Collectors.toList());
+		
+		GenericEntity<List<CommentDTO>> e = new GenericEntity<List<CommentDTO>>(comments) {
+			
+		};
+		
+		return Response.ok(e).build();
+	}
+	
+	@POST
+	@Path("/{id}/comments")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response addComments(@PathParam("id") long id, CommentForm form, @Context SecurityContext context) {
+		
+		final UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken)context.getUserPrincipal(); 
+		final User user = userService.findByUsername(userDetails.getName());
+		
+		if (user == null) {
+			return Response.status(Status.FORBIDDEN).build();
+		}
+		
+		final StoreItem item = storeItemService.findById(id);
+		
+		if (item == null) {
+			return Response.status(Status.NOT_FOUND).build();
+		}
+		
+		final CommentBuilder builder = new CommentBuilder(user, form.getContent(), form.getRating()).item(item);
+		storeItemService.addComment(builder);
+		
+//		List<CommentDTO> comments = storeItemService.getComments(item).stream().map(v -> new CommentDTO(v)).collect(Collectors.toList());
+//		
+//		GenericEntity<List<CommentDTO>> e = new GenericEntity<List<CommentDTO>>(comments) {
+//			
+//		};
+		
+		return Response.status(Status.CREATED).build();
 	}
 	
 	@DELETE

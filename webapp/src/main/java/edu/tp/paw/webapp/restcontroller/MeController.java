@@ -1,5 +1,6 @@
 package edu.tp.paw.webapp.restcontroller;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.validation.Valid;
@@ -204,6 +205,54 @@ public class MeController {
 		};
 		
 		logger.trace("converted result");
+		
+		return Response.ok(e).build();
+	}
+	
+	@GET
+	@Path("/published/all")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response allPublished(@Context SecurityContext context) {
+		
+		logger.trace("published request");
+		
+		final UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken)context.getUserPrincipal(); 
+		final User user = userService.findByUsername(userDetails.getName());
+		
+		if (user == null) {
+			return Response.status(Status.FORBIDDEN).build();
+		}
+		
+		List<StoreItemDTO> items = userService.getAllPublishedItems(user).stream().map(v -> new StoreItemDTO(v)).collect(Collectors.toList());
+		
+		GenericEntity<List<StoreItemDTO>> e = new GenericEntity<List<StoreItemDTO>>(items) {
+			
+		};
+		
+		return Response.ok(e).build();
+	}
+	
+	@GET
+	@Path("/purchased/pending")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response allPurchased(@Context SecurityContext context) {
+		
+		logger.trace("published request");
+		
+		final UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken)context.getUserPrincipal(); 
+		final User user = userService.findByUsername(userDetails.getName());
+		
+		if (user == null) {
+			return Response.status(Status.FORBIDDEN).build();
+		}
+		
+		List<StoreItemDTO> items = userService.getPendingPurchases(user).stream().map(v -> new StoreItemDTO(v.getItem())).collect(Collectors.toList());
+		
+		GenericEntity<List<StoreItemDTO>> e = new GenericEntity<List<StoreItemDTO>>(items) {
+			
+		};
 		
 		return Response.ok(e).build();
 	}
