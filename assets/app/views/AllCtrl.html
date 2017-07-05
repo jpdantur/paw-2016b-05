@@ -116,11 +116,11 @@
       </div>
       <div class="row">
         <div class="col-sm-12">
-          <ul id="filter-page" data-page="undefined" data-last-page="undefined" class="pager">
-            <li class="previous"><a href="#" class="filter-page-action"><span>&larr;</span><span>{{ 'search.filters.pagination.pagers.first' | translate }}</span></a></li>
-            <li class="pre"><a href="#" class="filter-page-action">{{ 'search.filters.pagination.pagers.previous' | translate }}</a></li>
-            <li class="ne disabled"><a href="#" class="filter-page-action">{{ 'search.filters.pagination.pagers.next' | translate }}</a></li>
-            <li class="next disabled"><a href="#" class="filter-page-action"><span>{{ 'search.filters.pagination.pagers.last' | translate }}</span><span>&rarr;</span></a></li>
+          <ul id="filter-page" class="pager">
+            <li ng-class="{disabled: profile.itemResult.currentPage === 0}" class="previous"><a ng-click="profile.updateItemsQuery({ pageNumber: 0 })" class="filter-page-action"><span>&larr;</span><span>{{ 'search.filters.pagination.pagers.first' | translate }}</span></a></li>
+            <li ng-class="{disabled: profile.itemResult.currentPage === 0}" class="pre"><a ng-click="profile.updateItemsQuery({ pageNumber: profile.itemResult.currentPage - 1 })" class="filter-page-action">{{ 'search.filters.pagination.pagers.previous' | translate }}</a></li>
+            <li ng-class="{disabled: profile.itemResult.currentPage === Math.floor(profile.itemResult.numberOfTotalResults / profile.itemResult.pageSize)}" class="ne"><a ng-click="profile.updateItemsQuery({ pageNumber: profile.itemResult.currentPage + 1 })" class="filter-page-action">{{ 'search.filters.pagination.pagers.next' | translate }}</a></li>
+            <li ng-class="{disabled: profile.itemResult.currentPage === Math.floor(profile.itemResult.numberOfTotalResults / profile.itemResult.pageSize)}" class="next"><a ng-click="profile.updateItemsQuery({ pageNumber: Math.floor(profile.itemResult.numberOfTotalResults / profile.itemResult.pageSize) })" class="filter-page-action"><span>{{ 'search.filters.pagination.pagers.last' | translate }}</span><span>&rarr;</span></a></li>
           </ul>
         </div>
       </div>

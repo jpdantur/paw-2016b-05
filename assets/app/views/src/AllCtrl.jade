@@ -29,17 +29,19 @@ block content
 							span.product-price $ {{item.price.toFixed(2)}}
 				div.row
 					div.col-sm-12
-						ul.pager#filter-page(data-page="#{pageNumber}", data-last-page="#{lastPage}")
-							li.previous(class="#{pageNumber==0?'disabled':''}")
-									a.filter-page-action(href="#")
-										span &larr;
-										span #{messageSource.getMessage('search.filters.pagination.pagers.first', [], locale)}
-							li.pre(class="#{pageNumber==0?'disabled':''}")
-								a.filter-page-action(href="#") #{messageSource.getMessage('search.filters.pagination.pagers.previous', [], locale)}
-							li.ne(class="#{pageNumber==lastPage?'disabled':''}")
-								a.filter-page-action(href="#") #{messageSource.getMessage('search.filters.pagination.pagers.next', [], locale)}
-							li.next(class="#{pageNumber==lastPage?'disabled':''}")
-									a.filter-page-action(href="#")
-										span #{messageSource.getMessage('search.filters.pagination.pagers.last', [], locale)}
-										span &rarr;
-								
+						ul.pager#filter-page
+							li.previous(ng-class="{disabled: profile.itemResult.currentPage === 0}")
+								a.filter-page-action(ng-click="profile.updateItemsQuery({ pageNumber: 0 })")
+									span &larr;
+									span #{messageSource.getMessage('search.filters.pagination.pagers.first', [], locale)}
+							
+							li.pre(ng-class="{disabled: profile.itemResult.currentPage === 0}")
+								a.filter-page-action(ng-click="profile.updateItemsQuery({ pageNumber: profile.itemResult.currentPage - 1 })") #{messageSource.getMessage('search.filters.pagination.pagers.previous', [], locale)}
+							
+							li.ne(ng-class="{disabled: profile.itemResult.currentPage === Math.floor(profile.itemResult.numberOfTotalResults / profile.itemResult.pageSize)}")
+								a.filter-page-action(ng-click="profile.updateItemsQuery({ pageNumber: profile.itemResult.currentPage + 1 })") #{messageSource.getMessage('search.filters.pagination.pagers.next', [], locale)}
+							
+							li.next(ng-class="{disabled: profile.itemResult.currentPage === Math.floor(profile.itemResult.numberOfTotalResults / profile.itemResult.pageSize)}")
+								a.filter-page-action(ng-click="profile.updateItemsQuery({ pageNumber: Math.floor(profile.itemResult.numberOfTotalResults / profile.itemResult.pageSize) })")
+									span #{messageSource.getMessage('search.filters.pagination.pagers.last', [], locale)}
+									span &rarr;

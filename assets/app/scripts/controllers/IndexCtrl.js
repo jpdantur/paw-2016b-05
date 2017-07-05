@@ -17,7 +17,7 @@ define([
 
 		self.logout = logout;
 
-		self.query = null;
+		self.query = $location.search().query;
 
 		self.performQuery = performQuery;
 
@@ -38,7 +38,7 @@ define([
 			if ($location.path() === '/store/items/all') {
 				$scope.$broadcast('query.update', self.query);
 			} else {
-				$location.path('/store/items/all').search({query:self.query});
+				$location.path('/store/items/all').search({query: self.query});
 			}
 		}
 

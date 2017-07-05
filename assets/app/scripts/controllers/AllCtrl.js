@@ -14,13 +14,19 @@ define([
 			pageNumber: 0,
 			pageSize: 20,
 			query: '',
-			status: 'ANY',
 			sortOrder: 'ASC',
 			sortField: 'PRICE',
 			minPrice: null,
 			maxPrice: null,
 			categories: []
-		}, $location.search());
+		}, _.mapValues($location.search(), function (val) {
+			if (isFinite(val)) {
+				return parseInt(val, 10);
+			}
+			return val;
+		}));
+
+		console.log(self.itemsQuery);
 
 		self.itemsLoading = false;
 		self.itemResult = {};
