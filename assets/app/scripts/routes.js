@@ -19,6 +19,16 @@ define([], function() {
 				controller: 'RegisterCtrl',
 				controllerAs: 'register'
 			},
+			'/auth/forgot-pass': {
+				templateUrl: 'views/ForgotPassCtrl.html',
+				controller: 'ForgotPassCtrl',
+				controllerAs: 'pass'
+			},
+			'/auth/reset-pass': {
+				templateUrl: 'views/ResetPassCtrl.html',
+				controller: 'ResetPassCtrl',
+				controllerAs: 'reset'
+			},
 			'/profile/details': {
 				templateUrl: 'views/ProfileCtrl.html',
 				controller: 'ProfileCtrl',

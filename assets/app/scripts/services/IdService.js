@@ -4,7 +4,7 @@ define([
 	'siglasApp'
 ], function (siglasApp) {
 
-	siglasApp.service('IdService', function($http, $q, localStorageService, jwtHelper) {
+	siglasApp.service('IdService', function($http, $q, localStorageService, jwtHelper, HOST) {
 
 		var Id = {};
 
@@ -12,7 +12,7 @@ define([
 		Id.profile = profile;
 		Id.published = published;
 
-		var HOST = 'localhost:8081/webapp';
+		// var HOST = 'localhost:8081/webapp';
 
 		var api = function api(path) {
 			return 'http://' + HOST + path;

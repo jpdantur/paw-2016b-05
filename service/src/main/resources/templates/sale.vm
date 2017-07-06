@@ -59,9 +59,9 @@
       </table>
 			<p>
 				Acceda a la informacion de la venta haciendo click aquí<br/>
-        <a href="${url}/profile/sales" class="btn btn-primary">Ver Venta</a>
+        <a href="${url}/#!/profile/details?tab=sales" class="btn btn-primary">Ver Venta</a>
 			</p>
-      <p>Si no puede acceder, copie y pegue el siguiente link en su navegador <a href="${url}/profile/sales">${url}/profile/sales</a></p>
+      <p>Si no puede acceder, copie y pegue el siguiente link en su navegador <a href="${url}/#!/profile/details?tab=sales">${url}/#!/profile/details?tab=sales</a></p>
 		</div>
 	</body>
 

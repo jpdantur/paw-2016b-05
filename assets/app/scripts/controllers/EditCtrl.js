@@ -5,7 +5,7 @@ define([
 	'services/CategoryService'
 ], function(siglasApp) {
 
-	siglasApp.controller('EditCtrl', function($scope, $rootScope, $location, $q, $route, ItemService, CategoryService) {
+	siglasApp.controller('EditCtrl', function($scope, $rootScope, $location, $q, $route, ItemService, CategoryService, toastr) {
 
 		console.log('EditCtrl');
 
@@ -24,6 +24,8 @@ define([
 
 		self.selectCategory = selectCategory;
 
+		self.submit = submit;
+
 		// ///////
 
 		$q.all({
@@ -35,28 +37,28 @@ define([
 			self.categories = result.category;
 			self.categoryPath.push(self.categories);
 
-			itemCategoryLookup(self.categories, 1, function (category) {
-				console.log(category);
-			});
+			itemCategoryLookup(self.categories, 1);
+
+			console.log(self.selectedCategory);
 
 		}, function (err) {
 			console.error(err);
 		});
 		// ///////
 
-		function itemCategoryLookup(categories, depth, cb) {
-			var stop = false;
+		var stop = false;
+
+		function itemCategoryLookup(categories, depth) {
 			_.each(categories, function (category) {
 				if (stop) {
 					return;
 				}
 				if (category.id === self.item.category.id) {
 					stop = true;
-					selectCategory(category, depth);
-					return cb(category);
+					return selectCategory(category, depth);
 				}
 				selectCategory(category, depth);
-				itemCategoryLookup(category.children, depth + 1, cb);
+				itemCategoryLookup(category.children, depth + 1);
 			});
 		}
 
@@ -76,6 +78,21 @@ define([
 			self.highlighted = _.map(self.categoryPath, function (group) {
 				return group[0].parent;
 			});
+		}
+
+		function submit(valid) {
+			if (valid) {
+				_.extend(self.item, {category: self.selectedCategory.id});
+				console.log(self.item);
+				ItemService.update(self.item).then(function (result) {
+					console.log(result);
+					toastr.success('Item successfully updated');
+					// $location.path('/store/sell/images').search({id: result.id});
+				}, function (err) {
+					console.error(err);
+					toastr.error('An error ocurred. Please try again');
+				});
+			}
 		}
 
 	});

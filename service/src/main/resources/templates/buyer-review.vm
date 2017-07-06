@@ -92,9 +92,9 @@ h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
       </p>
 			<p>
 				Acceda a la informacion de la venta haciendo click aquí<br/>
-        <a href="${url}/profile/purchases" class="btn btn-primary">Ver Venta</a>
+        <a href="${url}/#!/profile/details?tab=purchases" class="btn btn-primary">Ver Venta</a>
 			</p>
-      <p>Si no puede acceder, copie y pegue el siguiente link en su navegador <a href="${url}/profile/purchases">${url}/profile/purchases</a></p>
+      <p>Si no puede acceder, copie y pegue el siguiente link en su navegador <a href="${url}/#!/profile/details?tab=purchase">${url}/#!/profile/details?tab=purchase</a></p>
 		</div>
 	</body>
 

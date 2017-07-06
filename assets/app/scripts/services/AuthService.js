@@ -1,10 +1,11 @@
 'use strict';
 
 define([
-	'siglasApp'
+	'siglasApp',
+	'services/IdService'
 ], function (siglasApp) {
 
-	siglasApp.service('AuthService', function($http, $q, localStorageService, jwtHelper) {
+	siglasApp.service('AuthService', function($http, $q, localStorageService, jwtHelper, IdService, md5, HOST) {
 
 		var Auth = {};
 
@@ -13,11 +14,16 @@ define([
 		Auth.syncWithLocalStorage = syncWithLocalStorage;
 		Auth.fetchProfile = fetchProfile;
 		Auth.logout = logout;
+		Auth.forgotPass = forgotPass;
+
+		Auth.resetPassword = resetPassword;
+
+		Auth.isPasswordTokenValid = isPasswordTokenValid;
 
 		Auth.isTokenValid = isTokenValid;
 
 
-		var HOST = 'localhost:8081/webapp';
+		// var HOST = 'localhost:8081/webapp';
 
 		var api = function api(path) {
 			return 'http://' + HOST + path;
@@ -177,6 +183,33 @@ define([
 			return defer.promise;
 		}
 
+		function forgotPass(email) {
+			var defer = $q.defer();
+
+			$http({
+				method: 'POST',
+				url: api('/api/auth/forgot-pass'),
+				data: {
+					email: email
+				}
+			})
+			.then(function (response) {
+				if (response.status >= 400) {
+					console.log(response.status);
+					if (response.status >= 500) {
+						return defer.reject(response.data);
+					}
+					return defer.reject(response.data);
+				}
+				defer.resolve(response.data);
+			}, function (error) {
+				console.log(error);
+				defer.reject(error.data);
+			});
+
+			return defer.promise;
+		}
+
 		function fetchProfile() {
 
 			var defer = $q.defer();
@@ -264,30 +297,76 @@ define([
 			defer.resolve();
 
 			return defer.promise;
-
-			// $http({
-			// 	method: 'POST',
-			// 	url: api('/v1/auth/logout')
-			// })
-			// .then(function (response) {
-			// 	if (response.status >= 400) {
-			// 		console.log(response.status);
-			// 		if (response.status >= 500) {
-			// 			return defer.reject(response.data);
-			// 		}
-			// 		return defer.reject(response.data);
-			// 	}
-
-				
-
-			// 	defer.resolve();
-			// }, function (error) {
-			// 	console.log(error);
-			// 	defer.reject(error.data);
-			// });
-
-			// return defer.promise;
 		}
+
+		var MAX_EXPIRY = 3 * 60 * 60 * 1000;
+
+		function isPasswordTokenValid(username, token) {
+			var defer = $q.defer();
+
+			IdService.profile(username).then(function (result) {
+
+				var timestamp = Date.now();
+				var hexTimestamp = timestamp.toString(16);
+				var usernameHash = md5.createHash(username);
+				var generatedToken = hexTimestamp + usernameHash;
+
+				if (generatedToken.length !== token.length) {
+					return defer.reject('INVALID');
+				}
+
+				var tokenTimestamp = parseInt(token.substr(0, hexTimestamp.length), 16);
+
+				if (tokenTimestamp - timestamp > 0) {
+					return defer.reject('INVALID');
+				}
+
+				if (timestamp - tokenTimestamp > MAX_EXPIRY) {
+					return defer.reject('EXPIRED');
+				}
+
+				var tokenUsername = generatedToken.substr(hexTimestamp.length);
+
+				if (tokenUsername === token.substr(hexTimestamp.length)) {
+					return defer.resolve();
+				}
+
+				return defer.reject('INVALID');
+
+			}, function (err) {
+				defer.reject(err);
+			});
+
+			return defer.promise;
+		}
+
+		function resetPassword(username, passwords) {
+
+			var defer = $q.defer();
+
+			$http({
+				method: 'PUT',
+				url: api('/api/id/' + username + '/reset-password'),
+				data: JSON.stringify(passwords)
+			})
+			.then(function (response) {
+				if (response.status >= 400) {
+					console.log(response.status);
+					if (response.status >= 500) {
+						return defer.reject(response.data);
+					}
+					return defer.reject(response.data);
+				}
+				defer.resolve(response);
+			}, function (error) {
+				console.log(error);
+				defer.reject(error);
+			});
+
+			return defer.promise;
+		}
+
+		// http://pawserver.it.itba.edu.ar/paw-2016b-05/auth/reset-pass?token=15d165ca3f152902899b410eb0e3ccd55686ba63b21&username=mgoffan
 
 		return Auth;
 	});

@@ -83,7 +83,7 @@ block content
 									a(href="#!/store/items/{{item.id}}")
 										div.image-container
 											img(ng-if="!item.images.length", ng-src="http://placehold.it/200?text=Sin+Imagen", style="width:100%;height:auto")
-											img(ng-if="item.images.length", ng-src="data:image/png;base64,{{item.image[0].content}}", style="width:100%;height:auto")
+											img(ng-if="item.images.length", ng-src="data:image/png;base64,{{item.images[0].content}}", style="width:100%;height:auto")
 											//- if item.images.isEmpty()
 											//-img(src="http://placehold.it/200?text=Sin+Imagen", style="width:100%;height:auto")
 											//- else

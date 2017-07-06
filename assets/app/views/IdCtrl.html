@@ -8,7 +8,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li ng-if="!loggedUser"><a ng-href="#!/auth/register?next={{index.$location.path()}}">{{ 'index.register' | translate }}</a></li>
         <li ng-if="!loggedUser"><a ng-href="#!/auth/login?next={{index.$location.path()}}">{{ 'index.login' | translate }}</a></li>
-        <li><a ng-href="{{loggedUser ? '#!/store/sell/details' : '#!/auth/register?next=/store/sell/details'}}">{{ 'index.sell' | translate }}</a></li>
+        <li><a ng-href="{{loggedUser ? '#!/store/sell/details?next=' + index.$location.path() : '#!/auth/register?next=/store/sell/details'}}">{{ 'index.sell' | translate }}</a></li>
         <li id="favourite-dropdown" ng-if="loggedUser"><a href="#" data-toggle="dropdown" title="{{ 'index.favourite.title' | translate }}" class="dropdown-toggle"><i class="fa fa-heart"></i>&nbsp;<span class="caret"></span></a>
           <ul class="dropdown-menu dropdown-favourite">
             <li ng-if="loggedUser.favourites.length"><span class="fav-title">{{ 'index.favourite.title' | translate }}</span></li>
@@ -16,7 +16,7 @@
             <li ng-repeat="favourite in loggedUser.favourites"><span class="item"><span class="item-left"><a ng-href="#!/store/items/{{favourite.item.id)}"><img ng-if="!favourite.item.images.length" ng-src="http://placehold.it/80x80"/><img ng-if="favourite.item.images.length" ng-src="data:image/png;base64,{{favourite.item.images[0].content}}"/></a><span class="item-info"><a href="#!/store/items/{{favourite.item.id}}"><span>{{favourite.item.name}}</span></a><span class="price">${{favourite.item.price.toFixed(2)}}</span></span></span><span title="{{ 'index.favourite.remove' | translate }}" class="item-right">
                   <button ng-click="index.removeFavourite(favourite.id)" class="btn btn-xs btn-danger pull-right remove-fav">x</button></span></span></li>
             <li ng-if="loggedUser.favourites.hasMore" class="separator"></li>
-            <li ng-if="loggedUser.favourites.hasMore" class="text-center"><a ng-href="#!/profile/details?tab=favourites">{{ 'index.favourite.viewAll' | translate }}</a></li>
+            <li ng-if="loggedUser.favourites.hasMore" class="text-center"><a ng-href="#!/profile/details?tab=favourites" ng-click="profile.switchToTab('favourites')">{{ 'index.favourite.viewAll' | translate }}</a></li>
           </ul>
         </li>
         <li ng-if="loggedUser"><a href="#" data-toggle="dropdown" class="dropdown-toggle"><span>{{loggedUser.firstName}} {{loggedUser.lastName}}&nbsp;</span><span class="caret"></span></a>
@@ -112,7 +112,7 @@
           <div class="row">
             <div ng-repeat="item in id.itemResult.results" class="col-sm-3 store-item">
               <div class="product-container"><a href="#!/store/items/{{item.id}}">
-                  <div class="image-container"><img ng-if="!item.images.length" ng-src="http://placehold.it/200?text=Sin+Imagen" style="width:100%;height:auto"/><img ng-if="item.images.length" ng-src="data:image/png;base64,{{item.image[0].content}}" style="width:100%;height:auto"/>
+                  <div class="image-container"><img ng-if="!item.images.length" ng-src="http://placehold.it/200?text=Sin+Imagen" style="width:100%;height:auto"/><img ng-if="item.images.length" ng-src="data:image/png;base64,{{item.images[0].content}}" style="width:100%;height:auto"/>
                   </div></a><a href="#!/store/items/{{item.id}}" title="{{item.name}}" class="product-title"><b>{{item.name}}</b></a>
                 <p title="{{item.description}}" class="product-description">{{item.description}}</p>
                 <div star-rating="star-rating" ng-model="item.rating" readonly="true" ng-class="{worst: item.rating &lt;= 1, bad: 1 &lt; item.rating &amp;&amp; item.rating &lt;= 2, ok: 2 &lt; item.rating &amp;&amp; item.rating &lt;= 3, good: 3 &lt; item.rating &amp;&amp; item.rating &lt;= 4, great: 4 &lt; item.rating &amp;&amp; item.rating &lt;= 5}"></div><span class="product-price">$ {{item.price.toFixed(2)}}</span>

@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -38,6 +39,7 @@ import edu.tp.paw.webapp.dto.CommentDTO;
 import edu.tp.paw.webapp.dto.StoreItemDTO;
 import edu.tp.paw.webapp.dto.UserBriefDTO;
 import edu.tp.paw.webapp.dto.UserDTO;
+import edu.tp.paw.webapp.form.ChangePasswordForm;
 
 @Path("/api/id")
 @Component
@@ -151,5 +153,31 @@ public class UserController {
 		logger.trace("converted result");
 		
 		return Response.ok(e).build();
+	}
+	
+	@PUT
+	@Path("/{username}/reset-password")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response updatePassword(
+			@PathParam("username") String username,
+			final ChangePasswordForm form) {
+		
+		final User user = userService.findByUsername(username);
+		
+		if (user == null) {
+			return Response.status(Status.NOT_FOUND).build();
+		}
+		
+		if (!form.getPassword().equals(form.getRepeatPassword())) {
+			return Response.status(Status.CONFLICT).build();
+		}
+		
+		if (userService.changePassword(user, form.getPassword())) {
+			return Response.noContent().build();
+		}
+		
+		return Response.status(Status.INTERNAL_SERVER_ERROR).build();
+		
 	}
 }

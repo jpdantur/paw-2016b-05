@@ -17,7 +17,7 @@ mixin navbar(search)
 					li(ng-if="!loggedUser")
 						a(ng-href="#!/auth/login?next={{index.$location.path()}}") #{messageSource.getMessage('index.login', [], locale)}
 					li
-						a(ng-href="{{loggedUser ? '#!/store/sell/details' : '#!/auth/register?next=/store/sell/details'}}") #{messageSource.getMessage('index.sell', [], locale)}
+						a(ng-href="{{loggedUser ? '#!/store/sell/details?next=' + index.$location.path() : '#!/auth/register?next=/store/sell/details'}}") #{messageSource.getMessage('index.sell', [], locale)}
 					li#favourite-dropdown(ng-if="loggedUser")
 						a.dropdown-toggle(href="#", data-toggle="dropdown", title="#{messageSource.getMessage('index.favourite.title',[],locale)}")
 							i.fa.fa-heart
@@ -49,7 +49,7 @@ mixin navbar(search)
 							//-if userFavourites.numberOfTotalResults >= 8
 							li.separator(ng-if="loggedUser.favourites.hasMore")
 							li.text-center(ng-if="loggedUser.favourites.hasMore")
-								a(ng-href='#!/profile/details?tab=favourites') #{messageSource.getMessage('index.favourite.viewAll',[],locale)}
+								a(ng-href='#!/profile/details?tab=favourites', ng-click="profile.switchToTab('favourites')") #{messageSource.getMessage('index.favourite.viewAll',[],locale)}
 					li(ng-if="loggedUser")
 						a.dropdown-toggle(href="#", data-toggle="dropdown")
 							span {{loggedUser.firstName}} {{loggedUser.lastName}}&nbsp;

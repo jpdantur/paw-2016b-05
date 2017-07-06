@@ -4,6 +4,7 @@ import java.net.URI;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -32,6 +33,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
 
+import antlr.Token;
 import edu.tp.paw.interfaces.service.ICategoryService;
 import edu.tp.paw.interfaces.service.IImageService;
 import edu.tp.paw.interfaces.service.IStoreItemService;
@@ -41,10 +43,12 @@ import edu.tp.paw.model.Category;
 import edu.tp.paw.model.Comment;
 import edu.tp.paw.model.CommentBuilder;
 import edu.tp.paw.model.Purchase;
+import edu.tp.paw.model.PurchaseBuilder;
 import edu.tp.paw.model.PurchaseStatus;
 import edu.tp.paw.model.StoreImageBuilder;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
+import edu.tp.paw.model.StoreItemStatus;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.filter.Filter;
 import edu.tp.paw.model.filter.FilterBuilder;
@@ -52,11 +56,13 @@ import edu.tp.paw.model.filter.PagedResult;
 import edu.tp.paw.model.filter.StoreItemStatusFilter.ItemStatusFilter;
 import edu.tp.paw.model.filter.OrderFilter.SortField;
 import edu.tp.paw.model.filter.OrderFilter.SortOrder;
+import edu.tp.paw.webapp.auth.TokenHelper;
 import edu.tp.paw.webapp.dto.CommentDTO;
 import edu.tp.paw.webapp.dto.PurchaseDTO;
 import edu.tp.paw.webapp.dto.StoreItemDTO;
 import edu.tp.paw.webapp.dto.StoreItemWriteDTO;
 import edu.tp.paw.webapp.form.CommentForm;
+import io.jsonwebtoken.Claims;
 
 @Path("/api/store/item")
 @Component
@@ -71,6 +77,8 @@ public class StoreItemController {
 	@Autowired private IImageService imageService;
 	
 	@Context private UriInfo uriInfo;
+	
+	@Autowired private TokenHelper tokenHelper;
 	
 	@POST
 	@Path("/")
@@ -102,7 +110,10 @@ public class StoreItemController {
 	@GET
 	@Path("/{id}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response byId(@PathParam("id") long id) {
+	public Response byId(
+			@PathParam("id") long id,
+			@Context SecurityContext context,
+			@Context HttpServletRequest request) {
 		
 		final StoreItem item = storeItemService.findById(id);
 		
@@ -110,7 +121,28 @@ public class StoreItemController {
 			return Response.status(Status.NOT_FOUND).build();
 		}
 		
-		return Response.ok(new StoreItemDTO(item)).build();
+		if (item.getStatus() == StoreItemStatus.ACTIVE) {
+			return Response.ok(new StoreItemDTO(item)).build();
+		}
+		
+		String auth = request.getHeader("Authorization");
+		
+		if (auth == null || auth.trim().equals("") || !auth.toLowerCase().startsWith("bearer ")) {
+			return Response.status(Status.UNAUTHORIZED).build();
+		}
+		
+		Claims claims = tokenHelper.decodeToken(auth.substring(7)); 
+		final User user = userService.findByUsername(claims.getSubject());
+		
+		if (user == null) {
+			return Response.status(Status.FORBIDDEN).build();
+		}
+		
+		if (user.getUsername().equals(item.getOwner().getUsername())) {
+			return Response.ok(new StoreItemDTO(item)).build();
+		}
+		
+		return Response.status(Status.FORBIDDEN).build();
 	}
 	
 	@PUT
@@ -171,10 +203,6 @@ public class StoreItemController {
 		}
 		
 		List<FormDataBodyPart> bodyParts = multiPart.getFields("images");
-
-		StringBuffer fileDetails = new StringBuffer("");
-
-		/* Save multiple files */
 		
 		imageService.removeImagesForItem(item);
 		
@@ -195,6 +223,35 @@ public class StoreItemController {
 		}
 		
 		return Response.noContent().build();
+	}
+	
+	@PUT
+	@Path("/{id}/purchase")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	public Response purchase(@PathParam("id") long id, @Context SecurityContext context) {
+		
+		final UsernamePasswordAuthenticationToken userDetails = (UsernamePasswordAuthenticationToken)context.getUserPrincipal(); 
+		final User user = userService.findByUsername(userDetails.getName());
+		
+		if (user == null) {
+			return Response.status(Status.FORBIDDEN).build();
+		}
+		
+		final StoreItem item = storeItemService.findById(id);
+		
+		if (item == null) {
+			return Response.status(Status.NOT_FOUND).build();
+		}
+		
+		final PurchaseBuilder builder = new PurchaseBuilder(user, item);
+		final Purchase purchase = storeService.purchase(builder);
+		logger.trace(purchase.toString());
+		if (purchase != null) {
+			return Response.ok(new PurchaseDTO(purchase)).build();
+		}
+		
+		return Response.status(Status.INTERNAL_SERVER_ERROR).build();
 	}
 	
 	@GET

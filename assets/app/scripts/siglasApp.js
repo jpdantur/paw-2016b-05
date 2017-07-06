@@ -18,7 +18,8 @@ define([
 	'angular-moment',
 	'angular-sanitize',
 	'ngBootbox',
-	'ng-file-upload'
+	'ng-file-upload',
+	'angular-md5'
 ], function(config, dependencyResolverFor, protectedRoute, i18n) {
 		var siglasApp = angular.module('siglasApp', [
 			'ngRoute',
@@ -31,9 +32,11 @@ define([
 			'ui.bootstrap',
 			'angularMoment',
 			'ngBootbox',
-			'ngFileUpload'
+			'ngFileUpload',
+			'angular-md5'
 		]);
 		siglasApp
+		.constant('HOST', 'localhost:8081/webapp')
 		.config([
 			'$routeProvider',
 			'$controllerProvider',
@@ -127,19 +130,24 @@ define([
 				if (profile) {
 					$rootScope.loggedUser = profile;
 					$rootScope.loggedUser.favourites = [];
-				}
 
-				FavouritesService.mine({
-					pageNumber: 0,
-					pageSize: 8,
-					sortOrder: 'DESC',
-					sortField: 'CREATED'
-				}).then(function (result) {
-					$rootScope.loggedUser.favourites = result.results;
-					$rootScope.loggedUser.favourites.hasMore = result.numberOfTotalResults > result.numberOfAvailableResults;
-				}, function (error) {
-					console.error(error);
-				});
+					FavouritesService.mine({
+						pageNumber: 0,
+						pageSize: 8,
+						sortOrder: 'DESC',
+						sortField: 'CREATED'
+					}).then(function (result) {
+						$rootScope.loggedUser.favourites = result.results;
+						$rootScope.loggedUser.favourites.hasMore = result.numberOfTotalResults > result.numberOfAvailableResults;
+					}, function (error) {
+						console.error(error);
+					});
+
+					if ((/^\/auth/).test($location.path())) {
+						$location.path('/');
+					}
+				}
+				
 
 				// if (profile && $location.path() === '/') {
 				// 	$location.path('/dashboard');
@@ -149,7 +157,7 @@ define([
 
 				$rootScope.loading = false;
 
-				$rootScope.$broadcast('siglas.login', $rootScope.loggedUser);
+				// $rootScope.$broadcast('siglas.login', $rootScope.loggedUser);
 			}
 
 			$rootScope.loading = true;

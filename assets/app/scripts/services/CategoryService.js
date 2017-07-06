@@ -4,14 +4,14 @@ define([
 	'siglasApp'
 ], function (siglasApp) {
 
-	siglasApp.service('CategoryService', function($http, $q, localStorageService, jwtHelper) {
+	siglasApp.service('CategoryService', function($http, $q, localStorageService, jwtHelper, HOST) {
 
 		var Category = {};
 
 		Category.tree = tree;
 
 
-		var HOST = 'localhost:8081/webapp';
+		// var HOST = 'localhost:8081/webapp';
 
 		var api = function api(path) {
 			return 'http://' + HOST + path;

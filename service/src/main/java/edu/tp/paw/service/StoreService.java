@@ -57,19 +57,17 @@ public class StoreService implements IStoreService {
 		
 		if (purchase != null) {
 			
+			logger.trace("purchase is in db");
+			
 			emailService.notifySale(builder.getItem().getOwner(), purchase);
+			
+			logger.trace("email sent");
 			
 			return purchase;
 			
 		}
 		
 		return null;
-		
-//		if (!userService.purchase(builder)) {
-//			return false;
-//		}
-		
-//		return storeItemService.increaseSellCount(builder.getItem());
 	}
 
 	@Override

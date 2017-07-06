@@ -11,8 +11,6 @@ define([
 
 		var self = this;
 
-		console.log($route);
-
 		self.$route = $route;
 		self.$location = $location;
 

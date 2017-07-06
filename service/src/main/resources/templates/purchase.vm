@@ -59,9 +59,9 @@
       </table>
 			<p>
 				Acceda a la informacion de la compra haciendo click aquí<br/>
-        <a href="${url}/profile/purchases" class="btn btn-primary">Ver Compra</a>
+        <a href="${url}/#!/profile/details?tab=purchases" class="btn btn-primary">Ver Compra</a>
 			</p>
-      <p>Si no puede acceder, copie y pegue el siguiente link en su navegador <a href="${url}/profile/purchases">${url}/profile/purchases</a></p>
+      <p>Si no puede acceder, copie y pegue el siguiente link en su navegador <a href="${url}/#!/profile/details?tab=purchases">${url}/#!/profile/details?tab=purchases</a></p>
 		</div>
 	</body>
 

@@ -21,6 +21,7 @@ import org.apache.velocity.runtime.resource.loader.ClasspathResourceLoader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.velocity.VelocityEngineUtils;
@@ -40,12 +41,11 @@ public class EmailService implements IEmailService {
 	private final static String FROM = "siglas.commerce.paw@gmail.com";
 	private final static String USER = "siglas.commerce.paw@gmail.com";
 	private final static String PASS = "SiglasCommercePaw.1";
-	private final static String URL = "http://pawserver.it.itba.edu.ar/paw-2016b-05";
+	@Value("${siglas.host}") private String URL;
 	
 	private Session session;
 	private Properties props = new Properties();
 	private VelocityEngine velocityEngine;
-
 	
 	@Autowired private IPasswordRecoveryService passwordRecoveryService;
 

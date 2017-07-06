@@ -30,74 +30,46 @@
           </ul>
         </li>
       </ul>
+      <form id="navbar-search" ng-submit="index.performQuery()" class="navbar-form">
+        <div style="width:50%" class="form-group">
+          <div class="input-group">
+            <input id="navbar-query-input" type="text" placeholder="{{ 'index.search' | translate }}..." style="width:100%" name="query" ng-model="index.query" class="form-control"/><span style="width:1%" class="input-group-btn">
+              <button type="submit" class="btn btn-default"><i class="fa fa-search"></i></button></span>
+          </div>
+        </div>
+      </form>
     </nav>
   </div>
 </header>
-<div class="container-fluid">
+<div class="container">
   <div class="row">
-    <div class="col-sm-3">
-      <ul id="sidebar" class="nav in">
-        <li class="sidebar-item"><a href="http://localhost:8081/webapp/admin">{{ 'admin.index.headline' | translate }}</a></li>
-        <li class="sidebar-item"><a href="http://localhost:8081/webapp/admin/categories">{{ 'admin.index.categories' | translate }}</a></li>
-        <li class="sidebar-item"><a href="http://localhost:8081/webapp/admin/users">{{ 'admin.index.users' | translate }}</a></li>
-        <li class="sidebar-item"><a href="http://localhost:8081/webapp/admin/roles">{{ 'admin.sidebar.roles' | translate }}</a></li>
-      </ul>
-    </div>
-    <div class="col-sm-9">
-      <h1>{{ 'admin.users.create.headline' | translate }}</h1>
-      <div class="row">
-        <div class="col-sm-11">
-          <form action="http://localhost:8081/webapp/admin/users/create" method="POST" class="form-horizontal">
-            <div class="form-group">
-              <label for="firstName" class="control-label col-sm-2">{{ 'admin.users.create.name' | translate }}</label>
-              <div class="col-sm-10">
-                <input id="firstName" type="text" placeholder="{{ 'admin.users.create.name' | translate }}" name="firstName" value="" class="form-control"/>
-              </div>
+    <div class="col-sm-6 col-sm-offset-3">
+      <div class="well login-box">
+        <div ng-if="reset.status === 'EXPIRED'" class="alert alert-danger"><b>{{ 'login.error.error' | translate }}&nbsp;</b><span>{{ 'login.recover.maxTime' | translate }}</span></div>
+        <div ng-if="reset.status === 'INVALID'" class="alert alert-danger"><b>{{ 'login.error.error' | translate }}&nbsp;</b><span>{{ 'login.recover.invalidLink' | translate }}</span></div>
+        <form ng-if="reset.status === 'OK'" name="resetPasswordForm" ng-submit="reset.submit(resetPasswordForm.$valid)" novalidate="novalidate" class="form-horizontal">
+          <div ng-class="{ 'has-error': resetPasswordForm.password.$invalid &amp;&amp; !resetPasswordForm.password.$pristine }" class="form-group">
+            <label for="password" class="col-sm-3 control-label">{{ 'profile.password.form.new' | translate }}</label>
+            <div class="col-sm-9">
+              <input id="password" type="password" placeholder="{{ 'profile.password.form.new' | translate }}" name="password" required="required" ng-minlength="4" ng-maxlength="100" ng-model="reset.pass.password" class="form-control"/>
+              <p ng-show="resetPasswordForm.password.$error.required" class="help-block">Password is required</p>
+              <p ng-show="resetPasswordForm.password.$error.minlength" class="help-block">Password is too short</p>
+              <p ng-show="resetPasswordForm.password.$error.maxlength" class="help-block">Password is too long</p>
             </div>
-            <div class="form-group">
-              <label for="lastName" class="control-label col-sm-2">{{ 'admin.users.create.lastName' | translate }}</label>
-              <div class="col-sm-10">
-                <input id="lastName" type="text" placeholder="{{ 'admin.users.create.lastName' | translate }}" name="lastName" value="" class="form-control"/>
-              </div>
+          </div>
+          <div ng-class="{ 'has-error': resetPasswordForm.repeatPassword.$invalid &amp;&amp; !resetPasswordForm.repeatPassword.$pristine }" class="form-group">
+            <label class="col-sm-3 control-label">{{ 'profile.password.form.repeat' | translate }}</label>
+            <div class="col-sm-9">
+              <input type="password" placeholder="{{ 'profile.password.form.repeat' | translate }}" name="repeatPassword" pw-check="password" ng-model="reset.pass.repeatPassword" class="form-control"/>
+              <p ng-show="resetPasswordForm.repeatPassword.$error.pwmatch" class="help-block">Password does not match</p>
             </div>
-            <div class="form-group">
-              <label for="email" class="control-label col-sm-2">{{ 'admin.users.create.email' | translate }}</label>
-              <div class="col-sm-10">
-                <input id="email" type="text" placeholder="{{ 'admin.users.create.email' | translate }}" name="email" value="" class="form-control"/>
-              </div>
+          </div>
+          <div class="form-group">
+            <div class="col-sm-12">
+              <button type="submit" ng-disabled="!resetPasswordForm.$valid || reset.loading" class="btn btn-success btn-block">{{ 'profile.account.form.update' | translate }}</button>
             </div>
-            <div class="form-group">
-              <label for="username" class="control-label col-sm-2">{{ 'admin.users.create.username' | translate }}</label>
-              <div class="col-sm-10">
-                <input id="username" type="text" placeholder="{{ 'admin.users.create.username' | translate }}" name="username" value="" class="form-control"/>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="password" class="control-label col-sm-2">{{ 'admin.users.create.password' | translate }}</label>
-              <div class="col-sm-10">
-                <input id="password" type="password" placeholder="{{ 'admin.users.create.password' | translate }}" name="password" value="" class="form-control"/>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="repeatPassword" class="control-label col-sm-2">{{ 'admin.users.create.repeatPassword' | translate }}</label>
-              <div class="col-sm-10">
-                <input id="repeatPassword" type="password" placeholder="{{ 'admin.users.create.repeatPassword' | translate }}" name="repeatPassword" value="" class="form-control"/>
-              </div>
-            </div>
-            <div class="form-group">
-              <label for="role" class="control-label col-sm-2">{{ 'admin.users.create.mainRole' | translate }}</label>
-              <div class="col-sm-10">
-                <select id="role" name="role" class="form-control">
-                </select>
-              </div>
-            </div>
-            <div class="form-group">
-              <div class="col-sm-12">
-                <button type="submit" class="btn btn-success btn-block">{{ 'admin.users.create.headline' | translate }}</button>
-              </div>
-            </div>
-          </form>
-        </div>
+          </div>
+        </form>
       </div>
     </div>
   </div>

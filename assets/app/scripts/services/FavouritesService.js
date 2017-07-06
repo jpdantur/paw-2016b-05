@@ -4,7 +4,7 @@ define([
 	'siglasApp'
 ], function (siglasApp) {
 
-	siglasApp.service('FavouritesService', function($http, $q, localStorageService, jwtHelper) {
+	siglasApp.service('FavouritesService', function($http, $q, localStorageService, jwtHelper, HOST) {
 
 		var Favourites = {};
 
@@ -13,7 +13,7 @@ define([
 		Favourites.remove = remove;
 		Favourites.add = add;
 
-		var HOST = 'localhost:8081/webapp';
+		// var HOST = 'localhost:8081/webapp';
 
 		var api = function api(path) {
 			return 'http://' + HOST + path;
@@ -40,7 +40,7 @@ define([
 				defer.resolve(response.data);
 			}, function (error) {
 				console.log(error);
-				defer.reject(error.data);
+				defer.reject(error);
 			});
 
 			return defer.promise;
@@ -64,7 +64,7 @@ define([
 				defer.resolve(response.data);
 			}, function (error) {
 				console.log(error);
-				defer.reject(error.data);
+				defer.reject(error);
 			});
 
 			return defer.promise;
@@ -91,7 +91,7 @@ define([
 				defer.resolve(response.data);
 			}, function (error) {
 				console.log(error);
-				defer.reject(error.data);
+				defer.reject(error);
 			});
 
 			return defer.promise;
@@ -115,7 +115,7 @@ define([
 				defer.resolve(response.data);
 			}, function (error) {
 				console.log(error);
-				defer.reject(error.data);
+				defer.reject(error);
 			});
 
 			return defer.promise;

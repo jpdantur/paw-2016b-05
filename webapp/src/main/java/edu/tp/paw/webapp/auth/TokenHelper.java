@@ -52,16 +52,7 @@ public class TokenHelper {
 	
 	public Claims decodeToken(String token) {
 		
-		Claims claims;
-    
-    try {
-        claims = Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(secret)).parseClaimsJws(token).getBody();
-    }
-    catch (final Exception e) {
-    	logger.trace(e.getMessage());
-    	return null;
-    }
-    return claims;
+		return Jwts.parser().setSigningKey(DatatypeConverter.parseBase64Binary(secret)).parseClaimsJws(token).getBody();
 	}
 	
 }

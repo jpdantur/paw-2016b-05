@@ -8,7 +8,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li ng-if="!loggedUser"><a ng-href="#!/auth/register?next={{index.$location.path()}}">{{ 'index.register' | translate }}</a></li>
         <li ng-if="!loggedUser"><a ng-href="#!/auth/login?next={{index.$location.path()}}">{{ 'index.login' | translate }}</a></li>
-        <li><a ng-href="{{loggedUser ? '#!/store/sell/details' : '#!/auth/register?next=/store/sell/details'}}">{{ 'index.sell' | translate }}</a></li>
+        <li><a ng-href="{{loggedUser ? '#!/store/sell/details?next=' + index.$location.path() : '#!/auth/register?next=/store/sell/details'}}">{{ 'index.sell' | translate }}</a></li>
         <li id="favourite-dropdown" ng-if="loggedUser"><a href="#" data-toggle="dropdown" title="{{ 'index.favourite.title' | translate }}" class="dropdown-toggle"><i class="fa fa-heart"></i>&nbsp;<span class="caret"></span></a>
           <ul class="dropdown-menu dropdown-favourite">
             <li ng-if="loggedUser.favourites.length"><span class="fav-title">{{ 'index.favourite.title' | translate }}</span></li>
@@ -16,7 +16,7 @@
             <li ng-repeat="favourite in loggedUser.favourites"><span class="item"><span class="item-left"><a ng-href="#!/store/items/{{favourite.item.id)}"><img ng-if="!favourite.item.images.length" ng-src="http://placehold.it/80x80"/><img ng-if="favourite.item.images.length" ng-src="data:image/png;base64,{{favourite.item.images[0].content}}"/></a><span class="item-info"><a href="#!/store/items/{{favourite.item.id}}"><span>{{favourite.item.name}}</span></a><span class="price">${{favourite.item.price.toFixed(2)}}</span></span></span><span title="{{ 'index.favourite.remove' | translate }}" class="item-right">
                   <button ng-click="index.removeFavourite(favourite.id)" class="btn btn-xs btn-danger pull-right remove-fav">x</button></span></span></li>
             <li ng-if="loggedUser.favourites.hasMore" class="separator"></li>
-            <li ng-if="loggedUser.favourites.hasMore" class="text-center"><a ng-href="#!/profile/details?tab=favourites">{{ 'index.favourite.viewAll' | translate }}</a></li>
+            <li ng-if="loggedUser.favourites.hasMore" class="text-center"><a ng-href="#!/profile/details?tab=favourites" ng-click="profile.switchToTab('favourites')">{{ 'index.favourite.viewAll' | translate }}</a></li>
           </ul>
         </li>
         <li ng-if="loggedUser"><a href="#" data-toggle="dropdown" class="dropdown-toggle"><span>{{loggedUser.firstName}} {{loggedUser.lastName}}&nbsp;</span><span class="caret"></span></a>
@@ -58,25 +58,31 @@
             <h1 class="page-header text-center">{{ 'edit.headline' | translate }} `{{edit.item.name}}`</h1>
             <div class="row">
               <div class="col-sm-11">
-                <form class="form-horizontal">
-                  <div class="form-group">
+                <form name="editForm" ng-submit="edit.submit(editForm.$valid)" novalidate="novalidate" class="form-horizontal">
+                  <div ng-class="{ 'has-error': editForm.name.$invalid &amp;&amp; !editForm.name.$pristine }" class="form-group">
                     <label for="name" class="col-sm-2 control-label">{{ 'sell.field.name' | translate }}</label>
                     <div class="col-sm-10">
-                      <input type="text" id="name" name="name" placeholder="{{ 'sell.field.name' | translate }}" ng-model="edit.item.name" class="form-control"/>
+                      <input id="name" type="text" name="name" placeholder="{{ 'sell.field.name' | translate }}" ng-model="edit.item.name" required="required" ng-minlength="4" ng-maxlength="100" class="form-control"/>
+                      <p ng-show="editForm.name.$error.required" class="help-block">Name is required</p>
+                      <p ng-show="editForm.name.$error.minlength" class="help-block">Name is too short</p>
+                      <p ng-show="editForm.name.$error.maxlength" class="help-block">Name is too long</p>
                     </div>
                   </div>
-                  <div class="form-group">
+                  <div ng-class="{ 'has-error': edit.description.$invalid &amp;&amp; !edit.description.$pristine }" class="form-group">
                     <label for="description" class="col-sm-2 control-label">{{ 'sell.field.description' | translate }}</label>
                     <div class="col-sm-10">
-                      <textarea name="description" id="description" placeholder="{{ 'sell.field.description' | translate }}" ng-model="edit.item.description" rows="8" class="form-control">{{edit.item.description}}</textarea>
+                      <textarea id="description" name="description" placeholder="{{ 'sell.field.description' | translate }}" ng-model="edit.item.description" rows="8" class="form-control">{{edit.item.description}}</textarea>
                     </div>
                   </div>
-                  <div class="form-group">
+                  <div ng-class="{ 'has-error': editForm.price.$invalid &amp;&amp; !editForm.price.$pristine }" class="form-group">
                     <label for="price" class="col-sm-2 control-label">{{ 'sell.field.price' | translate }}</label>
                     <div class="col-sm-10">
                       <div class="input-group"><span class="input-group-addon">$</span>
-                        <input type="number" id="price" name="price" placeholder="{{ 'sell.field.price' | translate }}" min="0" step="0.01" ng-model="edit.item.price" class="form-control"/>
+                        <input type="number" id="price" name="price" placeholder="{{ 'sell.field.price' | translate }}" ng-min="0" ng-step="0.01" ng-model="edit.item.price" required="required" class="form-control"/>
                       </div>
+                      <p ng-show="editForm.price.$error.required" class="help-block">Price is required</p>
+                      <p ng-show="editForm.price.$error.min" class="help-block">Price can't be negative</p>
+                      <p ng-show="editForm.price.$error.step" class="help-block">Price should have up to 2 decimal places</p>
                     </div>
                   </div>
                   <div class="form-group">
@@ -94,8 +100,8 @@
                       </div>
                     </div>
                   </div>
-                  <div class="form-group">
-                    <label for="used" class="col-sm-2 control-label">{{ 'sell.field.publish' | translate }}</label>
+                  <div ng-class="{ 'has-error': editForm.used.$invalid &amp;&amp; !editForm.used.$pristine }" class="form-group">
+                    <label for="used" class="col-sm-2 control-label">{{ 'sell.field.status.title' | translate }}</label>
                     <div class="col-sm-10">
                       <label class="radio-inline">
                         <input id="used" type="radio" name="used" ng-value="true" ng-model="edit.item.used"/>{{ 'sell.field.status.used' | translate }}
@@ -105,10 +111,9 @@
                       </label>
                     </div>
                   </div>
-                  <input type="hidden" name="itemStatus" value="[object Object]"/>
                   <div class="form-group">
                     <div class="col-sm-4 col-sm-offset-8">
-                      <button type="submit" class="btn btn-success btn-block">{{ 'edit.action' | translate }}</button>
+                      <button type="submit" ng-disabled="!editForm.$valid" class="btn btn-success btn-block">{{ 'edit.action' | translate }}</button>
                     </div>
                   </div>
                 </form>

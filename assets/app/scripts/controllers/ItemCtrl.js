@@ -4,10 +4,11 @@ define([
 	'services/ItemService',
 	'services/FavouritesService',
 	'services/IdService',
+	'services/StoreService',
 	'directives/star-rating'
 ], function(siglasApp) {
 
-	siglasApp.controller('ItemCtrl', function($scope, $rootScope, $location, $route, $q, toastr, ItemService, FavouritesService, IdService) {
+	siglasApp.controller('ItemCtrl', function($scope, $filter, $rootScope, $location, $route, $q, toastr, ItemService, FavouritesService, IdService, StoreService) {
 
 		console.log('ItemCtrl');
 
@@ -35,6 +36,8 @@ define([
 
 		self.addFavourite = addFavourite;
 
+		self.purchase = purchase;
+
 		// ///////
 
 		$q.all({
@@ -49,9 +52,39 @@ define([
 			})
 		}).then(function (results) {
 			self.storeItem = results.item;
-			// self.favs = results.favourites;
-			
-			console.log(results);
+
+			if (_.includes(['UNPUBLISHED', 'PAUSED'], self.storeItem.status)) {
+				if ($rootScope.loggedUser.id !== self.storeItem.owner.id) {
+					console.log('403');
+					return $location.path('/403');
+				}
+			}
+
+			if (self.storeItem.status === 'UNPUBLISHED') {
+
+				toastr.warning($filter('translate')('item.notifications.draft.message'), $filter('translate')('item.notifications.draft.title'), {
+					onTap: function (toast) {
+						$location.path('/store/item/' + self.storeItem.id + '/details');
+					},
+					tapToDismiss: true
+				});
+			}
+
+			if (self.storeItem.status === 'PAUSED') {
+				toastr.warning($filter('translate')('item.notifications.paused.alternative'), {
+					onTap: function (toast) {
+						$location.path('/store/item/' + self.storeItem.id + '/details');
+					},
+					tapToDismiss: true
+				});
+				toastr.warning($filter('translate')('item.notifications.paused.message'), $filter('translate')('item.notifications.paused.title'), {
+					onTap: function (toast) {
+						$location.path('/profile/details').search({tab: 'items'});
+					},
+					tapToDismiss: true
+				});
+
+			}
 
 			self.isFavourite = _.find(results.favourites, function (fav) {
 				return fav.item.id === self.storeItem.id;
@@ -67,30 +100,18 @@ define([
 
 			self.related = results.related.results;
 
-			console.log(self.isFavourite);
-			console.log(self.isPublished);
-			console.log(self.isPurchased);
-			console.log(self.related);
-
 			IdService.profile(self.storeItem.owner.username).then(function (result) {
-				console.log(result);
 				self.owner = result;
 			}, function (err) {
 				console.error(err);
 			});
-			// self.favouriteIds = _.map(results.favourites, function (fav) {
-				// return {itemId: fav.item.id, favId: fav.id};
-			// });
-			// self.publishedIds = _.map(results.published, 'id');
 		}, function (err) {
 			console.error(err);
+			if (err.status === 401) {
+				$location.path('/403');
+			}
 		});
 
-		// ItemService.findById(id).then(function (result) {
-			
-		// }, function (err) {
-		// 	console.error(err);
-		// });
 
 		// ///////
 		
@@ -128,6 +149,19 @@ define([
 				self.isFavourite = null;
 			}
 		});
+
+		function purchase(item) {
+			self.purchasing = true;
+			StoreService.purchase(item).then(function (result) {
+				console.log(result);
+				toastr.success($filter('translate')('successMessages.buyItem.success'));
+				self.isPurchased = result;
+			}, function (err) {
+				self.purchasing = false;
+				toastr.error($filter('translate')('successMessages.buyItem.error'));
+				console.error(err);
+			});
+		}
 
 	});
 });

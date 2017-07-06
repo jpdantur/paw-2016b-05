@@ -3,13 +3,11 @@ package edu.tp.paw.webapp.restcontroller;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
@@ -24,13 +22,10 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import edu.tp.paw.interfaces.service.IUserService;
-import edu.tp.paw.model.Favourite;
 import edu.tp.paw.model.Purchase;
 import edu.tp.paw.model.PurchaseStatus;
-import edu.tp.paw.model.StoreImage;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.UserBuilder;
@@ -40,12 +35,10 @@ import edu.tp.paw.model.filter.OrderFilter.SortField;
 import edu.tp.paw.model.filter.OrderFilter.SortOrder;
 import edu.tp.paw.model.filter.PagedResult;
 import edu.tp.paw.model.filter.StoreItemStatusFilter.ItemStatusFilter;
-import edu.tp.paw.webapp.dto.FavouriteDTO;
 import edu.tp.paw.webapp.dto.PurchaseDTO;
 import edu.tp.paw.webapp.dto.StoreItemDTO;
 import edu.tp.paw.webapp.dto.UserDTO;
 import edu.tp.paw.webapp.form.ChangePasswordForm;
-import edu.tp.paw.webapp.form.ProfileItemSearchForm;
 
 @Path("/api/me")
 @Component

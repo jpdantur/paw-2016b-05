@@ -4,7 +4,7 @@ define([
 	'siglasApp'
 ], function (siglasApp) {
 
-	siglasApp.service('UserService', function($http, $q, localStorageService, jwtHelper) {
+	siglasApp.service('UserService', function($http, $q, localStorageService, jwtHelper, HOST) {
 
 		var User = {};
 
@@ -12,7 +12,7 @@ define([
 		User.changePassword = changePassword;
 
 
-		var HOST = 'localhost:8081/webapp';
+		// var HOST = 'localhost:8081/webapp';
 
 		var api = function api(path) {
 			return 'http://' + HOST + path;
@@ -37,7 +37,6 @@ define([
 					}
 					return defer.reject(response.data);
 				}
-				console.log(response);
 				defer.resolve(response.data);
 			}, function (error) {
 				console.log(error);
@@ -64,7 +63,6 @@ define([
 					}
 					return defer.reject(response.data);
 				}
-				console.log(response);
 				defer.resolve(response);
 			}, function (error) {
 				console.log(error);

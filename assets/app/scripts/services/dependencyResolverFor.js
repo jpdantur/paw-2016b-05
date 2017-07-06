@@ -13,7 +13,7 @@
  				var deferred = $q.defer();
  				// dependencies = allDependencies;
  				require(dependencies, function() {
- 					console.log('resolving', dependencies);
+ 					console.log('resolved', dependencies);
 					deferred.resolve();
  					$rootScope.$apply(function() {
  						

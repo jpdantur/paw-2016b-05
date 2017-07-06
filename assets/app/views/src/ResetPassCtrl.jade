@@ -1,0 +1,37 @@
+extends layouts/layout
+
+block styles
+	link(href=context.url('/resources/css/login.css'), rel="stylesheet")
+
+block content
+	+navbar(true)
+	div.container
+		div.row
+			div.col-sm-6.col-sm-offset-3
+				div.well.login-box
+					div.alert.alert-danger(ng-if="reset.status === 'EXPIRED'")
+						b #{messageSource.getMessage('login.error.error', [], locale)}&nbsp;
+						span #{messageSource.getMessage('login.recover.maxTime', [], locale)}
+					div.alert.alert-danger(ng-if="reset.status === 'INVALID'")
+						b #{messageSource.getMessage('login.error.error', [], locale)}&nbsp;
+						span #{messageSource.getMessage('login.recover.invalidLink', [], locale)}
+					form.form-horizontal(ng-if="reset.status === 'OK'", name="resetPasswordForm", ng-submit="reset.submit(resetPasswordForm.$valid)", novalidate)
+						div.form-group(ng-class="{ 'has-error': resetPasswordForm.password.$invalid && !resetPasswordForm.password.$pristine }")
+							label.col-sm-3.control-label(for="password") #{messageSource.getMessage('profile.password.form.new',[],locale)}
+							div.col-sm-9
+								input.form-control#password(type="password", placeholder="#{messageSource.getMessage('profile.password.form.new',[],locale)}", name="password", required, ng-minlength="4", ng-maxlength="100", ng-model="reset.pass.password")
+								p.help-block(ng-show="resetPasswordForm.password.$error.required") Password is required
+								p.help-block(ng-show="resetPasswordForm.password.$error.minlength") Password is too short
+								p.help-block(ng-show="resetPasswordForm.password.$error.maxlength") Password is too long
+								
+						
+						div.form-group(ng-class="{ 'has-error': resetPasswordForm.repeatPassword.$invalid && !resetPasswordForm.repeatPassword.$pristine }")
+							label.col-sm-3.control-label #{messageSource.getMessage('profile.password.form.repeat',[],locale)}
+							div.col-sm-9
+								input.form-control(type="password", placeholder="#{messageSource.getMessage('profile.password.form.repeat',[],locale)}", name="repeatPassword", pw-check='password', ng-model="reset.pass.repeatPassword")
+								p.help-block(ng-show="resetPasswordForm.repeatPassword.$error.pwmatch") Password does not match
+						
+
+						div.form-group
+							div.col-sm-12
+								button.btn.btn-success.btn-block(type="submit", ng-disabled="!resetPasswordForm.$valid || reset.loading") #{messageSource.getMessage('profile.account.form.update',[],locale)}

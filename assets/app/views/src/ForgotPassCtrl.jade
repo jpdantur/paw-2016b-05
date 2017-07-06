@@ -14,20 +14,21 @@ block content
 						div.alert.alert-danger
 							b #{messageSource.getMessage('login.error.error', [], locale)}&nbsp;
 							span #{messageSource.getMessage('login.error.wrongData', [], locale)}
-					form.form-horizontal(action=context.url('/auth/forgot-pass'), method="POST")
+					form.form-horizontal(name="forgotPassForm", ng-submit="pass.submit(forgotPassForm.$valid)", novalidate)
 						p.help-block #{messageSource.getMessage('login.recover.help', [], locale)}
-						div.form-group(class="#{result.hasFieldErrors('email')?'has-error':''}")
+						div.form-group(ng-class="{ 'has-error': forgotPassForm.email.$invalid && !forgotPassForm.email.$pristine }")
 							label.control-label.col-sm-3(for="username") #{messageSource.getMessage('register.form.mail', [], locale)}
 							div.col-sm-9
-								input.form-control#username(type="text", placeholder="#{messageSource.getMessage('register.form.mail', [], locale)}", name="email", value="#{user.email?user.email:''}")
-								+errors(result, 'email')
+								input.form-control#username(type="email", placeholder="#{messageSource.getMessage('register.form.mail', [], locale)}", name="email", ng-model="pass.email", required)
+								p.help-block(ng-show="forgotPassForm.email.$error.required") Email is required
+								p.help-block(ng-show="forgotPassForm.email.$invalid && !forgotPassForm.email.$pristine") Enter a valid email
 						div.form-group
 								div.col-sm-12
-									button.btn.btn-success.btn-block(type="submit") #{messageSource.getMessage('login.recover.recover', [], locale)}
+									button.btn.btn-success.btn-block(type="submit", ng-disabled="!forgotPassForm.$valid || pass.loading") #{messageSource.getMessage('login.recover.recover', [], locale)}
 						div.form-group
 							div.col-sm-12
 								span #{messageSource.getMessage('register.form.hasAccount', [], locale)}&nbsp;
-								a(href="#{context.url('/auth/login')}") #{messageSource.getMessage('register.form.login', [], locale)}
+								a(href='#!/auth/login') #{messageSource.getMessage('register.form.login', [], locale)}
 								br
 								span #{messageSource.getMessage('login.form.noUserQuestion', [], locale)}&nbsp;
-								a(href=context.url('/auth/register')) #{messageSource.getMessage('login.form.register', [], locale)}
+								a(href='#!/auth/register') #{messageSource.getMessage('login.form.register', [], locale)}

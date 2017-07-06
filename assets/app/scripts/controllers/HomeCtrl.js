@@ -16,7 +16,6 @@ define([
 		// ///////
 
 		ItemService.mostSold().then(function (items) {
-			console.log(items);
 			self.items = items;
 			self.compartments = _.reduce(self.items, function (memo, val, i) {
 				var key = Math.floor(i / 6);
@@ -27,14 +26,12 @@ define([
 				}
 				return memo;
 			}, {});
-			console.log(self.compartments);
 		}, function (err) {
 			console.error(err);
 		});
 
 		CategoryService.tree().then(function (categories) {
 			self.categories = categories;
-			console.log(self.categories);
 		}, function (err) {
 			console.error(err);
 		});

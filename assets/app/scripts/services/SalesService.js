@@ -4,7 +4,7 @@ define([
 	'siglasApp'
 ], function (siglasApp) {
 
-	siglasApp.service('SalesService', function($http, $q, localStorageService, jwtHelper) {
+	siglasApp.service('SalesService', function($http, $q, localStorageService, jwtHelper, HOST) {
 
 		var Sales = {};
 
@@ -17,7 +17,7 @@ define([
 
 		Sales.rateWithRole = rateWithRole;
 
-		var HOST = 'localhost:8081/webapp';
+		// var HOST = 'localhost:8081/webapp';
 
 		var api = function api(path) {
 			return 'http://' + HOST + path;

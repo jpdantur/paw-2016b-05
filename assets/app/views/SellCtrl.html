@@ -8,7 +8,7 @@
       <ul class="nav navbar-nav navbar-right">
         <li ng-if="!loggedUser"><a ng-href="#!/auth/register?next={{index.$location.path()}}">{{ 'index.register' | translate }}</a></li>
         <li ng-if="!loggedUser"><a ng-href="#!/auth/login?next={{index.$location.path()}}">{{ 'index.login' | translate }}</a></li>
-        <li><a ng-href="{{loggedUser ? '#!/store/sell/details' : '#!/auth/register?next=/store/sell/details'}}">{{ 'index.sell' | translate }}</a></li>
+        <li><a ng-href="{{loggedUser ? '#!/store/sell/details?next=' + index.$location.path() : '#!/auth/register?next=/store/sell/details'}}">{{ 'index.sell' | translate }}</a></li>
         <li id="favourite-dropdown" ng-if="loggedUser"><a href="#" data-toggle="dropdown" title="{{ 'index.favourite.title' | translate }}" class="dropdown-toggle"><i class="fa fa-heart"></i>&nbsp;<span class="caret"></span></a>
           <ul class="dropdown-menu dropdown-favourite">
             <li ng-if="loggedUser.favourites.length"><span class="fav-title">{{ 'index.favourite.title' | translate }}</span></li>
@@ -16,7 +16,7 @@
             <li ng-repeat="favourite in loggedUser.favourites"><span class="item"><span class="item-left"><a ng-href="#!/store/items/{{favourite.item.id)}"><img ng-if="!favourite.item.images.length" ng-src="http://placehold.it/80x80"/><img ng-if="favourite.item.images.length" ng-src="data:image/png;base64,{{favourite.item.images[0].content}}"/></a><span class="item-info"><a href="#!/store/items/{{favourite.item.id}}"><span>{{favourite.item.name}}</span></a><span class="price">${{favourite.item.price.toFixed(2)}}</span></span></span><span title="{{ 'index.favourite.remove' | translate }}" class="item-right">
                   <button ng-click="index.removeFavourite(favourite.id)" class="btn btn-xs btn-danger pull-right remove-fav">x</button></span></span></li>
             <li ng-if="loggedUser.favourites.hasMore" class="separator"></li>
-            <li ng-if="loggedUser.favourites.hasMore" class="text-center"><a ng-href="#!/profile/details?tab=favourites">{{ 'index.favourite.viewAll' | translate }}</a></li>
+            <li ng-if="loggedUser.favourites.hasMore" class="text-center"><a ng-href="#!/profile/details?tab=favourites" ng-click="profile.switchToTab('favourites')">{{ 'index.favourite.viewAll' | translate }}</a></li>
           </ul>
         </li>
         <li ng-if="loggedUser"><a href="#" data-toggle="dropdown" class="dropdown-toggle"><span>{{loggedUser.firstName}} {{loggedUser.lastName}}&nbsp;</span><span class="caret"></span></a>
@@ -88,7 +88,7 @@
           </div>
         </div>
         <div class="form-group">
-          <label for="used" class="col-sm-2 control-label">{{ 'sell.field.publish' | translate }}</label>
+          <label for="used" class="col-sm-2 control-label">{{ 'sell.field.status.title' | translate }}</label>
           <div class="col-sm-10">
             <label class="radio-inline">
               <input id="used" type="radio" name="used" ng-value="true" ng-model="sell.item.used"/>{{ 'sell.field.status.used' | translate }}
@@ -110,7 +110,7 @@
           </div>
         </div>
         <div class="form-group">
-          <div class="col-sm-2 col-sm-offset-2"><a href="http://localhost:8081/webapp/" class="btn btn-default btn-block"><i class="fa fa-chevron-left"></i>&nbsp;{{ 'sell.back' | translate }}</a></div>
+          <div class="col-sm-2 col-sm-offset-2"><a ng-href="{{'#!' + $location.search().next}}" class="btn btn-default btn-block"><i class="fa fa-chevron-left"></i>&nbsp;{{ 'sell.back' | translate }}</a></div>
           <div class="col-sm-4 col-sm-offset-4">
             <button id="submit-button" type="submit" ng-disabled="!sellForm.$valid || !sell.selectedCategory" class="btn btn-success btn-block"><span>{{ 'sell.ok' | translate }}&nbsp;</span><i class="fa fa-chevron-right"></i></button>
           </div>

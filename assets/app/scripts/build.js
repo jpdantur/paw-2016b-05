@@ -48,7 +48,8 @@ require.config({
 		q: '../../bower_components/q/q',
 		rater: '../../bower_components/rater/rater',
 		'remarkable-bootstrap-notify': '../../bower_components/remarkable-bootstrap-notify/bootstrap-notify',
-		underscore: '../../bower_components/underscore/underscore'
+		underscore: '../../bower_components/underscore/underscore',
+		'angular-md5': '../../bower_components/angular-md5/angular-md5'
 	},
 	shim: {
 		angular: {
@@ -135,6 +136,11 @@ require.config({
 				'jquery',
 				'bootstrap'
 			]
+		},
+		'angular-md5': {
+			deps: [
+				'angular'
+			]
 		}
 	},
 	packages: [
@@ -153,6 +159,7 @@ require([
 	'siglasApp',
 	'controllers/IndexCtrl',
 	'services/AuthService',
+	'services/ItemService',
 	'services/FavouritesService'
 ], function() {
 	angular.bootstrap(document, ['siglasApp']);

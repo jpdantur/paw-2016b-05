@@ -68,7 +68,20 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	protected void configure(final HttpSecurity http) throws Exception {
 		
-		jwtFilter.setWhitelist("/api/auth/login", "/api/auth/register", "/api/auth/renew", "/api/store/most-sold", "/api/store/category-tree");
+		jwtFilter.setWhitelist(
+				"/api/auth/login",
+				"/api/auth/register",
+				"/api/auth/renew",
+				"/api/auth/forgot-pass",
+				"/api/store/most-sold",
+				"/api/store/category-tree",
+				"/api/store/search",
+				"/api/store/item/*",
+				"/api/store/item/*/comments",
+				"/api/store/item/*/related",
+				"/api/id/*/profile",
+				"/api/id/*/published",
+				"/api/id/*/reset-password");
 		
 		http
 			.addFilterBefore(corsFilter, ChannelProcessingFilter.class)

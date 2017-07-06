@@ -8,7 +8,7 @@
 
  	return function(route) {
  		var definition = {
- 			resolver: ['$q', '$rootScope', '$location', 'AuthService', function($q, $rootScope, $location, AuthService) {
+ 			resolver: ['$q', '$rootScope', '$location', 'AuthService', 'ItemService', function($q, $rootScope, $location, AuthService, ItemService) {
  				var deferred = $q.defer();
 
  				console.log('protected route');
@@ -28,16 +28,29 @@
 				.syncWithLocalStorage()
 				.then(function (profile) {
 
-					if (route.protected(profile)) {
-						console.log('is authed');
+					$q.when(route.protected.call({
+						$q: $q,
+						$rootScope: $rootScope,
+						$location: $location,
+						AuthService: AuthService,
+						ItemService: ItemService
+					}, profile)).then(function (path) {
+
+						console.log(path);
+
+						if (isFinite(path)) {
+							$location.path('/' + path);
+						} else if (_.isString(path)) {
+							$location.path(path);
+						}
+
+						console.log($location.path());
+
 						return deferred.resolve();
-					}
+					}, function (err) {
 
-					console.log('not authed');
-
-					$location.path('/403');
-
-					deferred.resolve();
+						return deferred.resolve();
+					});
 				}, function (error) {
 					console.log(error);
 				});

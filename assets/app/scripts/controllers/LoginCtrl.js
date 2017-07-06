@@ -1,10 +1,11 @@
 'use strict';
 define([
 	'siglasApp',
-	'services/AuthService'
+	'services/AuthService',
+	'services/FavouritesService'
 ], function(siglasApp) {
 
-	siglasApp.controller('LoginCtrl', function($scope, $rootScope, $location, toastr, AuthService) {
+	siglasApp.controller('LoginCtrl', function($scope, $rootScope, $location, toastr, AuthService, FavouritesService) {
 
 		console.log('LoginCtrl');
 
@@ -14,6 +15,10 @@ define([
 		self.username = '';
 
 		self.signIn = signIn;
+
+		if ($rootScope.loggedUser) {
+			return $location.path('/');
+		}
 
 		// ///////
 

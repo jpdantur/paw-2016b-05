@@ -1,93 +1,5 @@
 extends layouts/layout
 
-block scripts
-	if storeItem.status.toString().equals('UNPUBLISHED')
-		script.
-			$.notify({
-				icon: 'fa fa-pencil',
-				title: "#{messageSource.getMessage('item.notifications.draft.title',[],locale)}",
-				message: "#{messageSource.getMessage('item.notifications.draft.message',[],locale)}",
-				url : "#{context.url('/store/item/'+storeItem.id+'/details')}"
-			}, {
-				allow_dismiss: true,
-				type: 'warning',
-				delay: 0,
-				offset: {
-					y: 60,
-					x: 20
-				},
-				template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
-					'<button type="button" aria-hidden="true" class="close" data-notify="dismiss">×</button>' +
-					'<span data-notify="icon"></span> ' +
-					'<b data-notify="title">{1}</b><br/> ' +
-					'<span data-notify="message">{2}</span>' +
-					'<div class="progress" data-notify="progressbar">' +
-						'<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
-					'</div>' +
-					'<a href="{3}" target="{4}" data-notify="url"></a>' +
-				'</div>'
-			})
-	if storeItem.status.toString().equals('PAUSED')
-		script.
-			$.notify({
-				icon: 'fa fa-hand-paper-o',
-				title: "#{messageSource.getMessage('item.notifications.paused.title',[],locale)}",
-				message: "#{messageSource.getMessage('item.notifications.paused.message',[],locale)}",
-				url : "#{context.url('/profile/items/paused')}"
-			}, {
-				allow_dismiss: true,
-				type: 'info',
-				delay: 0,
-				offset: {
-					y: 60,
-					x: 20
-				},
-				template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
-					'<button type="button" aria-hidden="true" class="close" data-notify="dismiss">×</button>' +
-					'<span data-notify="icon"></span> ' +
-					'<b data-notify="title">{1}</b><br/> ' +
-					'<span data-notify="message">{2}</span>' +
-					'<div class="progress" data-notify="progressbar">' +
-						'<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
-					'</div>' +
-					'<a href="{3}" target="{4}" data-notify="url"></a>' +
-				'</div>'
-			})
-			$.notify({
-				icon: 'fa fa-pencil',
-				title: "#{messageSource.getMessage('item.notifications.paused.alternative',[],locale)}",
-				url : "#{context.url('/store/item/'+storeItem.id+'/details')}"
-			}, {
-				allow_dismiss: true,
-				type: 'success',
-				delay: 0,
-				offset: {
-					y: 60,
-					x: 20
-				},
-				template: '<div data-notify="container" class="col-xs-11 col-sm-3 alert alert-{0}" role="alert">' +
-					'<button type="button" aria-hidden="true" class="close" data-notify="dismiss">×</button>' +
-					'<span data-notify="icon"></span> ' +
-					'<b data-notify="title">{1}</b><br/> ' +
-					'<div class="progress" data-notify="progressbar">' +
-						'<div class="progress-bar progress-bar-{0}" role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100" style="width: 0%;"></div>' +
-					'</div>' +
-					'<a href="{3}" target="{4}" data-notify="url"></a>' +
-				'</div>'
-			})
-	script.
-		var messages = {
-			addError: "#{messageSource.getMessage('successMessages.toggleFavourite.addError',[],locale)}",
-			addSuccess: "#{messageSource.getMessage('successMessages.toggleFavourite.addSuccess',[],locale)}",
-			removeError: "#{messageSource.getMessage('successMessages.toggleFavourite.removeError',[],locale)}",
-			removeSuccess: "#{messageSource.getMessage('successMessages.toggleFavourite.removeSuccess',[],locale)}",
-			buySuccess: "#{messageSource.getMessage('successMessages.buyItem.success',[],locale)}",
-			buyError: "#{messageSource.getMessage('successMessages.buyItem.error',[],locale)}",
-			purchaseInRevision: "#{messageSource.getMessage('item.bought.underRevision',[],locale)}",
-			seeStatus: "#{messageSource.getMessage('item.bought.viewStatus',[],locale)}"
-		};
-
-
 block content
 	include mixins/product
 	+navbar(true)
@@ -113,19 +25,14 @@ block content
 				div.row#product-container
 					//- carousel
 					div.col-sm-5
-						//-if storeItem.images.isEmpty()
 						img(ng-if="!item.storeItem.images.length", src="http://placehold.it/400?text=Sin+Imagen", style="width:100%;height:auto")
-						//-else
 						div.carousel.slide#carousel(ng-if="item.storeItem.images.length", data-ride="carousel")
 							ol.carousel-indicators
-								//-each image, i in storeItem.images
 								li(ng-repeat="image in item.storeItem.images", data-target="#carousel", data-slide-to="{{$index}}", ng-class="{ active: $first }")
 
 							div.carousel-inner
-								//-each image, i in storeItem.images
 								div.item(ng-class="{ active: $first }", ng-repeat="image in item.storeItem.images")
 									img(ng-src="data:image/png;base64,{{image.content}}", alt="Imagen {{$index}}")
-							//-if storeItem.images.size() > 1
 							a.left.carousel-control(href="#carousel", data-slide="prev", ng-if="item.storeItem.images.length > 1")
 								span.glyphicon.glyphicon-chevron-left
 								span.sr-only Previous
@@ -135,34 +42,14 @@ block content
 					//- item info
 					div.col-sm-7
 						h1 {{item.storeItem.name}}&nbsp;
-							//-if loggedUser
-								if !publishedItems.contains(storeItem)
-									- var contains = {a:false, id:0}
-									span(style="display:none") #{allFavourites}
-									each fav in allFavourites
-										span(style="display:none") #{fav.id}
-										if fav.item.id == storeItem.id
-											- contains.a = true
-											- contains.id = fav.id
-											- break
-									//-if contains.a
 							a(ng-if="loggedUser && !item.isPublished", ng-click="item.isFavourite ? index.removeFavourite(item.isFavourite.id) : item.addFavourite(item.storeItem.id)", ng-class='{"text-muted": !item.isFavourite, "text-danger": item.isFavourite}')
 								i.fa.fa-heart
-
-							//-a.text-danger.add-favourite(ng-click="item.removeFavourite(_.find)" data-favid=contains.id)
-								i.fa.fa-heart
-									//-else
-							//-a.text-muted.add-favourite(data-item=storeItem.id)
-								i.fa.fa-heart
 						div(star-rating, ng-model="item.storeItem.rating", readonly="true", ng-class='{worst: item.storeItem.rating <= 1, bad: 1 < item.storeItem.rating && item.storeItem.rating <= 2, ok: 2 < item.storeItem.rating && item.storeItem.rating <= 3, good: 3 < item.storeItem.rating && item.storeItem.rating <= 4, great: 4 < item.storeItem.rating && item.storeItem.rating <= 5}')
-						//-div.rating.static(style="font-size:32px", data-rate-value=storeItem.rating)
 						span {{item.storeItem.sold}} #{messageSource.getMessage('item.sold', [], locale)}
 						br
 						br
 						span #{messageSource.getMessage('item.item', [], locale)}:&nbsp;
-							//-if storeItem.used
 							b(ng-show="item.storeItem.used") #{messageSource.getMessage('item.used', [], locale)}
-							//-else
 							b(ng-show="!item.storeItem.used") #{messageSource.getMessage('item.new', [], locale)}
 						br
 						span #{messageSource.getMessage('item.seller', [], locale)}:&nbsp;&nbsp;
@@ -177,23 +64,8 @@ block content
 						div.alert.alert-info(ng-if="loggedUser && item.isPurchased")
 							p #{messageSource.getMessage('item.bought.underRevision', [], locale)}
 							a.btn.btn-success.btn-sm(href='#!/profile/details?tab=purchases') #{messageSource.getMessage('item.bought.viewStatus', [], locale)}
-						button.btn.btn-success.btn-lg#purchase(ng-if="loggedUser && !item.isPurchased && !item.isPurchased") #{messageSource.getMessage('item.buy', [], locale)}
-						a.btn.btn-success.btn-lg#purchase(ng-if="!loggedUser", href='#!/auth/login?next={{$location.path()}}')) #{messageSource.getMessage('item.buy', [], locale)}
-						//-
-							- var publishedItem = false
-							- var purchasedItem = false
-							if loggedUser
-								if publishedItems.contains(storeItem)
-									- publishedItem = true
-								if purchasedItems.contains(storeItem)
-									- purchasedItem = true
-									div.alert.alert-info
-										p #{messageSource.getMessage('item.bought.underRevision', [], locale)}
-										a.btn.btn-success.btn-sm(href=context.url('/profile/purchases')) #{messageSource.getMessage('item.bought.viewStatus', [], locale)}
-							if loggedUser && !publishedItem && !purchasedItem
-								button.btn.btn-success.btn-lg#purchase(data-buyer-email="#{storeItem.owner.email}", data-item="#{storeItem.id}") #{messageSource.getMessage('item.buy', [], locale)}
-							if !loggedUser
-								a.btn.btn-success.btn-lg#purchase(href=context.url('/auth/login?next='+currentURI)) #{messageSource.getMessage('item.buy', [], locale)}
+						button.btn.btn-success.btn-lg#purchase(ng-if="loggedUser && !item.isPurchased && !item.isPublished", ng-disabled="item.purchasing", ng-click="item.purchase(item.storeItem)") #{messageSource.getMessage('item.buy', [], locale)}
+						a.btn.btn-success.btn-lg#purchase(ng-if="!loggedUser", href='#!/auth/login?next={{$location.path()}}') #{messageSource.getMessage('item.buy', [], locale)}
 					div.col-sm-12
 						h3 #{messageSource.getMessage('item.description', [], locale)}
 						p {{item.storeItem.description}}
@@ -207,30 +79,23 @@ block content
 									label.col-sm-2.control-label(for="score") Puntaje
 									div.col-sm-10
 										div(star-rating, ng-model="item.comment.rating", ng-class='{worst: item.comment.rating <= 1, bad: 1 < item.comment.rating && item.comment.rating <= 2, ok: 2 < item.comment.rating && item.comment.rating <= 3, good: 3 < item.comment.rating && item.comment.rating <= 4, great: 4 < item.comment.rating && item.comment.rating <= 5}')
-										//-input#score-input(type="hidden", value="2.5", name="rating")
-										//-div#score.rating(style="font-size:1.5em", data-rate-value="2.5")
 										p.help-block
 								div.form-group(ng-class="{ 'has-error': commentForm.content.$invalid && !commentForm.content.$pristine }")
 									label.col-sm-2.control-label(for="content") #{messageSource.getMessage('item.comment', [], locale)}
 									div.col-sm-10
 										textarea.form-control#content(name="content", placeholder="#{messageSource.getMessage('item.comment', [], locale)}", required, ng-maxlength="300", ng-model="item.comment.content")
 										if commentError
-										//- #{messageSource.getMessage('NotEmpty.CommentForm.content',[],locale)}
 										span.help-block(ng-show="commentForm.content.$error.required") Review is required
-										//- #{messageSource.getMessage('Size.CommentForm.contentFixed',[],locale)}
 										span.help-block(ng-show="commentForm.content.$error.maxlength") Review is too long
 								div.form-group
 									div.col-sm-offset-8.col-sm-4
 										button.btn.btn-block.btn-success#submit-comment(type="submit", ng-disabled="!commentForm.$valid")
 											i.fa.fa-comment
 											span &nbsp;#{messageSource.getMessage('item.commentAction', [], locale)}
-							//-else
 							a.btn.btn-success(ng-if="!loggedUser", ng-href='#!/auth/login?next={{$location.path()}}')
 								i.fa.fa-comment
 								span &nbsp;#{messageSource.getMessage('item.commentAction', [], locale)}
-							//-if comments.isEmpty()
 							p.lead(ng-if="!item.storeItem.comments.length") #{messageSource.getMessage('item.commentEmpty', [], locale)}
-							//-each comment in comments
 							div.comment(ng-repeat="comment in item.storeItem.comments")
 								b.comment-author {{comment.user.firstName}}
 								span.pull-right
@@ -240,7 +105,6 @@ block content
 									div.col-sm-2.text-center
 										span.user-score {{comment.rating}}
 										div(star-rating, ng-model="comment.rating", readonly="true", ng-class='{worst: comment.rating <= 1, bad: 1 < comment.rating && comment.rating <= 2, ok: 2 < comment.rating && comment.rating <= 3, good: 3 < comment.rating && comment.rating <= 4, great: 4 < comment.rating && comment.rating <= 5}')
-										//-div.rating.static(style="font-size:1.5em" data-rate-value=comment.rating)
 									div.col-sm-10
 										p {{comment.content}}
 					div.col-sm-12(style="margin-bottom:30px")
@@ -251,15 +115,10 @@ block content
 									div.product-container
 										a(href="#!/store/items/{{item.id}}")
 											div.image-container
-												//-if item.images.isEmpty()
 												img(ng-if="!item.images.length", ng-src="http://placehold.it/200?text=Sin+Imagen", style="width:100%;height:auto")
-												//-else
-												img(ng-if="item.images.length", ng-src="data:image/png;base64,{{item.image[0].content}}", style="width:100%;height:auto")
+												img(ng-if="item.images.length", ng-src="data:image/png;base64,{{item.images[0].content}}", style="width:100%;height:auto")
 										a.product-title(href="#!/store/items/{{item.id}}", title="{{item.name}}")
 											b {{item.name}}
 										p.product-description(title="{{item.description}}") {{item.description}}
 										div(star-rating, ng-model="item.rating", readonly="true", ng-class='{worst: item.rating <= 1, bad: 1 < item.rating && item.rating <= 2, ok: 2 < item.rating && item.rating <= 3, good: 3 < item.rating && item.rating <= 4, great: 4 < item.rating && item.rating <= 5}')
-										//-div.rating.static(style="font-size:13px;", data-rate-value=item.rating)
 										span.product-price $ {{item.price.toFixed(2)}}
-									//-each item in relatedItems.results
-										+product(item)

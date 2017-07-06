@@ -125,6 +125,9 @@ define([
 		self.updatePurchasesQuery = _.debounce(updatePurchasesQuery, 400);
 		self.onPurchasesOrderChange = onPurchasesOrderChange;
 
+		self.updateFavouritesQuery = _.debounce(updateFavouritesQuery, 400);
+		self.onFavouritesOrderChange = onFavouritesOrderChange;
+
 		// ///////
 
 		publishedItems();

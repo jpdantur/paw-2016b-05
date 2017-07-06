@@ -26,7 +26,7 @@ block content
 					div.form-group
 						label.col-sm-2.control-label(for="description") #{messageSource.getMessage('sell.field.description',[],locale)}
 						div.col-sm-10
-							textarea.form-control#description(name="description", placeholder="#{messageSource.getMessage('sell.field.description',[],locale)}", ng-model="sell.item.description", rows="8") #{item.description?item.description:''}
+							textarea.form-control#description(name="description", placeholder="#{messageSource.getMessage('sell.field.description',[],locale)}", ng-model="sell.item.description", rows="8")
 					
 					div.form-group(ng-class="{ 'has-error': sellForm.price.$invalid && !sellForm.price.$pristine }")
 						label.col-sm-2.control-label(for="price") #{messageSource.getMessage('sell.field.price',[],locale)}
@@ -52,7 +52,7 @@ block content
 										br
 										span.h4#category-name {{sell.selectedCategory.name}}	
 					div.form-group
-						label.col-sm-2.control-label(for="used") #{messageSource.getMessage('sell.field.publish',[],locale)}
+						label.col-sm-2.control-label(for="used") #{messageSource.getMessage('sell.field.status.title',[],locale)}
 						div.col-sm-10
 							label.radio-inline
 								input#used(type="radio", name="used", ng-value="true", ng-model="sell.item.used")
@@ -73,7 +73,7 @@ block content
 					
 					div.form-group
 						div.col-sm-2.col-sm-offset-2
-							a.btn.btn-default.btn-block(href="#{context.url('/')}")
+							a.btn.btn-default.btn-block(ng-href="{{'#!' + $location.search().next}}")
 								i.fa.fa-chevron-left
 								| &nbsp;#{messageSource.getMessage('sell.back',[],locale)}
 						div.col-sm-4.col-sm-offset-4

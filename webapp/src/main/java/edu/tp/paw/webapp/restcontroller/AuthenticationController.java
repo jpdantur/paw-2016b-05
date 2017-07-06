@@ -35,6 +35,7 @@ import edu.tp.paw.webapp.auth.TokenHelper;
 import edu.tp.paw.webapp.dto.JWTTokenDTO;
 import edu.tp.paw.webapp.dto.LoginDTO;
 import edu.tp.paw.webapp.dto.UserDTO;
+import edu.tp.paw.webapp.form.PasswordRecoveryForm;
 import edu.tp.paw.webapp.form.RegisterForm;
 import io.jsonwebtoken.Claims;
 
@@ -145,5 +146,25 @@ public class AuthenticationController {
 		} catch (Exception e) {
 			return Response.status(Status.CONFLICT).build();
 		}
+	}
+	
+	@POST
+	@Path("/forgot-pass")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response forgotPass(final PasswordRecoveryForm form) {
+		
+		logger.trace(form.toString());
+		
+		if (userService.emailExists(form.getEmail())) {
+			
+			final User user = userService.findByEmail(form.getEmail());
+			
+			userService.recoverPassword(user);
+			
+			return Response.ok().build();
+		}
+		
+		return Response.status(Status.BAD_REQUEST).build();
 	}
 }

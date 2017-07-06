@@ -10,6 +10,7 @@ define([
 		console.log('SellCtrl');
 
 		$scope._ = _;
+		$scope.$location = $location;
 
 		var self = this;
 
@@ -55,11 +56,11 @@ define([
 		function submit(valid) {
 			if (valid) {
 				console.log(self.item);
-				_.extend(self.item, {categoryId: self.selectedCategory.id});
+				_.extend(self.item, {category: self.selectedCategory.id});
 				ItemService.create(self.item).then(function (result) {
 					console.log(result);
 					toastr.success('Item successfully created');
-					$location.path('/store/sell/images').search({id: result.id});
+					$location.path('/store/sell/images/' + result.id);
 				}, function (err) {
 					console.error(err);
 					toastr.error('An error ocurred. Please try again');

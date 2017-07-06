@@ -16,6 +16,10 @@ define([
 
 		self.submit = submit;
 
+		if ($rootScope.loggedUser) {
+			return $location.path('/');
+		}
+
 		// ///////
 
 		// ///////

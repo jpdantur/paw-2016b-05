@@ -20,28 +20,27 @@ block content
 							a(href="#!/store/items/{{item.id}}")
 								div.image-container
 									img(ng-if="!item.images.length", ng-src="http://placehold.it/200?text=Sin+Imagen", style="width:100%;height:auto")
-									img(ng-if="item.images.length", ng-src="data:image/png;base64,{{item.image[0].content}}", style="width:100%;height:auto")
+									img(ng-if="item.images.length", ng-src="data:image/png;base64,{{item.images[0].content}}", style="width:100%;height:auto")
 							a.product-title(href="#!/store/items/{{item.id}}", title="{{item.name}}")
 								b {{item.name}}
 							p.product-description(title="{{item.description}}") {{item.description}}
 							div(star-rating, ng-model="item.rating", readonly="true", ng-class='{worst: item.rating <= 1, bad: 1 < item.rating && item.rating <= 2, ok: 2 < item.rating && item.rating <= 3, good: 3 < item.rating && item.rating <= 4, great: 4 < item.rating && item.rating <= 5}')
-							//-div.rating.static(style="font-size:13px;", data-rate-value=item.rating)
 							span.product-price $ {{item.price.toFixed(2)}}
 				div.row
 					div.col-sm-12
 						ul.pager#filter-page
-							li.previous(ng-class="{disabled: profile.itemResult.currentPage === 0}")
-								a.filter-page-action(ng-click="profile.updateItemsQuery({ pageNumber: 0 })")
+							li.previous(ng-class="{disabled: all.itemResult.currentPage === 0}")
+								a.filter-page-action(ng-click="all.updateItemsQuery({ pageNumber: 0 })")
 									span &larr;
 									span #{messageSource.getMessage('search.filters.pagination.pagers.first', [], locale)}
 							
-							li.pre(ng-class="{disabled: profile.itemResult.currentPage === 0}")
-								a.filter-page-action(ng-click="profile.updateItemsQuery({ pageNumber: profile.itemResult.currentPage - 1 })") #{messageSource.getMessage('search.filters.pagination.pagers.previous', [], locale)}
+							li.pre(ng-class="{disabled: all.itemResult.currentPage === 0}")
+								a.filter-page-action(ng-click="all.updateItemsQuery({ pageNumber: all.itemResult.currentPage - 1 })") #{messageSource.getMessage('search.filters.pagination.pagers.previous', [], locale)}
 							
-							li.ne(ng-class="{disabled: profile.itemResult.currentPage === Math.floor(profile.itemResult.numberOfTotalResults / profile.itemResult.pageSize)}")
-								a.filter-page-action(ng-click="profile.updateItemsQuery({ pageNumber: profile.itemResult.currentPage + 1 })") #{messageSource.getMessage('search.filters.pagination.pagers.next', [], locale)}
+							li.ne(ng-class="{disabled: all.itemResult.currentPage === Math.floor(all.itemResult.numberOfTotalResults / all.itemResult.pageSize)}")
+								a.filter-page-action(ng-click="all.updateItemsQuery({ pageNumber: all.itemResult.currentPage + 1 })") #{messageSource.getMessage('search.filters.pagination.pagers.next', [], locale)}
 							
-							li.next(ng-class="{disabled: profile.itemResult.currentPage === Math.floor(profile.itemResult.numberOfTotalResults / profile.itemResult.pageSize)}")
-								a.filter-page-action(ng-click="profile.updateItemsQuery({ pageNumber: Math.floor(profile.itemResult.numberOfTotalResults / profile.itemResult.pageSize) })")
+							li.next(ng-class="{disabled: all.itemResult.currentPage === Math.floor(all.itemResult.numberOfTotalResults / all.itemResult.pageSize)}")
+								a.filter-page-action(ng-click="all.updateItemsQuery({ pageNumber: Math.floor(all.itemResult.numberOfTotalResults / all.itemResult.pageSize) })")
 									span #{messageSource.getMessage('search.filters.pagination.pagers.last', [], locale)}
 									span &rarr;
