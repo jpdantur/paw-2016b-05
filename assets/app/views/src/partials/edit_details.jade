@@ -1,33 +1,41 @@
 div.tab-content
 	if success
 		div.alert.alert-success #{messageSource.getMessage('sell.edit.details.success',[],locale)}
-	h1.page-header.text-center #{messageSource.getMessage('edit.headline',[],locale)} `#{item.name}`
+	h1.page-header.text-center #{messageSource.getMessage('edit.headline',[],locale)} `{{edit.item.name}}`
 	div.row
 		div.col-sm-11
-			form.form-horizontal(method="POST", action="#{context.url('/store/item/'+item.id+'/details')}")
-				input(type="hidden", name="owner", value="#{loggedUser.id}")
-				div.form-group(class="#{bindingResult.hasFieldErrors('name')?'has-error':''}")
+			form.form-horizontal
+				div.form-group
 					label.col-sm-2.control-label(for="name") #{messageSource.getMessage('sell.field.name',[],locale)}
 					div.col-sm-10
-						input.form-control(type="text", id="name", name="name", placeholder="#{messageSource.getMessage('sell.field.name',[],locale)}", value="#{item.name?item.name:''}")
-						+errors(bindingResult, 'name')
-				div.form-group(class="#{bindingResult.hasFieldErrors('description')?'has-error':''}")
+						input.form-control(type="text", id="name", name="name", placeholder="#{messageSource.getMessage('sell.field.name',[],locale)}", ng-model="edit.item.name")
+				
+				div.form-group
 					label.col-sm-2.control-label(for="description") #{messageSource.getMessage('sell.field.description',[],locale)}
 					div.col-sm-10
-						textarea.form-control(name="description", id="description", placeholder="#{messageSource.getMessage('sell.field.description',[],locale)}", value="#{item.description?item.description:''}", rows="12") #{item.description?item.description:''}
-						+errors(bindingResult, 'description')
-				div.form-group(class="#{bindingResult.hasFieldErrors('price')?'has-error':''}")
+						textarea.form-control(name="description", id="description", placeholder="#{messageSource.getMessage('sell.field.description',[],locale)}", ng-model="edit.item.description", rows="8") {{edit.item.description}}
+				
+				div.form-group
 					label.col-sm-2.control-label(for="price") #{messageSource.getMessage('sell.field.price',[],locale)}
 					div.col-sm-10
 						div.input-group
 							span.input-group-addon $
-							input.form-control(type="number", id="price", name="price", placeholder="#{messageSource.getMessage('sell.field.price',[],locale)}", min="0", step="0.01", value="!{item.price}")
-						+errors(bindingResult, 'price')
+							input.form-control(type="number", id="price", name="price", placeholder="#{messageSource.getMessage('sell.field.price',[],locale)}", min="0", step="0.01", ng-model="edit.item.price")
+				
 				div.form-group
 					label.col-sm-2.control-label(for="category") #{messageSource.getMessage('sell.field.category',[],locale)}
 					div.col-sm-10
-						input#category-input(type="hidden", name="categoryId", value=(item?item.category.id:'0'))
-						mixin categories(categories, depth)
+						div#category-browser
+							div
+								div.category-card.visible(ng-repeat="c in edit.categoryPath")
+									ul.list-unstyled
+										li(ng-repeat="category in c", ng-class='{ active: _.includes(edit.highlighted, category.id) || edit.selectedCategory.id === category.id }')
+											a(ng-click="edit.selectCategory(category, $parent.$index + 1)") {{category.name}}
+								div.category-card.text-center#success-card(ng-class='{visible: edit.selectedCategory }')
+									span.text-muted #{messageSource.getMessage('edit.details.categoryChosen',[],locale)}
+									br
+									span.h4#category-name {{edit.selectedCategory.name}}	
+						//-mixin categories(categories, depth)
 							if !categories.isEmpty()
 								div.category-card(class=(depth==0?' visible':''), data-parent=categories.iterator().next().parent.id)
 									ul.list-unstyled
@@ -36,15 +44,25 @@ div.tab-content
 												a(href="#", data-id=category.id, class=category.id) #{category.name}
 							each category in categories
 								+categories(category.children, depth+1)
-						div#category-browser
+						//-div#category-browser
 							div
-								+categories(categories, 0)
+								//-+categories(categories, 0)
 								div.category-card.text-center#success-card
 									span.text-muted #{messageSource.getMessage('edit.details.categoryChosen',[],locale)}
 									br
 									span.h4#category-name
 							+errors(bindingResult, 'category')
-				div.form-group(class="#{bindingResult.hasFieldErrors('used')?'has-error':''}")
+				div.form-group
+					label.col-sm-2.control-label(for="used") #{messageSource.getMessage('sell.field.publish',[],locale)}
+					div.col-sm-10
+						label.radio-inline
+							input#used(type="radio", name="used", ng-value="true", ng-model="edit.item.used")
+							| #{messageSource.getMessage('sell.field.status.used',[],locale)}
+						label.radio-inline
+							input#new(type="radio", name="used", ng-value="false", ng-model="edit.item.used")
+							| #{messageSource.getMessage('sell.field.status.new',[],locale)}
+
+				//-div.form-group(class="#{bindingResult.hasFieldErrors('used')?'has-error':''}")
 					label.col-sm-2.control-label(for="used") #{messageSource.getMessage('sell.field.status.title',[],locale)}
 					div.col-sm-10
 						div.btn-group(data-toggle="buttons")

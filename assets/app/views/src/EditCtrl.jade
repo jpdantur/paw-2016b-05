@@ -1,74 +1,5 @@
 extends layouts/layout
 
-block scripts
-	script(src="#{context.url('/resources/js/lib/dropzone.js')}", type="text/javascript")
-	script.
-		var messages = {
-			editPickCategory: 		"#{messageSource.getMessage('sell.pickCategory',[],locale)}"
-		};
-
-		var images = !{item.images.toString()}.map(function (i) {
-			i.name = '#{item.name}'+i.id;
-			i.url = baseUrl+'/images/get/'+i.id;
-			i.fileId = #{item.id};
-			return i;
-		});
-
-
-		Dropzone.options.autoDiscover = false;
-		Dropzone.autoDiscover = false;
-
-		$(document).ready(function () {
-
-			if (!$('#dropzone').length) return;
-
-			var dropzone = new Dropzone('#dropzone', {
-				url: "#{context.url('/images/upload/'+item.id)}",
-				acceptedFiles: 'image/*',
-				addRemoveLinks: true,
-				autoProcessQueue: false,
-				paramName: function () {
-					return 'images';
-				},
-				dictDefaultMessage: "#{messageSource.getMessage('sell.image.upload.drag',[],locale)}"
-			});
-
-			_.each(images, function (i) {
-
-				dropzone.emit("addedfile", i);
-				dropzone.createThumbnailFromUrl(i, i.url);
-				//- dropzone.emit("thumbnail", i, i.url);
-				dropzone.emit("complete", i);
-
-			});
-
-			$dropzone = $('#dropzone').addClass('dropzone');
-
-			$('#uploadImages').click(function (e) {
-				e.preventDefault();
-				
-				dropzone.processQueue();
-
-			});
-
-			var i = images.length;
-			dropzone.on('queuecomplete', function () {
-
-				if (i-- <= 0) {
-					window.location.href = "#{context.url('/store/item/'+item.id+'/images?s=1')}";
-				}
-			});
-
-			dropzone.on('removedfile', function (file) {
-				console.log(file);
-			});
-			
-		});
-	script(src="#{context.url('/resources/js/edit.js')}", type="text/javascript")
-block styles
-	link(href="#{context.url('/resources/css/dropzone.css')}", rel="stylesheet")
-	link(href="#{context.url('/resources/css/edit.css')}", rel="stylesheet")
-
 block content
 	+navbar(true)
 	div.container#edit-container
@@ -76,19 +7,21 @@ block content
 			div.col-sm-3
 				ul.nav.nav-tabs.tabs-left#myTab
 					li.static
-						a.btn.btn-primary(href=context.url('/profile/items'))
+						a.btn.btn-primary(href='#!/profile/details?tab=items')
 							span #{messageSource.getMessage('sell.edit.return',[],locale)}
 					li.separator
-					li(class=show.equals("details")?'active':'')
-						a(href=context.url('/store/item/'+item.id+'/details')) #{messageSource.getMessage('edit.details',[],locale)}
-					li(class=show.equals("images")?'active':'')
-						a(href=context.url('/store/item/'+item.id+'/images')) #{messageSource.getMessage('edit.images',[],locale)}
+					//- li(class=show.equals("details")?'active':'')
+					li(ng-class='{active: edit.selectedTab === "details"}')
+						a(ng-click="edit.switchToTab('details')") #{messageSource.getMessage('edit.details',[],locale)}
+					//- li(class=show.equals("images")?'active':'')
+					li(ng-class='{active: edit.selectedTab === "images"}')
+						a(ng-click="edit.switchToTab('images')") #{messageSource.getMessage('edit.images',[],locale)}
 			div.col-sm-9(style="padding: 0")
 				div.tab-content
-					div.tab-pane.fade(class=show.equals("details")?'in active':'')#details
+					div.tab-pane.fade.in(ng-class='{active: edit.selectedTab === "details"}')#details
 						//-if show.equals('details')
 						include partials/edit_details
-					div.tab-pane.fade(class=show.equals("images")?'in active':'')#images
+					div.tab-pane.fade.in(ng-class='{active: edit.selectedTab === "images"}')#images
 						//-if show.equals('images')
 						include partials/edit_images
 					

@@ -41,7 +41,6 @@ block content
 					div.form-group
 						label.col-sm-2.control-label(for="category") #{messageSource.getMessage('sell.field.category',[],locale)}
 						div.col-sm-10
-							input#category-input(type="hidden", name="categoryId", value=(item?item.categoryId:''))
 							div#category-browser
 								div
 									div.category-card.visible(ng-repeat="c in sell.categoryPath")

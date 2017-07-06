@@ -1,7 +1,7 @@
 div.tab-content
 	if success
 		div.alert.alert-success #{messageSource.getMessage('sell.edit.details.success',[],locale)}
-	h1.page-header.text-center #{messageSource.getMessage('sell.image.upload.headline',[],locale)} `#{item.name}`
+	h1.page-header.text-center #{messageSource.getMessage('sell.image.upload.headline',[],locale)} `{{edit.item.name}}`
 	div.row
 		div.col-sm-11
 			form.form-horizontal(method="POST", action="#{context.url('/images/upload/'+item.id)}", enctype="multipart/form-data")
