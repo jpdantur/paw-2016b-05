@@ -8,6 +8,8 @@ define([
 
 		console.log('AllCtrl');
 
+		$scope._ = _;
+
 		var self = this;
 
 		self.itemsQuery = _.extend({
@@ -20,11 +22,17 @@ define([
 			maxPrice: null,
 			categories: []
 		}, _.mapValues($location.search(), function (val) {
+			if (!val) {
+				return val;
+			}
 			if (isFinite(val)) {
 				return parseInt(val, 10);
 			}
 			return val;
 		}));
+
+		self.displayedCategories = [];
+		self.selectedCategories = [];
 
 		console.log(self.itemsQuery);
 
@@ -35,6 +43,9 @@ define([
 
 		self.updateItemsQuery = _.debounce(updateItemsQuery, 800);
 		self.onItemsOrderChange = onItemsOrderChange;
+
+		self.toggleCategory = toggleCategory;
+		self.applyCategory = applyCategory;
 
 		// /////////////////////////////
 
@@ -69,10 +80,34 @@ define([
 					return $location.search({}).path('/store/items/' + self.itemResult.results[0].id);
 				}
 
+				self.displayedCategories = self.itemResult.selectedCategories;
+
 				$location.search(self.itemsQuery);
 			}, function (err) {
 				console.error(err);
 			});
+		}
+
+		function toggleCategory(category) {
+			var idx = _.findIndex(self.selectedCategories, {id: category.id});
+			if (~idx) {
+				self.selectedCategories.splice(idx, 1);
+			} else {
+				self.selectedCategories.push(category);
+			}
+		}
+
+		function applyCategory() {
+			updateItemsQuery({
+				pageNumber: 0,
+				categories: _.map(self.selectedCategories, 'id')
+			});
+			// var d = self.displayedCategories;
+			// d.splice.apply(d, [0, d.length].concat(self.selectedCategories));
+			// self.displayedCategories = self.selectedCategories;
+			self.selectedCategories = [];
+			// console.log(self.displayedCategories);
+			// console.log(self.selectedCategories);
 		}
 
 	});

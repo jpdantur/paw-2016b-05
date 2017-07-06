@@ -104,6 +104,10 @@ html body.all {
 					bottom: 1px solid #dfdfdf;
 					right: none
 				}
+
+				&:last-child {
+					border-right: 1px solid #dfdfdf;
+				}
 				
 			}
 		}

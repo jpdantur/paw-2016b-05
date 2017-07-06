@@ -49,6 +49,9 @@
     <div class="col-sm-12">
       <div id="modifiers" class="row text-right">
         <div class="col-sm-12">
+          <div ng-show="all.itemsLoading" class="modifier">
+            <div class="modifier-title"><i class="fa fa-spin fa-spinner fa-fw fa-2x"></i><span>&nbsp;Loading...</span></div>
+          </div>
           <div class="modifier"><span class="modifier-title">{{ 'search.filters.pagination.modifiers.amount' | translate }}:&nbsp;</span><span class="modifier-content">{{all.itemResult.numberOfAvailableResults != 0 ? all.itemResult.currentPage * all.itemResult.pageSize + 1 : 0}} - {{all.itemResult.currentPage * all.itemResult.pageSize + all.itemResult.numberOfAvailableResults}}</span><span class="modifier-title">&nbsp;{{ 'search.filters.pagination.modifiers.of' | translate }}&nbsp;</span><b>{{all.itemResult.numberOfTotalResults}}</b></div>
           <div id="modifier-page-size" class="modifier"><span class="modifier-title">{{ 'search.filters.pagination.modifiers.showing' | translate }}&nbsp;</span><a ng-class="{selected: all.itemResult.pageSize === 20}" ng-click="all.updateItemsQuery({pageNumber: 0, pageSize: 20})" class="modifier-option"><b ng-show="all.itemResult.pageSize === 20">20</b><span ng-show="all.itemResult.pageSize !== 20">20</span></a>
             <div class="space"></div><a ng-class="{selected: all.itemResult.pageSize === 40}" ng-click="all.updateItemsQuery({pageNumber: 0, pageSize: 40})" class="modifier-option"><b ng-show="all.itemResult.pageSize === 40">40</b><span ng-show="all.itemResult.pageSize !== 40">40</span></a>
@@ -101,11 +104,35 @@
             </div>
           </div>
         </div>
+        <div id="category-filter" ng-if="all.itemResult.similarCategories.length || all.displayedCategories.length" class="filter-content">
+          <div class="filter-header">
+            <h6 class="filter-title">{{ 'search.filters.categories' | translate }}</h6>
+          </div>
+          <div class="filter-body">
+            <div ng-if="all.displayedCategories.length &gt; 1" ng-repeat="category in all.displayedCategories">
+              <label ng-if="$first || all.displayedCategories[$index - 1].parent !== category.parent" class="parent-label">{{category.name}}</label>
+              <div class="checkbox padding">
+                <label>
+                  <input type="checkbox" name="categories" ng-checked="_.find(all.selectedCategories, {id: category.id})" ng-click="all.toggleCategory(category)"/>{{category.name}}
+                </label>
+              </div>
+            </div>
+            <div>
+              <div ng-repeat="category in all.itemResult.similarCategories" class="checkbox">
+                <label>
+                  <input type="checkbox" name="categories" ng-checked="_.find(all.selectedCategories, {id: category.id})" ng-click="all.toggleCategory(category)"/>{{category.name}}
+                </label>
+              </div>
+            </div>
+            <button id="category-filter-button" type="button" ng-click="all.applyCategory()" class="btn btn-primary btn-xs col-sm-6 col-sm-offset-6">{{ 'search.filters.categories.apply' | translate }}</button>
+          </div>
+        </div>
       </div>
     </div>
     <div class="col-sm-10">
       <div id="product-grid" class="row">
         <h3 ng-if="!all.itemResult.results.length" class="text-warning">{{ 'search.none' | translate }}</h3>
+        <div ng-class="{show: all.itemsLoading}" class="backdrop"></div>
         <div ng-repeat="item in all.itemResult.results" class="col-sm-3 store-item">
           <div class="product-container"><a href="#!/store/items/{{item.id}}">
               <div class="image-container"><img ng-if="!item.images.length" ng-src="http://placehold.it/200?text=Sin+Imagen" style="width:100%;height:auto"/><img ng-if="item.images.length" ng-src="data:image/png;base64,{{item.images[0].content}}" style="width:100%;height:auto"/></div></a><a href="#!/store/items/{{item.id}}" title="{{item.name}}" class="product-title"><b>{{item.name}}</b></a>

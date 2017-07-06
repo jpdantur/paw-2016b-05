@@ -33,8 +33,10 @@ import edu.tp.paw.model.filter.PagedResult;
 import edu.tp.paw.model.filter.OrderFilter.SortField;
 import edu.tp.paw.model.filter.OrderFilter.SortOrder;
 import edu.tp.paw.model.filter.StoreItemStatusFilter.ItemStatusFilter;
+import edu.tp.paw.webapp.dto.CategoryDTO;
 import edu.tp.paw.webapp.dto.CategoryListDTO;
 import edu.tp.paw.webapp.dto.PurchaseDTO;
+import edu.tp.paw.webapp.dto.SearchResultDTO;
 import edu.tp.paw.webapp.dto.StoreItemDTO;
 import edu.tp.paw.webapp.dto.StoreItemListDTO;
 
@@ -120,27 +122,27 @@ public class StoreController {
 		
 		final PagedResult<StoreItem> pagedResults = storeService.search(filter);
 		
-		final PagedResult<StoreItemDTO> dto = new PagedResult<>(
-				pagedResults.getNumberOfTotalResults(),
-				pagedResults.getNumberOfAvailableResults(),
-				pagedResults.getPageSize(),
-				pagedResults.getCurrentPage(),
-				pagedResults.getResults().stream().map(v -> new StoreItemDTO(v)).collect(Collectors.toList())
-		);
+		filter.page().size(pagedResults.getNumberOfTotalResults()).take(0);
 		
-		// if there is just one item just show it
-//		if (pagedResults.getNumberOfAvailableResults() == 1) {
-//			
-//			return "redirect:/store/items/"+pagedResults.getResults().get(0).getId();
-//		}
+		final PagedResult<StoreItem> pagedResults2 = storeService.search(filter);
 		
 		final Set<Category> similarCategories = storeService
 				.getCategoriesForResultsInHigherDepthCategories(
 						filter.getCategoryFilter().getCategories(),
-						pagedResults.getResults()
+						pagedResults2.getResults()
 		);
 		
-		GenericEntity<PagedResult<StoreItemDTO>> e = new GenericEntity<PagedResult<StoreItemDTO>>(dto) {
+		final SearchResultDTO<StoreItemDTO> dto = new SearchResultDTO<>(
+				pagedResults.getNumberOfTotalResults(),
+				pagedResults.getNumberOfAvailableResults(),
+				pagedResults.getPageSize(),
+				pagedResults.getCurrentPage(),
+				pagedResults.getResults().stream().map(v -> new StoreItemDTO(v)).collect(Collectors.toList()),
+				similarCategories.stream().map(v -> new CategoryDTO(v)).collect(Collectors.toList()),
+				selectedCategories.stream().map(v -> new CategoryDTO(v)).collect(Collectors.toList())
+		);		
+		
+		GenericEntity<SearchResultDTO<StoreItemDTO>> e = new GenericEntity<SearchResultDTO<StoreItemDTO>>(dto) {
 			
 		};
 		
