@@ -27,102 +27,105 @@
 	position: relative;
 }
 
-h1 {
-	border-bottom: 1px solid #ddd;
-	
-	&.page-header {
-		margin-top: 0;
-		// background-color: #222;
-		// color: white;
-	}
-}
+body.edit {
 
-.tabs-left {
-  border-bottom: none;
-  padding-top: 2px;
-  border-right: 1px solid #ddd;
-
-  > li {
-  	float: none;
-	  margin-bottom: 2px;
-	  margin-right: -1px;
-
-	  > a {
-	  	border-radius: 4px 0 0 4px;
-		  margin-right: 0;
-		  display:block;
-	  }
-
-	  &.active > a,
-	  &.active > a:hover,
-	  &.active > a:focus {
-	  	border-bottom-color: #ddd;
-		  border-right-color: transparent;
-	  }
-  }
-}
-
-#edit-container {
-	background-color: white;
-	@include box-shadow(2px, 1px, 1px, #ccc);
-	padding-top: 30px;
-	min-height: 90%;
-}
-
-#myTab li.separator {
-	height: 40px
-}
-
-#myTab > li.static > a:hover {
-	border-color: #204d74;
-}
-#myTab > li.static > a:hover, #myTab > li.static > a:focus {
-	text-decoration: none;
-	background-color: #286090;
-}
-
-#category-browser {
-	max-height: 330px;
-	max-width: 100%;
-	overflow-x: scroll;
-	position: relative;
-	font-size: 12px;
-	
-	> div {
-		width: 100%;
-	}
-
-	#success-card {
-		width: 200px;
-		padding: 10px;
-		padding-top: 50px;
-		height: 150px;
-	}
-
-	.category-card {
-		@include border-radius(5px);
-		border: 1px solid #f5f5f5;
-		float: left;
-		width: auto;
-		display: none;
+	h1 {
+		border-bottom: 1px solid #ddd;
 		
-		&.visible {
-			display: block;
+		&.page-header {
+			margin-top: 0;
+			// background-color: #222;
+			// color: white;
+		}
+	}
+
+	.tabs-left {
+	  border-bottom: none;
+	  padding-top: 2px;
+	  border-right: 1px solid #ddd;
+
+	  > li {
+	  	float: none;
+		  margin-bottom: 2px;
+		  margin-right: -1px;
+
+		  > a {
+		  	border-radius: 4px 0 0 4px;
+			  margin-right: 0;
+			  display:block;
+		  }
+
+		  &.active > a,
+		  &.active > a:hover,
+		  &.active > a:focus {
+		  	border-bottom-color: #ddd;
+			  border-right-color: transparent;
+		  }
+	  }
+	}
+
+	#edit-container {
+		background-color: white;
+		@include box-shadow(2px, 1px, 1px, #ccc);
+		padding-top: 30px;
+		min-height: 90%;
+	}
+
+	#myTab li.separator {
+		height: 40px
+	}
+
+	#myTab > li.static > a:hover {
+		border-color: #204d74;
+	}
+	#myTab > li.static > a:hover, #myTab > li.static > a:focus {
+		text-decoration: none;
+		background-color: #286090;
+	}
+
+	#category-browser {
+		max-height: 330px;
+		max-width: 100%;
+		overflow-x: scroll;
+		position: relative;
+		font-size: 12px;
+		
+		> div {
+			width: 100%;
 		}
 
-		li {
+		#success-card {
+			width: 200px;
+			padding: 10px;
+			padding-top: 50px;
+			height: 150px;
+		}
 
-			padding: {
-				left: 5px;
-				right: 15px;
+		.category-card {
+			@include border-radius(5px);
+			border: 1px solid #f5f5f5;
+			float: left;
+			width: auto;
+			display: none;
+			
+			&.visible {
+				display: block;
 			}
 
-			&:hover {
-				background-color: #f3f3f3;
-			}
+			li {
 
-			&.active {
-				background-color: #f5f5f5;
+				padding: {
+					left: 5px;
+					right: 15px;
+				}
+
+				&:hover {
+					background-color: #f3f3f3;
+				}
+
+				&.active {
+					background-color: #f5f5f5;
+				}
 			}
 		}
 	}

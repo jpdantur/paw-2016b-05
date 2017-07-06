@@ -45,7 +45,7 @@ mixin navbar(search)
 													span {{favourite.item.name}}
 												span.price ${{favourite.item.price.toFixed(2)}}
 									span.item-right(title="#{messageSource.getMessage('index.favourite.remove',[],locale)}")
-										button.btn.btn-xs.btn-danger.pull-right.remove-fav x
+										button.btn.btn-xs.btn-danger.pull-right.remove-fav(ng-click="index.removeFavourite(favourite.id)") x
 							//-if userFavourites.numberOfTotalResults >= 8
 							li.separator(ng-if="loggedUser.favourites.hasMore")
 							li.text-center(ng-if="loggedUser.favourites.hasMore")

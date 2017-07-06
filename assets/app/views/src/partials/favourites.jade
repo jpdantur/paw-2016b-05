@@ -32,7 +32,7 @@ div.tab-pane-content
 							span &nbsp;- 
 							span.text-muted {{fav.item.sold}} #{messageSource.getMessage('profile.items.table.sold',[],locale)}
 						th.center-vertical
-							button.btn.btn-xs.btn-danger.remove-fav.pull-right
+							button.btn.btn-xs.btn-danger.remove-fav.pull-right(ng-click="profile.removeFavourite(fav.id)")
 								i.fa.fa-trash
 								span &nbsp;Eliminar
 

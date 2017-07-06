@@ -45,6 +45,11 @@ define([], function() {
 				controller: 'ItemCtrl',
 				controllerAs: 'item'
 			},
+			'/store/item/:id/details': {
+				templateUrl: 'views/EditCtrl.html',
+				controller: 'EditCtrl',
+				controllerAs: 'edit'
+			},
 			'/id/:username/:role': {
 				templateUrl: 'views/IdCtrl.html',
 				controller: 'IdCtrl',

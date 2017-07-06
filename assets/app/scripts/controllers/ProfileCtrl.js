@@ -102,6 +102,8 @@ define([
 
 		self.favouritesOrder = 'PRICE-ASC';
 
+		self.removeFavourite = removeFavourite;
+
 		// methods
 		
 		self.changeEmail = changeEmail;
@@ -304,6 +306,29 @@ define([
 				console.error(err);
 			});
 		}
+
+		function removeFavourite(favId) {
+			FavouritesService.remove(favId).then(function (result) {
+				self.favouritesResult.results = _.filter(self.favouritesResult.results, function (fav) {
+					return fav.id !== favId;
+				});
+				$rootScope.loggedUser.favourites = _.filter($rootScope.loggedUser.favourites, function (fav) {
+					return fav.id !== favId;
+				});
+				$rootScope.loggedUser.favourites.hasMore = $rootScope.loggedUser.favourites.length > 8;
+				toastr.success('Favourite successfully removed');
+			}, function (err) {
+				console.error(err);
+				toastr.error('Couldn\'t remove favourite');
+			});
+		}
+
+		$scope.$on('fav.remove', function (e, id) {
+			console.log('fav.remove');
+			self.favouritesResult.results = _.filter(self.favouritesResult.results, function (fav) {
+				return fav.id !== id;
+			});
+		});
 
 
 	});

@@ -3,10 +3,11 @@ define([
 	'siglasApp',
 	'services/ItemService',
 	'services/FavouritesService',
+	'services/IdService',
 	'directives/star-rating'
 ], function(siglasApp) {
 
-	siglasApp.controller('ItemCtrl', function($scope, $rootScope, $location, $route, $q, toastr, ItemService, FavouritesService) {
+	siglasApp.controller('ItemCtrl', function($scope, $rootScope, $location, $route, $q, toastr, ItemService, FavouritesService, IdService) {
 
 		console.log('ItemCtrl');
 
@@ -26,8 +27,13 @@ define([
 		self.comment = {
 			rating: 2.5
 		};
+		self.owner = {
+			sellerRating: 2.5
+		};
 
 		self.postComment = postComment;
+
+		self.addFavourite = addFavourite;
 
 		// ///////
 
@@ -44,6 +50,9 @@ define([
 		}).then(function (results) {
 			self.storeItem = results.item;
 			// self.favs = results.favourites;
+			
+			console.log(results);
+
 			self.isFavourite = _.find(results.favourites, function (fav) {
 				return fav.item.id === self.storeItem.id;
 			});
@@ -62,6 +71,13 @@ define([
 			console.log(self.isPublished);
 			console.log(self.isPurchased);
 			console.log(self.related);
+
+			IdService.profile(self.storeItem.owner.username).then(function (result) {
+				console.log(result);
+				self.owner = result;
+			}, function (err) {
+				console.error(err);
+			});
 			// self.favouriteIds = _.map(results.favourites, function (fav) {
 				// return {itemId: fav.item.id, favId: fav.id};
 			// });
@@ -91,6 +107,27 @@ define([
 				});
 			}
 		}
+
+		function addFavourite(id) {
+			FavouritesService.add(id).then(function (result) {
+
+				if (!$rootScope.loggedUser.favourites.hasMore) {
+					$rootScope.loggedUser.favourites.push(result);
+				}
+
+				self.isFavourite = result;
+
+				toastr.success('Favourite added succesfully');
+			}, function (err) {
+				toastr.error('Couldn\'t add favourite');
+			});
+		}
+
+		$scope.$on('fav.remove', function (e, id) {
+			if (self.isFavourite && self.isFavourite.id === id) {
+				self.isFavourite = null;
+			}
+		});
 
 	});
 });

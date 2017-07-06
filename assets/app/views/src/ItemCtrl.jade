@@ -146,7 +146,7 @@ block content
 											- contains.id = fav.id
 											- break
 									//-if contains.a
-							a(ng-if="loggedUser && !item.isPublished", ng-click="item.isFavourite ? item.removeFavourite(item.isFavourite.id) : item.addFavourite(item.storeItem.id)", ng-class='{"text-muted": !item.isFavourite, "text-danger": item.isFavourite}')
+							a(ng-if="loggedUser && !item.isPublished", ng-click="item.isFavourite ? index.removeFavourite(item.isFavourite.id) : item.addFavourite(item.storeItem.id)", ng-class='{"text-muted": !item.isFavourite, "text-danger": item.isFavourite}')
 								i.fa.fa-heart
 
 							//-a.text-danger.add-favourite(ng-click="item.removeFavourite(_.find)" data-favid=contains.id)
@@ -171,8 +171,7 @@ block content
 							span &nbsp;{{item.storeItem.owner.username}}&nbsp;
 						span.puntaje
 							| (
-							//-div(star-rating, ng-model="item.storeItem.rating", readonly="true", ng-class='{worst: item.storeItem.rating <= 1, bad: 1 < item.storeItem.rating && item.storeItem.rating <= 2, ok: 2 < item.storeItem.rating && item.storeItem.rating <= 3, good: 3 < item.storeItem.rating && item.storeItem.rating <= 4, great: 4 < item.storeItem.rating && item.storeItem.rating <= 5}')
-							//-div.rating.static(style="font-size:9px;display:inline-block", data-rate-value=ownerRating)
+							div(star-rating, style="display: inline-block", ng-model="item.owner.sellerRating", readonly="true", ng-class='{worst: item.owner.sellerRating <= 1, bad: 1 < item.owner.sellerRating && item.owner.sellerRating <= 2, ok: 2 < item.owner.sellerRating && item.owner.sellerRating <= 3, good: 3 < item.owner.sellerRating && item.owner.sellerRating <= 4, great: 4 < item.owner.sellerRating && item.owner.sellerRating <= 5}')
 							| )
 						h3.price ${{item.storeItem.price.toFixed(2)}}
 						div.alert.alert-info(ng-if="loggedUser && item.isPurchased")

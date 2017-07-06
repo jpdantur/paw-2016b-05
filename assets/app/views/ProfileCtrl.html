@@ -14,7 +14,7 @@
             <li ng-if="loggedUser.favourites.length"><span class="fav-title">{{ 'index.favourite.title' | translate }}</span></li>
             <li ng-if="!loggedUser.favourites.length"><a>{{ 'index.favourite.empty' | translate }}</a></li>
             <li ng-repeat="favourite in loggedUser.favourites"><span class="item"><span class="item-left"><a ng-href="#!/store/items/{{favourite.item.id)}"><img ng-if="!favourite.item.images.length" ng-src="http://placehold.it/80x80"/><img ng-if="favourite.item.images.length" ng-src="data:image/png;base64,{{favourite.item.images[0].content}}"/></a><span class="item-info"><a href="#!/store/items/{{favourite.item.id}}"><span>{{favourite.item.name}}</span></a><span class="price">${{favourite.item.price.toFixed(2)}}</span></span></span><span title="{{ 'index.favourite.remove' | translate }}" class="item-right">
-                  <button class="btn btn-xs btn-danger pull-right remove-fav">x</button></span></span></li>
+                  <button ng-click="index.removeFavourite(favourite.id)" class="btn btn-xs btn-danger pull-right remove-fav">x</button></span></span></li>
             <li ng-if="loggedUser.favourites.hasMore" class="separator"></li>
             <li ng-if="loggedUser.favourites.hasMore" class="text-center"><a ng-href="#!/profile/details?tab=favourites">{{ 'index.favourite.viewAll' | translate }}</a></li>
           </ul>
@@ -396,7 +396,7 @@
                       <td style="width:40px"><a href="#!/store/items/{{fav.item.id}}"><img ng-if="!fav.item.images.length" style="width:40px;height:40px" ng-src="http://placehold.it/40?text=Sin+Imagen" class="table-img"/><img ng-if="fav.item.images.length" style="width:40px;height:40px" ng-src="data:image/png;base64,{{fav.item.images[0].content}}" class="table-img"/></a></td>
                       <td><a href="#!/store/items/{{fav.item.id}}">{{fav.item.name}}</a><br/><span style="color:#900;font-weight:500">$ {{fav.item.price}}</span><span>&nbsp;- </span><span class="text-muted">{{fav.item.sold}} {{ 'profile.items.table.sold' | translate }}</span></td>
                       <th class="center-vertical">
-                        <button class="btn btn-xs btn-danger remove-fav pull-right"><i class="fa fa-trash"></i><span>&nbsp;Eliminar</span></button>
+                        <button ng-click="profile.removeFavourite(fav.id)" class="btn btn-xs btn-danger remove-fav pull-right"><i class="fa fa-trash"></i><span>&nbsp;Eliminar</span></button>
                       </th>
                     </tr>
                   </tbody>
