@@ -139,6 +139,10 @@ define([
 
 				if (!$rootScope.loggedUser.favourites.hasMore) {
 					$rootScope.loggedUser.favourites.push(result);
+
+					if ($rootScope.loggedUser.favourites.length > 8) {
+						$rootScope.loggedUser.favourites.hasMore = true;
+					}
 				}
 
 				self.isFavourite = result;

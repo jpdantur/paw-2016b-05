@@ -85,8 +85,8 @@
                   <label for="email" class="col-sm-2 control-label">{{ 'profile.account.form.email' | translate }}</label>
                   <div class="col-sm-6">
                     <input id="email" type="email" placeholder="{{ 'profile.account.form.email' | translate }}" name="email" ng-model="profile.user.email" required="required" class="form-control"/>
-                    <p ng-show="changeEmailForm.email.$error.required" class="help-block">Email is required</p>
-                    <p ng-show="changeEmailForm.email.$invalid &amp;&amp; !changeEmailForm.email.$pristine" class="help-block">Enter a valid email</p>
+                    <p ng-show="changeEmailForm.email.$error.required" class="help-block">{{ 'login.recover.emailRequired' | translate }}</p>
+                    <p ng-show="changeEmailForm.email.$invalid &amp;&amp; !changeEmailForm.email.$pristine" class="help-block">{{ 'login.recover.emailInvalid' | translate }}</p>
                   </div>
                 </div>
                 <div style="margin-top:40px" class="form-group">
@@ -113,16 +113,16 @@
                   <label class="col-sm-2 control-label">{{ 'profile.password.form.new' | translate }}</label>
                   <div class="col-sm-6">
                     <input id="password-field" type="password" placeholder="{{ 'profile.password.form.new' | translate }}" name="password" required="required" ng-minlength="4" ng-maxlength="100" ng-model="profile.pass.password" class="form-control"/>
-                    <p ng-show="changePasswordForm.password.$error.required" class="help-block">Password is required</p>
-                    <p ng-show="changePasswordForm.password.$error.minlength" class="help-block">Password is too short</p>
-                    <p ng-show="changePasswordForm.password.$error.maxlength" class="help-block">Password is too long</p>
+                    <p ng-show="changePasswordForm.password.$error.required" class="help-block">{{ 'register.form.passwordRequired' | translate }}</p>
+                    <p ng-show="changePasswordForm.password.$error.minlength" class="help-block">{{ 'register.form.passwordShort' | translate }}</p>
+                    <p ng-show="changePasswordForm.password.$error.maxlength" class="help-block">{{ 'register.form.passwordLong' | translate }}</p>
                   </div>
                 </div>
                 <div ng-class="{ 'has-error': changePasswordForm.repeatPassword.$invalid &amp;&amp; !changePasswordForm.repeatPassword.$pristine }" class="form-group">
                   <label class="col-sm-2 control-label">{{ 'profile.password.form.repeat' | translate }}</label>
                   <div class="col-sm-6">
                     <input type="password" placeholder="{{ 'profile.password.form.repeat' | translate }}" name="repeatPassword" pw-check="password-field" ng-model="profile.pass.repeatPassword" class="form-control"/>
-                    <p ng-show="changePasswordForm.repeatPassword.$error.pwmatch" class="help-block">Password does not match</p>
+                    <p ng-show="changePasswordForm.repeatPassword.$error.pwmatch" class="help-block">{{ 'register.form.passwordMatch' | translate }}</p>
                   </div>
                 </div>
                 <div class="form-group">
@@ -195,7 +195,7 @@
                     </tr>
                   </tbody>
                 </table>
-                <ul id="filter-page" class="pager">
+                <ul id="filter-page" ng-if="profile.itemResult.numberOfTotalResults &gt; 0" class="pager">
                   <li ng-class="{disabled: profile.itemResult.currentPage === 0}" class="previous"><a ng-click="profile.updateItemsQuery({ pageNumber: 0 })" class="filter-page-action"><span>&larr;</span><span>{{ 'search.filters.pagination.pagers.first' | translate }}</span></a></li>
                   <li ng-class="{disabled: profile.itemResult.currentPage === 0}" class="pre"><a ng-click="profile.updateItemsQuery({ pageNumber: profile.itemResult.currentPage - 1 })" class="filter-page-action">{{ 'search.filters.pagination.pagers.previous' | translate }}</a></li>
                   <li ng-class="{disabled: profile.itemResult.currentPage === Math.floor(profile.itemResult.numberOfTotalResults / profile.itemResult.pageSize)}" class="ne"><a ng-click="profile.updateItemsQuery({ pageNumber: profile.itemResult.currentPage + 1 })" class="filter-page-action">{{ 'search.filters.pagination.pagers.next' | translate }}</a></li>
@@ -273,7 +273,7 @@
                     </tr>
                   </tbody>
                 </table>
-                <ul id="filter-page" class="pager">
+                <ul id="filter-page" ng-if="profile.salesResult.numberOfTotalResults &gt; 0" class="pager">
                   <li ng-class="{disabled: profile.salesResult.currentPage === 0}" class="previous"><a ng-click="profile.updateItemsQuery({ pageNumber: 0 })" class="filter-page-action"><span>&larr;</span><span>{{ 'search.filters.pagination.pagers.first' | translate }}</span></a></li>
                   <li ng-class="{disabled: profile.salesResult.currentPage === 0}" class="pre"><a ng-click="profile.updateItemsQuery({ pageNumber: profile.salesResult.currentPage - 1 })" class="filter-page-action">{{ 'search.filters.pagination.pagers.previous' | translate }}</a></li>
                   <li ng-class="{disabled: profile.salesResult.currentPage === Math.floor(profile.salesResult.numberOfTotalResults / profile.salesResult.pageSize)}" class="ne"><a ng-click="profile.updateItemsQuery({ pageNumber: profile.salesResult.currentPage + 1 })" class="filter-page-action">{{ 'search.filters.pagination.pagers.next' | translate }}</a></li>
@@ -343,7 +343,7 @@
                     </tr>
                   </tbody>
                 </table>
-                <ul id="filter-page" class="pager">
+                <ul id="filter-page" ng-if="profile.purchasesResult.numberOfTotalResults &gt; 0" class="pager">
                   <li ng-class="{disabled: profile.purchasesResult.currentPage === 0}" class="previous"><a ng-click="profile.updateSalesQuery({ pageNumber: 0 })" class="filter-page-action"><span>&larr;</span><span>{{ 'search.filters.pagination.pagers.first' | translate }}</span></a></li>
                   <li ng-class="{disabled: profile.purchasesResult.currentPage === 0}" class="pre"><a ng-click="profile.updateSalesQuery({ pageNumber: profile.purchasesResult.currentPage - 1 })" class="filter-page-action">{{ 'search.filters.pagination.pagers.previous' | translate }}</a></li>
                   <li ng-class="{disabled: profile.purchasesResult.currentPage === Math.floor(profile.purchasesResult.numberOfTotalResults / profile.purchasesResult.pageSize)}" class="ne"><a ng-click="profile.updateSalesQuery({ pageNumber: profile.purchasesResult.currentPage + 1 })" class="filter-page-action">{{ 'search.filters.pagination.pagers.next' | translate }}</a></li>
@@ -399,12 +399,12 @@
                       <td style="width:40px"><a href="#!/store/items/{{fav.item.id}}"><img ng-if="!fav.item.images.length" style="width:40px;height:40px" ng-src="http://placehold.it/40?text=Sin+Imagen" class="table-img"/><img ng-if="fav.item.images.length" style="width:40px;height:40px" ng-src="data:image/png;base64,{{fav.item.images[0].content}}" class="table-img"/></a></td>
                       <td><a href="#!/store/items/{{fav.item.id}}">{{fav.item.name}}</a><br/><span style="color:#900;font-weight:500">$ {{fav.item.price}}</span><span>&nbsp;- </span><span class="text-muted">{{fav.item.sold}} {{ 'profile.items.table.sold' | translate }}</span></td>
                       <th class="center-vertical">
-                        <button ng-click="profile.removeFavourite(fav.id)" class="btn btn-xs btn-danger remove-fav pull-right"><i class="fa fa-trash"></i><span>&nbsp;Eliminar</span></button>
+                        <button ng-click="profile.removeFavourite(fav.id)" class="btn btn-xs btn-danger remove-fav pull-right"><i class="fa fa-trash"></i><span>&nbsp;{{ 'delete' | translate }}</span></button>
                       </th>
                     </tr>
                   </tbody>
                 </table>
-                <ul id="filter-page" class="pager">
+                <ul id="filter-page" ng-if="profile.favouritesResult.numberOfTotalResults &gt; 0" class="pager">
                   <li ng-class="{disabled: profile.favouritesResult.currentPage === 0}" class="previous"><a ng-click="profile.updateFavouritesQuery({ pageNumber: 0 })" class="filter-page-action"><span>&larr;</span><span>{{ 'search.filters.pagination.pagers.first' | translate }}</span></a></li>
                   <li ng-class="{disabled: profile.favouritesResult.currentPage === 0}" class="pre"><a ng-click="profile.updateFavouritesQuery({ pageNumber: profile.favouritesResult.currentPage - 1 })" class="filter-page-action">{{ 'search.filters.pagination.pagers.previous' | translate }}</a></li>
                   <li ng-class="{disabled: profile.favouritesResult.currentPage === Math.floor(profile.favouritesResult.numberOfTotalResults / profile.favouritesResult.pageSize)}" class="ne"><a ng-click="profile.updateFavouritesQuery({ pageNumber: profile.favouritesResult.currentPage + 1 })" class="filter-page-action">{{ 'search.filters.pagination.pagers.next' | translate }}</a></li>

@@ -380,7 +380,7 @@ define([], function () {
 
     'mg.messages.registerSuccess': 'Register successful',
     'mg.messages.registerError': 'There was an error during registration',
-    'delete':'Delete',
+    'delete': 'Delete',
     'mg.javascript1': 'Javascript disabled',
     'mg.javascript2': 'This site was designed to use Javascript, please enable it.'
   };

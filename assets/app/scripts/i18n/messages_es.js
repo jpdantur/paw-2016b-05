@@ -379,7 +379,7 @@ define([], function () {
 
     'mg.messages.registerSuccess': 'Registración exitosa',
     'mg.messages.registerError': 'No se pudo registrar',
-    'delete': 'Eliminar'
+    'delete': 'Eliminar',
     'mg.javascript1': 'Javascript deshabilitado',
     'mg.javascript2': 'Este sitio fue diseñado para utilizar Javascript. Habilítelo para utilizar todas sus ventajas.'
   };

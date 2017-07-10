@@ -53,7 +53,7 @@ div.tab-pane-content
 						td.center-vertical(ng-if="!profile.purchasesQuery.status === 'PENDING'")
 							button.btn.btn-default.btn-xs.show-scores #{messageSource.getMessage('profile.purchases.seeScores', [], locale)}
 							//-button.btn.btn-default.btn-xs.show-scores(data-s-rating=purchase.sellerReview, data-b-rating=purchase.buyerReview) #{messageSource.getMessage('profile.purchases.seeScores', [], locale)}
-			ul.pager#filter-page
+			ul.pager#filter-page(ng-if="profile.purchasesResult.numberOfTotalResults > 0")
 				li.previous(ng-class="{disabled: profile.purchasesResult.currentPage === 0}")
 					a.filter-page-action(ng-click="profile.updateSalesQuery({ pageNumber: 0 })")
 						span &larr;

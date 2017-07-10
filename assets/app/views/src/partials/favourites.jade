@@ -38,7 +38,7 @@ div.tab-pane-content
 
 							//-td.center-vertical
 								span #{fav.item.owner.username}
-			ul.pager#filter-page
+			ul.pager#filter-page(ng-if="profile.favouritesResult.numberOfTotalResults > 0")
 				li.previous(ng-class="{disabled: profile.favouritesResult.currentPage === 0}")
 					a.filter-page-action(ng-click="profile.updateFavouritesQuery({ pageNumber: 0 })")
 						span &larr;

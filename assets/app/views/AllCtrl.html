@@ -53,7 +53,7 @@
       <div id="modifiers" class="row text-right">
         <div class="col-sm-12">
           <div ng-show="all.itemsLoading" class="modifier">
-            <div class="modifier-title"><i class="fa fa-spin fa-spinner fa-fw fa-2x"></i><span>&nbsp;Loading...</span></div>
+            <div class="modifier-title"><i class="fa fa-spin fa-spinner fa-fw fa-2x"></i><span>&nbsp;{{ 'profile.loading' | translate }}</span></div>
           </div>
           <div class="modifier"><span class="modifier-title">{{ 'search.filters.pagination.modifiers.amount' | translate }}:&nbsp;</span><span class="modifier-content">{{all.itemResult.numberOfAvailableResults != 0 ? all.itemResult.currentPage * all.itemResult.pageSize + 1 : 0}} - {{all.itemResult.currentPage * all.itemResult.pageSize + all.itemResult.numberOfAvailableResults}}</span><span class="modifier-title">&nbsp;{{ 'search.filters.pagination.modifiers.of' | translate }}&nbsp;</span><b>{{all.itemResult.numberOfTotalResults}}</b></div>
           <div id="modifier-page-size" class="modifier"><span class="modifier-title">{{ 'search.filters.pagination.modifiers.showing' | translate }}&nbsp;</span><a ng-class="{selected: all.itemResult.pageSize === 20}" ng-click="all.updateItemsQuery({pageNumber: 0, pageSize: 20})" class="modifier-option"><b ng-show="all.itemResult.pageSize === 20">20</b><span ng-show="all.itemResult.pageSize !== 20">20</span></a>

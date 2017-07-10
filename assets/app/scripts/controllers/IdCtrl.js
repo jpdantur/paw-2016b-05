@@ -36,6 +36,9 @@ define([
 			self.user.totalTransactions = user.approvedTransactions + user.declinedTransactions;
 			self.user.totalPurchases = user.approvedPurchases + user.declinedPurchases;
 		}, function (err) {
+			if (err.status === 404) {
+				$location.path('/404');
+			}
 			console.error(err);
 		});
 

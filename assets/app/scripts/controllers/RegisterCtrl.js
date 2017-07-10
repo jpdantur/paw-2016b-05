@@ -47,7 +47,10 @@ define([
 
 				}, function (err) {
 
-					if (err.status === 409) {
+					self.loading = false;
+
+					if (err.status === 409) {			
+
 						return toastr.error($filter('translate')('UsernameExists.RegisterForm.username'));
 					}
 

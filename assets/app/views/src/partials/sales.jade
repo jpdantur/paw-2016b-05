@@ -77,7 +77,7 @@ div.tab-pane-content
 						//-td #{item.lastUpdated}
 						//-td
 							a(href="#{context.url('/store/item/'+item.id+'/details')}", title="#{messageSource.getMessage('profile.items.table.edit',[],locale)}") #{messageSource.getMessage('profile.items.table.edit',[],locale)}
-			ul.pager#filter-page
+			ul.pager#filter-page(ng-if="profile.salesResult.numberOfTotalResults > 0")
 				li.previous(ng-class="{disabled: profile.salesResult.currentPage === 0}")
 					a.filter-page-action(ng-click="profile.updateItemsQuery({ pageNumber: 0 })")
 						span &larr;
