@@ -60,54 +60,54 @@
               <label for="firstName" class="control-label col-sm-3">{{ 'register.form.name' | translate }}</label>
               <div class="col-sm-9">
                 <input id="firstName" type="text" placeholder="{{ 'register.form.name' | translate }}" name="firstName" ng-model="register.user.firstName" required="required" ng-minlength="2" ng-maxlength="100" ng-pattern="/^[a-zA-ZáéíóúÁÉÍÓÚ ]+$/" class="form-control"/>
-                <p ng-show="registerForm.firstName.$error.required" class="help-block">Name is required</p>
-                <p ng-show="registerForm.firstName.$error.minlength" class="help-block">Name is too short</p>
-                <p ng-show="registerForm.firstName.$error.maxlength" class="help-block">Name is too long</p>
-                <p ng-show="registerForm.firstName.$error.pattern" class="help-block">Name should only contain letters</p>
+                <p ng-show="registerForm.firstName.$error.required" class="help-block">{{ 'register.form.nameRequired' | translate }}</p>
+                <p ng-show="registerForm.firstName.$error.minlength" class="help-block">{{ 'register.form.nameShort' | translate }}</p>
+                <p ng-show="registerForm.firstName.$error.maxlength" class="help-block">{{ 'register.form.nameLong' | translate }}</p>
+                <p ng-show="registerForm.firstName.$error.pattern" class="help-block">{{ 'register.form.namePattern' | translate }}</p>
               </div>
             </div>
             <div ng-class="{ 'has-error': registerForm.lastName.$invalid &amp;&amp; !registerForm.lastName.$pristine }" class="form-group">
               <label for="lastName" class="control-label col-sm-3">{{ 'register.form.surname' | translate }}</label>
               <div class="col-sm-9">
                 <input id="lastName" type="text" placeholder="{{ 'register.form.surname' | translate }}" name="lastName" ng-model="register.user.lastName" required="required" ng-minlength="2" ng-maxlength="100" ng-pattern="/^[a-zA-ZáéíóúÁÉÍÓÚ ]+$/" class="form-control"/>
-                <p ng-show="registerForm.lastName.$error.required" class="help-block">Surname is required</p>
-                <p ng-show="registerForm.lastName.$error.minlength" class="help-block">Surname is too short</p>
-                <p ng-show="registerForm.lastName.$error.maxlength" class="help-block">Surname is too long</p>
-                <p ng-show="registerForm.lastName.$error.pattern" class="help-block">Surname should only contain letters</p>
+                <p ng-show="registerForm.lastName.$error.required" class="help-block">{{ 'register.form.surnameRequired' | translate }}</p>
+                <p ng-show="registerForm.lastName.$error.minlength" class="help-block">{{ 'register.form.surnameShort' | translate }}</p>
+                <p ng-show="registerForm.lastName.$error.maxlength" class="help-block">{{ 'register.form.surnameLong' | translate }}</p>
+                <p ng-show="registerForm.lastName.$error.pattern" class="help-block">{{ 'register.form.surnamePattern' | translate }}</p>
               </div>
             </div>
             <div ng-class="{ 'has-error': registerForm.email.$invalid &amp;&amp; !registerForm.email.$pristine }" class="form-group">
               <label for="email" class="control-label col-sm-3">{{ 'register.form.mail' | translate }}</label>
               <div class="col-sm-9">
                 <input id="email" type="email" placeholder="{{ 'register.form.mail' | translate }}" name="email" ng-model="register.user.email" required="required" class="form-control"/>
-                <p ng-show="registerForm.email.$error.required" class="help-block">Email is required</p>
-                <p ng-show="registerForm.email.$invalid &amp;&amp; !registerForm.email.$pristine" class="help-block">Enter a valid email</p>
+                <p ng-show="registerForm.email.$error.required" class="help-block">{{ 'register.form.emailRequired' | translate }}</p>
+                <p ng-show="registerForm.email.$invalid &amp;&amp; !registerForm.email.$pristine" class="help-block">{{ 'register.form.emailInvalid' | translate }}</p>
               </div>
             </div>
             <div ng-class="{ 'has-error': registerForm.username.$invalid &amp;&amp; !registerForm.username.$pristine }" class="form-group">
               <label for="username" class="control-label col-sm-3">{{ 'login.field.user' | translate }}</label>
               <div class="col-sm-9">
                 <input id="username" type="text" placeholder="{{ 'login.field.user' | translate }}" name="username" required="required" ng-minlength="6" ng-maxlength="100" ng-pattern="/^[a-zA-Z0-9_-]+$/" ng-model="register.user.username" class="form-control"/>
-                <p ng-show="registerForm.username.$error.required" class="help-block">Username is required</p>
-                <p ng-show="registerForm.username.$error.minlength" class="help-block">Username is too short</p>
-                <p ng-show="registerForm.username.$error.maxlength" class="help-block">Username is too long</p>
-                <p ng-show="registerForm.username.$error.pattern" class="help-block">Username should only contain letters, numbers, '-' or '_'</p>
+                <p ng-show="registerForm.username.$error.required" class="help-block">{{ 'register.form.usernameRequired' | translate }}</p>
+                <p ng-show="registerForm.username.$error.minlength" class="help-block">{{ 'register.form.usernameShort' | translate }}</p>
+                <p ng-show="registerForm.username.$error.maxlength" class="help-block">{{ 'register.form.usernameLong' | translate }}</p>
+                <p ng-show="registerForm.username.$error.pattern" class="help-block">{{ 'register.form.usernamePattern' | translate }}</p>
               </div>
             </div>
             <div ng-class="{ 'has-error': registerForm.password.$invalid &amp;&amp; !registerForm.password.$pristine }" class="form-group">
               <label for="password" class="control-label col-sm-3">{{ 'login.field.password' | translate }}</label>
               <div class="col-sm-9">
                 <input id="password" type="password" placeholder="{{ 'login.field.password' | translate }}" name="password" required="required" ng-minlength="4" ng-maxlength="100" ng-model="register.user.password" class="form-control"/>
-                <p ng-show="registerForm.password.$error.required" class="help-block">Password is required</p>
-                <p ng-show="registerForm.password.$error.minlength" class="help-block">Password is too short</p>
-                <p ng-show="registerForm.password.$error.maxlength" class="help-block">Password is too long</p>
+                <p ng-show="registerForm.password.$error.required" class="help-block">{{ 'register.form.passwordRequired' | translate }}</p>
+                <p ng-show="registerForm.password.$error.minlength" class="help-block">{{ 'register.form.passwordShort' | translate }}</p>
+                <p ng-show="registerForm.password.$error.maxlength" class="help-block">{{ 'register.form.passwordShort' | translate }}</p>
               </div>
             </div>
             <div ng-class="{ 'has-error': registerForm.repeatPassword.$invalid &amp;&amp; !registerForm.repeatPassword.$pristine }" class="form-group">
               <label for="repeatPassword" class="control-label col-sm-3">{{ 'register.form.repeatPassword' | translate }}</label>
               <div class="col-sm-9">
                 <input id="repeatPassword" type="password" placeholder="{{ 'register.form.repeatPassword' | translate }}" name="repeatPassword" pw-check="password" ng-model="register.user.repeatPassword" class="form-control"/>
-                <p ng-show="registerForm.repeatPassword.$error.pwmatch" class="help-block">Password does not match</p>
+                <p ng-show="registerForm.repeatPassword.$error.pwmatch" class="help-block">{{ 'register.form.passwordMatch' | translate }}</p>
               </div>
             </div>
             <div class="form-group">

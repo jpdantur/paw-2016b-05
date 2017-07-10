@@ -176,3 +176,4 @@ node
 bower_components
 .sass-cache
 assets/dist
+package-lock.json
