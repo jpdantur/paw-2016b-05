@@ -22,7 +22,7 @@ define([
 		self.isPurchased = null;
 		self.related = null;
 		self.comment = {
-			rating: 2.5
+			rating: 3
 		};
 		self.owner = {
 			sellerRating: 2.5
