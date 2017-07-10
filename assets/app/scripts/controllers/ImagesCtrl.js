@@ -5,7 +5,7 @@ define([
 	'services/ItemService'
 ], function(siglasApp) {
 
-	siglasApp.controller('ImagesCtrl', function ($scope, $rootScope, $route, $location, $q, toastr, CategoryService, ItemService) {
+	siglasApp.controller('ImagesCtrl', function ($scope, $rootScope, $route, $location, $q, toastr, CategoryService, ItemService, $filter) {
 		
 		console.log('ImagesCtrl');
 
@@ -54,10 +54,10 @@ define([
 
 			ItemService.uploadImage(id, self.item.images).then(function (results) {
 				console.log(results);
-				toastr.success('Images have uploaded successfully');
+				toastr.success($filter('translate')('ng.messages.imageSuccess'));
 				// $location.path('/store/item/')
 			}, function (err) {
-				console.error(err);
+				console.error($filter('translate')('ng.messages.imageError'));
 			});
 
 		}

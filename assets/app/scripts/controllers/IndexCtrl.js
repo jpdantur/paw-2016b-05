@@ -5,9 +5,11 @@ define([
 	'services/FavouritesService'
 ], function(siglasApp) {
 
-	siglasApp.controller('IndexCtrl', function($scope, $rootScope, $location, $route, AuthService, toastr, $translate, FavouritesService) {
+	siglasApp.controller('IndexCtrl', function($scope, $rootScope, $location, $route, AuthService, toastr, $filter, FavouritesService) {
 
 		console.log('IndexCtrl');
+
+		console.log($filter('translate')('ng.messages.logoutSuccessful'));
 
 		var self = this;
 
@@ -29,7 +31,7 @@ define([
 		function logout() {
 			AuthService.logout().then(function () {
 				$rootScope.loggedUser = null;
-				toastr.success('Logout successful');
+				toastr.success($filter('translate')('ng.messages.logoutSuccessful'));
 				$location.path('/');
 			});
 		}
@@ -51,10 +53,11 @@ define([
 				$rootScope.loggedUser.favourites.hasMore = $rootScope.loggedUser.favourites.length > 8;
 
 				$scope.$broadcast('fav.remove', favId);
-				toastr.success('Favourite successfully removed');
+				toastr.success($filter('translate')('successMessages.toggleFavourite.removeSuccess'));
 			}, function (err) {
 				console.error(err);
-				toastr.error('Couldn\'t remove favourite');
+				// toastr.error('Couldn\'t remove favourite');
+				toastr.error($filter('translate')('successMessages.toggleFavourite.removeError'));
 			});
 		}
 

@@ -8,7 +8,7 @@ define([
 	'directives/star-rating'
 ], function(siglasApp) {
 
-	siglasApp.controller('ItemCtrl', function($scope, $filter, $rootScope, $location, $route, $q, toastr, ItemService, FavouritesService, IdService, StoreService) {
+	siglasApp.controller('ItemCtrl', function($scope, $rootScope, $location, $route, $q, toastr, ItemService, FavouritesService, IdService, StoreService, $filter) {
 
 		console.log('ItemCtrl');
 
@@ -120,10 +120,10 @@ define([
 				console.log(self.comment);
 				ItemService.addComment(self.storeItem.id, self.comment).then(function (result) {
 					console.log(result);
-					toastr.success('Your review has been submitted');
+					toastr.success($filter('translate')('ng.messages.reviewSuccess'));
 					self.storeItem.comments.unshift(result);
 				}, function (err) {
-					toastr.error('An error ocurred posting your review');
+					toastr.error($filter('translate')('ng.messages.reviewError'));
 					console.error(err);
 				});
 			}
@@ -138,9 +138,9 @@ define([
 
 				self.isFavourite = result;
 
-				toastr.success('Favourite added succesfully');
+				toastr.success($filter('translate')('successMessages.toggleFavourite.addSuccess'));
 			}, function (err) {
-				toastr.error('Couldn\'t add favourite');
+				toastr.error($filter('translate')('successMessages.toggleFavourite.addError'));
 			});
 		}
 

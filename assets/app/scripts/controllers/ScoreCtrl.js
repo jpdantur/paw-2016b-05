@@ -5,7 +5,7 @@ define([
 	'directives/star-rating'
 ], function(siglasApp) {
 
-	siglasApp.controller('ScoreCtrl', function ($scope, $rootScope, $route, toastr, SalesService) {
+	siglasApp.controller('ScoreCtrl', function ($scope, $rootScope, $route, toastr, SalesService, $filter) {
 		
 		console.log('ScoreCtrl');
 
@@ -43,10 +43,10 @@ define([
 					comment: self.comment
 				}).then(function (result) {
 					console.log(result);
-					toastr.success('Your review was submitted');
+					toastr.success($filter('translate')('ng.messages.reviewSuccess'));
 					self.tx[self.role + 'Review'].id = -1;
 				}, function (err) {
-					toastr.error('There was an error submitting your review');
+					toastr.error($filter('translate')('ng.messages.reviewError'));
 				});
 			}
 		}

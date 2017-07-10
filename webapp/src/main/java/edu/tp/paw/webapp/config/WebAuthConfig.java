@@ -61,7 +61,22 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 	
 	@Override
 	public void configure(final WebSecurity web) throws Exception {
-		web.ignoring().antMatchers("/resources/**", "/favicon.ico", "/403", "/404", "/500", "/images/get/**");
+		web.ignoring().antMatchers(
+				"/index.html",
+				"404.html",
+				"/scripts/**",
+				"/angular-toastr/**",
+				"/styles/**",
+				"/animate.css/**",
+				"/bower_components/**",
+				"/dist/**",
+				"/views/**",
+				"/resources/**",
+				"/favicon.ico",
+				"/403",
+				"/404",
+				"/500",
+				"/images/get/**");
 //		web.ignoring().antMatchers("/api/auth/login", "/api/auth/register", "/api/auth/renew", "/api/store/most-sold", "/api/store/category-tree");
 	}
 	
@@ -69,6 +84,8 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(final HttpSecurity http) throws Exception {
 		
 		jwtFilter.setWhitelist(
+				"/",
+				"/index.html",
 				"/api/auth/login",
 				"/api/auth/register",
 				"/api/auth/renew",

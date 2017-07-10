@@ -316,6 +316,30 @@ define([], function () {
     'successMessages.toggleFavourite.addError': 'We were unable to add item to favourites',
     'successMessages.toggleFavourite.addSuccess': 'Item has been added to favourites',
     'successMessages.toggleFavourite.removeError': 'We were unable to remove item from favourites',
-    'successMessages.toggleFavourite.removeSuccess': 'Item has been removed from favourites'
+    'successMessages.toggleFavourite.removeSuccess': 'Item has been removed from favourites',
+
+    'ng.messages.logoutSuccessful': 'Logout Successful',
+    'ng.messages.loginSuccessful': 'Login Successful',
+    'ng.messages.loginError': 'Incorrect username or password',
+    'ng.messages.editSuccess': 'Item successfully updated',
+    'ng.messages.editError': 'An error ocurred updating this item',
+    'ng.messages.imageSuccess': 'Images have uploaded successfully',
+    'ng.messages.imageError': 'An error ocurred uploading the images',
+    'ng.messages.reviewSuccess': 'Your review has been submitted',
+    'ng.messages.reviewError': 'An error ocurred submitting your review',
+
+    'ng.messagess.emailSuccess': 'Email was successfully updated',
+    'ng.messagess.emailError': 'An error ocurred updating yor email',
+    'ng.messagess.passwordSuccess': 'Password was successfully updated',
+    'ng.messagess.passwordError': 'An error ocurred updating yor password',
+    'ng.messagess.itemSuccess': 'Publication was successfully updated',
+    'ng.messagess.itemError': 'An error ocurred updating yor publication',
+    'ng.messages.purchaseSuccess': 'Purchase successfully approved',
+    'ng.messagess.purchaseError': 'There was an error approving your purchase',
+    'ng.messages.purchaseSuccess2': 'Purchase successfully declined',
+    'ng.messagess.purchaseError2': 'There was an error declining your purchase',
+
+    'mg.messages.registerSuccess': 'Register successful',
+    'mg.messages.registerError': 'There was an error during registration'
   };
 });

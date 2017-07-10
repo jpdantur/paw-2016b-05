@@ -10,7 +10,7 @@ define([
 	'ngBootbox'
 ], function(siglasApp) {
 
-	siglasApp.controller('ProfileCtrl', function($scope, $rootScope, $route, $location, $ngBootbox, toastr, UserService, ItemService, SalesService, PurchasesService, FavouritesService) {
+	siglasApp.controller('ProfileCtrl', function($scope, $rootScope, $route, $location, $ngBootbox, toastr, UserService, ItemService, SalesService, PurchasesService, FavouritesService, $filter) {
 
 		console.log('ProfileCtrl');
 
@@ -151,9 +151,9 @@ define([
 				UserService.update(self.user).then(function (user) {
 					console.log(user);
 					$rootScope.loggedUser.email = user.email;
-					toastr.success('Email was successfully updated');
+					toastr.success($filter('translate')('ng.messages.emailSuccess'));
 				}, function (err) {
-					toastr.error('There was an error updating your email. Please try again');
+					toastr.error($filter('translate')('ng.messages.emailError'));
 				});
 			}
 		}
@@ -166,9 +166,9 @@ define([
 				UserService.changePassword(self.pass).then(function () {
 					// console.log(user);
 					// $rootScope.loggedUser.email = user.email;
-					toastr.success('Password was successfully updated');
+					toastr.success($filter('translate')('ng.messages.passwordSuccess'));
 				}, function (err) {
-					toastr.error('There was an error changing your password. Please try again');
+					toastr.error($filter('translate')('ng.messages.passwordError'));
 				});
 			}
 
@@ -207,9 +207,10 @@ define([
 			ItemService.update(i).then(function (item) {
 				console.log(item);
 				angular.extend(originalItem, item);
-				toastr.success('Successfully updated publication');
+				toastr.success($filter('translate')('ng.messages.itemSuccess'));
 			}, function (err) {
 				console.error(err);
+				toastr.error($filter('translate')('ng.messages.itemError'));
 			});
 		}
 
@@ -242,10 +243,10 @@ define([
 			SalesService.approve(item.id).then(function (result) {
 				console.log(result);
 				item.status = 'APPROVED';
-				toastr.success('Purchase successfully approved');
+				toastr.success($filter('translate')('ng.messages.purchaseSuccess'));
 			}, function (err) {
 				console.error(err);
-				toastr.error('There was an error approving your sale');
+				toastr.error($filter('translate')('ng.messages.purchaseError'));
 			});
 		}
 
@@ -253,10 +254,10 @@ define([
 			SalesService.decline(item.id).then(function (result) {
 				console.log(result);
 				item.status = 'DECLINED';
-				toastr.success('Purchase successfully declined');
+				toastr.success($filter('translate')('ng.messages.purchaseSuccess2'));
 			}, function (err) {
 				console.error(err);
-				toastr.error('There was an error declining your sale');
+				toastr.success($filter('translate')('ng.messages.purchaseError2'));
 			});
 		}
 
@@ -319,10 +320,10 @@ define([
 					return fav.id !== favId;
 				});
 				$rootScope.loggedUser.favourites.hasMore = $rootScope.loggedUser.favourites.length > 8;
-				toastr.success('Favourite successfully removed');
+				toastr.success($filter('translate')('successMessages.toggleFavourite.addSuccess'));
 			}, function (err) {
 				console.error(err);
-				toastr.error('Couldn\'t remove favourite');
+				toastr.error($filter('translate')('successMessages.toggleFavourite.addError'));
 			});
 		}
 

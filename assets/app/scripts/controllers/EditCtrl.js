@@ -86,11 +86,12 @@ define([
 				console.log(self.item);
 				ItemService.update(self.item).then(function (result) {
 					console.log(result);
-					toastr.success('Item successfully updated');
+					toastr.success($filter('translate')('ng.messages.editSuccess'));
 					// $location.path('/store/sell/images').search({id: result.id});
 				}, function (err) {
 					console.error(err);
-					toastr.error('An error ocurred. Please try again');
+					toastr.error($filter('translate')('ng.messages.editError'));
+					// toastr.error('An error ocurred. Please try again');
 				});
 			}
 		}

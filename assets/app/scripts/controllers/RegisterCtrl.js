@@ -5,7 +5,7 @@ define([
 	'directives/password-check'
 ], function(siglasApp) {
 
-	siglasApp.controller('RegisterCtrl', function($scope, $rootScope, $location, $timeout, toastr, AuthService) {
+	siglasApp.controller('RegisterCtrl', function($scope, $rootScope, $location, $timeout, toastr, AuthService, $filter) {
 
 		console.log('RegisterCtrl');
 
@@ -38,7 +38,7 @@ define([
 
 				}, function (err) {
 					console.error(err);
-					toastr.error('There was an error during registration');
+					toastr.error($filter('translate')('mg.messages.registerError'));
 				}).then(function (profile) {
 					$rootScope.loggedUser = profile;
 
@@ -48,11 +48,11 @@ define([
 
 					self.loading = false;
 
-					toastr.success('Successfully registered');
+					toastr.success($filter('translate')('mg.messages.registerSuccess'));
 
 				}, function (err) {
 					console.error(err);
-					toastr.error('There was an error during registration');
+					toastr.error($filter('translate')('mg.messages.registerError'));
 				});
 			}
 		}

@@ -5,7 +5,7 @@ define([
 	'services/FavouritesService'
 ], function(siglasApp) {
 
-	siglasApp.controller('LoginCtrl', function($scope, $rootScope, $location, toastr, AuthService, FavouritesService) {
+	siglasApp.controller('LoginCtrl', function($scope, $rootScope, $location, toastr, AuthService, FavouritesService, $filter) {
 
 		console.log('LoginCtrl');
 
@@ -46,11 +46,11 @@ define([
 					console.error(error);
 				});
 
-				toastr.success('Successfully logged in');
+				toastr.success($filter('translate')('ng.messages.loginSuccessful'));
 
 				$location.path($location.$$search.next || '/');
 			}, function (err) {
-				toastr.error('Incorrect username or password');
+				toastr.error($filter('translate')('ng.messages.loginError'));
 				console.error(err);
 			});
 		}

@@ -4,7 +4,7 @@ define([
 	'services/StoreService'
 ], function(siglasApp) {
 
-	siglasApp.controller('AllCtrl', function($scope, $rootScope, $location, $route, toastr, $translate, StoreService) {
+	siglasApp.controller('AllCtrl', function($scope, $rootScope, $location, $route, toastr, $filter, StoreService) {
 
 		console.log('AllCtrl');
 

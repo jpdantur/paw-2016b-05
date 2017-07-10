@@ -5,7 +5,7 @@ define([
 	'directives/password-check'
 ], function(siglasApp) {
 
-	siglasApp.controller('ResetPassCtrl', function($scope, $rootScope, $location, $filter, toastr, AuthService) {
+	siglasApp.controller('ResetPassCtrl', function($scope, $rootScope, $location, toastr, AuthService, $filter) {
 
 		console.log('ResetPassCtrl');
 
@@ -40,11 +40,11 @@ define([
 				AuthService.resetPassword(params.username, self.pass).then(function () {
 					// console.log(user);
 					// $rootScope.loggedUser.email = user.email;
-					toastr.success('Password was successfully updated');
+					toastr.success($filter('translate')('ng.messages.passwordSuccess'));
 					$location.path('/auth/login');
 				}, function (err) {
 					self.loading = false;
-					toastr.error('There was an error changing your password. Please try again');
+					toastr.success($filter('translate')('ng.messages.passwordError'));
 				});
 			}
 		}

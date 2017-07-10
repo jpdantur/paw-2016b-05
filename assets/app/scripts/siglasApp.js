@@ -79,7 +79,9 @@ define([
 
 				$translateProvider.translations('preferredLanguage', i18n);
 				$translateProvider.preferredLanguage('preferredLanguage');
-				$translateProvider.useSanitizeValueStrategy('sanitize');
+				// $translateProvider.useSanitizeValueStrategy('sanitize');
+				$translateProvider.useSanitizeValueStrategy('sce');
+
 
 				$httpProvider.defaults.headers.common['Content-Type'] = 'application/json';
 

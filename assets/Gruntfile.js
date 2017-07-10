@@ -260,6 +260,10 @@ module.exports = function (grunt) {
     },
 
     uglify: {
+      options: {
+        beautify: true,
+        mangle: false
+      },
       dist: {
         files: [{
           expand: true,
@@ -424,7 +428,7 @@ module.exports = function (grunt) {
           mainConfigFile: '.tmp/scripts/build.js',
           baseUrl: '.tmp/scripts',
           uglify2: {
-            mangle: true
+            mangle: false
           },
           removeCombined: true,
           preserveLicenseComments: false,
