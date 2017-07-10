@@ -40,7 +40,7 @@ import edu.tp.paw.webapp.dto.SearchResultDTO;
 import edu.tp.paw.webapp.dto.StoreItemDTO;
 import edu.tp.paw.webapp.dto.StoreItemListDTO;
 
-@Path("/api/store")
+@Path("/store")
 @Component
 public class StoreController {
 
@@ -126,7 +126,7 @@ public class StoreController {
 		
 		final PagedResult<StoreItem> pagedResults2 = storeService.search(filter);
 		
-		final Set<Category> similarCategories = storeService
+		final List<Category> similarCategories = storeService
 				.getCategoriesForResultsInHigherDepthCategories(
 						filter.getCategoryFilter().getCategories(),
 						pagedResults2.getResults()

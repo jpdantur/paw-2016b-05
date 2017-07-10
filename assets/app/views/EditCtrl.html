@@ -126,21 +126,25 @@
             <h1 class="page-header text-center">{{ 'sell.image.upload.headline' | translate }} `{{edit.item.name}}`</h1>
             <div class="row">
               <div class="col-sm-11">
-                <form method="POST" action="http://localhost:8081/webapp/images/upload/1" enctype="multipart/form-data" class="form-horizontal">
+                <form ng-submit="edit.submit2()" class="form-horizontal">
                   <div class="form-group">
                     <label class="col-sm-2 control-label">{{ 'sell.field.pictures' | translate }}</label>
                     <div class="col-sm-10">
-                      <div id="dropzone">
-                        <div class="dz-message">{{ 'sell.image.upload.drag' | translate }}</div>
-                        <div class="fallback">
-                          <input name="images" type="file" multiple="multiple"/>
+                      <div ngf-accept="'image/*'" ngf-keep="true" ngf-multiple="true" ngf-drop="ngf-drop" ngf-select="ngf-select" ng-model="edit.item.images" ngf-stop-propagation="true" class="ng-file-upload">
+                        <p ng-hide="edit.item.images.length" class="h3 text-info text-center ng-instruction">{{ 'sell.image.upload.drag' | translate }}</p>
+                        <div ng-repeat="im in edit.item.images" class="ng-file-upload-item">
+                          <div class="ngf-content"><img ngf-src="im"/>
+                            <div class="ng-file-remove">
+                              <button type="button" ng-click="edit.remove($index)" class="btn btn-link"><i class="fa fa-trash"></i></button>
+                            </div>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                   <div class="form-group">
                     <div class="col-sm-4 col-sm-offset-8">
-                      <button id="uploadImages" type="submit" class="btn btn-success btn-block">{{ 'sell.okImages' | translate }}</button>
+                      <button id="uploadImages" type="submit" ng-disabled="!edit.item.images.length" class="btn btn-success btn-block">{{ 'sell.okImages' | translate }}</button>
                     </div>
                   </div>
                 </form>

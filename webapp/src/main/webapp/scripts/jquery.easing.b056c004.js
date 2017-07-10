@@ -8,7 +8,7 @@
         return x < 1 / d1 ? n1 * x * x : x < 2 / d1 ? n1 * (x -= 1.5 / d1) * x + .75 : x < 2.5 / d1 ? n1 * (x -= 2.25 / d1) * x + .9375 : n1 * (x -= 2.625 / d1) * x + .984375;
     }
     $.easing.jswing = $.easing.swing;
-    var pow = Math.pow, sqrt = Math.sqrt, sin = Math.sin, cos = Math.cos, PI = Math.PI, c1 = 1.70158, c2 = 1.525 * c1, c3 = c1 + 1, c4 = 2 * PI / 3, c5 = 2 * PI / 4.5;
+    var pow = Math.pow, sqrt = Math.sqrt, sin = Math.sin, cos = Math.cos, PI = Math.PI, c1 = 1.70158, c2 = 1.525 * c1, c4 = 2 * PI / 3, c5 = 2 * PI / 4.5;
     $.extend($.easing, {
         def: "easeOutQuad",
         swing: function(x) {
@@ -84,16 +84,16 @@
             return 0 === x ? 0 : 1 === x ? 1 : pow(2, -10 * x) * sin((10 * x - .75) * c4) + 1;
         },
         easeInOutElastic: function(x) {
-            return 0 === x ? 0 : 1 === x ? 1 : x < .5 ? -(pow(2, 20 * x - 10) * sin((20 * x - 11.125) * c5)) / 2 : pow(2, -20 * x + 10) * sin((20 * x - 11.125) * c5) / 2 + 1;
+            return 0 === x ? 0 : 1 === x ? 1 : x < .5 ? -pow(2, 20 * x - 10) * sin((20 * x - 11.125) * c5) / 2 : pow(2, -20 * x + 10) * sin((20 * x - 11.125) * c5) / 2 + 1;
         },
         easeInBack: function(x) {
-            return c3 * x * x * x - c1 * x * x;
+            return 2.70158 * x * x * x - c1 * x * x;
         },
         easeOutBack: function(x) {
-            return 1 + c3 * pow(x - 1, 3) + c1 * pow(x - 1, 2);
+            return 1 + 2.70158 * pow(x - 1, 3) + c1 * pow(x - 1, 2);
         },
         easeInOutBack: function(x) {
-            return x < .5 ? pow(2 * x, 2) * (2 * (c2 + 1) * x - c2) / 2 : (pow(2 * x - 2, 2) * ((c2 + 1) * (2 * x - 2) + c2) + 2) / 2;
+            return x < .5 ? pow(2 * x, 2) * (7.189819 * x - c2) / 2 : (pow(2 * x - 2, 2) * ((c2 + 1) * (2 * x - 2) + c2) + 2) / 2;
         },
         easeInBounce: function(x) {
             return 1 - bounceOut(1 - x);

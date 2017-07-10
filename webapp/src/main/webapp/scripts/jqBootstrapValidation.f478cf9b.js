@@ -44,25 +44,25 @@
                     s.find(".controls").append(u), t.push(u[0])), o.options.sniffHtml) {
                         var l;
                         if (n.data("validationPatternPattern") && n.attr("pattern", n.data("validationPatternPattern")), 
-                        void 0 !== n.attr("pattern") && (l = "Not in the expected format<!-- data-validation-pattern-message to override -->", 
+                        void 0 !== n.attr("pattern") && (l = "Not in the expected format\x3c!-- data-validation-pattern-message to override --\x3e", 
                         n.data("validationPatternMessage") && (l = n.data("validationPatternMessage")), 
                         n.data("validationPatternMessage", l), n.data("validationPatternRegex", n.attr("pattern"))), 
                         void 0 !== n.attr("max") || void 0 !== n.attr("aria-valuemax")) {
                             var c = void 0 !== n.attr("max") ? n.attr("max") : n.attr("aria-valuemax");
-                            l = "Too high: Maximum of '" + c + "'<!-- data-validation-max-message to override -->", 
+                            l = "Too high: Maximum of '" + c + "'\x3c!-- data-validation-max-message to override --\x3e", 
                             n.data("validationMaxMessage") && (l = n.data("validationMaxMessage")), n.data("validationMaxMessage", l), 
                             n.data("validationMaxMax", c);
                         }
                         if (void 0 !== n.attr("min") || void 0 !== n.attr("aria-valuemin")) {
                             var h = void 0 !== n.attr("min") ? n.attr("min") : n.attr("aria-valuemin");
-                            l = "Too low: Minimum of '" + h + "'<!-- data-validation-min-message to override -->", 
+                            l = "Too low: Minimum of '" + h + "'\x3c!-- data-validation-min-message to override --\x3e", 
                             n.data("validationMinMessage") && (l = n.data("validationMinMessage")), n.data("validationMinMessage", l), 
                             n.data("validationMinMin", h);
                         }
-                        if (void 0 !== n.attr("maxlength") && (l = "Too long: Maximum of '" + n.attr("maxlength") + "' characters<!-- data-validation-maxlength-message to override -->", 
+                        if (void 0 !== n.attr("maxlength") && (l = "Too long: Maximum of '" + n.attr("maxlength") + "' characters\x3c!-- data-validation-maxlength-message to override --\x3e", 
                         n.data("validationMaxlengthMessage") && (l = n.data("validationMaxlengthMessage")), 
                         n.data("validationMaxlengthMessage", l), n.data("validationMaxlengthMaxlength", n.attr("maxlength"))), 
-                        void 0 !== n.attr("minlength") && (l = "Too short: Minimum of '" + n.attr("minlength") + "' characters<!-- data-validation-minlength-message to override -->", 
+                        void 0 !== n.attr("minlength") && (l = "Too short: Minimum of '" + n.attr("minlength") + "' characters\x3c!-- data-validation-minlength-message to override --\x3e", 
                         n.data("validationMinlengthMessage") && (l = n.data("validationMinlengthMessage")), 
                         n.data("validationMinlengthMessage", l), n.data("validationMinlengthMinlength", n.attr("minlength"))), 
                         void 0 === n.attr("required") && void 0 === n.attr("aria-required") || (l = o.builtInValidators.required.message, 
@@ -75,12 +75,12 @@
                             var d = o.validatorTypes.number.decimal;
                             n.data("validationNumberDecimal") && (d = n.data("validationNumberDecimal")), n.data("validationNumberDecimal", d);
                         }
-                        void 0 !== n.attr("type") && "email" === n.attr("type").toLowerCase() && (l = "Not a valid email address<!-- data-validation-email-message to override -->", 
+                        void 0 !== n.attr("type") && "email" === n.attr("type").toLowerCase() && (l = "Not a valid email address\x3c!-- data-validation-email-message to override --\x3e", 
                         n.data("validationEmailMessage") && (l = n.data("validationEmailMessage")), n.data("validationEmailMessage", l)), 
-                        void 0 !== n.attr("minchecked") && (l = "Not enough options checked; Minimum of '" + n.attr("minchecked") + "' required<!-- data-validation-minchecked-message to override -->", 
+                        void 0 !== n.attr("minchecked") && (l = "Not enough options checked; Minimum of '" + n.attr("minchecked") + "' required\x3c!-- data-validation-minchecked-message to override --\x3e", 
                         n.data("validationMincheckedMessage") && (l = n.data("validationMincheckedMessage")), 
                         n.data("validationMincheckedMessage", l), n.data("validationMincheckedMinchecked", n.attr("minchecked"))), 
-                        void 0 !== n.attr("maxchecked") && (l = "Too many options checked; Maximum of '" + n.attr("maxchecked") + "' required<!-- data-validation-maxchecked-message to override -->", 
+                        void 0 !== n.attr("maxchecked") && (l = "Too many options checked; Maximum of '" + n.attr("maxchecked") + "' required\x3c!-- data-validation-maxchecked-message to override --\x3e", 
                         n.data("validationMaxcheckedMessage") && (l = n.data("validationMaxcheckedMessage")), 
                         n.data("validationMaxcheckedMessage", l), n.data("validationMaxcheckedMaxchecked", n.attr("maxchecked")));
                     }
@@ -100,11 +100,13 @@
                             });
                         }
                     };
-                    do e.each(f, g), f = e.unique(f), m = [], e.each(v, y), v = m; while (v.length > 0);
+                    do {
+                        e.each(f, g), f = e.unique(f), m = [], e.each(v, y), v = m;
+                    } while (v.length > 0);
                     var b = {};
                     e.each(f, function(t, i) {
                         var s = n.data("validation" + i + "Message"), u = !!s, a = !1;
-                        if (s || (s = "'" + i + "' validation failed <!-- Add attribute 'data-validation-" + i.toLowerCase() + "-message' to input to change this message -->"), 
+                        if (s || (s = "'" + i + "' validation failed \x3c!-- Add attribute 'data-validation-" + i.toLowerCase() + "-message' to input to change this message --\x3e"), 
                         e.each(o.validatorTypes, function(t, o) {
                             if (void 0 === b[t] && (b[t] = []), !a && void 0 !== n.data("validation" + i + r(o.name))) {
                                 var f = o.init(n, i);
@@ -208,7 +210,7 @@
                 },
                 validate: function(e, t, n) {
                     if (n.lastValue === t && n.lastFinished) return !n.lastValid;
-                    if (n.lastFinished === !0) {
+                    if (!0 === n.lastFinished) {
                         n.lastValue = t, n.lastValid = !0, n.lastFinished = !1;
                         var r = n, i = e;
                         o(n.callback, window, e, t, function(t) {
@@ -234,7 +236,7 @@
                     };
                 },
                 validate: function(t, n, r) {
-                    return "" + r.lastValue == "" + n && r.lastFinished === !0 ? r.lastValid === !1 : (r.lastFinished === !0 && (r.lastValue = n, 
+                    return "" + r.lastValue == "" + n && !0 === r.lastFinished ? !1 === r.lastValid : (!0 === r.lastFinished && (r.lastValue = n, 
                     r.lastValid = !0, r.lastFinished = !1, e.ajax({
                         url: r.url,
                         data: "value=" + encodeURIComponent(n) + "&field=" + t.attr("name"),
@@ -414,10 +416,10 @@
                     return r && (n.message = r), n;
                 },
                 validate: function(e, t, n) {
-                    for (var r = t.replace(n.decimal, ".").replace(n.thousands, ""), i = parseFloat(r), s = parseFloat(n.step); s % 1 !== 0; ) s *= 10, 
+                    for (var r = t.replace(n.decimal, ".").replace(n.thousands, ""), i = parseFloat(r), s = parseFloat(n.step); s % 1 != 0; ) s *= 10, 
                     i *= 10;
-                    var o = n.regex.test(t), u = parseFloat(i) % parseFloat(s) === 0, a = !isNaN(parseFloat(r)) && isFinite(r), f = !(o && u && a);
-                    return f;
+                    var o = n.regex.test(t), u = parseFloat(i) % parseFloat(s) == 0, a = !isNaN(parseFloat(r)) && isFinite(r);
+                    return !(o && u && a);
                 },
                 message: "Must be a number"
             }
@@ -431,7 +433,7 @@
                 name: "Passwordagain",
                 type: "match",
                 match: "password",
-                message: "Does not match the given password<!-- data-validator-paswordagain-message to override -->"
+                message: "Does not match the given password\x3c!-- data-validator-paswordagain-message to override --\x3e"
             },
             positive: {
                 name: "Positive",
@@ -447,30 +449,30 @@
                 name: "Integer",
                 type: "regex",
                 regex: "[+-]?\\d+",
-                message: "No decimal places allowed<!-- data-validator-integer-message to override -->"
+                message: "No decimal places allowed\x3c!-- data-validator-integer-message to override --\x3e"
             },
             positivenumber: {
                 name: "Positivenumber",
                 type: "min",
                 min: 0,
-                message: "Must be a positive number<!-- data-validator-positivenumber-message to override -->"
+                message: "Must be a positive number\x3c!-- data-validator-positivenumber-message to override --\x3e"
             },
             negativenumber: {
                 name: "Negativenumber",
                 type: "max",
                 max: 0,
-                message: "Must be a negative number<!-- data-validator-negativenumber-message to override -->"
+                message: "Must be a negative number\x3c!-- data-validator-negativenumber-message to override --\x3e"
             },
             required: {
                 name: "Required",
                 type: "required",
-                message: "This is required<!-- data-validator-required-message to override -->"
+                message: "This is required\x3c!-- data-validator-required-message to override --\x3e"
             },
             checkone: {
                 name: "Checkone",
                 type: "minchecked",
                 minchecked: 1,
-                message: "Check at least one option<!-- data-validation-checkone-message to override -->"
+                message: "Check at least one option\x3c!-- data-validation-checkone-message to override --\x3e"
             },
             number: {
                 name: "Number",

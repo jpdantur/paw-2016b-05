@@ -5,10 +5,9 @@ define([
 ], function(siglasApp) {
 
 	siglasApp.controller('IdCtrl', function($scope, $rootScope, $location, $route, toastr, IdService) {
-
-		console.log('IdCtrl');
-
 		var self = this;
+
+		$scope.Math = window.Math;
 
 		self.user = null;
 		self.params = $route.current.pathParams;

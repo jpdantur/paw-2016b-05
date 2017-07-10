@@ -14,7 +14,7 @@
                         try {
                             stringifySupported = "0" === stringify(0) && "0" === stringify(new Number()) && '""' == stringify(new String()) && stringify(getClass) === undef && stringify(undef) === undef && stringify() === undef && "1" === stringify(value) && "[1]" == stringify([ value ]) && "[null]" == stringify([ undef ]) && "null" == stringify(null) && "[null,null,null]" == stringify([ undef, getClass, null ]) && stringify({
                                 a: [ value, !0, !1, null, "\0\b\n\f\r\t" ]
-                            }) == serialized && "1" === stringify(null, value) && "[\n 1,\n 2\n]" == stringify([ 1, 2 ], null, 1) && '"-271821-04-20T00:00:00.000Z"' == stringify(new Date((-864e13))) && '"+275760-09-13T00:00:00.000Z"' == stringify(new Date(864e13)) && '"-000001-01-01T00:00:00.000Z"' == stringify(new Date((-621987552e5))) && '"1969-12-31T23:59:59.999Z"' == stringify(new Date((-1)));
+                            }) == serialized && "1" === stringify(null, value) && "[\n 1,\n 2\n]" == stringify([ 1, 2 ], null, 1) && '"-271821-04-20T00:00:00.000Z"' == stringify(new Date(-864e13)) && '"+275760-09-13T00:00:00.000Z"' == stringify(new Date(864e13)) && '"-000001-01-01T00:00:00.000Z"' == stringify(new Date(-621987552e5)) && '"1969-12-31T23:59:59.999Z"' == stringify(new Date(-1));
                         } catch (exception) {
                             stringifySupported = !1;
                         }
@@ -51,12 +51,12 @@
         var Number = context.Number || root.Number, String = context.String || root.String, Object = context.Object || root.Object, Date = context.Date || root.Date, SyntaxError = context.SyntaxError || root.SyntaxError, TypeError = context.TypeError || root.TypeError, Math = context.Math || root.Math, nativeJSON = context.JSON || root.JSON;
         "object" == typeof nativeJSON && nativeJSON && (exports.stringify = nativeJSON.stringify, 
         exports.parse = nativeJSON.parse);
-        var isProperty, forEach, undef, objectProto = Object.prototype, getClass = objectProto.toString, isExtended = new Date((-0xc782b5b800cec));
+        var isProperty, forEach, undef, objectProto = Object.prototype, getClass = objectProto.toString, isExtended = new Date(-0xc782b5b800cec);
         try {
-            isExtended = isExtended.getUTCFullYear() == -109252 && 0 === isExtended.getUTCMonth() && 1 === isExtended.getUTCDate() && 10 == isExtended.getUTCHours() && 37 == isExtended.getUTCMinutes() && 6 == isExtended.getUTCSeconds() && 708 == isExtended.getUTCMilliseconds();
+            isExtended = -109252 == isExtended.getUTCFullYear() && 0 === isExtended.getUTCMonth() && 1 === isExtended.getUTCDate() && 10 == isExtended.getUTCHours() && 37 == isExtended.getUTCMinutes() && 6 == isExtended.getUTCSeconds() && 708 == isExtended.getUTCMilliseconds();
         } catch (exception) {}
         if (!has("json")) {
-            var functionClass = "[object Function]", dateClass = "[object Date]", numberClass = "[object Number]", stringClass = "[object String]", arrayClass = "[object Array]", booleanClass = "[object Boolean]", charIndexBuggy = has("bug-string-char-index");
+            var charIndexBuggy = has("bug-string-char-index");
             if (!isExtended) var floor = Math.floor, Months = [ 0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334 ], getDay = function(year, month) {
                 return Months[month] + 365 * (year - 1970) + floor((year - 1969 + (month = +(month > 1))) / 4) - floor((year - 1901 + month) / 100) + floor((year - 1601 + month) / 400);
             };
@@ -78,15 +78,15 @@
                 }).prototype.valueOf = 0, members = new Properties();
                 for (property in members) isProperty.call(members, property) && size++;
                 return Properties = members = null, size ? forEach = 2 == size ? function(object, callback) {
-                    var property, members = {}, isFunction = getClass.call(object) == functionClass;
+                    var property, members = {}, isFunction = "[object Function]" == getClass.call(object);
                     for (property in object) isFunction && "prototype" == property || isProperty.call(members, property) || !(members[property] = 1) || !isProperty.call(object, property) || callback(property);
                 } : function(object, callback) {
-                    var property, isConstructor, isFunction = getClass.call(object) == functionClass;
+                    var property, isConstructor, isFunction = "[object Function]" == getClass.call(object);
                     for (property in object) isFunction && "prototype" == property || !isProperty.call(object, property) || (isConstructor = "constructor" === property) || callback(property);
                     (isConstructor || isProperty.call(object, property = "constructor")) && callback(property);
                 } : (members = [ "valueOf", "toString", "toLocaleString", "propertyIsEnumerable", "isPrototypeOf", "hasOwnProperty", "constructor" ], 
                 forEach = function(object, callback) {
-                    var property, length, isFunction = getClass.call(object) == functionClass, hasProperty = !isFunction && "function" != typeof object.constructor && objectTypes[typeof object.hasOwnProperty] && object.hasOwnProperty || isProperty;
+                    var property, length, isFunction = "[object Function]" == getClass.call(object), hasProperty = !isFunction && "function" != typeof object.constructor && objectTypes[typeof object.hasOwnProperty] && object.hasOwnProperty || isProperty;
                     for (property in object) isFunction && "prototype" == property || !hasProperty.call(object, property) || callback(property);
                     for (length = members.length; property = members[--length]; hasProperty.call(object, property) && callback(property)) ;
                 }), forEach(object, callback);
@@ -99,9 +99,9 @@
                     10: "\\n",
                     13: "\\r",
                     9: "\\t"
-                }, leadingZeroes = "000000", toPaddedString = function(width, value) {
-                    return (leadingZeroes + (value || 0)).slice(-width);
-                }, unicodePrefix = "\\u00", quote = function(value) {
+                }, toPaddedString = function(width, value) {
+                    return ("000000" + (value || 0)).slice(-width);
+                }, quote = function(value) {
                     for (var result = '"', index = 0, length = value.length, useCharIndex = !charIndexBuggy || length > 10, symbols = useCharIndex && (charIndexBuggy ? value.split("") : value); index < length; index++) {
                         var charCode = value.charCodeAt(index);
                         switch (charCode) {
@@ -117,7 +117,7 @@
 
                           default:
                             if (charCode < 32) {
-                                result += unicodePrefix + toPaddedString(2, charCode.toString(16));
+                                result += "\\u00" + toPaddedString(2, charCode.toString(16));
                                 break;
                             }
                             result += useCharIndex ? symbols[index] : value.charAt(index);
@@ -129,7 +129,7 @@
                     try {
                         value = object[property];
                     } catch (exception) {}
-                    if ("object" == typeof value && value) if (className = getClass.call(value), className != dateClass || isProperty.call(value, "toJSON")) "function" == typeof value.toJSON && (className != numberClass && className != stringClass && className != arrayClass || isProperty.call(value, "toJSON")) && (value = value.toJSON(property)); else if (value > -1 / 0 && value < 1 / 0) {
+                    if ("object" == typeof value && value) if ("[object Date]" != (className = getClass.call(value)) || isProperty.call(value, "toJSON")) "function" == typeof value.toJSON && ("[object Number]" != className && "[object String]" != className && "[object Array]" != className || isProperty.call(value, "toJSON")) && (value = value.toJSON(property)); else if (value > -1 / 0 && value < 1 / 0) {
                         if (getDay) {
                             for (date = floor(value / 864e5), year = floor(date / 365.2425) + 1970 - 1; getDay(year + 1, 0) <= date; year++) ;
                             for (month = floor((date - getDay(year, 0)) / 30.42); getDay(year, month + 1) <= date; month++) ;
@@ -141,13 +141,13 @@
                         value = (year <= 0 || year >= 1e4 ? (year < 0 ? "-" : "+") + toPaddedString(6, year < 0 ? -year : year) : toPaddedString(4, year)) + "-" + toPaddedString(2, month + 1) + "-" + toPaddedString(2, date) + "T" + toPaddedString(2, hours) + ":" + toPaddedString(2, minutes) + ":" + toPaddedString(2, seconds) + "." + toPaddedString(3, milliseconds) + "Z";
                     } else value = null;
                     if (callback && (value = callback.call(object, property, value)), null === value) return "null";
-                    if (className = getClass.call(value), className == booleanClass) return "" + value;
-                    if (className == numberClass) return value > -1 / 0 && value < 1 / 0 ? "" + value : "null";
-                    if (className == stringClass) return quote("" + value);
+                    if ("[object Boolean]" == (className = getClass.call(value))) return "" + value;
+                    if ("[object Number]" == className) return value > -1 / 0 && value < 1 / 0 ? "" + value : "null";
+                    if ("[object String]" == className) return quote("" + value);
                     if ("object" == typeof value) {
                         for (length = stack.length; length--; ) if (stack[length] === value) throw TypeError();
                         if (stack.push(value), results = [], prefix = indentation, indentation += whitespace, 
-                        className == arrayClass) {
+                        "[object Array]" == className) {
                             for (index = 0, length = value.length; index < length; index++) element = serialize(index, value, callback, properties, whitespace, indentation, stack), 
                             results.push(element === undef ? "null" : element);
                             result = results.length ? whitespace ? "[\n" + indentation + results.join(",\n" + indentation) + "\n" + prefix + "]" : "[" + results.join(",") + "]" : "[]";
@@ -160,14 +160,14 @@
                 };
                 exports.stringify = function(source, filter, width) {
                     var whitespace, callback, properties, className;
-                    if (objectTypes[typeof filter] && filter) if ((className = getClass.call(filter)) == functionClass) callback = filter; else if (className == arrayClass) {
+                    if (objectTypes[typeof filter] && filter) if ("[object Function]" == (className = getClass.call(filter))) callback = filter; else if ("[object Array]" == className) {
                         properties = {};
                         for (var value, index = 0, length = filter.length; index < length; value = filter[index++], 
-                        className = getClass.call(value), (className == stringClass || className == numberClass) && (properties[value] = 1)) ;
+                        ("[object String]" == (className = getClass.call(value)) || "[object Number]" == className) && (properties[value] = 1)) ;
                     }
-                    if (width) if ((className = getClass.call(width)) == numberClass) {
+                    if (width) if ("[object Number]" == (className = getClass.call(width))) {
                         if ((width -= width % 1) > 0) for (whitespace = "", width > 10 && (width = 10); whitespace.length < width; whitespace += " ") ;
-                    } else className == stringClass && (whitespace = width.length <= 10 ? width : width.slice(0, 10));
+                    } else "[object String]" == className && (whitespace = width.length <= 10 ? width : width.slice(0, 10));
                     return serialize("", (value = {}, value[""] = source, value), callback, properties, whitespace, "", []);
                 };
             }
@@ -201,8 +201,7 @@
                         return value = charIndexBuggy ? source.charAt(Index) : source[Index], Index++, value;
 
                       case 34:
-                        for (value = "@", Index++; Index < length; ) if (charCode = source.charCodeAt(Index), 
-                        charCode < 32) abort(); else if (92 == charCode) switch (charCode = source.charCodeAt(++Index)) {
+                        for (value = "@", Index++; Index < length; ) if ((charCode = source.charCodeAt(Index)) < 32) abort(); else if (92 == charCode) switch (charCode = source.charCodeAt(++Index)) {
                           case 92:
                           case 34:
                           case 47:
@@ -215,8 +214,7 @@
                             break;
 
                           case 117:
-                            for (begin = ++Index, position = Index + 4; Index < position; Index++) charCode = source.charCodeAt(Index), 
-                            charCode >= 48 && charCode <= 57 || charCode >= 97 && charCode <= 102 || charCode >= 65 && charCode <= 70 || abort();
+                            for (begin = ++Index, position = Index + 4; Index < position; Index++) (charCode = source.charCodeAt(Index)) >= 48 && charCode <= 57 || charCode >= 97 && charCode <= 102 || charCode >= 65 && charCode <= 70 || abort();
                             value += fromCharCode("0x" + source.slice(begin, Index));
                             break;
 
@@ -233,17 +231,15 @@
                       default:
                         if (begin = Index, 45 == charCode && (isSigned = !0, charCode = source.charCodeAt(++Index)), 
                         charCode >= 48 && charCode <= 57) {
-                            for (48 == charCode && (charCode = source.charCodeAt(Index + 1), charCode >= 48 && charCode <= 57) && abort(), 
-                            isSigned = !1; Index < length && (charCode = source.charCodeAt(Index), charCode >= 48 && charCode <= 57); Index++) ;
+                            for (48 == charCode && (charCode = source.charCodeAt(Index + 1)) >= 48 && charCode <= 57 && abort(), 
+                            isSigned = !1; Index < length && (charCode = source.charCodeAt(Index)) >= 48 && charCode <= 57; Index++) ;
                             if (46 == source.charCodeAt(Index)) {
-                                for (position = ++Index; position < length && (charCode = source.charCodeAt(position), 
-                                charCode >= 48 && charCode <= 57); position++) ;
+                                for (position = ++Index; position < length && (charCode = source.charCodeAt(position)) >= 48 && charCode <= 57; position++) ;
                                 position == Index && abort(), Index = position;
                             }
-                            if (charCode = source.charCodeAt(Index), 101 == charCode || 69 == charCode) {
+                            if (101 == (charCode = source.charCodeAt(Index)) || 69 == charCode) {
                                 for (charCode = source.charCodeAt(++Index), 43 != charCode && 45 != charCode || Index++, 
-                                position = Index; position < length && (charCode = source.charCodeAt(position), 
-                                charCode >= 48 && charCode <= 57); position++) ;
+                                position = Index; position < length && (charCode = source.charCodeAt(position)) >= 48 && charCode <= 57; position++) ;
                                 position == Index && abort(), Index = position;
                             }
                             return +source.slice(begin, Index);
@@ -260,13 +256,13 @@
                     if ("$" == value && abort(), "string" == typeof value) {
                         if ("@" == (charIndexBuggy ? value.charAt(0) : value[0])) return value.slice(1);
                         if ("[" == value) {
-                            for (results = []; value = lex(), "]" != value; hasMembers || (hasMembers = !0)) hasMembers && ("," == value ? (value = lex(), 
-                            "]" == value && abort()) : abort()), "," == value && abort(), results.push(get(value));
+                            for (results = []; "]" != (value = lex()); hasMembers || (hasMembers = !0)) hasMembers && ("," == value ? "]" == (value = lex()) && abort() : abort()), 
+                            "," == value && abort(), results.push(get(value));
                             return results;
                         }
                         if ("{" == value) {
-                            for (results = {}; value = lex(), "}" != value; hasMembers || (hasMembers = !0)) hasMembers && ("," == value ? (value = lex(), 
-                            "}" == value && abort()) : abort()), "," != value && "string" == typeof value && "@" == (charIndexBuggy ? value.charAt(0) : value[0]) && ":" == lex() || abort(), 
+                            for (results = {}; "}" != (value = lex()); hasMembers || (hasMembers = !0)) hasMembers && ("," == value ? "}" == (value = lex()) && abort() : abort()), 
+                            "," != value && "string" == typeof value && "@" == (charIndexBuggy ? value.charAt(0) : value[0]) && ":" == lex() || abort(), 
                             results[value.slice(1)] = get(lex());
                             return results;
                         }
@@ -278,7 +274,7 @@
                     element === undef ? delete source[property] : source[property] = element;
                 }, walk = function(source, property, callback) {
                     var length, value = source[property];
-                    if ("object" == typeof value && value) if (getClass.call(value) == arrayClass) for (length = value.length; length--; ) update(value, length, callback); else forEach(value, function(property) {
+                    if ("object" == typeof value && value) if ("[object Array]" == getClass.call(value)) for (length = value.length; length--; ) update(value, length, callback); else forEach(value, function(property) {
                         update(value, property, callback);
                     });
                     return callback.call(source, property, value);
@@ -286,7 +282,7 @@
                 exports.parse = function(source, callback) {
                     var result, value;
                     return Index = 0, Source = "" + source, result = get(lex()), "$" != lex() && abort(), 
-                    Index = Source = null, callback && getClass.call(callback) == functionClass ? walk((value = {}, 
+                    Index = Source = null, callback && "[object Function]" == getClass.call(callback) ? walk((value = {}, 
                     value[""] = result, value), "", callback) : result;
                 };
             }
@@ -294,7 +290,7 @@
         return exports.runInContext = runInContext, exports;
     }
     var isLoader = "function" == typeof define && define.amd, objectTypes = {
-        "function": !0,
+        function: !0,
         object: !0
     }, freeExports = objectTypes[typeof exports] && exports && !exports.nodeType && exports, root = objectTypes[typeof window] && window || this, freeGlobal = freeExports && objectTypes[typeof module] && module && !module.nodeType && "object" == typeof global && global;
     if (!freeGlobal || freeGlobal.global !== freeGlobal && freeGlobal.window !== freeGlobal && freeGlobal.self !== freeGlobal || (root = freeGlobal), 

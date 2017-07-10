@@ -40,7 +40,7 @@ import edu.tp.paw.webapp.dto.StoreItemDTO;
 import edu.tp.paw.webapp.dto.UserDTO;
 import edu.tp.paw.webapp.form.ChangePasswordForm;
 
-@Path("/api/me")
+@Path("/me")
 @Component
 public class MeController {
 	

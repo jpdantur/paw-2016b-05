@@ -7,8 +7,6 @@ define([
 
 	siglasApp.controller('HomeCtrl', function($scope, $rootScope, $location, ItemService, CategoryService) {
 
-		console.log('HomeCtrl');
-
 		var self = this;
 
 		self.items = [];

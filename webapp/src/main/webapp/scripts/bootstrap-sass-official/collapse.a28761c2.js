@@ -20,12 +20,11 @@
     Collapse.VERSION = "3.3.7", Collapse.TRANSITION_DURATION = 350, Collapse.DEFAULTS = {
         toggle: !0
     }, Collapse.prototype.dimension = function() {
-        var hasWidth = this.$element.hasClass("width");
-        return hasWidth ? "width" : "height";
+        return this.$element.hasClass("width") ? "width" : "height";
     }, Collapse.prototype.show = function() {
         if (!this.transitioning && !this.$element.hasClass("in")) {
             var activesData, actives = this.$parent && this.$parent.children(".panel").children(".in, .collapsing");
-            if (!(actives && actives.length && (activesData = actives.data("bs.collapse"), activesData && activesData.transitioning))) {
+            if (!(actives && actives.length && (activesData = actives.data("bs.collapse")) && activesData.transitioning)) {
                 var startEvent = $.Event("show.bs.collapse");
                 if (this.$element.trigger(startEvent), !startEvent.isDefaultPrevented()) {
                     actives && actives.length && (Plugin.call(actives, "hide"), activesData || actives.data("bs.collapse", null));

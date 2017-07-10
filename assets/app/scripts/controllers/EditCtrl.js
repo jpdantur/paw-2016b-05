@@ -5,11 +5,11 @@ define([
 	'services/CategoryService'
 ], function(siglasApp) {
 
-	siglasApp.controller('EditCtrl', function($scope, $rootScope, $location, $q, $route, ItemService, CategoryService, toastr) {
-
-		console.log('EditCtrl');
+	siglasApp.controller('EditCtrl', function($scope, $rootScope, $location, $q, $route, ItemService, CategoryService, toastr, $filter) {
 
 		var self = this;
+
+		var id = $route.current.pathParams.id;
 
 		$scope._ = _;
 
@@ -26,20 +26,35 @@ define([
 
 		self.submit = submit;
 
+		self.remove = remove;
+		self.submit2 = submit2;
+
 		// ///////
 
+		function dataURItoBlob(dataURI, mimeString) {
+			// convert base64/URLEncoded data component to raw binary data held in a string
+			var byteString = atob(dataURI);
+			var ia = new Uint8Array(byteString.length);
+			for (var i = 0; i < byteString.length; i++) {
+				ia[i] = byteString.charCodeAt(i);
+			}
+
+			return new Blob([ia], {type: mimeString});
+		}
+
 		$q.all({
-			item: ItemService.findById($route.current.pathParams.id),
+			item: ItemService.findById(id),
 			category: CategoryService.tree()
 		}).then(function (result) {
 			self.item = result.item;
+			self.item.images = _.map(self.item.images, function (image) {
+				return dataURItoBlob(image.content, image.mimeType);
+			});
 
 			self.categories = result.category;
 			self.categoryPath.push(self.categories);
 
 			itemCategoryLookup(self.categories, 1);
-
-			console.log(self.selectedCategory);
 
 		}, function (err) {
 			console.error(err);
@@ -83,9 +98,7 @@ define([
 		function submit(valid) {
 			if (valid) {
 				_.extend(self.item, {category: self.selectedCategory.id});
-				console.log(self.item);
 				ItemService.update(self.item).then(function (result) {
-					console.log(result);
 					toastr.success($filter('translate')('ng.messages.editSuccess'));
 					// $location.path('/store/sell/images').search({id: result.id});
 				}, function (err) {
@@ -94,6 +107,22 @@ define([
 					// toastr.error('An error ocurred. Please try again');
 				});
 			}
+		}
+
+		function remove(index) {
+			self.item.images.splice(index, 1);
+		}
+
+		function submit2() {
+
+			ItemService.uploadImage(id, self.item.images).then(function (results) {
+				toastr.success($filter('translate')('ng.messages.imageSuccess'));
+				// $location.path('/store/items/' + id);
+			}, function (err) {
+				toastr.error($filter('translate')('ng.messages.imageError'));
+				console.error($filter('translate')('ng.messages.imageError'));
+			});
+
 		}
 
 	});

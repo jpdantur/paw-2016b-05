@@ -1,6 +1,5 @@
 angular.module("btford.socket-io", []).provider("socketFactory", function() {
     "use strict";
-    var defaultPrefix = "socket:";
     this.$get = [ "$rootScope", "$timeout", function($rootScope, $timeout) {
         var asyncAngularify = function(socket, callback) {
             return callback ? function() {
@@ -12,14 +11,15 @@ angular.module("btford.socket-io", []).provider("socketFactory", function() {
         };
         return function(options) {
             options = options || {};
-            var socket = options.ioSocket || io.connect(), prefix = void 0 === options.prefix ? defaultPrefix : options.prefix, defaultScope = options.scope || $rootScope, addListener = function(eventName, callback) {
+            var socket = options.ioSocket || io.connect(), prefix = void 0 === options.prefix ? "socket:" : options.prefix, defaultScope = options.scope || $rootScope, addListener = function(eventName, callback) {
                 socket.on(eventName, callback.__ng = asyncAngularify(socket, callback));
-            }, addOnceListener = function(eventName, callback) {
-                socket.once(eventName, callback.__ng = asyncAngularify(socket, callback));
-            }, wrappedSocket = {
+            };
+            return {
                 on: addListener,
                 addListener: addListener,
-                once: addOnceListener,
+                once: function(eventName, callback) {
+                    socket.once(eventName, callback.__ng = asyncAngularify(socket, callback));
+                },
                 emit: function(eventName, data, callback) {
                     var lastIndex = arguments.length - 1, callback = arguments[lastIndex];
                     return "function" == typeof callback && (callback = asyncAngularify(socket, callback), 
@@ -49,7 +49,6 @@ angular.module("btford.socket-io", []).provider("socketFactory", function() {
                     });
                 }
             };
-            return wrappedSocket;
         };
     } ];
 });

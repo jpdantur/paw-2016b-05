@@ -64,7 +64,7 @@ import edu.tp.paw.webapp.dto.StoreItemWriteDTO;
 import edu.tp.paw.webapp.form.CommentForm;
 import io.jsonwebtoken.Claims;
 
-@Path("/api/store/item")
+@Path("/store/item")
 @Component
 public class StoreItemController {
 
@@ -127,6 +127,8 @@ public class StoreItemController {
 		
 		String auth = request.getHeader("Authorization");
 		
+		logger.trace(auth);
+		
 		if (auth == null || auth.trim().equals("") || !auth.toLowerCase().startsWith("bearer ")) {
 			return Response.status(Status.UNAUTHORIZED).build();
 		}
@@ -134,9 +136,13 @@ public class StoreItemController {
 		Claims claims = tokenHelper.decodeToken(auth.substring(7)); 
 		final User user = userService.findByUsername(claims.getSubject());
 		
+		logger.trace(claims.toString());
+		
 		if (user == null) {
 			return Response.status(Status.FORBIDDEN).build();
 		}
+		
+		logger.trace(user.toString());
 		
 		if (user.getUsername().equals(item.getOwner().getUsername())) {
 			return Response.ok(new StoreItemDTO(item)).build();
@@ -246,8 +252,9 @@ public class StoreItemController {
 		
 		final PurchaseBuilder builder = new PurchaseBuilder(user, item);
 		final Purchase purchase = storeService.purchase(builder);
-		logger.trace(purchase.toString());
+		
 		if (purchase != null) {
+			logger.trace(purchase.toString());
 			return Response.ok(new PurchaseDTO(purchase)).build();
 		}
 		

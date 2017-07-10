@@ -39,7 +39,6 @@ define([
 				}
 				defer.resolve(response.data);
 			}, function (error) {
-				console.log(error);
 				defer.reject(error.data);
 			});
 
@@ -65,7 +64,6 @@ define([
 				}
 				defer.resolve(response);
 			}, function (error) {
-				console.log(error);
 				defer.reject(error);
 			});
 

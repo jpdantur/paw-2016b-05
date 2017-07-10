@@ -66,7 +66,7 @@ define([
 
 				console.log($http.defaults.headers.common.Authorization);
 
-				console.log('setting local storage');
+
 				localStorageService.set('tokens', response.data);
 
 				defer.resolve(response.data);
@@ -102,7 +102,7 @@ define([
 
 				console.log($http.defaults.headers.common.Authorization);
 
-				console.log('setting local storage');
+
 				localStorageService.set('tokens', response.data);
 
 				defer.resolve(response.data);
@@ -118,7 +118,7 @@ define([
 
 			var defer = $q.defer();
 
-			console.log('renewing token');
+
 
 			$http({
 				method: 'POST',
@@ -128,7 +128,7 @@ define([
 				})
 			})
 			.then(function (response) {
-				console.log('renew response', response);
+
 
 				if (response.status >= 400) {
 					console.log(response.status);
@@ -157,7 +157,7 @@ define([
 				
 				console.log($http.defaults.headers.common.Authorization);
 
-				console.log('setting local storage');
+
 				localStorageService.set('tokens', response.data.tokens);
 
 				defer.resolve(response.data.user);
@@ -214,7 +214,7 @@ define([
 
 			var defer = $q.defer();
 
-			console.log('fetching profile');
+
 
 			console.log($http.defaults.headers.common.Authorization);
 
@@ -230,7 +230,7 @@ define([
 					}
 					return defer.reject(response.data);
 				}
-				console.log('got profile', response.data);
+
 				defer.resolve(response.data);
 			}, function (error) {
 				console.log(error);
@@ -244,20 +244,20 @@ define([
 
 			var defer = $q.defer();
 
-			console.log('syncWithLocalStorage');
+
 
 			var tokens = localStorageService.get('tokens');
 
-			console.log('current token is', tokens);
+
 
 			if (tokens) {
 				if (jwtHelper.isTokenExpired(tokens.idToken)) {
-					console.log('token is expired');
+
 					return renewToken(tokens);
 				}
 
-				console.log('token is ok');
-				console.log('setting default $http Authorization header to ' + tokens.idToken);
+
+
 
 				setDefaultAuthorizationHeader(tokens.idToken);
 
@@ -271,11 +271,11 @@ define([
 
 		function isTokenValid() {
 
-			console.log('isTokenValid');
+
 
 			var tokens = localStorageService.get('tokens');
 
-			console.log('current token is', tokens);
+
 
 			if (tokens) {
 				return !jwtHelper.isTokenExpired(tokens.accessToken);
@@ -289,7 +289,7 @@ define([
 
 			var defer = $q.defer();
 
-			console.log('logout');
+
 
 			removeDefaultAuthorizationHeader();
 			localStorageService.remove('tokens');

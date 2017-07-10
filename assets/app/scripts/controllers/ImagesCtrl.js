@@ -6,14 +6,11 @@ define([
 ], function(siglasApp) {
 
 	siglasApp.controller('ImagesCtrl', function ($scope, $rootScope, $route, $location, $q, toastr, CategoryService, ItemService, $filter) {
-		
-		console.log('ImagesCtrl');
 
 		$scope._ = _;
 
 		var self = this;
 
-		console.log($route);
 
 		var id = $route.current.pathParams.id;
 
@@ -35,7 +32,6 @@ define([
 		}
 
 		ItemService.findById(id).then(function (item) {
-			console.log(item);
 			self.item = item;
 			self.item.images = _.map(self.item.images, function (image) {
 				return dataURItoBlob(image.content, image.mimeType);
@@ -53,10 +49,10 @@ define([
 		function submit() {
 
 			ItemService.uploadImage(id, self.item.images).then(function (results) {
-				console.log(results);
 				toastr.success($filter('translate')('ng.messages.imageSuccess'));
-				// $location.path('/store/item/')
+				$location.path('/store/items/' + id);
 			}, function (err) {
+				toastr.error($filter('translate')('ng.messages.imageError'));
 				console.error($filter('translate')('ng.messages.imageError'));
 			});
 

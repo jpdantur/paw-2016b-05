@@ -62,6 +62,7 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 	@Override
 	public void configure(final WebSecurity web) throws Exception {
 		web.ignoring().antMatchers(
+				"/",
 				"/index.html",
 				"404.html",
 				"/scripts/**",
@@ -71,6 +72,8 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 				"/bower_components/**",
 				"/dist/**",
 				"/views/**",
+				"/images/**",
+				"/fonts/**",
 				"/resources/**",
 				"/favicon.ico",
 				"/403",
@@ -84,10 +87,8 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(final HttpSecurity http) throws Exception {
 		
 		jwtFilter.setWhitelist(
-				"/",
-				"/index.html",
 				"/api/auth/login",
-				"/api/auth/register",
+				"/api//auth/register",
 				"/api/auth/renew",
 				"/api/auth/forgot-pass",
 				"/api/store/most-sold",

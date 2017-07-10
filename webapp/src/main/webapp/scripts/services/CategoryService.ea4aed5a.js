@@ -6,7 +6,8 @@ define([ "siglasApp" ], function(siglasApp) {
                 method: "GET",
                 url: api("/api/store/category-tree")
             }).then(function(response) {
-                return response.status >= 400 ? (console.log(response.status), response.status >= 500 ? defer.reject(response.data) : defer.reject(response.data)) : void defer.resolve(response.data.categories);
+                return response.status >= 400 ? (console.log(response.status), response.status, 
+                defer.reject(response.data)) : void defer.resolve(response.data.categories);
             }, function(error) {
                 console.log(error), defer.reject(error.data);
             }), defer.promise;

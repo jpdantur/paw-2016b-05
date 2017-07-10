@@ -4,14 +4,18 @@ div.tab-content
 	h1.page-header.text-center #{messageSource.getMessage('sell.image.upload.headline',[],locale)} `{{edit.item.name}}`
 	div.row
 		div.col-sm-11
-			form.form-horizontal(method="POST", action="#{context.url('/images/upload/'+item.id)}", enctype="multipart/form-data")
+			form.form-horizontal(ng-submit="edit.submit2()")
 				div.form-group
 					label.col-sm-2.control-label #{messageSource.getMessage('sell.field.pictures',[],locale)}
 					div.col-sm-10
-						div#dropzone
-							div.dz-message #{messageSource.getMessage('sell.image.upload.drag',[],locale)}
-							div.fallback
-								input(name="images", type="file", multiple)
+						div.ng-file-upload(ngf-accept="'image/*'", ngf-keep="true", ngf-multiple="true", ngf-drop, ngf-select, ng-model="edit.item.images", ngf-stop-propagation="true")
+							p.h3.text-info.text-center.ng-instruction(ng-hide="edit.item.images.length") #{messageSource.getMessage('sell.image.upload.drag',[],locale)}
+							div.ng-file-upload-item(ng-repeat="im in edit.item.images")
+								div.ngf-content
+									img(ngf-src="im")
+									.ng-file-remove
+										button.btn.btn-link(type="button", ng-click="edit.remove($index)")
+											i.fa.fa-trash
 				div.form-group
 					div.col-sm-4.col-sm-offset-8
-						button.btn.btn-success.btn-block#uploadImages(type="submit") #{messageSource.getMessage('sell.okImages',[],locale)}
+						button.btn.btn-success.btn-block#uploadImages(type="submit", ng-disabled="!edit.item.images.length") #{messageSource.getMessage('sell.okImages',[],locale)}

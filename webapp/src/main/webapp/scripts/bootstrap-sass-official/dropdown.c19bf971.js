@@ -45,7 +45,7 @@
                 var $parent = getParent($this), isActive = $parent.hasClass("open");
                 if (!isActive && 27 != e.which || isActive && 27 == e.which) return 27 == e.which && $parent.find(toggle).trigger("focus"), 
                 $this.trigger("click");
-                var desc = " li:not(.disabled):visible a", $items = $parent.find(".dropdown-menu" + desc);
+                var $items = $parent.find(".dropdown-menu li:not(.disabled):visible a");
                 if ($items.length) {
                     var index = $items.index(e.target);
                     38 == e.which && index > 0 && index--, 40 == e.which && index < $items.length - 1 && index++, 

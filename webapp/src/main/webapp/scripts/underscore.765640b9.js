@@ -34,8 +34,7 @@
     }
     function collectNonEnumProps(obj, keys) {
         var nonEnumIdx = nonEnumerableProps.length, constructor = obj.constructor, proto = _.isFunction(constructor) && constructor.prototype || ObjProto, prop = "constructor";
-        for (_.has(obj, prop) && !_.contains(keys, prop) && keys.push(prop); nonEnumIdx--; ) prop = nonEnumerableProps[nonEnumIdx], 
-        prop in obj && obj[prop] !== proto[prop] && !_.contains(keys, prop) && keys.push(prop);
+        for (_.has(obj, prop) && !_.contains(keys, prop) && keys.push(prop); nonEnumIdx--; ) (prop = nonEnumerableProps[nonEnumIdx]) in obj && obj[prop] !== proto[prop] && !_.contains(keys, prop) && keys.push(prop);
     }
     var root = this, previousUnderscore = root._, ArrayProto = Array.prototype, ObjProto = Object.prototype, FuncProto = Function.prototype, push = ArrayProto.push, slice = ArrayProto.slice, toString = ObjProto.toString, hasOwnProperty = ObjProto.hasOwnProperty, nativeIsArray = Array.isArray, nativeKeys = Object.keys, nativeBind = FuncProto.bind, nativeCreate = Object.create, Ctor = function() {}, _ = function(obj) {
         return obj instanceof _ ? obj : this instanceof _ ? void (this._wrapped = obj) : new _(obj);
@@ -116,8 +115,7 @@
     }, _.reduce = _.foldl = _.inject = createReduce(1), _.reduceRight = _.foldr = createReduce(-1), 
     _.find = _.detect = function(obj, predicate, context) {
         var key;
-        if (key = isArrayLike(obj) ? _.findIndex(obj, predicate, context) : _.findKey(obj, predicate, context), 
-        void 0 !== key && key !== -1) return obj[key];
+        if (void 0 !== (key = isArrayLike(obj) ? _.findIndex(obj, predicate, context) : _.findKey(obj, predicate, context)) && -1 !== key) return obj[key];
     }, _.filter = _.select = function(obj, predicate, context) {
         var results = [];
         return predicate = cb(predicate, context), _.each(obj, function(value, index, list) {
@@ -155,12 +153,12 @@
     }, _.findWhere = function(obj, attrs) {
         return _.find(obj, _.matcher(attrs));
     }, _.max = function(obj, iteratee, context) {
-        var value, computed, result = -(1 / 0), lastComputed = -(1 / 0);
+        var value, computed, result = -1 / 0, lastComputed = -1 / 0;
         if (null == iteratee && null != obj) {
             obj = isArrayLike(obj) ? obj : _.values(obj);
-            for (var i = 0, length = obj.length; i < length; i++) value = obj[i], value > result && (result = value);
+            for (var i = 0, length = obj.length; i < length; i++) (value = obj[i]) > result && (result = value);
         } else iteratee = cb(iteratee, context), _.each(obj, function(value, index, list) {
-            computed = iteratee(value, index, list), (computed > lastComputed || computed === -(1 / 0) && result === -(1 / 0)) && (result = value, 
+            ((computed = iteratee(value, index, list)) > lastComputed || computed === -1 / 0 && result === -1 / 0) && (result = value, 
             lastComputed = computed);
         });
         return result;
@@ -168,9 +166,9 @@
         var value, computed, result = 1 / 0, lastComputed = 1 / 0;
         if (null == iteratee && null != obj) {
             obj = isArrayLike(obj) ? obj : _.values(obj);
-            for (var i = 0, length = obj.length; i < length; i++) value = obj[i], value < result && (result = value);
+            for (var i = 0, length = obj.length; i < length; i++) (value = obj[i]) < result && (result = value);
         } else iteratee = cb(iteratee, context), _.each(obj, function(value, index, list) {
-            computed = iteratee(value, index, list), (computed < lastComputed || computed === 1 / 0 && result === 1 / 0) && (result = value, 
+            ((computed = iteratee(value, index, list)) < lastComputed || computed === 1 / 0 && result === 1 / 0) && (result = value, 
             lastComputed = computed);
         });
         return result;
@@ -335,15 +333,15 @@
         var context, args, result, timeout = null, previous = 0;
         options || (options = {});
         var later = function() {
-            previous = options.leading === !1 ? 0 : _.now(), timeout = null, result = func.apply(context, args), 
+            previous = !1 === options.leading ? 0 : _.now(), timeout = null, result = func.apply(context, args), 
             timeout || (context = args = null);
         };
         return function() {
             var now = _.now();
-            previous || options.leading !== !1 || (previous = now);
+            previous || !1 !== options.leading || (previous = now);
             var remaining = wait - (now - previous);
             return context = this, args = arguments, remaining <= 0 || remaining > wait ? (timeout && (clearTimeout(timeout), 
-            timeout = null), previous = now, result = func.apply(context, args), timeout || (context = args = null)) : timeout || options.trailing === !1 || (timeout = setTimeout(later, remaining)), 
+            timeout = null), previous = now, result = func.apply(context, args), timeout || (context = args = null)) : timeout || !1 === options.trailing || (timeout = setTimeout(later, remaining)), 
             result;
         };
     }, _.debounce = function(func, wait, immediate) {
@@ -455,7 +453,7 @@
         return !0;
     };
     var eq = function(a, b, aStack, bStack) {
-        if (a === b) return 0 !== a || 1 / a === 1 / b;
+        if (a === b) return 0 !== a || 1 / a == 1 / b;
         if (null == a || null == b) return a === b;
         a instanceof _ && (a = a._wrapped), b instanceof _ && (b = b._wrapped);
         var className = toString.call(a);
@@ -466,11 +464,11 @@
             return "" + a == "" + b;
 
           case "[object Number]":
-            return +a !== +a ? +b !== +b : 0 === +a ? 1 / +a === 1 / b : +a === +b;
+            return +a != +a ? +b != +b : 0 == +a ? 1 / +a == 1 / b : +a == +b;
 
           case "[object Date]":
           case "[object Boolean]":
-            return +a === +b;
+            return +a == +b;
         }
         var areArrays = "[object Array]" === className;
         if (!areArrays) {
@@ -481,7 +479,7 @@
         aStack = aStack || [], bStack = bStack || [];
         for (var length = aStack.length; length--; ) if (aStack[length] === a) return bStack[length] === b;
         if (aStack.push(a), bStack.push(b), areArrays) {
-            if (length = a.length, length !== b.length) return !1;
+            if ((length = a.length) !== b.length) return !1;
             for (;length--; ) if (!eq(a[length], b[length], aStack, bStack)) return !1;
         } else {
             var key, keys = _.keys(a);
@@ -514,7 +512,7 @@
     }, _.isNaN = function(obj) {
         return _.isNumber(obj) && obj !== +obj;
     }, _.isBoolean = function(obj) {
-        return obj === !0 || obj === !1 || "[object Boolean]" === toString.call(obj);
+        return !0 === obj || !1 === obj || "[object Boolean]" === toString.call(obj);
     }, _.isNull = function(obj) {
         return null === obj;
     }, _.isUndefined = function(obj) {
@@ -601,8 +599,9 @@
         }
         var template = function(data) {
             return render.call(this, data, _);
-        }, argument = settings.variable || "obj";
-        return template.source = "function(" + argument + "){\n" + source + "}", template;
+        };
+        return template.source = "function(" + (settings.variable || "obj") + "){\n" + source + "}", 
+        template;
     }, _.chain = function(obj) {
         var instance = _(obj);
         return instance._chain = !0, instance;

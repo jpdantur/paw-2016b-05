@@ -7,7 +7,6 @@ define([
 
 	siglasApp.controller('ScoreCtrl', function ($scope, $rootScope, $route, toastr, SalesService, $filter) {
 		
-		console.log('ScoreCtrl');
 
 		var self = this;
 
@@ -24,12 +23,9 @@ define([
 		SalesService.findById(txId).then(function (tx) {
 			var prop = self.role + 'Review';
 			if (!tx[prop]) {
-				console.log('setting');
 				_.set(tx, prop, {rating: 2.5});
 			}
 			self.tx = tx;
-			console.log(self.tx);
-			console.log(tx);
 		}, function (error) {
 			console.error(error);
 		});
@@ -42,7 +38,6 @@ define([
 					rating: self.role === 'buyer' ? self.tx.buyerReview.rating : self.tx.sellerReview.rating,
 					comment: self.comment
 				}).then(function (result) {
-					console.log(result);
 					toastr.success($filter('translate')('ng.messages.reviewSuccess'));
 					self.tx[self.role + 'Review'].id = -1;
 				}, function (err) {

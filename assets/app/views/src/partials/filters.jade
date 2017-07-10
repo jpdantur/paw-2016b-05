@@ -1,28 +1,20 @@
 div#filters
-	- min = filter.priceFilter.priceRange.lowerBound()
-	- max = filter.priceFilter.priceRange.upperBound()
-	//-if min.isPresent() || max.isPresent() || selectedCategories.size() > 0
-	//- TODO categorues
-	div.filter-content(ng-if="all.itemsQuery.minPrice || all.itemsQuery.maxPrice")
+	div.filter-content(ng-if="all.itemsQuery.minPrice || all.itemsQuery.maxPrice || all.displayedCategories.length")
 		div.filter-header
-			h6.filter-title Filtros Aplicados
+			h6.filter-title #{messageSource.getMessage('search.filters.applied')}
 		div.filter-body
-			//-if min.isPresent() && max.isPresent()
-			div.applied-filter(data-target="minPrice,maxPrice", ng-show="all.itemsQuery.minPrice && all.itemsQuery.maxPrice")
-				button.close &times;
+			div.applied-filter(ng-show="all.itemsQuery.minPrice && all.itemsQuery.maxPrice")
+				button.close(ng-click="all.updateItemsQuery({pageNumber: 0, minPrice: null, maxPrice: null})") &times;
 				span #{messageSource.getMessage('search.filters.price.between', 'all.itemsQuery', locale)}
-			//-else if min.isPresent()
-			div.applied-filter(data-target="minPrice", ng-show="all.itemsQuery.minPrice && !all.itemsQuery.maxPrice")
-				button.close &times;
+			div.applied-filter(ng-show="all.itemsQuery.minPrice && !all.itemsQuery.maxPrice")
+				button.close(ng-click="all.updateItemsQuery({pageNumber: 0, minPrice: null})") &times;
 				span #{messageSource.getMessage('search.filters.price.from', 'all.itemsQuery', locale)}
-			//-else if max.isPresent()
-			div.applied-filter(data-target="maxPrice", ng-show="!all.itemsQuery.minPrice && all.itemsQuery.maxPrice")
-				button.close &times;
+			div.applied-filter(ng-show="!all.itemsQuery.minPrice && all.itemsQuery.maxPrice")
+				button.close(ng-click="all.updateItemsQuery({pageNumber: 0, maxPrice: null})") &times;
 				span #{messageSource.getMessage('search.filters.price.to', 'all.itemsQuery', locale)}
-		each category in selectedCategories
-				div.applied-filter(data-target-complex="categories", data-category-id="#{category.id}")
-					button.close &times;
-					span #{category.name}
+			div.applied-filter(ng-repeat="category in all.displayedCategories")
+				button.close(ng-click="all.removeCategory(category)") &times;
+				span {{category.name}}
 	div.filter-content
 		div.filter-header
 			h6.filter-title #{messageSource.getMessage('search.filters.price', [], locale)}
@@ -34,37 +26,15 @@ div#filters
 					span.separator -
 				div.col-sm-5
 					input.input-sm.form-control#filter-price-max(type="number", placeholder="#{messageSource.getMessage('search.filters.price.max', [], locale)}", min=0, step=1, ng-model="all.itemsQuery.maxPrice", ng-change="all.updateItemsQuery({pageNumber:0})")
-				//-div.col-sm-2.col-sm-offset-1
-					a.btn.btn-primary.btn-sm.btn-block#filter-price-set(ng-click="all.updateItemsQuery({pageNumber: 0})")
-						i.fa.fa-chevron-right
-	//- if similarCategories.size() > 0
-	div.filter-content#category-filter(ng-if="all.itemResult.similarCategories.length || all.displayedCategories.length")
+	div.filter-content#category-filter(ng-if="all.itemResult.similarCategories.length")
 		div.filter-header
 			h6.filter-title #{messageSource.getMessage('search.filters.categories', [], locale)}
 		div.filter-body
-			div(ng-if="all.displayedCategories.length > 1", ng-repeat="category in all.displayedCategories")
-				label.parent-label(ng-if="$first || all.displayedCategories[$index - 1].parent !== category.parent") {{category.name}}
-				div.checkbox.padding
-					label
-						input(type="checkbox", name="categories", ng-checked="_.find(all.selectedCategories, {id: category.id})", ng-click="all.toggleCategory(category)")
-						| {{category.name}}
-			//-if selectedCategories.size() > 1
-				- i = 0
-				- currentParent = -1
-				each category in similarCategories
-					if currentParent != category.parent.id
-						label.parent-label(data-id="#{selectedCategories.get(i).id}") #{selectedCategories.get(i).name}
-						- i = i+1
-						- currentParent = category.parent.id
-					div.checkbox.padding
-						label
-							input(type="checkbox", value="#{category.id}")
-							| #{category.name}
-			//- else
-				each category in similarCategories
 			div
-				div.checkbox(ng-repeat="category in all.itemResult.similarCategories")
-					label
-						input(type="checkbox", name="categories", ng-checked="_.find(all.selectedCategories, {id: category.id})", ng-click="all.toggleCategory(category)")
-						| {{category.name}}
+				div(ng-repeat="category in all.itemResult.similarCategories")
+					label.parent-label(ng-if="all.displayedCategories.length > 1 && ($first || all.itemResult.similarCategories[$index - 1].parent !== category.parent)") {{all.displayedCategoriesG[category.parent].name}}
+					div.checkbox(ng-class="{padding: all.displayedCategories.length > 1}")
+						label
+							input(type="checkbox", name="categories", ng-checked="_.find(all.selectedCategories, {id: category.id})", ng-click="all.toggleCategory(category)")
+							| {{category.name}}
 			button.btn.btn-primary.btn-xs.col-sm-6.col-sm-offset-6#category-filter-button(type="button", ng-click="all.applyCategory()") #{messageSource.getMessage('search.filters.categories.apply', [], locale)}

@@ -11,14 +11,14 @@
  			resolver: ['$q', '$rootScope', '$location', 'AuthService', 'ItemService', function($q, $rootScope, $location, AuthService, ItemService) {
  				var deferred = $q.defer();
 
- 				console.log('protected route');
+
 
  				if (!route.protected) {
- 					console.log('route is not protected');
+
  					return deferred.resolve();
  				}
 
- 				console.log('checking authentication state');
+
 
  				if (AuthService.isTokenValid()) {
  					return deferred.resolve();

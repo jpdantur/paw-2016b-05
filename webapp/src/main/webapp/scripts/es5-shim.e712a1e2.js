@@ -15,22 +15,22 @@
         } catch (e) {
             return !1;
         }
-    }, fnClass = "[object Function]", genClass = "[object GeneratorFunction]", isCallable = function(value) {
+    }, isCallable = function(value) {
         if (!value) return !1;
         if ("function" != typeof value && "object" != typeof value) return !1;
         if (hasToStringTag) return tryFunctionObject(value);
         if (isES6ClassFn(value)) return !1;
         var strClass = to_string.call(value);
-        return strClass === fnClass || strClass === genClass;
+        return "[object Function]" === strClass || "[object GeneratorFunction]" === strClass;
     }, regexExec = RegExp.prototype.exec, tryRegexExec = function(value) {
         try {
             return regexExec.call(value), !0;
         } catch (e) {
             return !1;
         }
-    }, regexClass = "[object RegExp]";
+    };
     isRegex = function(value) {
-        return "object" == typeof value && (hasToStringTag ? tryRegexExec(value) : to_string.call(value) === regexClass);
+        return "object" == typeof value && (hasToStringTag ? tryRegexExec(value) : "[object RegExp]" === to_string.call(value));
     };
     var isString, strValue = String.prototype.valueOf, tryStringObject = function(value) {
         try {
@@ -38,9 +38,9 @@
         } catch (e) {
             return !1;
         }
-    }, stringClass = "[object String]";
+    };
     isString = function(value) {
-        return "string" == typeof value || "object" == typeof value && (hasToStringTag ? tryStringObject(value) : to_string.call(value) === stringClass);
+        return "string" == typeof value || "object" == typeof value && (hasToStringTag ? tryStringObject(value) : "[object String]" === to_string.call(value));
     };
     var supportsDescriptors = $Object.defineProperty && function() {
         try {
@@ -76,7 +76,7 @@
     }, ES = {
         ToInteger: function(num) {
             var n = +num;
-            return isActualNaN(n) ? n = 0 : 0 !== n && n !== 1 / 0 && n !== -(1 / 0) && (n = (n > 0 || -1) * Math.floor(Math.abs(n))), 
+            return isActualNaN(n) ? n = 0 : 0 !== n && n !== 1 / 0 && n !== -1 / 0 && (n = (n > 0 || -1) * Math.floor(Math.abs(n))), 
             n;
         },
         ToPrimitive: function(input) {
@@ -139,34 +139,34 @@
         forEach: function(callbackfn) {
             var T, object = ES.ToObject(this), self = splitString && isString(this) ? strSplit(this, "") : object, i = -1, length = ES.ToUint32(self.length);
             if (arguments.length > 1 && (T = arguments[1]), !isCallable(callbackfn)) throw new TypeError("Array.prototype.forEach callback must be a function");
-            for (;++i < length; ) i in self && ("undefined" == typeof T ? callbackfn(self[i], i, object) : callbackfn.call(T, self[i], i, object));
+            for (;++i < length; ) i in self && (void 0 === T ? callbackfn(self[i], i, object) : callbackfn.call(T, self[i], i, object));
         }
     }, !properlyBoxesContext(ArrayPrototype.forEach)), defineProperties(ArrayPrototype, {
         map: function(callbackfn) {
             var T, object = ES.ToObject(this), self = splitString && isString(this) ? strSplit(this, "") : object, length = ES.ToUint32(self.length), result = $Array(length);
             if (arguments.length > 1 && (T = arguments[1]), !isCallable(callbackfn)) throw new TypeError("Array.prototype.map callback must be a function");
-            for (var i = 0; i < length; i++) i in self && ("undefined" == typeof T ? result[i] = callbackfn(self[i], i, object) : result[i] = callbackfn.call(T, self[i], i, object));
+            for (var i = 0; i < length; i++) i in self && (result[i] = void 0 === T ? callbackfn(self[i], i, object) : callbackfn.call(T, self[i], i, object));
             return result;
         }
     }, !properlyBoxesContext(ArrayPrototype.map)), defineProperties(ArrayPrototype, {
         filter: function(callbackfn) {
             var value, T, object = ES.ToObject(this), self = splitString && isString(this) ? strSplit(this, "") : object, length = ES.ToUint32(self.length), result = [];
             if (arguments.length > 1 && (T = arguments[1]), !isCallable(callbackfn)) throw new TypeError("Array.prototype.filter callback must be a function");
-            for (var i = 0; i < length; i++) i in self && (value = self[i], ("undefined" == typeof T ? callbackfn(value, i, object) : callbackfn.call(T, value, i, object)) && pushCall(result, value));
+            for (var i = 0; i < length; i++) i in self && (value = self[i], (void 0 === T ? callbackfn(value, i, object) : callbackfn.call(T, value, i, object)) && pushCall(result, value));
             return result;
         }
     }, !properlyBoxesContext(ArrayPrototype.filter)), defineProperties(ArrayPrototype, {
         every: function(callbackfn) {
             var T, object = ES.ToObject(this), self = splitString && isString(this) ? strSplit(this, "") : object, length = ES.ToUint32(self.length);
             if (arguments.length > 1 && (T = arguments[1]), !isCallable(callbackfn)) throw new TypeError("Array.prototype.every callback must be a function");
-            for (var i = 0; i < length; i++) if (i in self && !("undefined" == typeof T ? callbackfn(self[i], i, object) : callbackfn.call(T, self[i], i, object))) return !1;
+            for (var i = 0; i < length; i++) if (i in self && !(void 0 === T ? callbackfn(self[i], i, object) : callbackfn.call(T, self[i], i, object))) return !1;
             return !0;
         }
     }, !properlyBoxesContext(ArrayPrototype.every)), defineProperties(ArrayPrototype, {
         some: function(callbackfn) {
             var T, object = ES.ToObject(this), self = splitString && isString(this) ? strSplit(this, "") : object, length = ES.ToUint32(self.length);
             if (arguments.length > 1 && (T = arguments[1]), !isCallable(callbackfn)) throw new TypeError("Array.prototype.some callback must be a function");
-            for (var i = 0; i < length; i++) if (i in self && ("undefined" == typeof T ? callbackfn(self[i], i, object) : callbackfn.call(T, self[i], i, object))) return !0;
+            for (var i = 0; i < length; i++) if (i in self && (void 0 === T ? callbackfn(self[i], i, object) : callbackfn.call(T, self[i], i, object))) return !0;
             return !1;
         }
     }, !properlyBoxesContext(ArrayPrototype.some));
@@ -207,11 +207,13 @@
                 if (--i < 0) throw new TypeError("reduceRight of empty array with no initial value");
             }
             if (i < 0) return result;
-            do i in self && (result = callbackfn(result, self[i], i, object)); while (i--);
+            do {
+                i in self && (result = callbackfn(result, self[i], i, object));
+            } while (i--);
             return result;
         }
     }, !reduceRightCoercesToObject);
-    var hasFirefox2IndexOfBug = ArrayPrototype.indexOf && [ 0, 1 ].indexOf(1, 2) !== -1;
+    var hasFirefox2IndexOfBug = ArrayPrototype.indexOf && -1 !== [ 0, 1 ].indexOf(1, 2);
     defineProperties(ArrayPrototype, {
         indexOf: function(searchElement) {
             var self = splitString && isString(this) ? strSplit(this, "") : ES.ToObject(this), length = ES.ToUint32(self.length);
@@ -221,7 +223,7 @@
             return -1;
         }
     }, hasFirefox2IndexOfBug);
-    var hasFirefox2LastIndexOfBug = ArrayPrototype.lastIndexOf && [ 0, 1 ].lastIndexOf(0, -3) !== -1;
+    var hasFirefox2LastIndexOfBug = ArrayPrototype.lastIndexOf && -1 !== [ 0, 1 ].lastIndexOf(0, -3);
     defineProperties(ArrayPrototype, {
         lastIndexOf: function(searchElement) {
             var self = splitString && isString(this) ? strSplit(this, "") : ES.ToObject(this), length = ES.ToUint32(self.length);
@@ -257,8 +259,8 @@
         var arr = new $Array(1e5);
         return arr[8] = "x", arr.splice(1, 1), 7 === arr.indexOf("x");
     }(), spliceWorksWithSmallSparseArrays = function() {
-        var n = 256, arr = [];
-        return arr[n] = "a", arr.splice(n + 1, 0, "b"), "a" === arr[n];
+        var arr = [];
+        return arr[256] = "a", arr.splice(257, 0, "b"), "a" === arr[256];
     }();
     defineProperties(ArrayPrototype, {
         splice: function(start, deleteCount) {
@@ -288,14 +290,14 @@
     }
     hasStringJoinBug && defineProperties(ArrayPrototype, {
         join: function(separator) {
-            var sep = "undefined" == typeof separator ? "," : separator;
+            var sep = void 0 === separator ? "," : separator;
             return originalJoin.call(isString(this) ? strSplit(this, "") : this, sep);
         }
     }, hasStringJoinBug);
     var hasJoinUndefinedBug = "1,2" !== [ 1, 2 ].join(void 0);
     hasJoinUndefinedBug && defineProperties(ArrayPrototype, {
         join: function(separator) {
-            var sep = "undefined" == typeof separator ? "," : separator;
+            var sep = void 0 === separator ? "," : separator;
             return originalJoin.call(this, sep);
         }
     }, hasJoinUndefinedBug);
@@ -304,8 +306,8 @@
         i += 1;
         return O.length = n + i, n + i;
     }, pushIsNotGeneric = function() {
-        var obj = {}, result = Array.prototype.push.call(obj, void 0);
-        return 1 !== result || 1 !== obj.length || "undefined" != typeof obj[0] || !owns(obj, 0);
+        var obj = {};
+        return 1 !== Array.prototype.push.call(obj, void 0) || 1 !== obj.length || void 0 !== obj[0] || !owns(obj, 0);
     }();
     defineProperties(ArrayPrototype, {
         push: function(item) {
@@ -313,8 +315,8 @@
         }
     }, pushIsNotGeneric);
     var pushUndefinedIsWeird = function() {
-        var arr = [], result = arr.push(void 0);
-        return 1 !== result || 1 !== arr.length || "undefined" != typeof arr[0] || !owns(arr, 0);
+        var arr = [];
+        return 1 !== arr.push(void 0) || 1 !== arr.length || void 0 !== arr[0] || !owns(arr, 0);
     }();
     defineProperties(ArrayPrototype, {
         push: pushShim
@@ -342,7 +344,7 @@
     }();
     defineProperties(ArrayPrototype, {
         sort: function(compareFn) {
-            if ("undefined" == typeof compareFn) return arraySort(this);
+            if (void 0 === compareFn) return arraySort(this);
             if (!isCallable(compareFn)) throw new TypeError("Array.prototype.sort callback must be a function");
             return arraySort(this, compareFn);
         }
@@ -408,8 +410,8 @@
             return originalKeys(isArguments(object) ? arraySlice(object) : object);
         }
     }, !keysWorksWithArguments || keysHasArgumentsLengthBug);
-    var hasToDateStringFormatBug, hasToStringFormatBug, hasNegativeMonthYearBug = 0 !== new Date((-0xc782b5b342b24)).getUTCMonth(), aNegativeTestDate = new Date((-0x55d318d56a724)), aPositiveTestDate = new Date(14496624e5), hasToUTCStringFormatBug = "Mon, 01 Jan -45875 11:59:59 GMT" !== aNegativeTestDate.toUTCString(), timeZoneOffset = aNegativeTestDate.getTimezoneOffset();
-    timeZoneOffset < -720 ? (hasToDateStringFormatBug = "Tue Jan 02 -45875" !== aNegativeTestDate.toDateString(), 
+    var hasToDateStringFormatBug, hasToStringFormatBug, hasNegativeMonthYearBug = 0 !== new Date(-0xc782b5b342b24).getUTCMonth(), aNegativeTestDate = new Date(-0x55d318d56a724), aPositiveTestDate = new Date(14496624e5), hasToUTCStringFormatBug = "Mon, 01 Jan -45875 11:59:59 GMT" !== aNegativeTestDate.toUTCString();
+    aNegativeTestDate.getTimezoneOffset() < -720 ? (hasToDateStringFormatBug = "Tue Jan 02 -45875" !== aNegativeTestDate.toDateString(), 
     hasToStringFormatBug = !/^Thu Dec 10 2015 \d\d:\d\d:\d\d GMT[-\+]\d\d\d\d(?: |$)/.test(aPositiveTestDate.toString())) : (hasToDateStringFormatBug = "Mon Jan 01 -45875" !== aNegativeTestDate.toDateString(), 
     hasToStringFormatBug = !/^Wed Dec 09 2015 \d\d:\d\d:\d\d GMT[-\+]\d\d\d\d(?: |$)/.test(aPositiveTestDate.toString()));
     var originalGetFullYear = call.bind(Date.prototype.getFullYear), originalGetMonth = call.bind(Date.prototype.getMonth), originalGetDate = call.bind(Date.prototype.getDate), originalGetUTCFullYear = call.bind(Date.prototype.getUTCFullYear), originalGetUTCMonth = call.bind(Date.prototype.getUTCMonth), originalGetUTCDate = call.bind(Date.prototype.getUTCDate), originalGetUTCDay = call.bind(Date.prototype.getUTCDay), originalGetUTCHours = call.bind(Date.prototype.getUTCHours), originalGetUTCMinutes = call.bind(Date.prototype.getUTCMinutes), originalGetUTCSeconds = call.bind(Date.prototype.getUTCSeconds), originalGetUTCMilliseconds = call.bind(Date.prototype.getUTCMilliseconds), dayName = [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ], monthName = [ "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec" ], daysInMonth = function(month, year) {
@@ -431,8 +433,7 @@
             var year = originalGetFullYear(this), month = originalGetMonth(this), date = originalGetDate(this);
             if (year < 0 && month > 11) {
                 if (12 === month) return date;
-                var days = daysInMonth(0, year + 1);
-                return days - date + 1;
+                return daysInMonth(0, year + 1) - date + 1;
             }
             return date;
         },
@@ -451,8 +452,7 @@
             var year = originalGetUTCFullYear(this), month = originalGetUTCMonth(this), date = originalGetUTCDate(this);
             if (year < 0 && month > 11) {
                 if (12 === month) return date;
-                var days = daysInMonth(0, year + 1);
-                return days - date + 1;
+                return daysInMonth(0, year + 1) - date + 1;
             }
             return date;
         }
@@ -477,7 +477,7 @@
         enumerable: !1,
         writable: !0
     }));
-    var negativeDate = -621987552e5, negativeYearString = "-000001", hasNegativeDateBug = Date.prototype.toISOString && new Date(negativeDate).toISOString().indexOf(negativeYearString) === -1, hasSafari51DateBug = Date.prototype.toISOString && "1969-12-31T23:59:59.999Z" !== new Date((-1)).toISOString(), getTime = call.bind(Date.prototype.getTime);
+    var hasNegativeDateBug = Date.prototype.toISOString && -1 === new Date(-621987552e5).toISOString().indexOf("-000001"), hasSafari51DateBug = Date.prototype.toISOString && "1969-12-31T23:59:59.999Z" !== new Date(-1).toISOString(), getTime = call.bind(Date.prototype.getTime);
     defineProperties(Date.prototype, {
         toISOString: function() {
             if (!isFinite(this) || !isFinite(getTime(this))) throw new RangeError("Date.prototype.toISOString called on non-finite value.");
@@ -488,10 +488,9 @@
             for (var i = 0; i < result.length; ++i) result[i] = strSlice("00" + result[i], -2);
             return year + "-" + arraySlice(result, 0, 2).join("-") + "T" + arraySlice(result, 2).join(":") + "." + strSlice("000" + originalGetUTCMilliseconds(this), -3) + "Z";
         }
-    }, hasNegativeDateBug || hasSafari51DateBug);
-    var dateToJSONIsSupported = function() {
+    }, hasNegativeDateBug || hasSafari51DateBug), function() {
         try {
-            return Date.prototype.toJSON && null === new Date(NaN).toJSON() && new Date(negativeDate).toJSON().indexOf(negativeYearString) !== -1 && Date.prototype.toJSON.call({
+            return Date.prototype.toJSON && null === new Date(NaN).toJSON() && -1 !== new Date(-621987552e5).toJSON().indexOf("-000001") && Date.prototype.toJSON.call({
                 toISOString: function() {
                     return !0;
                 }
@@ -499,16 +498,15 @@
         } catch (e) {
             return !1;
         }
-    }();
-    dateToJSONIsSupported || (Date.prototype.toJSON = function(key) {
+    }() || (Date.prototype.toJSON = function(key) {
         var O = $Object(this), tv = ES.ToPrimitive(O);
         if ("number" == typeof tv && !isFinite(tv)) return null;
         var toISO = O.toISOString;
         if (!isCallable(toISO)) throw new TypeError("toISOString property is not callable");
         return toISO.call(O);
     });
-    var supportsExtendedYears = 1e15 === Date.parse("+033658-09-27T01:46:40.000Z"), acceptsInvalidDates = !isNaN(Date.parse("2012-04-04T24:00:00.500Z")) || !isNaN(Date.parse("2012-11-31T23:59:59.000Z")) || !isNaN(Date.parse("2012-12-31T23:59:60.000Z")), doesNotParseY2KNewYear = isNaN(Date.parse("2000-01-01T00:00:00.000Z"));
-    if (doesNotParseY2KNewYear || acceptsInvalidDates || !supportsExtendedYears) {
+    var supportsExtendedYears = 1e15 === Date.parse("+033658-09-27T01:46:40.000Z"), acceptsInvalidDates = !isNaN(Date.parse("2012-04-04T24:00:00.500Z")) || !isNaN(Date.parse("2012-11-31T23:59:59.000Z")) || !isNaN(Date.parse("2012-12-31T23:59:60.000Z"));
+    if (isNaN(Date.parse("2000-01-01T00:00:00.000Z")) || acceptsInvalidDates || !supportsExtendedYears) {
         var maxSafeUnsigned32Bit = Math.pow(2, 31) - 1, hasSafariSignedIntBug = isActualNaN(new Date(1970, 0, 1, 0, 0, 0, maxSafeUnsigned32Bit + 1).getTime());
         Date = function(NativeDate) {
             var DateShim = function(Y, M, D, h, m, s, ms) {
@@ -536,24 +534,22 @@
                 return $Number(new NativeDate(1970, 0, 1, 0, 0, s, ms));
             };
             for (var key in NativeDate) owns(NativeDate, key) && (DateShim[key] = NativeDate[key]);
-            defineProperties(DateShim, {
+            return defineProperties(DateShim, {
                 now: NativeDate.now,
                 UTC: NativeDate.UTC
             }, !0), DateShim.prototype = NativeDate.prototype, defineProperties(DateShim.prototype, {
                 constructor: DateShim
-            }, !0);
-            var parseShim = function(string) {
-                var match = isoDateExpression.exec(string);
-                if (match) {
-                    var result, year = $Number(match[1]), month = $Number(match[2] || 1) - 1, day = $Number(match[3] || 1) - 1, hour = $Number(match[4] || 0), minute = $Number(match[5] || 0), second = $Number(match[6] || 0), millisecond = Math.floor(1e3 * $Number(match[7] || 0)), isLocalTime = Boolean(match[4] && !match[8]), signOffset = "-" === match[9] ? 1 : -1, hourOffset = $Number(match[10] || 0), minuteOffset = $Number(match[11] || 0), hasMinutesOrSecondsOrMilliseconds = minute > 0 || second > 0 || millisecond > 0;
-                    return hour < (hasMinutesOrSecondsOrMilliseconds ? 24 : 25) && minute < 60 && second < 60 && millisecond < 1e3 && month > -1 && month < 12 && hourOffset < 24 && minuteOffset < 60 && day > -1 && day < dayFromMonth(year, month + 1) - dayFromMonth(year, month) && (result = 60 * (24 * (dayFromMonth(year, month) + day) + hour + hourOffset * signOffset), 
-                    result = 1e3 * (60 * (result + minute + minuteOffset * signOffset) + second) + millisecond, 
-                    isLocalTime && (result = toUTC(result)), -864e13 <= result && result <= 864e13) ? result : NaN;
+            }, !0), defineProperties(DateShim, {
+                parse: function(string) {
+                    var match = isoDateExpression.exec(string);
+                    if (match) {
+                        var result, year = $Number(match[1]), month = $Number(match[2] || 1) - 1, day = $Number(match[3] || 1) - 1, hour = $Number(match[4] || 0), minute = $Number(match[5] || 0), second = $Number(match[6] || 0), millisecond = Math.floor(1e3 * $Number(match[7] || 0)), isLocalTime = Boolean(match[4] && !match[8]), signOffset = "-" === match[9] ? 1 : -1, hourOffset = $Number(match[10] || 0), minuteOffset = $Number(match[11] || 0);
+                        return hour < (minute > 0 || second > 0 || millisecond > 0 ? 24 : 25) && minute < 60 && second < 60 && millisecond < 1e3 && month > -1 && month < 12 && hourOffset < 24 && minuteOffset < 60 && day > -1 && day < dayFromMonth(year, month + 1) - dayFromMonth(year, month) && (result = 60 * (24 * (dayFromMonth(year, month) + day) + hour + hourOffset * signOffset), 
+                        result = 1e3 * (60 * (result + minute + minuteOffset * signOffset) + second) + millisecond, 
+                        isLocalTime && (result = toUTC(result)), -864e13 <= result && result <= 864e13) ? result : NaN;
+                    }
+                    return NativeDate.parse.apply(this, arguments);
                 }
-                return NativeDate.parse.apply(this, arguments);
-            };
-            return defineProperties(DateShim, {
-                parse: parseShim
             }), DateShim;
         }(Date);
     }
@@ -580,33 +576,33 @@
             return s;
         },
         pow: function pow(x, n, acc) {
-            return 0 === n ? acc : n % 2 === 1 ? pow(x, n - 1, acc * x) : pow(x * x, n / 2, acc);
+            return 0 === n ? acc : n % 2 == 1 ? pow(x, n - 1, acc * x) : pow(x * x, n / 2, acc);
         },
         log: function(x) {
             for (var n = 0, x2 = x; x2 >= 4096; ) n += 12, x2 /= 4096;
             for (;x2 >= 2; ) n += 1, x2 /= 2;
             return n;
         }
-    }, toFixedShim = function(fractionDigits) {
-        var f, x, s, m, e, z, j, k;
-        if (f = $Number(fractionDigits), f = isActualNaN(f) ? 0 : Math.floor(f), f < 0 || f > 20) throw new RangeError("Number.toFixed called with invalid number of decimals");
-        if (x = $Number(this), isActualNaN(x)) return "NaN";
-        if (x <= -1e21 || x >= 1e21) return $String(x);
-        if (s = "", x < 0 && (s = "-", x = -x), m = "0", x > 1e-21) if (e = toFixedHelpers.log(x * toFixedHelpers.pow(2, 69, 1)) - 69, 
-        z = e < 0 ? x * toFixedHelpers.pow(2, -e, 1) : x / toFixedHelpers.pow(2, e, 1), 
-        z *= 4503599627370496, e = 52 - e, e > 0) {
-            for (toFixedHelpers.multiply(0, z), j = f; j >= 7; ) toFixedHelpers.multiply(1e7, 0), 
-            j -= 7;
-            for (toFixedHelpers.multiply(toFixedHelpers.pow(10, j, 1), 0), j = e - 1; j >= 23; ) toFixedHelpers.divide(1 << 23), 
-            j -= 23;
-            toFixedHelpers.divide(1 << j), toFixedHelpers.multiply(1, 1), toFixedHelpers.divide(2), 
-            m = toFixedHelpers.numToString();
-        } else toFixedHelpers.multiply(0, z), toFixedHelpers.multiply(1 << -e, 0), m = toFixedHelpers.numToString() + strSlice("0.00000000000000000000", 2, 2 + f);
-        return f > 0 ? (k = m.length, m = k <= f ? s + strSlice("0.0000000000000000000", 0, f - k + 2) + m : s + strSlice(m, 0, k - f) + "." + strSlice(m, k - f)) : m = s + m, 
-        m;
     };
     defineProperties(NumberPrototype, {
-        toFixed: toFixedShim
+        toFixed: function(fractionDigits) {
+            var f, x, s, m, e, z, j, k;
+            if (f = $Number(fractionDigits), (f = isActualNaN(f) ? 0 : Math.floor(f)) < 0 || f > 20) throw new RangeError("Number.toFixed called with invalid number of decimals");
+            if (x = $Number(this), isActualNaN(x)) return "NaN";
+            if (x <= -1e21 || x >= 1e21) return $String(x);
+            if (s = "", x < 0 && (s = "-", x = -x), m = "0", x > 1e-21) if (e = toFixedHelpers.log(x * toFixedHelpers.pow(2, 69, 1)) - 69, 
+            z = e < 0 ? x * toFixedHelpers.pow(2, -e, 1) : x / toFixedHelpers.pow(2, e, 1), 
+            z *= 4503599627370496, (e = 52 - e) > 0) {
+                for (toFixedHelpers.multiply(0, z), j = f; j >= 7; ) toFixedHelpers.multiply(1e7, 0), 
+                j -= 7;
+                for (toFixedHelpers.multiply(toFixedHelpers.pow(10, j, 1), 0), j = e - 1; j >= 23; ) toFixedHelpers.divide(1 << 23), 
+                j -= 23;
+                toFixedHelpers.divide(1 << j), toFixedHelpers.multiply(1, 1), toFixedHelpers.divide(2), 
+                m = toFixedHelpers.numToString();
+            } else toFixedHelpers.multiply(0, z), toFixedHelpers.multiply(1 << -e, 0), m = toFixedHelpers.numToString() + strSlice("0.00000000000000000000", 2, 2 + f);
+            return f > 0 ? (k = m.length, m = k <= f ? s + strSlice("0.0000000000000000000", 0, f - k + 2) + m : s + strSlice(m, 0, k - f) + "." + strSlice(m, k - f)) : m = s + m, 
+            m;
+        }
     }, hasToFixedBugs);
     var hasToPrecisionUndefinedBug = function() {
         try {
@@ -617,37 +613,36 @@
     }(), originalToPrecision = NumberPrototype.toPrecision;
     defineProperties(NumberPrototype, {
         toPrecision: function(precision) {
-            return "undefined" == typeof precision ? originalToPrecision.call(this) : originalToPrecision.call(this, precision);
+            return void 0 === precision ? originalToPrecision.call(this) : originalToPrecision.call(this, precision);
         }
-    }, hasToPrecisionUndefinedBug), 2 !== "ab".split(/(?:ab)*/).length || 4 !== ".".split(/(.?)(.?)/).length || "t" === "tesst".split(/(s)*/)[1] || 4 !== "test".split(/(?:)/, -1).length || "".split(/.?/).length || ".".split(/()()/).length > 1 ? !function() {
-        var compliantExecNpcg = "undefined" == typeof /()??/.exec("")[1], maxSafe32BitInt = Math.pow(2, 32) - 1;
+    }, hasToPrecisionUndefinedBug), 2 !== "ab".split(/(?:ab)*/).length || 4 !== ".".split(/(.?)(.?)/).length || "t" === "tesst".split(/(s)*/)[1] || 4 !== "test".split(/(?:)/, -1).length || "".split(/.?/).length || ".".split(/()()/).length > 1 ? function() {
+        var compliantExecNpcg = void 0 === /()??/.exec("")[1], maxSafe32BitInt = Math.pow(2, 32) - 1;
         StringPrototype.split = function(separator, limit) {
             var string = String(this);
-            if ("undefined" == typeof separator && 0 === limit) return [];
+            if (void 0 === separator && 0 === limit) return [];
             if (!isRegex(separator)) return strSplit(this, separator, limit);
             var separator2, match, lastIndex, lastLength, output = [], flags = (separator.ignoreCase ? "i" : "") + (separator.multiline ? "m" : "") + (separator.unicode ? "u" : "") + (separator.sticky ? "y" : ""), lastLastIndex = 0, separatorCopy = new RegExp(separator.source, flags + "g");
             compliantExecNpcg || (separator2 = new RegExp("^" + separatorCopy.source + "$(?!\\s)", flags));
-            var splitLimit = "undefined" == typeof limit ? maxSafe32BitInt : ES.ToUint32(limit);
-            for (match = separatorCopy.exec(string); match && (lastIndex = match.index + match[0].length, 
-            !(lastIndex > lastLastIndex && (pushCall(output, strSlice(string, lastLastIndex, match.index)), 
+            var splitLimit = void 0 === limit ? maxSafe32BitInt : ES.ToUint32(limit);
+            for (match = separatorCopy.exec(string); match && !((lastIndex = match.index + match[0].length) > lastLastIndex && (pushCall(output, strSlice(string, lastLastIndex, match.index)), 
             !compliantExecNpcg && match.length > 1 && match[0].replace(separator2, function() {
-                for (var i = 1; i < arguments.length - 2; i++) "undefined" == typeof arguments[i] && (match[i] = void 0);
+                for (var i = 1; i < arguments.length - 2; i++) void 0 === arguments[i] && (match[i] = void 0);
             }), match.length > 1 && match.index < string.length && array_push.apply(output, arraySlice(match, 1)), 
-            lastLength = match[0].length, lastLastIndex = lastIndex, output.length >= splitLimit))); ) separatorCopy.lastIndex === match.index && separatorCopy.lastIndex++, 
+            lastLength = match[0].length, lastLastIndex = lastIndex, output.length >= splitLimit)); ) separatorCopy.lastIndex === match.index && separatorCopy.lastIndex++, 
             match = separatorCopy.exec(string);
             return lastLastIndex === string.length ? !lastLength && separatorCopy.test("") || pushCall(output, "") : pushCall(output, strSlice(string, lastLastIndex)), 
             output.length > splitLimit ? arraySlice(output, 0, splitLimit) : output;
         };
     }() : "0".split(void 0, 0).length && (StringPrototype.split = function(separator, limit) {
-        return "undefined" == typeof separator && 0 === limit ? [] : strSplit(this, separator, limit);
+        return void 0 === separator && 0 === limit ? [] : strSplit(this, separator, limit);
     });
-    var str_replace = StringPrototype.replace, replaceReportsGroupsCorrectly = function() {
+    var str_replace = StringPrototype.replace;
+    (function() {
         var groups = [];
         return "x".replace(/x(.)?/g, function(match, group) {
             pushCall(groups, group);
-        }), 1 === groups.length && "undefined" == typeof groups[0];
-    }();
-    replaceReportsGroupsCorrectly || (StringPrototype.replace = function(searchValue, replaceValue) {
+        }), 1 === groups.length && void 0 === groups[0];
+    })() || (StringPrototype.replace = function(searchValue, replaceValue) {
         var isFn = isCallable(replaceValue), hasCapturingGroups = isRegex(searchValue) && /\)[*?]/.test(searchValue.source);
         if (isFn && hasCapturingGroups) {
             var wrappedReplaceValue = function(match) {
@@ -668,21 +663,21 @@
             return start < 0 && (normalizedStart = max(this.length + start, 0)), string_substr.call(this, normalizedStart, length);
         }
     }, hasNegativeSubstrBug);
-    var ws = "\t\n\x0B\f\r   ᠎             　\u2028\u2029\ufeff", zeroWidth = "​", wsRegexChars = "[" + ws + "]", trimBeginRegexp = new RegExp("^" + wsRegexChars + wsRegexChars + "*"), trimEndRegexp = new RegExp(wsRegexChars + wsRegexChars + "*$"), hasTrimWhitespaceBug = StringPrototype.trim && (ws.trim() || !zeroWidth.trim());
+    var ws = "\t\n\v\f\r   ᠎             　\u2028\u2029\ufeff", zeroWidth = "​", wsRegexChars = "[" + ws + "]", trimBeginRegexp = new RegExp("^" + wsRegexChars + wsRegexChars + "*"), trimEndRegexp = new RegExp(wsRegexChars + wsRegexChars + "*$"), hasTrimWhitespaceBug = StringPrototype.trim && (ws.trim() || !zeroWidth.trim());
     defineProperties(StringPrototype, {
         trim: function() {
-            if ("undefined" == typeof this || null === this) throw new TypeError("can't convert " + this + " to object");
+            if (void 0 === this || null === this) throw new TypeError("can't convert " + this + " to object");
             return $String(this).replace(trimBeginRegexp, "").replace(trimEndRegexp, "");
         }
     }, hasTrimWhitespaceBug);
-    var trim = call.bind(String.prototype.trim), hasLastIndexBug = StringPrototype.lastIndexOf && "abcあい".lastIndexOf("あい", 2) !== -1;
+    var trim = call.bind(String.prototype.trim), hasLastIndexBug = StringPrototype.lastIndexOf && -1 !== "abcあい".lastIndexOf("あい", 2);
     defineProperties(StringPrototype, {
         lastIndexOf: function(searchString) {
-            if ("undefined" == typeof this || null === this) throw new TypeError("can't convert " + this + " to object");
+            if (void 0 === this || null === this) throw new TypeError("can't convert " + this + " to object");
             for (var S = $String(this), searchStr = $String(searchString), numPos = arguments.length > 1 ? $Number(arguments[1]) : NaN, pos = isActualNaN(numPos) ? 1 / 0 : ES.ToInteger(numPos), start = min(max(pos, 0), S.length), searchLen = searchStr.length, k = start + searchLen; k > 0; ) {
                 k = max(0, k - searchLen);
                 var index = strIndexOf(strSlice(S, k, start + searchLen), searchStr);
-                if (index !== -1) return k + index;
+                if (-1 !== index) return k + index;
             }
             return -1;
         }
@@ -698,18 +693,18 @@
             var string = trim(String(str)), defaultedRadix = $Number(radix) || (hexRegex.test(string) ? 16 : 10);
             return origParseInt(string, defaultedRadix);
         };
-    }(parseInt)), 1 / parseFloat("-0") !== -(1 / 0) && (parseFloat = function(origParseFloat) {
+    }(parseInt)), 1 / parseFloat("-0") != -1 / 0 && (parseFloat = function(origParseFloat) {
         return function(string) {
             var inputString = trim(String(string)), result = origParseFloat(inputString);
             return 0 === result && "-" === strSlice(inputString, 0, 1) ? -0 : result;
         };
     }(parseFloat)), "RangeError: test" !== String(new RangeError("test"))) {
         var errorToStringShim = function() {
-            if ("undefined" == typeof this || null === this) throw new TypeError("can't convert " + this + " to object");
+            if (void 0 === this || null === this) throw new TypeError("can't convert " + this + " to object");
             var name = this.name;
-            "undefined" == typeof name ? name = "Error" : "string" != typeof name && (name = $String(name));
+            void 0 === name ? name = "Error" : "string" != typeof name && (name = $String(name));
             var msg = this.message;
-            return "undefined" == typeof msg ? msg = "" : "string" != typeof msg && (msg = $String(msg)), 
+            return void 0 === msg ? msg = "" : "string" != typeof msg && (msg = $String(msg)), 
             name ? msg ? name + ": " + msg : name : msg;
         };
         Error.prototype.toString = errorToStringShim;

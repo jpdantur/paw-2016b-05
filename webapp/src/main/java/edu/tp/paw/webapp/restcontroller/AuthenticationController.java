@@ -39,7 +39,7 @@ import edu.tp.paw.webapp.form.PasswordRecoveryForm;
 import edu.tp.paw.webapp.form.RegisterForm;
 import io.jsonwebtoken.Claims;
 
-@Path("/api/auth")
+@Path("/auth")
 @Component
 public class AuthenticationController {
 	

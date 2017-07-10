@@ -12,13 +12,9 @@ define([
 
 	siglasApp.controller('ProfileCtrl', function($scope, $rootScope, $route, $location, $ngBootbox, toastr, UserService, ItemService, SalesService, PurchasesService, FavouritesService, $filter) {
 
-		console.log('ProfileCtrl');
-
 		$scope.Math = window.Math;
 
 		var self = this;
-
-		console.log($route);
 
 		self.selectedTab = $route.current.params.tab || 'account';
 
@@ -144,12 +140,8 @@ define([
 
 		function changeEmail(isValid) {
 
-			console.log(self.user);
-			console.log($rootScope.loggedUser.email);
-
 			if (isValid) {
 				UserService.update(self.user).then(function (user) {
-					console.log(user);
 					$rootScope.loggedUser.email = user.email;
 					toastr.success($filter('translate')('ng.messages.emailSuccess'));
 				}, function (err) {
@@ -160,12 +152,8 @@ define([
 
 		function changePassword(isValid) {
 
-			// return console.log(self.pass);
-
 			if (isValid) {
 				UserService.changePassword(self.pass).then(function () {
-					// console.log(user);
-					// $rootScope.loggedUser.email = user.email;
 					toastr.success($filter('translate')('ng.messages.passwordSuccess'));
 				}, function (err) {
 					toastr.error($filter('translate')('ng.messages.passwordError'));
@@ -189,7 +177,6 @@ define([
 		function publishedItems() {
 			self.itemsLoading = true;
 			ItemService.published(self.itemsQuery).then(function (result) {
-				console.log(result);
 				self.itemResult = result;
 				self.itemsLoading = false;
 			}, function (err) {
@@ -203,9 +190,7 @@ define([
 				owner: originalItem.owner.id,
 				status: status
 			});
-			console.log(i);
 			ItemService.update(i).then(function (item) {
-				console.log(item);
 				angular.extend(originalItem, item);
 				toastr.success($filter('translate')('ng.messages.itemSuccess'));
 			}, function (err) {
@@ -231,7 +216,6 @@ define([
 		function sales() {
 			self.salesLoading = true;
 			SalesService.mine(self.salesQuery).then(function (result) {
-				console.log(result);
 				self.salesResult = result;
 				self.salesLoading = false;
 			}, function (err) {
@@ -241,7 +225,6 @@ define([
 
 		function approveSale(item) {
 			SalesService.approve(item.id).then(function (result) {
-				console.log(result);
 				item.status = 'APPROVED';
 				toastr.success($filter('translate')('ng.messages.purchaseSuccess'));
 			}, function (err) {
@@ -252,7 +235,6 @@ define([
 
 		function declineSale(item) {
 			SalesService.decline(item.id).then(function (result) {
-				console.log(result);
 				item.status = 'DECLINED';
 				toastr.success($filter('translate')('ng.messages.purchaseSuccess2'));
 			}, function (err) {
@@ -280,7 +262,6 @@ define([
 		function purchases() {
 			self.purchasesLoading = true;
 			PurchasesService.mine(self.purchasesQuery).then(function (result) {
-				console.log(result);
 				self.purchasesResult = result;
 				self.purchasesLoading = false;
 			}, function (err) {
@@ -303,7 +284,6 @@ define([
 		function favourites() {
 			self.favouritesLoading = true;
 			FavouritesService.mine(self.favouritesQuery).then(function (result) {
-				console.log(result);
 				self.favouritesResult = result;
 				self.favouritesLoading = false;
 			}, function (err) {
@@ -328,7 +308,6 @@ define([
 		}
 
 		$scope.$on('fav.remove', function (e, id) {
-			console.log('fav.remove');
 			self.favouritesResult.results = _.filter(self.favouritesResult.results, function (fav) {
 				return fav.id !== id;
 			});

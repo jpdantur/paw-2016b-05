@@ -7,8 +7,6 @@ define([
 
 	siglasApp.controller('RegisterCtrl', function($scope, $rootScope, $location, $timeout, toastr, AuthService, $filter) {
 
-		console.log('RegisterCtrl');
-
 		var self = this;
 
 		self.user = {};
@@ -32,7 +30,6 @@ define([
 
 
 				AuthService.register(self.user).then(function (data) {
-					console.log(data);
 
 					return AuthService.fetchProfile();
 
@@ -41,8 +38,6 @@ define([
 					toastr.error($filter('translate')('mg.messages.registerError'));
 				}).then(function (profile) {
 					$rootScope.loggedUser = profile;
-
-					// console.log($location);
 
 					$location.path($location.$$search.next);
 

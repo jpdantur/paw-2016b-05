@@ -6,9 +6,10 @@ define([
 
 	siglasApp.controller('AllCtrl', function($scope, $rootScope, $location, $route, toastr, $filter, StoreService) {
 
-		console.log('AllCtrl');
-
 		$scope._ = _;
+		$scope.Math = window.Math;
+
+		var lock = true;
 
 		var self = this;
 
@@ -32,26 +33,51 @@ define([
 		}));
 
 		self.displayedCategories = [];
+		self.displayedCategoriesG = {};
 		self.selectedCategories = [];
-
-		console.log(self.itemsQuery);
 
 		self.itemsLoading = false;
 		self.itemResult = {};
 
 		self.itemsOrder = 'PRICE-ASC';
 
-		self.updateItemsQuery = _.debounce(updateItemsQuery, 800);
+		self.updateItemsQuery = _.debounce(updateItemsQuery, 500);
 		self.onItemsOrderChange = onItemsOrderChange;
 
 		self.toggleCategory = toggleCategory;
 		self.applyCategory = applyCategory;
+		self.removeCategory = removeCategory;
 
 		// /////////////////////////////
 
 		$scope.$on('query.update', function (e, query) {
-			console.log('query.updated', query);
 			updateItemsQuery({pageNumber: 0, query: query});
+		});
+
+		$scope.$watch(function() {
+			return $location.search();
+		}, function() {
+			if (!lock) {
+				self.itemsQuery = _.extend({
+					pageNumber: 0,
+					pageSize: 20,
+					query: '',
+					sortOrder: 'ASC',
+					sortField: 'PRICE',
+					minPrice: null,
+					maxPrice: null,
+					categories: []
+				}, _.mapValues($location.search(), function (val) {
+					if (!val) {
+						return val;
+					}
+					if (isFinite(val)) {
+						return parseInt(val, 10);
+					}
+					return val;
+				}));
+				publishedItems();
+			}
 		});
 
 		publishedItems();
@@ -70,9 +96,8 @@ define([
 
 		function publishedItems() {
 			self.itemsLoading = true;
-			console.log(self.itemsQuery);
+			lock = true;
 			StoreService.search(self.itemsQuery).then(function (result) {
-				console.log(result);
 				self.itemResult = result;
 				self.itemsLoading = false;
 
@@ -82,7 +107,15 @@ define([
 
 				self.displayedCategories = self.itemResult.selectedCategories;
 
+				self.displayedCategoriesG = _.reduce(self.displayedCategories, function (memo, val) {
+					memo[val.id] = val;
+					return memo;
+				}, {});
+
 				$location.search(self.itemsQuery);
+				setTimeout(function () {
+					lock = false;
+				}, 50);
 			}, function (err) {
 				console.error(err);
 			});
@@ -102,12 +135,19 @@ define([
 				pageNumber: 0,
 				categories: _.map(self.selectedCategories, 'id')
 			});
-			// var d = self.displayedCategories;
-			// d.splice.apply(d, [0, d.length].concat(self.selectedCategories));
-			// self.displayedCategories = self.selectedCategories;
 			self.selectedCategories = [];
-			// console.log(self.displayedCategories);
-			// console.log(self.selectedCategories);
+		}
+
+		function removeCategory(category) {
+			var idx = _.findIndex(self.displayedCategories, {id: category.id});
+
+			self.displayedCategories.splice(idx, 1);
+
+			updateItemsQuery({
+				pageNumber: 0,
+				categories: _.map(self.displayedCategories, 'id')
+			});
+			self.selectedCategories = [];
 		}
 
 	});

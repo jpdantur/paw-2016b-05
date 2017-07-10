@@ -41,7 +41,7 @@ import edu.tp.paw.webapp.dto.UserBriefDTO;
 import edu.tp.paw.webapp.dto.UserDTO;
 import edu.tp.paw.webapp.form.ChangePasswordForm;
 
-@Path("/api/id")
+@Path("/id")
 @Component
 public class UserController {
 	

@@ -7,13 +7,13 @@
  define([], function() {
 
  	return function(dependencies) {
- 		console.log('dependencyResolverFor', dependencies);
+
  		var definition = {
  			resolver: ['$q', '$rootScope', function($q, $rootScope) {
  				var deferred = $q.defer();
  				// dependencies = allDependencies;
  				require(dependencies, function() {
- 					console.log('resolved', dependencies);
+
 					deferred.resolve();
  					$rootScope.$apply(function() {
  						

@@ -17,7 +17,7 @@ define([ "siglasApp" ], function(siglasApp) {
                     });
                 }
                 void 0 === scope.max && (scope.max = 5), scope.toggle = function(index) {
-                    void 0 !== scope.readonly && scope.readonly !== !1 || (scope.ratingValue = index + 1, 
+                    void 0 !== scope.readonly && !1 !== scope.readonly || (scope.ratingValue = index + 1, 
                     scope.onRatingSelect && scope.onRatingSelect({
                         rating: index + 1
                     }));

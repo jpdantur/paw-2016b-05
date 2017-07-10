@@ -7,7 +7,8 @@ define([ "siglasApp" ], function(siglasApp) {
                 url: api("/api/store/search"),
                 params: query
             }).then(function(response) {
-                return response.status >= 400 ? (console.log(response.status), response.status >= 500 ? defer.reject(response.data) : defer.reject(response.data)) : void defer.resolve(response.data);
+                return response.status >= 400 ? (console.log(response.status), response.status, 
+                defer.reject(response.data)) : void defer.resolve(response.data);
             }, function(error) {
                 console.log(error), defer.reject(error.data);
             }), defer.promise;
@@ -18,7 +19,8 @@ define([ "siglasApp" ], function(siglasApp) {
                 method: "PUT",
                 url: api("/api/store/item/" + item.id + "/purchase")
             }).then(function(response) {
-                return response.status >= 400 ? (console.log(response.status), response.status >= 500 ? defer.reject(response.data) : defer.reject(response.data)) : void defer.resolve(response.data);
+                return response.status >= 400 ? (console.log(response.status), response.status, 
+                defer.reject(response.data)) : void defer.resolve(response.data);
             }, function(error) {
                 console.log(error), defer.reject(error.data);
             }), defer.promise;

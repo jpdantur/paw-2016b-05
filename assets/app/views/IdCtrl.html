@@ -89,6 +89,9 @@
           </div>
         </div>
         <div ng-if="id.params.role === 'seller'" class="col-sm-12">
+          <div ng-class="{show: id.itemsLoading}" class="backdrop">
+            <div class="spinner-loader">Loading...</div>
+          </div>
           <h2 class="h1">{{ 'profile.public.seller.items' | translate }}</h2>
           <div class="row text-right">
             <div class="col-sm-12">

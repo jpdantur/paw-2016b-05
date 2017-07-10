@@ -10,10 +10,6 @@ define([
 
 	siglasApp.controller('ItemCtrl', function($scope, $rootScope, $location, $route, $q, toastr, ItemService, FavouritesService, IdService, StoreService, $filter) {
 
-		console.log('ItemCtrl');
-
-		console.log($route);
-
 		$scope._ = _;
 		$scope.$location = $location;
 
@@ -55,7 +51,6 @@ define([
 
 			if (_.includes(['UNPUBLISHED', 'PAUSED'], self.storeItem.status)) {
 				if ($rootScope.loggedUser.id !== self.storeItem.owner.id) {
-					console.log('403');
 					return $location.path('/403');
 				}
 			}
@@ -110,6 +105,12 @@ define([
 			if (err.status === 401) {
 				$location.path('/403');
 			}
+			if (err.status === 403) {
+				$location.path('/403');
+			}
+			if (err.status === 404) {
+				$location.path('/404');
+			}
 		});
 
 
@@ -117,9 +118,7 @@ define([
 		
 		function postComment(valid) {
 			if (valid) {
-				console.log(self.comment);
 				ItemService.addComment(self.storeItem.id, self.comment).then(function (result) {
-					console.log(result);
 					toastr.success($filter('translate')('ng.messages.reviewSuccess'));
 					self.storeItem.comments.unshift(result);
 				}, function (err) {
@@ -153,7 +152,6 @@ define([
 		function purchase(item) {
 			self.purchasing = true;
 			StoreService.purchase(item).then(function (result) {
-				console.log(result);
 				toastr.success($filter('translate')('successMessages.buyItem.success'));
 				self.isPurchased = result;
 			}, function (err) {

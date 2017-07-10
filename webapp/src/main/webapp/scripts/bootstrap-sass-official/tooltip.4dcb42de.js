@@ -190,10 +190,12 @@
         }
         return delta;
     }, Tooltip.prototype.getTitle = function() {
-        var title, $e = this.$element, o = this.options;
-        return title = $e.attr("data-original-title") || ("function" == typeof o.title ? o.title.call($e[0]) : o.title);
+        var $e = this.$element, o = this.options;
+        return $e.attr("data-original-title") || ("function" == typeof o.title ? o.title.call($e[0]) : o.title);
     }, Tooltip.prototype.getUID = function(prefix) {
-        do prefix += ~~(1e6 * Math.random()); while (document.getElementById(prefix));
+        do {
+            prefix += ~~(1e6 * Math.random());
+        } while (document.getElementById(prefix));
         return prefix;
     }, Tooltip.prototype.tip = function() {
         if (!this.$tip && (this.$tip = $(this.options.template), 1 != this.$tip.length)) throw new Error(this.type + " `template` option must consist of exactly 1 top-level element!");
@@ -208,7 +210,7 @@
         this.enabled = !this.enabled;
     }, Tooltip.prototype.toggle = function(e) {
         var self = this;
-        e && (self = $(e.currentTarget).data("bs." + this.type), self || (self = new this.constructor(e.currentTarget, this.getDelegateOptions()), 
+        e && ((self = $(e.currentTarget).data("bs." + this.type)) || (self = new this.constructor(e.currentTarget, this.getDelegateOptions()), 
         $(e.currentTarget).data("bs." + this.type, self))), e ? (self.inState.click = !self.inState.click, 
         self.isInStateTrue() ? self.enter(self) : self.leave(self)) : self.tip().hasClass("in") ? self.leave(self) : self.enter(self);
     }, Tooltip.prototype.destroy = function() {

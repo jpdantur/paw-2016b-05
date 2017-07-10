@@ -7,7 +7,6 @@ define([
 
 	siglasApp.controller('SellCtrl', function ($scope, $rootScope, $route, $location, toastr, CategoryService, ItemService) {
 		
-		console.log('SellCtrl');
 
 		$scope._ = _;
 		$scope.$location = $location;
@@ -20,7 +19,7 @@ define([
 
 		self.item = {
 			used: false,
-			itemStatus: 'ACTIVE',
+			status: 'ACTIVE',
 			description: ''
 		};
 
@@ -31,7 +30,6 @@ define([
 		// //////////
 	
 		CategoryService.tree().then(function (categories) {
-			console.log(categories);
 			self.categories = categories;
 			self.categoryPath.push(self.categories);
 		}, function (err) {
@@ -55,10 +53,8 @@ define([
 
 		function submit(valid) {
 			if (valid) {
-				console.log(self.item);
 				_.extend(self.item, {category: self.selectedCategory.id});
 				ItemService.create(self.item).then(function (result) {
-					console.log(result);
 					toastr.success('Item successfully created');
 					$location.path('/store/sell/images/' + result.id);
 				}, function (err) {

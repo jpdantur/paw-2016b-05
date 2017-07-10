@@ -41,7 +41,7 @@ import edu.tp.paw.webapp.dto.PurchaseReviewWriteDTO;
 import edu.tp.paw.webapp.dto.StoreItemDTO;
 import edu.tp.paw.webapp.dto.StoreItemWriteDTO;
 
-@Path("/api/store/sales")
+@Path("/store/sales")
 @Component
 public class SalesController {
 

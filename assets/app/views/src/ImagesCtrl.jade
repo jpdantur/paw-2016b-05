@@ -33,7 +33,7 @@ block content
 												i.fa.fa-trash
 					div.form-group
 						div.col-sm-4.col-sm-offset-6
-							button.btn.btn-success.btn-block#uploadImages(type="submit") #{messageSource.getMessage('sell.okImages',[],locale)}
+							button.btn.btn-success.btn-block#uploadImages(type="submit", ng-disabled="!images.item.images.length") #{messageSource.getMessage('sell.okImages',[],locale)}
 						div.col-sm-2
 							a.btn.btn-default.btn-block(ng-href="#!/store/items/{{images.item.id}}")
 								| #{messageSource.getMessage('sell.skip',[],locale)}&nbsp;

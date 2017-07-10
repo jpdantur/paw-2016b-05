@@ -38,6 +38,8 @@ block scripts
 block content
 	+navbar(true)
 	div.container#profile-container
+		div.backdrop(ng-class="{show: profile.itemsLoading || profile.salesLoading || profile.purchasesLoading || profile.favouritesLoading }")
+			div.spinner-loader Loading...
 		div.row
 			div.col-sm-3
 				ul.nav.nav-tabs.tabs-left#myTab

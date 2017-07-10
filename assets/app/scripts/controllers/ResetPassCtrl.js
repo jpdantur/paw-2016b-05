@@ -7,8 +7,6 @@ define([
 
 	siglasApp.controller('ResetPassCtrl', function($scope, $rootScope, $location, toastr, AuthService, $filter) {
 
-		console.log('ResetPassCtrl');
-
 		var self = this;
 
 		self.submit = submit;
@@ -38,8 +36,6 @@ define([
 			if (valid) {
 				self.loading = true;
 				AuthService.resetPassword(params.username, self.pass).then(function () {
-					// console.log(user);
-					// $rootScope.loggedUser.email = user.email;
 					toastr.success($filter('translate')('ng.messages.passwordSuccess'));
 					$location.path('/auth/login');
 				}, function (err) {

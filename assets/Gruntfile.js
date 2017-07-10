@@ -261,7 +261,6 @@ module.exports = function (grunt) {
 
     uglify: {
       options: {
-        beautify: true,
         mangle: false
       },
       dist: {
@@ -461,11 +460,6 @@ module.exports = function (grunt) {
       options: {
         pretty: true,
         data: {
-          context: {
-            url: function (url) {
-              return 'http://localhost:8081/webapp' + url;
-            }
-          },
           messageSource: {
             getMessage: function (msg, params) {
               if (_.isString(params)) {
@@ -473,177 +467,7 @@ module.exports = function (grunt) {
               }
               return '{{ \'' + msg + '\' | translate }}';
             }
-          },
-          categories: [],
-          result: {
-            hasFieldErrors: function (name) {
-              return false;
-            },
-            getFieldErrors: function (path) {
-              return [];
-            }
-          },
-          bindingResult: {
-            hasFieldErrors: function (name) {
-              return false;
-            },
-            getFieldErrors: function (path) {
-              return [];
-            }
-          },
-          role: {
-            name: ''
-          },
-          roles: [],
-          user: {
-            firstName: ''
-          },
-          allRoles: [],
-          users: [],
-          category: {
-            parent: {
-              id: 1
-            }
-          },
-          show: {
-            equals: function () {
-              return false;
-            }
-          },
-          item: {
-            id: 1,
-            images: (function () {
-              var result = [];
-              result.isEmpty = function () {
-                return true;
-              };
-              return result;
-            })(),
-            status: {
-              toString: function () {
-                return {
-                  equals: function () {
-                    return false;
-                  }
-                };
-              }
-            }
-          },
-          items: {
-            numberOfAvailableResults: 0,
-            results: []
-          },
-          view: {
-            equals: function () {
-              return false;
-            }
-          },
-          mostSoldItems: [],
-          storeItem: {
-            name: null,
-            images: {
-              isEmpty: function () {
-                return false;
-              },
-              size: function () {
-                return 0;
-              }
-            },
-            owner: {
-              username: 'mm'
-            },
-            status: {
-              toString: function () {
-                return {
-                  equals: function () {
-                    return false;
-                  }
-                };
-              }
-            }
-          },
-          comments: [],
-          relatedItems: {
-            results: []
-          },
-          filter: {
-            pageFilter: {
-              pageSize: 0
-            },
-            priceFilter: {
-              priceRange: {
-                lowerBound: function () {
-                  return {
-                    isPresent: function () {
-                      return true;
-                    },
-                    get: function () {
-                      return 1;
-                    }
-                  };
-                },
-                upperBound: function () {
-                  return {
-                    isPresent: function () {
-                      return true;
-                    },
-                    get: function () {
-                      return 1;
-                    }
-                  };
-                }
-              }
-            }
-          },
-          selectedCategories: [],
-          similarCategories: {
-            size: function () {
-              return 0;
-            }
-          },
-          storeItems: {
-            size: function () {
-              return 0;
-            }
-          },
-          sort: {
-            equals: function () {
-              return false;
-            }
-          },
-          tokenValidity: {
-            toString: function () {
-              return {
-                equals: function () {
-                  return false;
-                },
-                startsWith: function () {
-                  return false;
-                }
-              };
-            }
-          },
-          loggedUser: {
-            id: 1
-          },
-          userFavourites: {
-            results: {
-              isEmpty: function () {
-                return true;
-              }
-            }
-          },
-          publishedItems: {
-            contains: function () {
-              return false;
-            }
-          },
-          purchasedItems: {
-            contains: function () {
-              return false;
-            }
-          },
-          allFavourites: []
+          }
         }
       },
       dist: {

@@ -1,5 +1,6 @@
 package edu.tp.paw.service;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -71,7 +72,7 @@ public class StoreService implements IStoreService {
 	}
 
 	@Override
-	public Set<Category> getCategoriesForResultsInHigherDepthCategories(final Set<Category> categories, final List<StoreItem> items) {
+	public List<Category> getCategoriesForResultsInHigherDepthCategories(final Set<Category> categories, final List<StoreItem> items) {
 		
 		final Set<Category> similarCategories;
 		
@@ -105,7 +106,16 @@ public class StoreService implements IStoreService {
 				return false;
 			});
 			return b;
-		}).collect(Collectors.toSet());
+		})
+		.sorted((category1, category2) -> {
+			long parentId1 = category1.getParent().getId();
+			long parentId2 = category2.getParent().getId();
+			if (parentId1 == parentId2) {
+				return category1.getName().compareTo(category2.getName());
+			}
+			return (int) (parentId1 - parentId2); 
+		})
+		.collect(Collectors.toList());
 	}
 
 }

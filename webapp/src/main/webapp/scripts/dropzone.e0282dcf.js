@@ -19,11 +19,11 @@
             return this;
         }, a.prototype.removeListener = a.prototype.off, a.prototype.removeAllListeners = a.prototype.off, 
         a.prototype.removeEventListener = a.prototype.off, a.prototype.off = function(a, b) {
-            var c, d, e, f, g;
+            var d, e, f, g;
             if (!this._callbacks || 0 === arguments.length) return this._callbacks = {}, this;
-            if (d = this._callbacks[a], !d) return this;
+            if (!(d = this._callbacks[a])) return this;
             if (1 === arguments.length) return delete this._callbacks[a], this;
-            for (e = f = 0, g = d.length; g > f; e = ++f) if (c = d[e], c === b) {
+            for (e = f = 0, g = d.length; g > f; e = ++f) if (d[e] === b) {
                 d.splice(e, 1);
                 break;
             }
@@ -44,8 +44,8 @@
             this.options.acceptedMimeTypes && (this.options.acceptedFiles = this.options.acceptedMimeTypes, 
             delete this.options.acceptedMimeTypes), this.options.method = this.options.method.toUpperCase(), 
             (f = this.getExistingFallback()) && f.parentNode && f.parentNode.removeChild(f), 
-            this.options.previewsContainer !== !1 && (this.previewsContainer = this.options.previewsContainer ? c.getElement(this.options.previewsContainer, "previewsContainer") : this.element), 
-            this.options.clickable && (this.clickableElements = this.options.clickable === !0 ? [ this.element ] : c.getElements(this.options.clickable, "clickable")), 
+            !1 !== this.options.previewsContainer && (this.previewsContainer = this.options.previewsContainer ? c.getElement(this.options.previewsContainer, "previewsContainer") : this.element), 
+            this.options.clickable && (this.clickableElements = !0 === this.options.clickable ? [ this.element ] : c.getElements(this.options.clickable, "clickable")), 
             this.init();
         }
         var d, e;
@@ -96,7 +96,7 @@
             forceFallback: !1,
             fallback: function() {
                 var a, b, d, e, f, g;
-                for (this.element.className = "" + this.element.className + " dz-browser-not-supported", 
+                for (this.element.className = this.element.className + " dz-browser-not-supported", 
                 g = this.element.getElementsByTagName("div"), e = 0, f = g.length; f > e; e++) a = g[e], 
                 /(^| )dz-message($| )/.test(a.className) && (b = a, a.className = "dz-message");
                 return b || (b = c.createElement('<div class="dz-message"><span></span></div>'), 
@@ -174,7 +174,7 @@
                         return function() {
                             return a.previewElement.classList.add("dz-image-preview");
                         };
-                    }(this), 1);
+                    }(), 1);
                 }
             },
             error: function(a, b) {
@@ -195,7 +195,7 @@
                 var c, d, e, f, g;
                 if (a.previewElement) {
                     for (f = a.previewElement.querySelectorAll("[data-dz-uploadprogress]"), g = [], 
-                    d = 0, e = f.length; e > d; d++) c = f[d], g.push("PROGRESS" === c.nodeName ? c.value = b : c.style.width = "" + b + "%");
+                    d = 0, e = f.length; e > d; d++) c = f[d], g.push("PROGRESS" === c.nodeName ? c.value = b : c.style.width = b + "%");
                     return g;
                 }
             },
@@ -358,7 +358,7 @@
             } else e = 100;
             return this.emit("totaluploadprogress", e, c, d);
         }, c.prototype._getParamName = function(a) {
-            return "function" == typeof this.options.paramName ? this.options.paramName(a) : "" + this.options.paramName + (this.options.uploadMultiple ? "[" + a + "]" : "");
+            return "function" == typeof this.options.paramName ? this.options.paramName(a) : this.options.paramName + (this.options.uploadMultiple ? "[" + a + "]" : "");
         }, c.prototype._renameFilename = function(a) {
             return "function" != typeof this.options.renameFilename ? a : this.options.renameFilename(a);
         }, c.prototype.getFallbackForm = function() {
@@ -444,9 +444,9 @@
                         var d, f, g;
                         if (c.length > 0) {
                             for (f = 0, g = c.length; g > f; f++) d = c[f], d.isFile ? d.file(function(c) {
-                                return a.options.ignoreHiddenFiles && "." === c.name.substring(0, 1) ? void 0 : (c.fullPath = "" + b + "/" + c.name, 
+                                return a.options.ignoreHiddenFiles && "." === c.name.substring(0, 1) ? void 0 : (c.fullPath = b + "/" + c.name, 
                                 a.addFile(c));
-                            }) : d.isDirectory && a._addFilesFromDirectory(d, "" + b + "/" + d.name);
+                            }) : d.isDirectory && a._addFilesFromDirectory(d, b + "/" + d.name);
                             e();
                         }
                         return null;
@@ -473,7 +473,7 @@
             for (c = 0, d = a.length; d > c; c++) b = a[c], this.enqueueFile(b);
             return null;
         }, c.prototype.enqueueFile = function(a) {
-            if (a.status !== c.ADDED || a.accepted !== !0) throw new Error("This file can't be queued because it has already been processed or was rejected.");
+            if (a.status !== c.ADDED || !0 !== a.accepted) throw new Error("This file can't be queued because it has already been processed or was rejected.");
             return a.status = c.QUEUED, this.options.autoProcessQueue ? setTimeout(function(a) {
                 return function() {
                     return a.processQueue();
@@ -538,8 +538,8 @@
             this.emit("processing", b);
             return this.options.uploadMultiple && this.emit("processingmultiple", a), this.uploadFiles(a);
         }, c.prototype._getFilesWithXhr = function(a) {
-            var b, c;
-            return c = function() {
+            var b;
+            return function() {
                 var c, d, e, f;
                 for (e = this.files, f = [], c = 0, d = e.length; d > c; c++) b = e[c], b.xhr === a && f.push(b);
                 return f;
@@ -602,12 +602,12 @@
                 return function() {
                     return a[0].status !== c.CANCELED ? g() : void 0;
                 };
-            }(this), r = null != (G = w.upload) ? G : w, r.onprogress = t, j = {
+            }(), r = null != (G = w.upload) ? G : w, r.onprogress = t, j = {
                 Accept: "application/json",
                 "Cache-Control": "no-cache",
                 "X-Requested-With": "XMLHttpRequest"
             }, this.options.headers && d(j, this.options.headers);
-            for (h in j) i = j[h], i && w.setRequestHeader(h, i);
+            for (h in j) (i = j[h]) && w.setRequestHeader(h, i);
             if (f = new FormData(), this.options.params) {
                 H = this.options.params;
                 for (o in H) v = H[o], f.append(o, v);
@@ -647,7 +647,7 @@
             for (f = [], c = 0, e = a.length; e > c; c++) b = a[c], f.push(/(^| )dropzone($| )/.test(b.className) ? d.push(b) : void 0);
             return f;
         }, b(document.getElementsByTagName("div")), b(document.getElementsByTagName("form"))), 
-        g = [], e = 0, f = d.length; f > e; e++) c = d[e], g.push(a.optionsForElement(c) !== !1 ? new a(c) : void 0);
+        g = [], e = 0, f = d.length; f > e; e++) c = d[e], g.push(!1 !== a.optionsForElement(c) ? new a(c) : void 0);
         return g;
     }, a.blacklistedBrowsers = [ /opera.*Macintosh.*version\/12/i ], a.isBrowserSupported = function() {
         var b, c, d, e, f;
@@ -656,7 +656,7 @@
         return b;
     }, h = function(a, b) {
         var c, d, e, f;
-        for (f = [], d = 0, e = a.length; e > d; d++) c = a[d], c !== b && f.push(c);
+        for (f = [], d = 0, e = a.length; e > d; d++) (c = a[d]) !== b && f.push(c);
         return f;
     }, c = function(a) {
         return a.replace(/[\-_](\w)/g, function(a) {
@@ -675,13 +675,13 @@
         null == c) throw new Error("Invalid `" + b + "` option provided. Please provide a CSS selector or a plain HTML element.");
         return c;
     }, a.getElements = function(a, b) {
-        var c, d, e, f, g, h, i, j;
+        var d, e, f, g, h, i, j;
         if (a instanceof Array) {
             e = [];
             try {
                 for (f = 0, h = a.length; h > f; f++) d = a[f], e.push(this.getElement(d, b));
             } catch (k) {
-                c = k, e = null;
+                k, e = null;
             }
         } else if ("string" == typeof a) for (e = [], j = document.querySelectorAll(a), 
         g = 0, i = j.length; i > g; g++) d = j[g], e.push(d); else null != a.nodeType && (e = [ a ]);
@@ -707,8 +707,8 @@
     a.ADDED = "added", a.QUEUED = "queued", a.ACCEPTED = a.QUEUED, a.UPLOADING = "uploading", 
     a.PROCESSING = a.UPLOADING, a.CANCELED = "canceled", a.ERROR = "error", a.SUCCESS = "success", 
     e = function(a) {
-        var b, c, d, e, f, g, h, i, j, k;
-        for (h = a.naturalWidth, g = a.naturalHeight, c = document.createElement("canvas"), 
+        var b, c, d, e, f, g, i, j, k;
+        for (a.naturalWidth, g = a.naturalHeight, c = document.createElement("canvas"), 
         c.width = 1, c.height = g, d = c.getContext("2d"), d.drawImage(a, 0, 0), e = d.getImageData(0, 0, 1, g).data, 
         k = 0, f = g, i = g; i > k; ) b = e[4 * (i - 1) + 3], 0 === b ? f = i : k = i, i = f + k >> 1;
         return j = i / g, 0 === j ? 1 : j;
@@ -723,11 +723,10 @@
             return "readystatechange" !== c.type || "complete" === d.readyState ? (("load" === c.type ? a : d)[i](h + c.type, f, !1), 
             !e && (e = !0) ? b.call(a, c.type || c) : void 0) : void 0;
         }, g = function() {
-            var a;
             try {
                 j.doScroll("left");
             } catch (b) {
-                return a = b, void setTimeout(g, 50);
+                return b, void setTimeout(g, 50);
             }
             return f("poll");
         }, "complete" !== d.readyState) {

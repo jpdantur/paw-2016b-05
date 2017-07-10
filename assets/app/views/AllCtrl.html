@@ -42,6 +42,9 @@
   </div>
 </header>
 <div class="container">
+  <div ng-class="{show: all.itemsLoading}" class="backdrop">
+    <div class="spinner-loader">Loading...</div>
+  </div>
   <div id="search-container" class="row">
     <div id="search-title" class="col-sm-12">
       <h1>{{ 'search.searchResults' | translate }}&nbsp;<i></i></h1>
@@ -72,19 +75,22 @@
     </div>
     <div style="padding:5px" class="col-sm-2">
       <div id="filters">
-        <div ng-if="all.itemsQuery.minPrice || all.itemsQuery.maxPrice" class="filter-content">
+        <div ng-if="all.itemsQuery.minPrice || all.itemsQuery.maxPrice || all.displayedCategories.length" class="filter-content">
           <div class="filter-header">
-            <h6 class="filter-title">Filtros Aplicados</h6>
+            <h6 class="filter-title">{{ 'search.filters.applied' | translate }}</h6>
           </div>
           <div class="filter-body">
-            <div data-target="minPrice,maxPrice" ng-show="all.itemsQuery.minPrice &amp;&amp; all.itemsQuery.maxPrice" class="applied-filter">
-              <button class="close">&times;</button><span>{{ 'search.filters.price.between' | translate:all.itemsQuery }}</span>
+            <div ng-show="all.itemsQuery.minPrice &amp;&amp; all.itemsQuery.maxPrice" class="applied-filter">
+              <button ng-click="all.updateItemsQuery({pageNumber: 0, minPrice: null, maxPrice: null})" class="close">&times;</button><span>{{ 'search.filters.price.between' | translate:all.itemsQuery }}</span>
             </div>
-            <div data-target="minPrice" ng-show="all.itemsQuery.minPrice &amp;&amp; !all.itemsQuery.maxPrice" class="applied-filter">
-              <button class="close">&times;</button><span>{{ 'search.filters.price.from' | translate:all.itemsQuery }}</span>
+            <div ng-show="all.itemsQuery.minPrice &amp;&amp; !all.itemsQuery.maxPrice" class="applied-filter">
+              <button ng-click="all.updateItemsQuery({pageNumber: 0, minPrice: null})" class="close">&times;</button><span>{{ 'search.filters.price.from' | translate:all.itemsQuery }}</span>
             </div>
-            <div data-target="maxPrice" ng-show="!all.itemsQuery.minPrice &amp;&amp; all.itemsQuery.maxPrice" class="applied-filter">
-              <button class="close">&times;</button><span>{{ 'search.filters.price.to' | translate:all.itemsQuery }}</span>
+            <div ng-show="!all.itemsQuery.minPrice &amp;&amp; all.itemsQuery.maxPrice" class="applied-filter">
+              <button ng-click="all.updateItemsQuery({pageNumber: 0, maxPrice: null})" class="close">&times;</button><span>{{ 'search.filters.price.to' | translate:all.itemsQuery }}</span>
+            </div>
+            <div ng-repeat="category in all.displayedCategories" class="applied-filter">
+              <button ng-click="all.removeCategory(category)" class="close">&times;</button><span>{{category.name}}</span>
             </div>
           </div>
         </div>
@@ -104,24 +110,19 @@
             </div>
           </div>
         </div>
-        <div id="category-filter" ng-if="all.itemResult.similarCategories.length || all.displayedCategories.length" class="filter-content">
+        <div id="category-filter" ng-if="all.itemResult.similarCategories.length" class="filter-content">
           <div class="filter-header">
             <h6 class="filter-title">{{ 'search.filters.categories' | translate }}</h6>
           </div>
           <div class="filter-body">
-            <div ng-if="all.displayedCategories.length &gt; 1" ng-repeat="category in all.displayedCategories">
-              <label ng-if="$first || all.displayedCategories[$index - 1].parent !== category.parent" class="parent-label">{{category.name}}</label>
-              <div class="checkbox padding">
-                <label>
-                  <input type="checkbox" name="categories" ng-checked="_.find(all.selectedCategories, {id: category.id})" ng-click="all.toggleCategory(category)"/>{{category.name}}
-                </label>
-              </div>
-            </div>
             <div>
-              <div ng-repeat="category in all.itemResult.similarCategories" class="checkbox">
-                <label>
-                  <input type="checkbox" name="categories" ng-checked="_.find(all.selectedCategories, {id: category.id})" ng-click="all.toggleCategory(category)"/>{{category.name}}
-                </label>
+              <div ng-repeat="category in all.itemResult.similarCategories">
+                <label ng-if="all.displayedCategories.length &gt; 1 &amp;&amp; ($first || all.itemResult.similarCategories[$index - 1].parent !== category.parent)" class="parent-label">{{all.displayedCategoriesG[category.parent].name}}</label>
+                <div ng-class="{padding: all.displayedCategories.length &gt; 1}" class="checkbox">
+                  <label>
+                    <input type="checkbox" name="categories" ng-checked="_.find(all.selectedCategories, {id: category.id})" ng-click="all.toggleCategory(category)"/>{{category.name}}
+                  </label>
+                </div>
               </div>
             </div>
             <button id="category-filter-button" type="button" ng-click="all.applyCategory()" class="btn btn-primary btn-xs col-sm-6 col-sm-offset-6">{{ 'search.filters.categories.apply' | translate }}</button>
@@ -132,7 +133,6 @@
     <div class="col-sm-10">
       <div id="product-grid" class="row">
         <h3 ng-if="!all.itemResult.results.length" class="text-warning">{{ 'search.none' | translate }}</h3>
-        <div ng-class="{show: all.itemsLoading}" class="backdrop"></div>
         <div ng-repeat="item in all.itemResult.results" class="col-sm-3 store-item">
           <div class="product-container"><a href="#!/store/items/{{item.id}}">
               <div class="image-container"><img ng-if="!item.images.length" ng-src="http://placehold.it/200?text=Sin+Imagen" style="width:100%;height:auto"/><img ng-if="item.images.length" ng-src="data:image/png;base64,{{item.images[0].content}}" style="width:100%;height:auto"/></div></a><a href="#!/store/items/{{item.id}}" title="{{item.name}}" class="product-title"><b>{{item.name}}</b></a>

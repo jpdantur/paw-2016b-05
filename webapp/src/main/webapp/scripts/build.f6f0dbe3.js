@@ -14,6 +14,9 @@ if (function(global, factory) {
         var length = !!obj && "length" in obj && obj.length, type = jQuery.type(obj);
         return "function" !== type && !jQuery.isWindow(obj) && ("array" === type || 0 === length || "number" == typeof length && length > 0 && length - 1 in obj);
     }
+    function nodeName(elem, name) {
+        return elem.nodeName && elem.nodeName.toLowerCase() === name.toLowerCase();
+    }
     function winnow(elements, qualifier, not) {
         return jQuery.isFunction(qualifier) ? jQuery.grep(elements, function(elem, i) {
             return !!qualifier.call(elem, i, elem) !== not;
@@ -42,12 +45,12 @@ if (function(global, factory) {
     function Thrower(ex) {
         throw ex;
     }
-    function adoptValue(value, resolve, reject) {
+    function adoptValue(value, resolve, reject, noValue) {
         var method;
         try {
-            value && jQuery.isFunction(method = value.promise) ? method.call(value).done(resolve).fail(reject) : value && jQuery.isFunction(method = value.then) ? method.call(value, resolve, reject) : resolve.call(void 0, value);
+            value && jQuery.isFunction(method = value.promise) ? method.call(value).done(resolve).fail(reject) : value && jQuery.isFunction(method = value.then) ? method.call(value, resolve, reject) : resolve.apply(void 0, [ value ].slice(noValue));
         } catch (value) {
-            reject.call(void 0, value);
+            reject.apply(void 0, [ value ]);
         }
     }
     function completed() {
@@ -63,7 +66,7 @@ if (function(global, factory) {
     function dataAttr(elem, key, data) {
         var name;
         if (void 0 === data && 1 === elem.nodeType) if (name = "data-" + key.replace(rmultiDash, "-$&").toLowerCase(), 
-        data = elem.getAttribute(name), "string" == typeof data) {
+        "string" == typeof (data = elem.getAttribute(name))) {
             try {
                 data = getData(data);
             } catch (e) {}
@@ -79,7 +82,9 @@ if (function(global, factory) {
         }, initial = currentValue(), unit = valueParts && valueParts[3] || (jQuery.cssNumber[prop] ? "" : "px"), initialInUnit = (jQuery.cssNumber[prop] || "px" !== unit && +initial) && rcssNum.exec(jQuery.css(elem, prop));
         if (initialInUnit && initialInUnit[3] !== unit) {
             unit = unit || initialInUnit[3], valueParts = valueParts || [], initialInUnit = +initial || 1;
-            do scale = scale || ".5", initialInUnit /= scale, jQuery.style(elem, prop, initialInUnit + unit); while (scale !== (scale = currentValue() / initial) && 1 !== scale && --maxIterations);
+            do {
+                scale = scale || ".5", initialInUnit /= scale, jQuery.style(elem, prop, initialInUnit + unit);
+            } while (scale !== (scale = currentValue() / initial) && 1 !== scale && --maxIterations);
         }
         return valueParts && (initialInUnit = +initialInUnit || +initial || 0, adjusted = valueParts[1] ? initialInUnit + (valueParts[1] + 1) * valueParts[2] : +valueParts[2], 
         tween && (tween.unit = unit, tween.start = initialInUnit, tween.end = adjusted)), 
@@ -87,9 +92,9 @@ if (function(global, factory) {
     }
     function getDefaultDisplay(elem) {
         var temp, doc = elem.ownerDocument, nodeName = elem.nodeName, display = defaultDisplayMap[nodeName];
-        return display ? display : (temp = doc.body.appendChild(doc.createElement(nodeName)), 
-        display = jQuery.css(temp, "display"), temp.parentNode.removeChild(temp), "none" === display && (display = "block"), 
-        defaultDisplayMap[nodeName] = display, display);
+        return display || (temp = doc.body.appendChild(doc.createElement(nodeName)), display = jQuery.css(temp, "display"), 
+        temp.parentNode.removeChild(temp), "none" === display && (display = "block"), defaultDisplayMap[nodeName] = display, 
+        display);
     }
     function showHide(elements, show) {
         for (var display, elem, values = [], index = 0, length = elements.length; index < length; index++) elem = elements[index], 
@@ -101,15 +106,14 @@ if (function(global, factory) {
     }
     function getAll(context, tag) {
         var ret;
-        return ret = "undefined" != typeof context.getElementsByTagName ? context.getElementsByTagName(tag || "*") : "undefined" != typeof context.querySelectorAll ? context.querySelectorAll(tag || "*") : [], 
-        void 0 === tag || tag && jQuery.nodeName(context, tag) ? jQuery.merge([ context ], ret) : ret;
+        return ret = void 0 !== context.getElementsByTagName ? context.getElementsByTagName(tag || "*") : void 0 !== context.querySelectorAll ? context.querySelectorAll(tag || "*") : [], 
+        void 0 === tag || tag && nodeName(context, tag) ? jQuery.merge([ context ], ret) : ret;
     }
     function setGlobalEval(elems, refElements) {
         for (var i = 0, l = elems.length; i < l; i++) dataPriv.set(elems[i], "globalEval", !refElements || dataPriv.get(refElements[i], "globalEval"));
     }
     function buildFragment(elems, context, scripts, selection, ignored) {
-        for (var elem, tmp, tag, wrap, contains, j, fragment = context.createDocumentFragment(), nodes = [], i = 0, l = elems.length; i < l; i++) if (elem = elems[i], 
-        elem || 0 === elem) if ("object" === jQuery.type(elem)) jQuery.merge(nodes, elem.nodeType ? [ elem ] : elem); else if (rhtml.test(elem)) {
+        for (var elem, tmp, tag, wrap, contains, j, fragment = context.createDocumentFragment(), nodes = [], i = 0, l = elems.length; i < l; i++) if ((elem = elems[i]) || 0 === elem) if ("object" === jQuery.type(elem)) jQuery.merge(nodes, elem.nodeType ? [ elem ] : elem); else if (rhtml.test(elem)) {
             for (tmp = tmp || fragment.appendChild(context.createElement("div")), tag = (rtagName.exec(elem) || [ "", "" ])[1].toLowerCase(), 
             wrap = wrapMap[tag] || wrapMap._default, tmp.innerHTML = wrap[1] + jQuery.htmlPrefilter(elem) + wrap[2], 
             j = wrap[0]; j--; ) tmp = tmp.lastChild;
@@ -139,7 +143,7 @@ if (function(global, factory) {
             return elem;
         }
         if (null == data && null == fn ? (fn = selector, data = selector = void 0) : null == fn && ("string" == typeof selector ? (fn = data, 
-        data = void 0) : (fn = data, data = selector, selector = void 0)), fn === !1) fn = returnFalse; else if (!fn) return elem;
+        data = void 0) : (fn = data, data = selector, selector = void 0)), !1 === fn) fn = returnFalse; else if (!fn) return elem;
         return 1 === one && (origFn = fn, fn = function(event) {
             return jQuery().off(event), origFn.apply(this, arguments);
         }, fn.guid = origFn.guid || (origFn.guid = jQuery.guid++)), elem.each(function() {
@@ -147,7 +151,7 @@ if (function(global, factory) {
         });
     }
     function manipulationTarget(elem, content) {
-        return jQuery.nodeName(elem, "table") && jQuery.nodeName(11 !== content.nodeType ? content : content.firstChild, "tr") ? elem.getElementsByTagName("tbody")[0] || elem : elem;
+        return nodeName(elem, "table") && nodeName(11 !== content.nodeType ? content : content.firstChild, "tr") ? jQuery(">tbody", elem)[0] || elem : elem;
     }
     function disableScript(elem) {
         return elem.type = (null !== elem.getAttribute("type")) + "/" + elem.type, elem;
@@ -214,8 +218,11 @@ if (function(global, factory) {
     }
     function vendorPropName(name) {
         if (name in emptyStyle) return name;
-        for (var capName = name[0].toUpperCase() + name.slice(1), i = cssPrefixes.length; i--; ) if (name = cssPrefixes[i] + capName, 
-        name in emptyStyle) return name;
+        for (var capName = name[0].toUpperCase() + name.slice(1), i = cssPrefixes.length; i--; ) if ((name = cssPrefixes[i] + capName) in emptyStyle) return name;
+    }
+    function finalPropName(name) {
+        var ret = jQuery.cssProps[name];
+        return ret || (ret = jQuery.cssProps[name] = vendorPropName(name) || name), ret;
     }
     function setPositiveNumber(elem, value, subtract) {
         var matches = rcssNum.exec(value);
@@ -230,21 +237,17 @@ if (function(global, factory) {
         return val;
     }
     function getWidthOrHeight(elem, name, extra) {
-        var val, valueIsBorderBox = !0, styles = getStyles(elem), isBorderBox = "border-box" === jQuery.css(elem, "boxSizing", !1, styles);
-        if (elem.getClientRects().length && (val = elem.getBoundingClientRect()[name]), 
-        val <= 0 || null == val) {
-            if (val = curCSS(elem, name, styles), (val < 0 || null == val) && (val = elem.style[name]), 
-            rnumnonpx.test(val)) return val;
-            valueIsBorderBox = isBorderBox && (support.boxSizingReliable() || val === elem.style[name]), 
-            val = parseFloat(val) || 0;
-        }
-        return val + augmentWidthOrHeight(elem, name, extra || (isBorderBox ? "border" : "content"), valueIsBorderBox, styles) + "px";
+        var valueIsBorderBox, styles = getStyles(elem), val = curCSS(elem, name, styles), isBorderBox = "border-box" === jQuery.css(elem, "boxSizing", !1, styles);
+        return rnumnonpx.test(val) ? val : (valueIsBorderBox = isBorderBox && (support.boxSizingReliable() || val === elem.style[name]), 
+        "auto" === val && (val = elem["offset" + name[0].toUpperCase() + name.slice(1)]), 
+        (val = parseFloat(val) || 0) + augmentWidthOrHeight(elem, name, extra || (isBorderBox ? "border" : "content"), valueIsBorderBox, styles) + "px");
     }
     function Tween(elem, options, prop, end, easing) {
         return new Tween.prototype.init(elem, options, prop, end, easing);
     }
-    function raf() {
-        timerId && (window.requestAnimationFrame(raf), jQuery.fx.tick());
+    function schedule() {
+        inProgress && (!1 === document.hidden && window.requestAnimationFrame ? window.requestAnimationFrame(schedule) : window.setTimeout(schedule, jQuery.fx.interval), 
+        jQuery.fx.tick());
     }
     function createFxNow() {
         return window.setTimeout(function() {
@@ -279,7 +282,7 @@ if (function(global, factory) {
             }
             orig[prop] = dataShow && dataShow[prop] || jQuery.style(elem, prop);
         }
-        if (propTween = !jQuery.isEmptyObject(props), propTween || !jQuery.isEmptyObject(orig)) {
+        if ((propTween = !jQuery.isEmptyObject(props)) || !jQuery.isEmptyObject(orig)) {
             isBox && 1 === elem.nodeType && (opts.overflow = [ style.overflow, style.overflowX, style.overflowY ], 
             restoreDisplay = dataShow && dataShow.display, null == restoreDisplay && (restoreDisplay = dataPriv.get(elem, "display")), 
             display = jQuery.css(elem, "display"), "none" === display && (restoreDisplay ? display = restoreDisplay : (showHide([ elem ], !0), 
@@ -302,9 +305,8 @@ if (function(global, factory) {
     function propFilter(props, specialEasing) {
         var index, name, easing, value, hooks;
         for (index in props) if (name = jQuery.camelCase(index), easing = specialEasing[name], 
-        value = props[index], jQuery.isArray(value) && (easing = value[1], value = props[index] = value[0]), 
-        index !== name && (props[name] = value, delete props[index]), hooks = jQuery.cssHooks[name], 
-        hooks && "expand" in hooks) {
+        value = props[index], Array.isArray(value) && (easing = value[1], value = props[index] = value[0]), 
+        index !== name && (props[name] = value, delete props[index]), (hooks = jQuery.cssHooks[name]) && "expand" in hooks) {
             value = hooks.expand(value), delete props[name];
             for (index in value) index in props || (props[index] = value[index], specialEasing[index] = easing);
         } else specialEasing[name] = easing;
@@ -315,8 +317,8 @@ if (function(global, factory) {
         }), tick = function() {
             if (stopped) return !1;
             for (var currentTime = fxNow || createFxNow(), remaining = Math.max(0, animation.startTime + animation.duration - currentTime), temp = remaining / animation.duration || 0, percent = 1 - temp, index = 0, length = animation.tweens.length; index < length; index++) animation.tweens[index].run(percent);
-            return deferred.notifyWith(elem, [ animation, percent, remaining ]), percent < 1 && length ? remaining : (deferred.resolveWith(elem, [ animation ]), 
-            !1);
+            return deferred.notifyWith(elem, [ animation, percent, remaining ]), percent < 1 && length ? remaining : (length || deferred.notifyWith(elem, [ animation, 1, 0 ]), 
+            deferred.resolveWith(elem, [ animation ]), !1);
         }, animation = deferred.promise({
             elem: elem,
             props: jQuery.extend({}, properties),
@@ -344,22 +346,22 @@ if (function(global, factory) {
         for (propFilter(props, animation.opts.specialEasing); index < length; index++) if (result = Animation.prefilters[index].call(animation, elem, props, animation.opts)) return jQuery.isFunction(result.stop) && (jQuery._queueHooks(animation.elem, animation.opts.queue).stop = jQuery.proxy(result.stop, result)), 
         result;
         return jQuery.map(props, createTween, animation), jQuery.isFunction(animation.opts.start) && animation.opts.start.call(elem, animation), 
+        animation.progress(animation.opts.progress).done(animation.opts.done, animation.opts.complete).fail(animation.opts.fail).always(animation.opts.always), 
         jQuery.fx.timer(jQuery.extend(tick, {
             elem: elem,
             anim: animation,
             queue: animation.opts.queue
-        })), animation.progress(animation.opts.progress).done(animation.opts.done, animation.opts.complete).fail(animation.opts.fail).always(animation.opts.always);
+        })), animation;
     }
     function stripAndCollapse(value) {
-        var tokens = value.match(rnothtmlwhite) || [];
-        return tokens.join(" ");
+        return (value.match(rnothtmlwhite) || []).join(" ");
     }
     function getClass(elem) {
         return elem.getAttribute && elem.getAttribute("class") || "";
     }
     function buildParams(prefix, obj, traditional, add) {
         var name;
-        if (jQuery.isArray(obj)) jQuery.each(obj, function(i, v) {
+        if (Array.isArray(obj)) jQuery.each(obj, function(i, v) {
             traditional || rbracket.test(prefix) ? add(prefix, v) : buildParams(prefix + "[" + ("object" == typeof v && null != v ? i : "") + "]", v, traditional, add);
         }); else if (traditional || "object" !== jQuery.type(obj)) add(prefix, obj); else for (name in obj) buildParams(prefix + "[" + name + "]", obj[name], traditional, add);
     }
@@ -414,13 +416,13 @@ if (function(global, factory) {
         for (current = dataTypes.shift(); current; ) if (s.responseFields[current] && (jqXHR[s.responseFields[current]] = response), 
         !prev && isSuccess && s.dataFilter && (response = s.dataFilter(response, s.dataType)), 
         prev = current, current = dataTypes.shift()) if ("*" === current) current = prev; else if ("*" !== prev && prev !== current) {
-            if (conv = converters[prev + " " + current] || converters["* " + current], !conv) for (conv2 in converters) if (tmp = conv2.split(" "), 
+            if (!(conv = converters[prev + " " + current] || converters["* " + current])) for (conv2 in converters) if (tmp = conv2.split(" "), 
             tmp[1] === current && (conv = converters[prev + " " + tmp[0]] || converters["* " + tmp[0]])) {
-                conv === !0 ? conv = converters[conv2] : converters[conv2] !== !0 && (current = tmp[0], 
+                !0 === conv ? conv = converters[conv2] : !0 !== converters[conv2] && (current = tmp[0], 
                 dataTypes.unshift(tmp[1]));
                 break;
             }
-            if (conv !== !0) if (conv && s["throws"]) response = conv(response); else try {
+            if (!0 !== conv) if (conv && s.throws) response = conv(response); else try {
                 response = conv(response);
             } catch (e) {
                 return {
@@ -434,16 +436,13 @@ if (function(global, factory) {
             data: response
         };
     }
-    function getWindow(elem) {
-        return jQuery.isWindow(elem) ? elem : 9 === elem.nodeType && elem.defaultView;
-    }
-    var arr = [], document = window.document, getProto = Object.getPrototypeOf, slice = arr.slice, concat = arr.concat, push = arr.push, indexOf = arr.indexOf, class2type = {}, toString = class2type.toString, hasOwn = class2type.hasOwnProperty, fnToString = hasOwn.toString, ObjectFunctionString = fnToString.call(Object), support = {}, version = "3.1.1", jQuery = function(selector, context) {
+    var arr = [], document = window.document, getProto = Object.getPrototypeOf, slice = arr.slice, concat = arr.concat, push = arr.push, indexOf = arr.indexOf, class2type = {}, toString = class2type.toString, hasOwn = class2type.hasOwnProperty, fnToString = hasOwn.toString, ObjectFunctionString = fnToString.call(Object), support = {}, jQuery = function(selector, context) {
         return new jQuery.fn.init(selector, context);
     }, rtrim = /^[\s\uFEFF\xA0]+|[\s\uFEFF\xA0]+$/g, rmsPrefix = /^-ms-/, rdashAlpha = /-([a-z])/g, fcamelCase = function(all, letter) {
         return letter.toUpperCase();
     };
     jQuery.fn = jQuery.prototype = {
-        jquery: version,
+        jquery: "3.2.1",
         constructor: jQuery,
         length: 0,
         toArray: function() {
@@ -488,12 +487,12 @@ if (function(global, factory) {
         for ("boolean" == typeof target && (deep = target, target = arguments[i] || {}, 
         i++), "object" == typeof target || jQuery.isFunction(target) || (target = {}), i === length && (target = this, 
         i--); i < length; i++) if (null != (options = arguments[i])) for (name in options) src = target[name], 
-        copy = options[name], target !== copy && (deep && copy && (jQuery.isPlainObject(copy) || (copyIsArray = jQuery.isArray(copy))) ? (copyIsArray ? (copyIsArray = !1, 
-        clone = src && jQuery.isArray(src) ? src : []) : clone = src && jQuery.isPlainObject(src) ? src : {}, 
+        copy = options[name], target !== copy && (deep && copy && (jQuery.isPlainObject(copy) || (copyIsArray = Array.isArray(copy))) ? (copyIsArray ? (copyIsArray = !1, 
+        clone = src && Array.isArray(src) ? src : []) : clone = src && jQuery.isPlainObject(src) ? src : {}, 
         target[name] = jQuery.extend(deep, clone, copy)) : void 0 !== copy && (target[name] = copy));
         return target;
     }, jQuery.extend({
-        expando: "jQuery" + (version + Math.random()).replace(/\D/g, ""),
+        expando: "jQuery" + ("3.2.1" + Math.random()).replace(/\D/g, ""),
         isReady: !0,
         error: function(msg) {
             throw new Error(msg);
@@ -502,7 +501,6 @@ if (function(global, factory) {
         isFunction: function(obj) {
             return "function" === jQuery.type(obj);
         },
-        isArray: Array.isArray,
         isWindow: function(obj) {
             return null != obj && obj === obj.window;
         },
@@ -512,8 +510,7 @@ if (function(global, factory) {
         },
         isPlainObject: function(obj) {
             var proto, Ctor;
-            return !(!obj || "[object Object]" !== toString.call(obj) || (proto = getProto(obj)) && (Ctor = hasOwn.call(proto, "constructor") && proto.constructor, 
-            "function" != typeof Ctor || fnToString.call(Ctor) !== ObjectFunctionString));
+            return !(!obj || "[object Object]" !== toString.call(obj) || (proto = getProto(obj)) && ("function" != typeof (Ctor = hasOwn.call(proto, "constructor") && proto.constructor) || fnToString.call(Ctor) !== ObjectFunctionString));
         },
         isEmptyObject: function(obj) {
             var name;
@@ -529,12 +526,9 @@ if (function(global, factory) {
         camelCase: function(string) {
             return string.replace(rmsPrefix, "ms-").replace(rdashAlpha, fcamelCase);
         },
-        nodeName: function(elem, name) {
-            return elem.nodeName && elem.nodeName.toLowerCase() === name.toLowerCase();
-        },
         each: function(obj, callback) {
             var length, i = 0;
-            if (isArrayLike(obj)) for (length = obj.length; i < length && callback.call(obj[i], i, obj[i]) !== !1; i++) ; else for (i in obj) if (callback.call(obj[i], i, obj[i]) === !1) break;
+            if (isArrayLike(obj)) for (length = obj.length; i < length && !1 !== callback.call(obj[i], i, obj[i]); i++) ; else for (i in obj) if (!1 === callback.call(obj[i], i, obj[i])) break;
             return obj;
         },
         trim: function(text) {
@@ -553,15 +547,12 @@ if (function(global, factory) {
             return first.length = i, first;
         },
         grep: function(elems, callback, invert) {
-            for (var callbackInverse, matches = [], i = 0, length = elems.length, callbackExpect = !invert; i < length; i++) callbackInverse = !callback(elems[i], i), 
-            callbackInverse !== callbackExpect && matches.push(elems[i]);
+            for (var matches = [], i = 0, length = elems.length, callbackExpect = !invert; i < length; i++) !callback(elems[i], i) !== callbackExpect && matches.push(elems[i]);
             return matches;
         },
         map: function(elems, callback, arg) {
             var length, value, i = 0, ret = [];
-            if (isArrayLike(elems)) for (length = elems.length; i < length; i++) value = callback(elems[i], i, arg), 
-            null != value && ret.push(value); else for (i in elems) value = callback(elems[i], i, arg), 
-            null != value && ret.push(value);
+            if (isArrayLike(elems)) for (length = elems.length; i < length; i++) null != (value = callback(elems[i], i, arg)) && ret.push(value); else for (i in elems) null != (value = callback(elems[i], i, arg)) && ret.push(value);
             return concat.apply([], ret);
         },
         guid: 1,
@@ -640,21 +631,9 @@ if (function(global, factory) {
             if (cur) for (;cur = cur.nextSibling; ) if (cur === b) return -1;
             return a ? 1 : -1;
         }
-        function createInputPseudo(type) {
-            return function(elem) {
-                var name = elem.nodeName.toLowerCase();
-                return "input" === name && elem.type === type;
-            };
-        }
-        function createButtonPseudo(type) {
-            return function(elem) {
-                var name = elem.nodeName.toLowerCase();
-                return ("input" === name || "button" === name) && elem.type === type;
-            };
-        }
         function createDisabledPseudo(disabled) {
             return function(elem) {
-                return "form" in elem ? elem.parentNode && elem.disabled === !1 ? "label" in elem ? "label" in elem.parentNode ? elem.parentNode.disabled === disabled : elem.disabled === disabled : elem.isDisabled === disabled || elem.isDisabled !== !disabled && disabledAncestor(elem) === disabled : elem.disabled === disabled : "label" in elem && elem.disabled === disabled;
+                return "form" in elem ? elem.parentNode && !1 === elem.disabled ? "label" in elem ? "label" in elem.parentNode ? elem.parentNode.disabled === disabled : elem.disabled === disabled : elem.isDisabled === disabled || elem.isDisabled !== !disabled && disabledAncestor(elem) === disabled : elem.disabled === disabled : "label" in elem && elem.disabled === disabled;
             };
         }
         function createPositionalPseudo(fn) {
@@ -665,7 +644,7 @@ if (function(global, factory) {
             });
         }
         function testContext(context) {
-            return context && "undefined" != typeof context.getElementsByTagName && context;
+            return context && void 0 !== context.getElementsByTagName && context;
         }
         function setFilters() {}
         function toSelector(tokens) {
@@ -790,7 +769,7 @@ if (function(global, factory) {
         }, unloadHandler = function() {
             setDocument();
         }, disabledAncestor = addCombinator(function(elem) {
-            return elem.disabled === !0 && ("form" in elem || "label" in elem);
+            return !0 === elem.disabled && ("form" in elem || "label" in elem);
         }, {
             dir: "parentNode",
             next: "legend"
@@ -828,28 +807,27 @@ if (function(global, factory) {
                     return elem.getAttribute("id") === attrId;
                 };
             }, Expr.find.ID = function(id, context) {
-                if ("undefined" != typeof context.getElementById && documentIsHTML) {
+                if (void 0 !== context.getElementById && documentIsHTML) {
                     var elem = context.getElementById(id);
                     return elem ? [ elem ] : [];
                 }
             }) : (Expr.filter.ID = function(id) {
                 var attrId = id.replace(runescape, funescape);
                 return function(elem) {
-                    var node = "undefined" != typeof elem.getAttributeNode && elem.getAttributeNode("id");
+                    var node = void 0 !== elem.getAttributeNode && elem.getAttributeNode("id");
                     return node && node.value === attrId;
                 };
             }, Expr.find.ID = function(id, context) {
-                if ("undefined" != typeof context.getElementById && documentIsHTML) {
+                if (void 0 !== context.getElementById && documentIsHTML) {
                     var node, i, elems, elem = context.getElementById(id);
                     if (elem) {
-                        if (node = elem.getAttributeNode("id"), node && node.value === id) return [ elem ];
-                        for (elems = context.getElementsByName(id), i = 0; elem = elems[i++]; ) if (node = elem.getAttributeNode("id"), 
-                        node && node.value === id) return [ elem ];
+                        if ((node = elem.getAttributeNode("id")) && node.value === id) return [ elem ];
+                        for (elems = context.getElementsByName(id), i = 0; elem = elems[i++]; ) if ((node = elem.getAttributeNode("id")) && node.value === id) return [ elem ];
                     }
                     return [];
                 }
             }), Expr.find.TAG = support.getElementsByTagName ? function(tag, context) {
-                return "undefined" != typeof context.getElementsByTagName ? context.getElementsByTagName(tag) : support.qsa ? context.querySelectorAll(tag) : void 0;
+                return void 0 !== context.getElementsByTagName ? context.getElementsByTagName(tag) : support.qsa ? context.querySelectorAll(tag) : void 0;
             } : function(tag, context) {
                 var elem, tmp = [], i = 0, results = context.getElementsByTagName(tag);
                 if ("*" === tag) {
@@ -858,7 +836,7 @@ if (function(global, factory) {
                 }
                 return results;
             }, Expr.find.CLASS = support.getElementsByClassName && function(className, context) {
-                if ("undefined" != typeof context.getElementsByClassName && documentIsHTML) return context.getElementsByClassName(className);
+                if (void 0 !== context.getElementsByClassName && documentIsHTML) return context.getElementsByClassName(className);
             }, rbuggyMatches = [], rbuggyQSA = [], (support.qsa = rnative.test(document.querySelectorAll)) && (assert(function(el) {
                 docElem.appendChild(el).innerHTML = "<a id='" + expando + "'></a><select id='" + expando + "-\r\\' msallowcapture=''><option selected=''></option></select>", 
                 el.querySelectorAll("[msallowcapture^='']").length && rbuggyQSA.push("[*^$]=" + whitespace + "*(?:''|\"\")"), 
@@ -886,7 +864,7 @@ if (function(global, factory) {
             }, sortOrder = hasCompare ? function(a, b) {
                 if (a === b) return hasDuplicate = !0, 0;
                 var compare = !a.compareDocumentPosition - !b.compareDocumentPosition;
-                return compare ? compare : (compare = (a.ownerDocument || a) === (b.ownerDocument || b) ? a.compareDocumentPosition(b) : 1, 
+                return compare || (compare = (a.ownerDocument || a) === (b.ownerDocument || b) ? a.compareDocumentPosition(b) : 1, 
                 1 & compare || !support.sortDetached && b.compareDocumentPosition(a) === compare ? a === document || a.ownerDocument === preferredDoc && contains(preferredDoc, a) ? -1 : b === document || b.ownerDocument === preferredDoc && contains(preferredDoc, b) ? 1 : sortInput ? indexOf(sortInput, a) - indexOf(sortInput, b) : 0 : 4 & compare ? -1 : 1);
             } : function(a, b) {
                 if (a === b) return hasDuplicate = !0, 0;
@@ -986,7 +964,7 @@ if (function(global, factory) {
                 CLASS: function(className) {
                     var pattern = classCache[className + " "];
                     return pattern || (pattern = new RegExp("(^|" + whitespace + ")" + className + "(" + whitespace + "|$)")) && classCache(className, function(elem) {
-                        return pattern.test("string" == typeof elem.className && elem.className || "undefined" != typeof elem.getAttribute && elem.getAttribute("class") || "");
+                        return pattern.test("string" == typeof elem.className && elem.className || void 0 !== elem.getAttribute && elem.getAttribute("class") || "");
                     });
                 },
                 ATTR: function(name, operator, check) {
@@ -1018,10 +996,10 @@ if (function(global, factory) {
                                 }
                             } else if (useCache && (node = elem, outerCache = node[expando] || (node[expando] = {}), 
                             uniqueCache = outerCache[node.uniqueID] || (outerCache[node.uniqueID] = {}), cache = uniqueCache[type] || [], 
-                            nodeIndex = cache[0] === dirruns && cache[1], diff = nodeIndex), diff === !1) for (;(node = ++nodeIndex && node && node[dir] || (diff = nodeIndex = 0) || start.pop()) && ((ofType ? node.nodeName.toLowerCase() !== name : 1 !== node.nodeType) || !++diff || (useCache && (outerCache = node[expando] || (node[expando] = {}), 
+                            nodeIndex = cache[0] === dirruns && cache[1], diff = nodeIndex), !1 === diff) for (;(node = ++nodeIndex && node && node[dir] || (diff = nodeIndex = 0) || start.pop()) && ((ofType ? node.nodeName.toLowerCase() !== name : 1 !== node.nodeType) || !++diff || (useCache && (outerCache = node[expando] || (node[expando] = {}), 
                             uniqueCache = outerCache[node.uniqueID] || (outerCache[node.uniqueID] = {}), uniqueCache[type] = [ dirruns, diff ]), 
                             node !== elem)); ) ;
-                            return diff -= last, diff === first || diff % first === 0 && diff / first >= 0;
+                            return (diff -= last) === first || diff % first == 0 && diff / first >= 0;
                         }
                     };
                 },
@@ -1059,8 +1037,9 @@ if (function(global, factory) {
                     return ridentifier.test(lang || "") || Sizzle.error("unsupported lang: " + lang), 
                     lang = lang.replace(runescape, funescape).toLowerCase(), function(elem) {
                         var elemLang;
-                        do if (elemLang = documentIsHTML ? elem.lang : elem.getAttribute("xml:lang") || elem.getAttribute("lang")) return elemLang = elemLang.toLowerCase(), 
-                        elemLang === lang || 0 === elemLang.indexOf(lang + "-"); while ((elem = elem.parentNode) && 1 === elem.nodeType);
+                        do {
+                            if (elemLang = documentIsHTML ? elem.lang : elem.getAttribute("xml:lang") || elem.getAttribute("lang")) return (elemLang = elemLang.toLowerCase()) === lang || 0 === elemLang.indexOf(lang + "-");
+                        } while ((elem = elem.parentNode) && 1 === elem.nodeType);
                         return !1;
                     };
                 }),
@@ -1081,7 +1060,7 @@ if (function(global, factory) {
                     return "input" === nodeName && !!elem.checked || "option" === nodeName && !!elem.selected;
                 },
                 selected: function(elem) {
-                    return elem.parentNode && elem.parentNode.selectedIndex, elem.selected === !0;
+                    return elem.parentNode && elem.parentNode.selectedIndex, !0 === elem.selected;
                 },
                 empty: function(elem) {
                     for (elem = elem.firstChild; elem; elem = elem.nextSibling) if (elem.nodeType < 6) return !1;
@@ -1137,11 +1116,20 @@ if (function(global, factory) {
             file: !0,
             password: !0,
             image: !0
-        }) Expr.pseudos[i] = createInputPseudo(i);
+        }) Expr.pseudos[i] = function(type) {
+            return function(elem) {
+                return "input" === elem.nodeName.toLowerCase() && elem.type === type;
+            };
+        }(i);
         for (i in {
             submit: !0,
             reset: !0
-        }) Expr.pseudos[i] = createButtonPseudo(i);
+        }) Expr.pseudos[i] = function(type) {
+            return function(elem) {
+                var name = elem.nodeName.toLowerCase();
+                return ("input" === name || "button" === name) && elem.type === type;
+            };
+        }(i);
         return setFilters.prototype = Expr.filters = Expr.pseudos, Expr.setFilters = new setFilters(), 
         tokenize = Sizzle.tokenize = function(selector, parseOnly) {
             var matched, match, tokens, type, soFar, groups, preFilters, cached = tokenCache[selector + " "];
@@ -1175,13 +1163,12 @@ if (function(global, factory) {
             var i, tokens, token, type, find, compiled = "function" == typeof selector && selector, match = !seed && tokenize(selector = compiled.selector || selector);
             if (results = results || [], 1 === match.length) {
                 if (tokens = match[0] = match[0].slice(0), tokens.length > 2 && "ID" === (token = tokens[0]).type && 9 === context.nodeType && documentIsHTML && Expr.relative[tokens[1].type]) {
-                    if (context = (Expr.find.ID(token.matches[0].replace(runescape, funescape), context) || [])[0], 
-                    !context) return results;
+                    if (!(context = (Expr.find.ID(token.matches[0].replace(runescape, funescape), context) || [])[0])) return results;
                     compiled && (context = context.parentNode), selector = selector.slice(tokens.shift().value.length);
                 }
                 for (i = matchExpr.needsContext.test(selector) ? 0 : tokens.length; i-- && (token = tokens[i], 
                 !Expr.relative[type = token.type]); ) if ((find = Expr.find[type]) && (seed = find(token.matches[0].replace(runescape, funescape), rsibling.test(tokens[0].type) && testContext(context.parentNode) || context))) {
-                    if (tokens.splice(i, 1), selector = seed.length && toSelector(tokens), !selector) return push.apply(results, seed), 
+                    if (tokens.splice(i, 1), !(selector = seed.length && toSelector(tokens))) return push.apply(results, seed), 
                     results;
                     break;
                 }
@@ -1203,7 +1190,7 @@ if (function(global, factory) {
             return null == el.getAttribute("disabled");
         }) || addHandle(booleans, function(elem, name, isXML) {
             var val;
-            if (!isXML) return elem[name] === !0 ? name.toLowerCase() : (val = elem.getAttributeNode(name)) && val.specified ? val.value : null;
+            if (!isXML) return !0 === elem[name] ? name.toLowerCase() : (val = elem.getAttributeNode(name)) && val.specified ? val.value : null;
         }), Sizzle;
     }(window);
     jQuery.find = Sizzle, jQuery.expr = Sizzle.selectors, jQuery.expr[":"] = jQuery.expr.pseudos, 
@@ -1243,12 +1230,12 @@ if (function(global, factory) {
             return !!winnow(this, "string" == typeof selector && rneedsContext.test(selector) ? jQuery(selector) : selector || [], !1).length;
         }
     });
-    var rootjQuery, rquickExpr = /^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]+))$/, init = jQuery.fn.init = function(selector, context, root) {
+    var rootjQuery, rquickExpr = /^(?:\s*(<[\w\W]+>)[^>]*|#([\w-]+))$/;
+    (jQuery.fn.init = function(selector, context, root) {
         var match, elem;
         if (!selector) return this;
         if (root = root || rootjQuery, "string" == typeof selector) {
-            if (match = "<" === selector[0] && ">" === selector[selector.length - 1] && selector.length >= 3 ? [ null, selector, null ] : rquickExpr.exec(selector), 
-            !match || !match[1] && context) return !context || context.jquery ? (context || root).find(selector) : this.constructor(context).find(selector);
+            if (!(match = "<" === selector[0] && ">" === selector[selector.length - 1] && selector.length >= 3 ? [ null, selector, null ] : rquickExpr.exec(selector)) || !match[1] && context) return !context || context.jquery ? (context || root).find(selector) : this.constructor(context).find(selector);
             if (match[1]) {
                 if (context = context instanceof jQuery ? context[0] : context, jQuery.merge(this, jQuery.parseHTML(match[1], context && context.nodeType ? context.ownerDocument || context : document, !0)), 
                 rsingleTag.test(match[1]) && jQuery.isPlainObject(context)) for (match in context) jQuery.isFunction(this[match]) ? this[match](context[match]) : this.attr(match, context[match]);
@@ -1258,8 +1245,7 @@ if (function(global, factory) {
             this;
         }
         return selector.nodeType ? (this[0] = selector, this.length = 1, this) : jQuery.isFunction(selector) ? void 0 !== root.ready ? root.ready(selector) : selector(jQuery) : jQuery.makeArray(selector, this);
-    };
-    init.prototype = jQuery.fn, rootjQuery = jQuery(document);
+    }).prototype = jQuery.fn, rootjQuery = jQuery(document);
     var rparentsprev = /^(?:parents|prev(?:Until|All))/, guaranteedUnique = {
         children: !0,
         contents: !0,
@@ -1326,7 +1312,8 @@ if (function(global, factory) {
             return siblings(elem.firstChild);
         },
         contents: function(elem) {
-            return elem.contentDocument || jQuery.merge([], elem.childNodes);
+            return nodeName(elem, "iframe") ? elem.contentDocument : (nodeName(elem, "template") && (elem = elem.content || elem), 
+            jQuery.merge([], elem.childNodes));
         }
     }, function(name, fn) {
         jQuery.fn[name] = function(until, selector) {
@@ -1340,7 +1327,7 @@ if (function(global, factory) {
     jQuery.Callbacks = function(options) {
         options = "string" == typeof options ? createOptions(options) : jQuery.extend({}, options);
         var firing, memory, fired, locked, list = [], queue = [], firingIndex = -1, fire = function() {
-            for (locked = options.once, fired = firing = !0; queue.length; firingIndex = -1) for (memory = queue.shift(); ++firingIndex < list.length; ) list[firingIndex].apply(memory[0], memory[1]) === !1 && options.stopOnFalse && (firingIndex = list.length, 
+            for (locked = locked || options.once, fired = firing = !0; queue.length; firingIndex = -1) for (memory = queue.shift(); ++firingIndex < list.length; ) !1 === list[firingIndex].apply(memory[0], memory[1]) && options.stopOnFalse && (firingIndex = list.length, 
             memory = !1);
             options.memory || (memory = !1), firing = !1, locked && (list = memory ? [] : "");
         }, self = {
@@ -1397,7 +1384,7 @@ if (function(global, factory) {
                 always: function() {
                     return deferred.done(arguments).fail(arguments), this;
                 },
-                "catch": function(fn) {
+                catch: function(fn) {
                     return promise.then(null, fn);
                 },
                 pipe: function() {
@@ -1418,7 +1405,7 @@ if (function(global, factory) {
                             var that = this, args = arguments, mightThrow = function() {
                                 var returned, then;
                                 if (!(depth < maxDepth)) {
-                                    if (returned = handler.apply(that, args), returned === deferred.promise()) throw new TypeError("Thenable self-resolution");
+                                    if ((returned = handler.apply(that, args)) === deferred.promise()) throw new TypeError("Thenable self-resolution");
                                     then = returned && ("object" == typeof returned || "function" == typeof returned) && returned.then, 
                                     jQuery.isFunction(then) ? special ? then.call(returned, resolve(maxDepth, deferred, Identity, special), resolve(maxDepth, deferred, Thrower, special)) : (maxDepth++, 
                                     then.call(returned, resolve(maxDepth, deferred, Identity, special), resolve(maxDepth, deferred, Thrower, special), resolve(maxDepth, deferred, Identity, deferred.notifyWith))) : (handler !== Identity && (that = void 0, 
@@ -1465,7 +1452,7 @@ if (function(global, factory) {
                     --remaining || master.resolveWith(resolveContexts, resolveValues);
                 };
             };
-            if (remaining <= 1 && (adoptValue(singleValue, master.done(updateFunc(i)).resolve, master.reject), 
+            if (remaining <= 1 && (adoptValue(singleValue, master.done(updateFunc(i)).resolve, master.reject, !remaining), 
             "pending" === master.state() || jQuery.isFunction(resolveValues[i] && resolveValues[i].then))) return master.then();
             for (;i--; ) adoptValue(resolveValues[i], updateFunc(i), master.reject);
             return master.promise();
@@ -1481,17 +1468,14 @@ if (function(global, factory) {
     };
     var readyList = jQuery.Deferred();
     jQuery.fn.ready = function(fn) {
-        return readyList.then(fn)["catch"](function(error) {
+        return readyList.then(fn).catch(function(error) {
             jQuery.readyException(error);
         }), this;
     }, jQuery.extend({
         isReady: !1,
         readyWait: 1,
-        holdReady: function(hold) {
-            hold ? jQuery.readyWait++ : jQuery.ready(!0);
-        },
         ready: function(wait) {
-            (wait === !0 ? --jQuery.readyWait : jQuery.isReady) || (jQuery.isReady = !0, wait !== !0 && --jQuery.readyWait > 0 || readyList.resolveWith(document, [ jQuery ]));
+            (!0 === wait ? --jQuery.readyWait : jQuery.isReady) || (jQuery.isReady = !0, !0 !== wait && --jQuery.readyWait > 0 || readyList.resolveWith(document, [ jQuery ]));
         }
     }), jQuery.ready.then = readyList.then, "complete" === document.readyState || "loading" !== document.readyState && !document.documentElement.doScroll ? window.setTimeout(jQuery.ready) : (document.addEventListener("DOMContentLoaded", completed), 
     window.addEventListener("load", completed));
@@ -1532,7 +1516,7 @@ if (function(global, factory) {
             var i, cache = owner[this.expando];
             if (void 0 !== cache) {
                 if (void 0 !== key) {
-                    jQuery.isArray(key) ? key = key.map(jQuery.camelCase) : (key = jQuery.camelCase(key), 
+                    Array.isArray(key) ? key = key.map(jQuery.camelCase) : (key = jQuery.camelCase(key), 
                     key = key in cache ? [ key ] : key.match(rnothtmlwhite) || []), i = key.length;
                     for (;i--; ) delete cache[key[i]];
                 }
@@ -1577,8 +1561,8 @@ if (function(global, factory) {
             }) : access(this, function(value) {
                 var data;
                 if (elem && void 0 === value) {
-                    if (data = dataUser.get(elem, key), void 0 !== data) return data;
-                    if (data = dataAttr(elem, key), void 0 !== data) return data;
+                    if (void 0 !== (data = dataUser.get(elem, key))) return data;
+                    if (void 0 !== (data = dataAttr(elem, key))) return data;
                 } else this.each(function() {
                     dataUser.set(this, key, value);
                 });
@@ -1593,7 +1577,7 @@ if (function(global, factory) {
         queue: function(elem, type, data) {
             var queue;
             if (elem) return type = (type || "fx") + "queue", queue = dataPriv.get(elem, type), 
-            data && (!queue || jQuery.isArray(data) ? queue = dataPriv.access(elem, type, jQuery.makeArray(data)) : queue.push(data)), 
+            data && (!queue || Array.isArray(data) ? queue = dataPriv.access(elem, type, jQuery.makeArray(data)) : queue.push(data)), 
             queue || [];
         },
         dequeue: function(elem, type) {
@@ -1632,8 +1616,8 @@ if (function(global, factory) {
             var tmp, count = 1, defer = jQuery.Deferred(), elements = this, i = this.length, resolve = function() {
                 --count || defer.resolveWith(elements, [ elements ]);
             };
-            for ("string" != typeof type && (obj = type, type = void 0), type = type || "fx"; i--; ) tmp = dataPriv.get(elements[i], type + "queueHooks"), 
-            tmp && tmp.empty && (count++, tmp.empty.add(resolve));
+            for ("string" != typeof type && (obj = type, type = void 0), type = type || "fx"; i--; ) (tmp = dataPriv.get(elements[i], type + "queueHooks")) && tmp.empty && (count++, 
+            tmp.empty.add(resolve));
             return resolve(), defer.promise(obj);
         }
     });
@@ -1685,7 +1669,7 @@ if (function(global, factory) {
             selector = handleObjIn.selector), selector && jQuery.find.matchesSelector(documentElement, selector), 
             handler.guid || (handler.guid = jQuery.guid++), (events = elemData.events) || (events = elemData.events = {}), 
             (eventHandle = elemData.handle) || (eventHandle = elemData.handle = function(e) {
-                return "undefined" != typeof jQuery && jQuery.event.triggered !== e.type ? jQuery.event.dispatch.apply(elem, arguments) : void 0;
+                return void 0 !== jQuery && jQuery.event.triggered !== e.type ? jQuery.event.dispatch.apply(elem, arguments) : void 0;
             }), types = (types || "").match(rnothtmlwhite) || [ "" ], t = types.length; t--; ) tmp = rtypenamespace.exec(types[t]) || [], 
             type = origType = tmp[1], namespaces = (tmp[2] || "").split(".").sort(), type && (special = jQuery.event.special[type] || {}, 
             type = (selector ? special.delegateType : special.bindType) || type, special = jQuery.event.special[type] || {}, 
@@ -1699,7 +1683,7 @@ if (function(global, factory) {
                 needsContext: selector && jQuery.expr.match.needsContext.test(selector),
                 namespace: namespaces.join(".")
             }, handleObjIn), (handlers = events[type]) || (handlers = events[type] = [], handlers.delegateCount = 0, 
-            special.setup && special.setup.call(elem, data, namespaces, eventHandle) !== !1 || elem.addEventListener && elem.addEventListener(type, eventHandle)), 
+            special.setup && !1 !== special.setup.call(elem, data, namespaces, eventHandle) || elem.addEventListener && elem.addEventListener(type, eventHandle)), 
             special.add && (special.add.call(elem, handleObj), handleObj.handler.guid || (handleObj.handler.guid = handler.guid)), 
             selector ? handlers.splice(handlers.delegateCount++, 0, handleObj) : handlers.push(handleObj), 
             jQuery.event.global[type] = !0);
@@ -1713,7 +1697,7 @@ if (function(global, factory) {
                     handlers = events[type] || [], tmp = tmp[2] && new RegExp("(^|\\.)" + namespaces.join("\\.(?:.*\\.|)") + "(\\.|$)"), 
                     origCount = j = handlers.length; j--; ) handleObj = handlers[j], !mappedTypes && origType !== handleObj.origType || handler && handler.guid !== handleObj.guid || tmp && !tmp.test(handleObj.namespace) || selector && selector !== handleObj.selector && ("**" !== selector || !handleObj.selector) || (handlers.splice(j, 1), 
                     handleObj.selector && handlers.delegateCount--, special.remove && special.remove.call(elem, handleObj));
-                    origCount && !handlers.length && (special.teardown && special.teardown.call(elem, namespaces, elemData.handle) !== !1 || jQuery.removeEvent(elem, type, elemData.handle), 
+                    origCount && !handlers.length && (special.teardown && !1 !== special.teardown.call(elem, namespaces, elemData.handle) || jQuery.removeEvent(elem, type, elemData.handle), 
                     delete events[type]);
                 } else for (type in events) jQuery.event.remove(elem, type + types[t], handler, selector, !0);
                 jQuery.isEmptyObject(events) && dataPriv.remove(elem, "handle events");
@@ -1722,17 +1706,17 @@ if (function(global, factory) {
         dispatch: function(nativeEvent) {
             var i, j, ret, matched, handleObj, handlerQueue, event = jQuery.event.fix(nativeEvent), args = new Array(arguments.length), handlers = (dataPriv.get(this, "events") || {})[event.type] || [], special = jQuery.event.special[event.type] || {};
             for (args[0] = event, i = 1; i < arguments.length; i++) args[i] = arguments[i];
-            if (event.delegateTarget = this, !special.preDispatch || special.preDispatch.call(this, event) !== !1) {
+            if (event.delegateTarget = this, !special.preDispatch || !1 !== special.preDispatch.call(this, event)) {
                 for (handlerQueue = jQuery.event.handlers.call(this, event, handlers), i = 0; (matched = handlerQueue[i++]) && !event.isPropagationStopped(); ) for (event.currentTarget = matched.elem, 
                 j = 0; (handleObj = matched.handlers[j++]) && !event.isImmediatePropagationStopped(); ) event.rnamespace && !event.rnamespace.test(handleObj.namespace) || (event.handleObj = handleObj, 
-                event.data = handleObj.data, ret = ((jQuery.event.special[handleObj.origType] || {}).handle || handleObj.handler).apply(matched.elem, args), 
-                void 0 !== ret && (event.result = ret) === !1 && (event.preventDefault(), event.stopPropagation()));
+                event.data = handleObj.data, void 0 !== (ret = ((jQuery.event.special[handleObj.origType] || {}).handle || handleObj.handler).apply(matched.elem, args)) && !1 === (event.result = ret) && (event.preventDefault(), 
+                event.stopPropagation()));
                 return special.postDispatch && special.postDispatch.call(this, event), event.result;
             }
         },
         handlers: function(event, handlers) {
             var i, handleObj, sel, matchedHandlers, matchedSelectors, handlerQueue = [], delegateCount = handlers.delegateCount, cur = event.target;
-            if (delegateCount && cur.nodeType && !("click" === event.type && event.button >= 1)) for (;cur !== this; cur = cur.parentNode || this) if (1 === cur.nodeType && ("click" !== event.type || cur.disabled !== !0)) {
+            if (delegateCount && cur.nodeType && !("click" === event.type && event.button >= 1)) for (;cur !== this; cur = cur.parentNode || this) if (1 === cur.nodeType && ("click" !== event.type || !0 !== cur.disabled)) {
                 for (matchedHandlers = [], matchedSelectors = {}, i = 0; i < delegateCount; i++) handleObj = handlers[i], 
                 sel = handleObj.selector + " ", void 0 === matchedSelectors[sel] && (matchedSelectors[sel] = handleObj.needsContext ? jQuery(sel, this).index(cur) > -1 : jQuery.find(sel, this, null, [ cur ]).length), 
                 matchedSelectors[sel] && matchedHandlers.push(handleObj);
@@ -1786,11 +1770,11 @@ if (function(global, factory) {
             },
             click: {
                 trigger: function() {
-                    if ("checkbox" === this.type && this.click && jQuery.nodeName(this, "input")) return this.click(), 
+                    if ("checkbox" === this.type && this.click && nodeName(this, "input")) return this.click(), 
                     !1;
                 },
                 _default: function(event) {
-                    return jQuery.nodeName(event.target, "a");
+                    return nodeName(event.target, "a");
                 }
             },
             beforeunload: {
@@ -1803,7 +1787,7 @@ if (function(global, factory) {
         elem.removeEventListener && elem.removeEventListener(type, handle);
     }, jQuery.Event = function(src, props) {
         return this instanceof jQuery.Event ? (src && src.type ? (this.originalEvent = src, 
-        this.type = src.type, this.isDefaultPrevented = src.defaultPrevented || void 0 === src.defaultPrevented && src.returnValue === !1 ? returnTrue : returnFalse, 
+        this.type = src.type, this.isDefaultPrevented = src.defaultPrevented || void 0 === src.defaultPrevented && !1 === src.returnValue ? returnTrue : returnFalse, 
         this.target = src.target && 3 === src.target.nodeType ? src.target.parentNode : src.target, 
         this.currentTarget = src.currentTarget, this.relatedTarget = src.relatedTarget) : this.type = src, 
         props && jQuery.extend(this, props), this.timeStamp = src && src.timeStamp || jQuery.now(), 
@@ -1840,7 +1824,7 @@ if (function(global, factory) {
         pageY: !0,
         shiftKey: !0,
         view: !0,
-        "char": !0,
+        char: !0,
         charCode: !0,
         key: !0,
         keyCode: !0,
@@ -1892,8 +1876,8 @@ if (function(global, factory) {
                 for (type in types) this.off(type, selector, types[type]);
                 return this;
             }
-            return selector !== !1 && "function" != typeof selector || (fn = selector, selector = void 0), 
-            fn === !1 && (fn = returnFalse), this.each(function() {
+            return !1 !== selector && "function" != typeof selector || (fn = selector, selector = void 0), 
+            !1 === fn && (fn = returnFalse), this.each(function() {
                 jQuery.event.remove(this, types, fn, selector);
             });
         }
@@ -1938,8 +1922,7 @@ if (function(global, factory) {
         append: function() {
             return domManip(this, arguments, function(elem) {
                 if (1 === this.nodeType || 11 === this.nodeType || 9 === this.nodeType) {
-                    var target = manipulationTarget(this, elem);
-                    target.appendChild(elem);
+                    manipulationTarget(this, elem).appendChild(elem);
                 }
             });
         },
@@ -2041,7 +2024,7 @@ if (function(global, factory) {
             }
         }));
     }();
-    var rdisplayswap = /^(none|table(?!-c[ea]).+)/, cssShow = {
+    var rdisplayswap = /^(none|table(?!-c[ea]).+)/, rcustomProp = /^--/, cssShow = {
         position: "absolute",
         visibility: "hidden",
         display: "block"
@@ -2076,25 +2059,25 @@ if (function(global, factory) {
             zoom: !0
         },
         cssProps: {
-            "float": "cssFloat"
+            float: "cssFloat"
         },
         style: function(elem, name, value, extra) {
             if (elem && 3 !== elem.nodeType && 8 !== elem.nodeType && elem.style) {
-                var ret, type, hooks, origName = jQuery.camelCase(name), style = elem.style;
-                return name = jQuery.cssProps[origName] || (jQuery.cssProps[origName] = vendorPropName(origName) || origName), 
-                hooks = jQuery.cssHooks[name] || jQuery.cssHooks[origName], void 0 === value ? hooks && "get" in hooks && void 0 !== (ret = hooks.get(elem, !1, extra)) ? ret : style[name] : (type = typeof value, 
+                var ret, type, hooks, origName = jQuery.camelCase(name), isCustomProp = rcustomProp.test(name), style = elem.style;
+                return isCustomProp || (name = finalPropName(origName)), hooks = jQuery.cssHooks[name] || jQuery.cssHooks[origName], 
+                void 0 === value ? hooks && "get" in hooks && void 0 !== (ret = hooks.get(elem, !1, extra)) ? ret : style[name] : (type = typeof value, 
                 "string" === type && (ret = rcssNum.exec(value)) && ret[1] && (value = adjustCSS(elem, name, ret), 
                 type = "number"), void (null != value && value === value && ("number" === type && (value += ret && ret[3] || (jQuery.cssNumber[origName] ? "" : "px")), 
                 support.clearCloneStyle || "" !== value || 0 !== name.indexOf("background") || (style[name] = "inherit"), 
-                hooks && "set" in hooks && void 0 === (value = hooks.set(elem, value, extra)) || (style[name] = value))));
+                hooks && "set" in hooks && void 0 === (value = hooks.set(elem, value, extra)) || (isCustomProp ? style.setProperty(name, value) : style[name] = value))));
             }
         },
         css: function(elem, name, extra, styles) {
             var val, num, hooks, origName = jQuery.camelCase(name);
-            return name = jQuery.cssProps[origName] || (jQuery.cssProps[origName] = vendorPropName(origName) || origName), 
-            hooks = jQuery.cssHooks[name] || jQuery.cssHooks[origName], hooks && "get" in hooks && (val = hooks.get(elem, !0, extra)), 
-            void 0 === val && (val = curCSS(elem, name, styles)), "normal" === val && name in cssNormalTransform && (val = cssNormalTransform[name]), 
-            "" === extra || extra ? (num = parseFloat(val), extra === !0 || isFinite(num) ? num || 0 : val) : val;
+            return rcustomProp.test(name) || (name = finalPropName(origName)), hooks = jQuery.cssHooks[name] || jQuery.cssHooks[origName], 
+            hooks && "get" in hooks && (val = hooks.get(elem, !0, extra)), void 0 === val && (val = curCSS(elem, name, styles)), 
+            "normal" === val && name in cssNormalTransform && (val = cssNormalTransform[name]), 
+            "" === extra || extra ? (num = parseFloat(val), !0 === extra || isFinite(num) ? num || 0 : val) : val;
         }
     }), jQuery.each([ "height", "width" ], function(i, name) {
         jQuery.cssHooks[name] = {
@@ -2130,7 +2113,7 @@ if (function(global, factory) {
         css: function(name, value) {
             return access(this, function(elem, name, value) {
                 var styles, len, map = {}, i = 0;
-                if (jQuery.isArray(name)) {
+                if (Array.isArray(name)) {
                     for (styles = getStyles(elem), len = name.length; i < len; i++) map[name[i]] = jQuery.css(elem, name[i], !1, styles);
                     return map;
                 }
@@ -2177,7 +2160,7 @@ if (function(global, factory) {
         },
         _default: "swing"
     }, jQuery.fx = Tween.prototype.init, jQuery.fx.step = {};
-    var fxNow, timerId, rfxtypes = /^(?:toggle|show|hide)$/, rrun = /queueHooks$/;
+    var fxNow, inProgress, rfxtypes = /^(?:toggle|show|hide)$/, rrun = /queueHooks$/;
     jQuery.Animation = jQuery.extend(Animation, {
         tweeners: {
             "*": [ function(prop, value) {
@@ -2200,8 +2183,8 @@ if (function(global, factory) {
             duration: speed,
             easing: fn && easing || easing && !jQuery.isFunction(easing) && easing
         };
-        return jQuery.fx.off || document.hidden ? opt.duration = 0 : "number" != typeof opt.duration && (opt.duration in jQuery.fx.speeds ? opt.duration = jQuery.fx.speeds[opt.duration] : opt.duration = jQuery.fx.speeds._default), 
-        null != opt.queue && opt.queue !== !0 || (opt.queue = "fx"), opt.old = opt.complete, 
+        return jQuery.fx.off ? opt.duration = 0 : "number" != typeof opt.duration && (opt.duration in jQuery.fx.speeds ? opt.duration = jQuery.fx.speeds[opt.duration] : opt.duration = jQuery.fx.speeds._default), 
+        null != opt.queue && !0 !== opt.queue || (opt.queue = "fx"), opt.old = opt.complete, 
         opt.complete = function() {
             jQuery.isFunction(opt.old) && opt.old.call(this), opt.queue && jQuery.dequeue(this, opt.queue);
         }, opt;
@@ -2216,7 +2199,7 @@ if (function(global, factory) {
                 var anim = Animation(this, jQuery.extend({}, prop), optall);
                 (empty || dataPriv.get(this, "finish")) && anim.stop(!0);
             };
-            return doAnimation.finish = doAnimation, empty || optall.queue === !1 ? this.each(doAnimation) : this.queue(optall.queue, doAnimation);
+            return doAnimation.finish = doAnimation, empty || !1 === optall.queue ? this.each(doAnimation) : this.queue(optall.queue, doAnimation);
         },
         stop: function(type, clearQueue, gotoEnd) {
             var stopQueue = function(hooks) {
@@ -2224,7 +2207,7 @@ if (function(global, factory) {
                 delete hooks.stop, stop(gotoEnd);
             };
             return "string" != typeof type && (gotoEnd = clearQueue, clearQueue = type, type = void 0), 
-            clearQueue && type !== !1 && this.queue(type || "fx", []), this.each(function() {
+            clearQueue && !1 !== type && this.queue(type || "fx", []), this.each(function() {
                 var dequeue = !0, index = null != type && type + "queueHooks", timers = jQuery.timers, data = dataPriv.get(this);
                 if (index) data[index] && data[index].stop && stopQueue(data[index]); else for (index in data) data[index] && data[index].stop && rrun.test(index) && stopQueue(data[index]);
                 for (index = timers.length; index--; ) timers[index].elem !== this || null != type && timers[index].queue !== type || (timers[index].anim.stop(gotoEnd), 
@@ -2233,7 +2216,7 @@ if (function(global, factory) {
             });
         },
         finish: function(type) {
-            return type !== !1 && (type = type || "fx"), this.each(function() {
+            return !1 !== type && (type = type || "fx"), this.each(function() {
                 var index, data = dataPriv.get(this), queue = data[type + "queue"], hooks = data[type + "queueHooks"], timers = jQuery.timers, length = queue ? queue.length : 0;
                 for (data.finish = !0, jQuery.queue(this, type, []), hooks && hooks.stop && hooks.stop.call(this, !0), 
                 index = timers.length; index--; ) timers[index].elem === this && timers[index].queue === type && (timers[index].anim.stop(!0), 
@@ -2266,15 +2249,14 @@ if (function(global, factory) {
         };
     }), jQuery.timers = [], jQuery.fx.tick = function() {
         var timer, i = 0, timers = jQuery.timers;
-        for (fxNow = jQuery.now(); i < timers.length; i++) timer = timers[i], timer() || timers[i] !== timer || timers.splice(i--, 1);
+        for (fxNow = jQuery.now(); i < timers.length; i++) (timer = timers[i])() || timers[i] !== timer || timers.splice(i--, 1);
         timers.length || jQuery.fx.stop(), fxNow = void 0;
     }, jQuery.fx.timer = function(timer) {
-        jQuery.timers.push(timer), timer() ? jQuery.fx.start() : jQuery.timers.pop();
+        jQuery.timers.push(timer), jQuery.fx.start();
     }, jQuery.fx.interval = 13, jQuery.fx.start = function() {
-        timerId || (timerId = window.requestAnimationFrame ? window.requestAnimationFrame(raf) : window.setInterval(jQuery.fx.tick, jQuery.fx.interval));
+        inProgress || (inProgress = !0, schedule());
     }, jQuery.fx.stop = function() {
-        window.cancelAnimationFrame ? window.cancelAnimationFrame(timerId) : window.clearInterval(timerId), 
-        timerId = null;
+        inProgress = null;
     }, jQuery.fx.speeds = {
         slow: 600,
         fast: 200,
@@ -2306,7 +2288,7 @@ if (function(global, factory) {
     }), jQuery.extend({
         attr: function(elem, name, value) {
             var ret, hooks, nType = elem.nodeType;
-            if (3 !== nType && 8 !== nType && 2 !== nType) return "undefined" == typeof elem.getAttribute ? jQuery.prop(elem, name, value) : (1 === nType && jQuery.isXMLDoc(elem) || (hooks = jQuery.attrHooks[name.toLowerCase()] || (jQuery.expr.match.bool.test(name) ? boolHook : void 0)), 
+            if (3 !== nType && 8 !== nType && 2 !== nType) return void 0 === elem.getAttribute ? jQuery.prop(elem, name, value) : (1 === nType && jQuery.isXMLDoc(elem) || (hooks = jQuery.attrHooks[name.toLowerCase()] || (jQuery.expr.match.bool.test(name) ? boolHook : void 0)), 
             void 0 !== value ? null === value ? void jQuery.removeAttr(elem, name) : hooks && "set" in hooks && void 0 !== (ret = hooks.set(elem, value, name)) ? ret : (elem.setAttribute(name, value + ""), 
             value) : hooks && "get" in hooks && null !== (ret = hooks.get(elem, name)) ? ret : (ret = jQuery.find.attr(elem, name), 
             null == ret ? void 0 : ret));
@@ -2314,7 +2296,7 @@ if (function(global, factory) {
         attrHooks: {
             type: {
                 set: function(elem, value) {
-                    if (!support.radioValue && "radio" === value && jQuery.nodeName(elem, "input")) {
+                    if (!support.radioValue && "radio" === value && nodeName(elem, "input")) {
                         var val = elem.value;
                         return elem.setAttribute("type", value), val && (elem.value = val), value;
                     }
@@ -2327,7 +2309,7 @@ if (function(global, factory) {
         }
     }), boolHook = {
         set: function(elem, value, name) {
-            return value === !1 ? jQuery.removeAttr(elem, name) : elem.setAttribute(name, name), 
+            return !1 === value ? jQuery.removeAttr(elem, name) : elem.setAttribute(name, name), 
             name;
         }
     }, jQuery.each(jQuery.expr.match.bool.source.match(/\w+/g), function(i, name) {
@@ -2364,8 +2346,8 @@ if (function(global, factory) {
             }
         },
         propFix: {
-            "for": "htmlFor",
-            "class": "className"
+            for: "htmlFor",
+            class: "className"
         }
     }), support.optSelected || (jQuery.propHooks.selected = {
         get: function(elem) {
@@ -2411,7 +2393,7 @@ if (function(global, factory) {
             }) : this.each(function() {
                 var className, i, self, classNames;
                 if ("string" === type) for (i = 0, self = jQuery(this), classNames = value.match(rnothtmlwhite) || []; className = classNames[i++]; ) self.hasClass(className) ? self.removeClass(className) : self.addClass(className); else void 0 !== value && "boolean" !== type || (className = getClass(this), 
-                className && dataPriv.set(this, "__className__", className), this.setAttribute && this.setAttribute("class", className || value === !1 ? "" : dataPriv.get(this, "__className__") || ""));
+                className && dataPriv.set(this, "__className__", className), this.setAttribute && this.setAttribute("class", className || !1 === value ? "" : dataPriv.get(this, "__className__") || ""));
             });
         },
         hasClass: function(selector) {
@@ -2427,10 +2409,9 @@ if (function(global, factory) {
             return arguments.length ? (isFunction = jQuery.isFunction(value), this.each(function(i) {
                 var val;
                 1 === this.nodeType && (val = isFunction ? value.call(this, i, jQuery(this).val()) : value, 
-                null == val ? val = "" : "number" == typeof val ? val += "" : jQuery.isArray(val) && (val = jQuery.map(val, function(value) {
+                null == val ? val = "" : "number" == typeof val ? val += "" : Array.isArray(val) && (val = jQuery.map(val, function(value) {
                     return null == value ? "" : value + "";
-                })), hooks = jQuery.valHooks[this.type] || jQuery.valHooks[this.nodeName.toLowerCase()], 
-                hooks && "set" in hooks && void 0 !== hooks.set(this, val, "value") || (this.value = val));
+                })), (hooks = jQuery.valHooks[this.type] || jQuery.valHooks[this.nodeName.toLowerCase()]) && "set" in hooks && void 0 !== hooks.set(this, val, "value") || (this.value = val));
             })) : elem ? (hooks = jQuery.valHooks[elem.type] || jQuery.valHooks[elem.nodeName.toLowerCase()], 
             hooks && "get" in hooks && void 0 !== (ret = hooks.get(elem, "value")) ? ret : (ret = elem.value, 
             "string" == typeof ret ? ret.replace(rreturn, "") : null == ret ? "" : ret)) : void 0;
@@ -2447,7 +2428,7 @@ if (function(global, factory) {
                 get: function(elem) {
                     var value, option, i, options = elem.options, index = elem.selectedIndex, one = "select-one" === elem.type, values = one ? null : [], max = one ? index + 1 : options.length;
                     for (i = index < 0 ? max : one ? index : 0; i < max; i++) if (option = options[i], 
-                    (option.selected || i === index) && !option.disabled && (!option.parentNode.disabled || !jQuery.nodeName(option.parentNode, "optgroup"))) {
+                    (option.selected || i === index) && !option.disabled && (!option.parentNode.disabled || !nodeName(option.parentNode, "optgroup"))) {
                         if (value = jQuery(option).val(), one) return value;
                         values.push(value);
                     }
@@ -2463,7 +2444,7 @@ if (function(global, factory) {
     }), jQuery.each([ "radio", "checkbox" ], function() {
         jQuery.valHooks[this] = {
             set: function(elem, value) {
-                if (jQuery.isArray(value)) return elem.checked = jQuery.inArray(jQuery(elem).val(), value) > -1;
+                if (Array.isArray(value)) return elem.checked = jQuery.inArray(jQuery(elem).val(), value) > -1;
             }
         }, support.checkOn || (jQuery.valHooks[this].get = function(elem) {
             return null === elem.getAttribute("value") ? "on" : elem.value;
@@ -2479,7 +2460,7 @@ if (function(global, factory) {
             event.isTrigger = onlyHandlers ? 2 : 3, event.namespace = namespaces.join("."), 
             event.rnamespace = event.namespace ? new RegExp("(^|\\.)" + namespaces.join("\\.(?:.*\\.|)") + "(\\.|$)") : null, 
             event.result = void 0, event.target || (event.target = elem), data = null == data ? [ event ] : jQuery.makeArray(data, [ event ]), 
-            special = jQuery.event.special[type] || {}, onlyHandlers || !special.trigger || special.trigger.apply(elem, data) !== !1)) {
+            special = jQuery.event.special[type] || {}, onlyHandlers || !special.trigger || !1 !== special.trigger.apply(elem, data))) {
                 if (!onlyHandlers && !special.noBubble && !jQuery.isWindow(elem)) {
                     for (bubbleType = special.delegateType || type, rfocusMorph.test(bubbleType + type) || (cur = cur.parentNode); cur; cur = cur.parentNode) eventPath.push(cur), 
                     tmp = cur;
@@ -2487,9 +2468,9 @@ if (function(global, factory) {
                 }
                 for (i = 0; (cur = eventPath[i++]) && !event.isPropagationStopped(); ) event.type = i > 1 ? bubbleType : special.bindType || type, 
                 handle = (dataPriv.get(cur, "events") || {})[event.type] && dataPriv.get(cur, "handle"), 
-                handle && handle.apply(cur, data), handle = ontype && cur[ontype], handle && handle.apply && acceptData(cur) && (event.result = handle.apply(cur, data), 
-                event.result === !1 && event.preventDefault());
-                return event.type = type, onlyHandlers || event.isDefaultPrevented() || special._default && special._default.apply(eventPath.pop(), data) !== !1 || !acceptData(elem) || ontype && jQuery.isFunction(elem[type]) && !jQuery.isWindow(elem) && (tmp = elem[ontype], 
+                handle && handle.apply(cur, data), (handle = ontype && cur[ontype]) && handle.apply && acceptData(cur) && (event.result = handle.apply(cur, data), 
+                !1 === event.result && event.preventDefault());
+                return event.type = type, onlyHandlers || event.isDefaultPrevented() || special._default && !1 !== special._default.apply(eventPath.pop(), data) || !acceptData(elem) || ontype && jQuery.isFunction(elem[type]) && !jQuery.isWindow(elem) && (tmp = elem[ontype], 
                 tmp && (elem[ontype] = null), jQuery.event.triggered = type, elem[type](), jQuery.event.triggered = void 0, 
                 tmp && (elem[ontype] = tmp)), event.result;
             }
@@ -2556,7 +2537,7 @@ if (function(global, factory) {
             var value = jQuery.isFunction(valueOrFunction) ? valueOrFunction() : valueOrFunction;
             s[s.length] = encodeURIComponent(key) + "=" + encodeURIComponent(null == value ? "" : value);
         };
-        if (jQuery.isArray(a) || a.jquery && !jQuery.isPlainObject(a)) jQuery.each(a, function() {
+        if (Array.isArray(a) || a.jquery && !jQuery.isPlainObject(a)) jQuery.each(a, function() {
             add(this.name, this.value);
         }); else for (prefix in a) buildParams(prefix, a[prefix], traditional, add);
         return s.join("&");
@@ -2573,7 +2554,7 @@ if (function(global, factory) {
                 return this.name && !jQuery(this).is(":disabled") && rsubmittable.test(this.nodeName) && !rsubmitterTypes.test(type) && (this.checked || !rcheckableType.test(type));
             }).map(function(i, elem) {
                 var val = jQuery(this).val();
-                return null == val ? null : jQuery.isArray(val) ? jQuery.map(val, function(val) {
+                return null == val ? null : Array.isArray(val) ? jQuery.map(val, function(val) {
                     return {
                         name: elem.name,
                         value: val.replace(rCRLF, "\r\n")
@@ -2638,8 +2619,8 @@ if (function(global, factory) {
                 transport = void 0, responseHeadersString = headers || "", jqXHR.readyState = status > 0 ? 4 : 0, 
                 isSuccess = status >= 200 && status < 300 || 304 === status, responses && (response = ajaxHandleResponses(s, jqXHR, responses)), 
                 response = ajaxConvert(s, response, jqXHR, isSuccess), isSuccess ? (s.ifModified && (modified = jqXHR.getResponseHeader("Last-Modified"), 
-                modified && (jQuery.lastModified[cacheURL] = modified), modified = jqXHR.getResponseHeader("etag"), 
-                modified && (jQuery.etag[cacheURL] = modified)), 204 === status || "HEAD" === s.type ? statusText = "nocontent" : 304 === status ? statusText = "notmodified" : (statusText = response.state, 
+                modified && (jQuery.lastModified[cacheURL] = modified), (modified = jqXHR.getResponseHeader("etag")) && (jQuery.etag[cacheURL] = modified)), 
+                204 === status || "HEAD" === s.type ? statusText = "nocontent" : 304 === status ? statusText = "notmodified" : (statusText = response.state, 
                 success = response.data, error = response.error, isSuccess = !error)) : (error = statusText, 
                 !status && statusText || (statusText = "error", status < 0 && (status = 0))), jqXHR.status = status, 
                 jqXHR.statusText = (nativeStatusText || statusText) + "", isSuccess ? deferred.resolveWith(callbackContext, [ success, statusText, jqXHR ]) : deferred.rejectWith(callbackContext, [ jqXHR, statusText, error ]), 
@@ -2690,17 +2671,17 @@ if (function(global, factory) {
             }
             if (s.data && s.processData && "string" != typeof s.data && (s.data = jQuery.param(s.data, s.traditional)), 
             inspectPrefiltersOrTransports(prefilters, s, options, jqXHR), completed) return jqXHR;
-            fireGlobals = jQuery.event && s.global, fireGlobals && 0 === jQuery.active++ && jQuery.event.trigger("ajaxStart"), 
+            fireGlobals = jQuery.event && s.global, fireGlobals && 0 == jQuery.active++ && jQuery.event.trigger("ajaxStart"), 
             s.type = s.type.toUpperCase(), s.hasContent = !rnoContent.test(s.type), cacheURL = s.url.replace(rhash, ""), 
             s.hasContent ? s.data && s.processData && 0 === (s.contentType || "").indexOf("application/x-www-form-urlencoded") && (s.data = s.data.replace(r20, "+")) : (uncached = s.url.slice(cacheURL.length), 
             s.data && (cacheURL += (rquery.test(cacheURL) ? "&" : "?") + s.data, delete s.data), 
-            s.cache === !1 && (cacheURL = cacheURL.replace(rantiCache, "$1"), uncached = (rquery.test(cacheURL) ? "&" : "?") + "_=" + nonce++ + uncached), 
+            !1 === s.cache && (cacheURL = cacheURL.replace(rantiCache, "$1"), uncached = (rquery.test(cacheURL) ? "&" : "?") + "_=" + nonce++ + uncached), 
             s.url = cacheURL + uncached), s.ifModified && (jQuery.lastModified[cacheURL] && jqXHR.setRequestHeader("If-Modified-Since", jQuery.lastModified[cacheURL]), 
             jQuery.etag[cacheURL] && jqXHR.setRequestHeader("If-None-Match", jQuery.etag[cacheURL])), 
-            (s.data && s.hasContent && s.contentType !== !1 || options.contentType) && jqXHR.setRequestHeader("Content-Type", s.contentType), 
+            (s.data && s.hasContent && !1 !== s.contentType || options.contentType) && jqXHR.setRequestHeader("Content-Type", s.contentType), 
             jqXHR.setRequestHeader("Accept", s.dataTypes[0] && s.accepts[s.dataTypes[0]] ? s.accepts[s.dataTypes[0]] + ("*" !== s.dataTypes[0] ? ", " + allTypes + "; q=0.01" : "") : s.accepts["*"]);
             for (i in s.headers) jqXHR.setRequestHeader(i, s.headers[i]);
-            if (s.beforeSend && (s.beforeSend.call(callbackContext, jqXHR, s) === !1 || completed)) return jqXHR.abort();
+            if (s.beforeSend && (!1 === s.beforeSend.call(callbackContext, jqXHR, s) || completed)) return jqXHR.abort();
             if (strAbort = "abort", completeDeferred.add(s.complete), jqXHR.done(s.success), 
             jqXHR.fail(s.error), transport = inspectPrefiltersOrTransports(transports, s, options, jqXHR)) {
                 if (jqXHR.readyState = 1, fireGlobals && globalEventContext.trigger("ajaxSend", [ jqXHR, s ]), 
@@ -2742,7 +2723,7 @@ if (function(global, factory) {
             cache: !0,
             async: !1,
             global: !1,
-            "throws": !0
+            throws: !0
         });
     }, jQuery.fn.extend({
         wrapAll: function(html) {
@@ -2862,9 +2843,9 @@ if (function(global, factory) {
             return this[callback] = !0, callback;
         }
     }), jQuery.ajaxPrefilter("json jsonp", function(s, originalSettings, jqXHR) {
-        var callbackName, overwritten, responseContainer, jsonProp = s.jsonp !== !1 && (rjsonp.test(s.url) ? "url" : "string" == typeof s.data && 0 === (s.contentType || "").indexOf("application/x-www-form-urlencoded") && rjsonp.test(s.data) && "data");
+        var callbackName, overwritten, responseContainer, jsonProp = !1 !== s.jsonp && (rjsonp.test(s.url) ? "url" : "string" == typeof s.data && 0 === (s.contentType || "").indexOf("application/x-www-form-urlencoded") && rjsonp.test(s.data) && "data");
         if (jsonProp || "jsonp" === s.dataTypes[0]) return callbackName = s.jsonpCallback = jQuery.isFunction(s.jsonpCallback) ? s.jsonpCallback() : s.jsonpCallback, 
-        jsonProp ? s[jsonProp] = s[jsonProp].replace(rjsonp, "$1" + callbackName) : s.jsonp !== !1 && (s.url += (rquery.test(s.url) ? "&" : "?") + s.jsonp + "=" + callbackName), 
+        jsonProp ? s[jsonProp] = s[jsonProp].replace(rjsonp, "$1" + callbackName) : !1 !== s.jsonp && (s.url += (rquery.test(s.url) ? "&" : "?") + s.jsonp + "=" + callbackName), 
         s.converters["script json"] = function() {
             return responseContainer || jQuery.error(callbackName + " was not called"), responseContainer[0];
         }, s.dataTypes[0] = "json", overwritten = window[callbackName], window[callbackName] = function() {
@@ -2926,13 +2907,13 @@ if (function(global, factory) {
             if (arguments.length) return void 0 === options ? this : this.each(function(i) {
                 jQuery.offset.setOffset(this, options, i);
             });
-            var docElem, win, rect, doc, elem = this[0];
+            var doc, docElem, rect, win, elem = this[0];
             return elem ? elem.getClientRects().length ? (rect = elem.getBoundingClientRect(), 
-            rect.width || rect.height ? (doc = elem.ownerDocument, win = getWindow(doc), docElem = doc.documentElement, 
+            doc = elem.ownerDocument, docElem = doc.documentElement, win = doc.defaultView, 
             {
                 top: rect.top + win.pageYOffset - docElem.clientTop,
                 left: rect.left + win.pageXOffset - docElem.clientLeft
-            }) : rect) : {
+            }) : {
                 top: 0,
                 left: 0
             } : void 0;
@@ -2944,7 +2925,7 @@ if (function(global, factory) {
                     left: 0
                 };
                 return "fixed" === jQuery.css(elem, "position") ? offset = elem.getBoundingClientRect() : (offsetParent = this.offsetParent(), 
-                offset = this.offset(), jQuery.nodeName(offsetParent[0], "html") || (parentOffset = offsetParent.offset()), 
+                offset = this.offset(), nodeName(offsetParent[0], "html") || (parentOffset = offsetParent.offset()), 
                 parentOffset = {
                     top: parentOffset.top + jQuery.css(offsetParent[0], "borderTopWidth", !0),
                     left: parentOffset.left + jQuery.css(offsetParent[0], "borderLeftWidth", !0)
@@ -2967,8 +2948,9 @@ if (function(global, factory) {
         var top = "pageYOffset" === prop;
         jQuery.fn[method] = function(val) {
             return access(this, function(elem, method, val) {
-                var win = getWindow(elem);
-                return void 0 === val ? win ? win[prop] : elem[method] : void (win ? win.scrollTo(top ? win.pageXOffset : val, top ? val : win.pageYOffset) : elem[method] = val);
+                var win;
+                return jQuery.isWindow(elem) ? win = elem : 9 === elem.nodeType && (win = elem.defaultView), 
+                void 0 === val ? win ? win[prop] : elem[method] : void (win ? win.scrollTo(top ? win.pageXOffset : val, top ? val : win.pageYOffset) : elem[method] = val);
             }, method, val, arguments.length);
         };
     }), jQuery.each([ "top", "left" ], function(i, prop) {
@@ -2985,7 +2967,7 @@ if (function(global, factory) {
             "": "outer" + name
         }, function(defaultExtra, funcName) {
             jQuery.fn[funcName] = function(margin, value) {
-                var chainable = arguments.length && (defaultExtra || "boolean" != typeof margin), extra = defaultExtra || (margin === !0 || value === !0 ? "margin" : "border");
+                var chainable = arguments.length && (defaultExtra || "boolean" != typeof margin), extra = defaultExtra || (!0 === margin || !0 === value ? "margin" : "border");
                 return access(this, function(elem, type, value) {
                     var doc;
                     return jQuery.isWindow(elem) ? 0 === funcName.indexOf("outer") ? elem["inner" + name] : elem.document.documentElement["client" + name] : 9 === elem.nodeType ? (doc = elem.documentElement, 
@@ -3006,7 +2988,10 @@ if (function(global, factory) {
         undelegate: function(selector, types, fn) {
             return 1 === arguments.length ? this.off(selector, "**") : this.off(types, selector || "**", fn);
         }
-    }), jQuery.parseJSON = JSON.parse, "function" == typeof define && define.amd && define("jquery", [], function() {
+    }), jQuery.holdReady = function(hold) {
+        hold ? jQuery.readyWait++ : jQuery.ready(!0);
+    }, jQuery.isArray = Array.isArray, jQuery.parseJSON = JSON.parse, jQuery.nodeName = nodeName, 
+    "function" == typeof define && define.amd && define("jquery", [], function() {
         return jQuery;
     });
     var _jQuery = window.jQuery, _$ = window.$;
@@ -3100,10 +3085,10 @@ if (function(global, factory) {
         return isFunction(obj.toString) && obj.toString !== toString;
     }
     function isUndefined(value) {
-        return "undefined" == typeof value;
+        return void 0 === value;
     }
     function isDefined(value) {
-        return "undefined" != typeof value;
+        return void 0 !== value;
     }
     function isObject(value) {
         return null !== value && "object" == typeof value;
@@ -3165,7 +3150,7 @@ if (function(global, factory) {
         return lowercase(element.nodeName || element[0] && element[0].nodeName);
     }
     function includes(array, obj) {
-        return Array.prototype.indexOf.call(array, obj) !== -1;
+        return -1 !== Array.prototype.indexOf.call(array, obj);
     }
     function arrayRemove(array, value) {
         var index = array.indexOf(value);
@@ -3173,7 +3158,7 @@ if (function(global, factory) {
     }
     function copy(source, destination, maxDepth) {
         function copyRecurse(source, destination, maxDepth) {
-            if (maxDepth--, maxDepth < 0) return "...";
+            if (--maxDepth < 0) return "...";
             var key, h = destination.$$hashKey;
             if (isArray(source)) for (var i = 0, ii = source.length; i < ii; i++) destination.push(copyElement(source[i], maxDepth)); else if (isBlankObject(source)) for (key in source) destination[key] = copyElement(source[key], maxDepth); else if (source && "function" == typeof source.hasOwnProperty) for (key in source) source.hasOwnProperty(key) && (destination[key] = copyElement(source[key], maxDepth)); else for (key in source) hasOwnProperty.call(source, key) && (destination[key] = copyElement(source[key], maxDepth));
             return setHashKey(destination, h), destination;
@@ -3181,7 +3166,7 @@ if (function(global, factory) {
         function copyElement(source, maxDepth) {
             if (!isObject(source)) return source;
             var index = stackSource.indexOf(source);
-            if (index !== -1) return stackDest[index];
+            if (-1 !== index) return stackDest[index];
             if (isWindow(source) || isScope(source)) throw ngMinErr("cpws", "Can't copy! Making copies of Window or Scope instances is not supported.");
             var needsRecurse = !1, destination = copyType(source);
             return void 0 === destination && (destination = isArray(source) ? [] : Object.create(getPrototypeOf(source)), 
@@ -3241,8 +3226,8 @@ if (function(global, factory) {
         if (o1 === o2) return !0;
         if (null === o1 || null === o2) return !1;
         if (o1 !== o1 && o2 !== o2) return !0;
-        var length, key, keySet, t1 = typeof o1, t2 = typeof o2;
-        if (t1 === t2 && "object" === t1) {
+        var length, key, keySet, t1 = typeof o1;
+        if (t1 === typeof o2 && "object" === t1) {
             if (!isArray(o1)) {
                 if (isDate(o1)) return !!isDate(o2) && simpleCompare(o1.getTime(), o2.getTime());
                 if (isRegExp(o1)) return !!isRegExp(o2) && o1.toString() === o2.toString();
@@ -3300,8 +3285,8 @@ if (function(global, factory) {
     }
     function convertTimezoneToLocal(date, timezone, reverse) {
         reverse = reverse ? -1 : 1;
-        var dateTimezoneOffset = date.getTimezoneOffset(), timezoneOffset = timezoneToOffset(timezone, dateTimezoneOffset);
-        return addDateMinutes(date, reverse * (timezoneOffset - dateTimezoneOffset));
+        var dateTimezoneOffset = date.getTimezoneOffset();
+        return addDateMinutes(date, reverse * (timezoneToOffset(timezone, dateTimezoneOffset) - dateTimezoneOffset));
     }
     function startingTag(element) {
         element = jqLite(element).clone();
@@ -3327,7 +3312,7 @@ if (function(global, factory) {
         return forEach((keyValue || "").split("&"), function(keyValue) {
             var splitPoint, key, val;
             keyValue && (key = keyValue = keyValue.replace(/\+/g, "%20"), splitPoint = keyValue.indexOf("="), 
-            splitPoint !== -1 && (key = keyValue.substring(0, splitPoint), val = keyValue.substring(splitPoint + 1)), 
+            -1 !== splitPoint && (key = keyValue.substring(0, splitPoint), val = keyValue.substring(splitPoint + 1)), 
             key = tryDecodeURIComponent(key), isDefined(key) && (val = !isDefined(val) || tryDecodeURIComponent(val), 
             hasOwnProperty.call(obj, key) ? isArray(obj[key]) ? obj[key].push(val) : obj[key] = [ obj[key], val ] : obj[key] = val));
         }), obj;
@@ -3336,8 +3321,8 @@ if (function(global, factory) {
         var parts = [];
         return forEach(obj, function(value, key) {
             isArray(value) ? forEach(value, function(arrayValue) {
-                parts.push(encodeUriQuery(key, !0) + (arrayValue === !0 ? "" : "=" + encodeUriQuery(arrayValue, !0)));
-            }) : parts.push(encodeUriQuery(key, !0) + (value === !0 ? "" : "=" + encodeUriQuery(value, !0)));
+                parts.push(encodeUriQuery(key, !0) + (!0 === arrayValue ? "" : "=" + encodeUriQuery(arrayValue, !0)));
+            }) : parts.push(encodeUriQuery(key, !0) + (!0 === value ? "" : "=" + encodeUriQuery(value, !0)));
         }), parts.length ? parts.join("&") : "";
     }
     function encodeUriSegment(val) {
@@ -3350,30 +3335,6 @@ if (function(global, factory) {
         var attr, i, ii = ngAttrPrefixes.length;
         for (i = 0; i < ii; ++i) if (attr = ngAttrPrefixes[i] + ngAttr, isString(attr = element.getAttribute(attr))) return attr;
         return null;
-    }
-    function allowAutoBootstrap(document) {
-        var script = document.currentScript;
-        if (!script) return !0;
-        if (!(script instanceof window.HTMLScriptElement || script instanceof window.SVGScriptElement)) return !1;
-        var attributes = script.attributes, srcs = [ attributes.getNamedItem("src"), attributes.getNamedItem("href"), attributes.getNamedItem("xlink:href") ];
-        return srcs.every(function(src) {
-            if (!src) return !0;
-            if (!src.value) return !1;
-            var link = document.createElement("a");
-            if (link.href = src.value, document.location.origin === link.origin) return !0;
-            switch (link.protocol) {
-              case "http:":
-              case "https:":
-              case "ftp:":
-              case "blob:":
-              case "file:":
-              case "data:":
-                return !0;
-
-              default:
-                return !1;
-            }
-        });
     }
     function angularInit(element, bootstrap) {
         var appElement, module, config = {};
@@ -3391,11 +3352,9 @@ if (function(global, factory) {
         }
     }
     function bootstrap(element, modules, config) {
-        isObject(config) || (config = {});
-        var defaultConfig = {
+        isObject(config) || (config = {}), config = extend({
             strictDi: !1
-        };
-        config = extend(defaultConfig, config);
+        }, config);
         var doBootstrap = function() {
             if (element = jqLite(element), element.injector()) {
                 var tag = element[0] === window.document ? "document" : startingTag(element);
@@ -3433,24 +3392,6 @@ if (function(global, factory) {
         return separator = separator || "_", name.replace(SNAKE_CASE_REGEXP, function(letter, pos) {
             return (pos ? separator : "") + letter.toLowerCase();
         });
-    }
-    function bindJQuery() {
-        var originalCleanData;
-        if (!bindJQueryFired) {
-            var jqName = jq();
-            jQuery = isUndefined(jqName) ? window.jQuery : jqName ? window[jqName] : void 0, 
-            jQuery && jQuery.fn.on ? (jqLite = jQuery, extend(jQuery.fn, {
-                scope: JQLitePrototype.scope,
-                isolateScope: JQLitePrototype.isolateScope,
-                controller: JQLitePrototype.controller,
-                injector: JQLitePrototype.injector,
-                inheritedData: JQLitePrototype.inheritedData
-            }), originalCleanData = jQuery.cleanData, jQuery.cleanData = function(elems) {
-                for (var events, elem, i = 0; null != (elem = elems[i]); i++) events = jQuery._data(elem, "events"), 
-                events && events.$destroy && jQuery(elem).triggerHandler("$destroy");
-                originalCleanData(elems);
-            }) : jqLite = JQLite, angular.element = jqLite, bindJQueryFired = !0;
-        }
     }
     function assertArg(arg, name, reason) {
         if (!arg) throw ngMinErr("areq", "Argument '{0}' is {1}", name || "?", reason || "required");
@@ -3500,10 +3441,10 @@ if (function(global, factory) {
         return angular.$$minErr = angular.$$minErr || minErr, ensure(angular, "module", function() {
             var modules = {};
             return function(name, requires, configFn) {
-                var info = {}, assertNotHasOwnProperty = function(name, context) {
+                var info = {};
+                return function(name, context) {
                     if ("hasOwnProperty" === name) throw ngMinErr("badname", "hasOwnProperty is not a valid {0} name", context);
-                };
-                return assertNotHasOwnProperty(name, "module"), requires && modules.hasOwnProperty(name) && (modules[name] = null), 
+                }(name, "module"), requires && modules.hasOwnProperty(name) && (modules[name] = null), 
                 ensure(modules, name, function() {
                     function invokeLater(provider, method, insertMethod, queue) {
                         return queue || (queue = invokeQueue), function() {
@@ -3573,140 +3514,6 @@ if (function(global, factory) {
     }
     function toDebugString(obj, maxDepth) {
         return "function" == typeof obj ? obj.toString().replace(/ \{[\s\S]*$/, "") : isUndefined(obj) ? "undefined" : "string" != typeof obj ? serializeObject(obj, maxDepth) : obj;
-    }
-    function publishExternalAPI(angular) {
-        extend(angular, {
-            errorHandlingConfig: errorHandlingConfig,
-            bootstrap: bootstrap,
-            copy: copy,
-            extend: extend,
-            merge: merge,
-            equals: equals,
-            element: jqLite,
-            forEach: forEach,
-            injector: createInjector,
-            noop: noop,
-            bind: bind,
-            toJson: toJson,
-            fromJson: fromJson,
-            identity: identity,
-            isUndefined: isUndefined,
-            isDefined: isDefined,
-            isString: isString,
-            isFunction: isFunction,
-            isObject: isObject,
-            isNumber: isNumber,
-            isElement: isElement,
-            isArray: isArray,
-            version: version,
-            isDate: isDate,
-            lowercase: lowercase,
-            uppercase: uppercase,
-            callbacks: {
-                $$counter: 0
-            },
-            getTestability: getTestability,
-            reloadWithDebugInfo: reloadWithDebugInfo,
-            $$minErr: minErr,
-            $$csp: csp,
-            $$encodeUriSegment: encodeUriSegment,
-            $$encodeUriQuery: encodeUriQuery,
-            $$stringify: stringify
-        }), angularModule = setupModuleLoader(window), angularModule("ng", [ "ngLocale" ], [ "$provide", function($provide) {
-            $provide.provider({
-                $$sanitizeUri: $$SanitizeUriProvider
-            }), $provide.provider("$compile", $CompileProvider).directive({
-                a: htmlAnchorDirective,
-                input: inputDirective,
-                textarea: inputDirective,
-                form: formDirective,
-                script: scriptDirective,
-                select: selectDirective,
-                option: optionDirective,
-                ngBind: ngBindDirective,
-                ngBindHtml: ngBindHtmlDirective,
-                ngBindTemplate: ngBindTemplateDirective,
-                ngClass: ngClassDirective,
-                ngClassEven: ngClassEvenDirective,
-                ngClassOdd: ngClassOddDirective,
-                ngCloak: ngCloakDirective,
-                ngController: ngControllerDirective,
-                ngForm: ngFormDirective,
-                ngHide: ngHideDirective,
-                ngIf: ngIfDirective,
-                ngInclude: ngIncludeDirective,
-                ngInit: ngInitDirective,
-                ngNonBindable: ngNonBindableDirective,
-                ngPluralize: ngPluralizeDirective,
-                ngRepeat: ngRepeatDirective,
-                ngShow: ngShowDirective,
-                ngStyle: ngStyleDirective,
-                ngSwitch: ngSwitchDirective,
-                ngSwitchWhen: ngSwitchWhenDirective,
-                ngSwitchDefault: ngSwitchDefaultDirective,
-                ngOptions: ngOptionsDirective,
-                ngTransclude: ngTranscludeDirective,
-                ngModel: ngModelDirective,
-                ngList: ngListDirective,
-                ngChange: ngChangeDirective,
-                pattern: patternDirective,
-                ngPattern: patternDirective,
-                required: requiredDirective,
-                ngRequired: requiredDirective,
-                minlength: minlengthDirective,
-                ngMinlength: minlengthDirective,
-                maxlength: maxlengthDirective,
-                ngMaxlength: maxlengthDirective,
-                ngValue: ngValueDirective,
-                ngModelOptions: ngModelOptionsDirective
-            }).directive({
-                ngInclude: ngIncludeFillContentDirective
-            }).directive(ngAttributeAliasDirectives).directive(ngEventDirectives), $provide.provider({
-                $anchorScroll: $AnchorScrollProvider,
-                $animate: $AnimateProvider,
-                $animateCss: $CoreAnimateCssProvider,
-                $$animateJs: $$CoreAnimateJsProvider,
-                $$animateQueue: $$CoreAnimateQueueProvider,
-                $$AnimateRunner: $$AnimateRunnerFactoryProvider,
-                $$animateAsyncRun: $$AnimateAsyncRunFactoryProvider,
-                $browser: $BrowserProvider,
-                $cacheFactory: $CacheFactoryProvider,
-                $controller: $ControllerProvider,
-                $document: $DocumentProvider,
-                $$isDocumentHidden: $$IsDocumentHiddenProvider,
-                $exceptionHandler: $ExceptionHandlerProvider,
-                $filter: $FilterProvider,
-                $$forceReflow: $$ForceReflowProvider,
-                $interpolate: $InterpolateProvider,
-                $interval: $IntervalProvider,
-                $http: $HttpProvider,
-                $httpParamSerializer: $HttpParamSerializerProvider,
-                $httpParamSerializerJQLike: $HttpParamSerializerJQLikeProvider,
-                $httpBackend: $HttpBackendProvider,
-                $xhrFactory: $xhrFactoryProvider,
-                $jsonpCallbacks: $jsonpCallbacksProvider,
-                $location: $LocationProvider,
-                $log: $LogProvider,
-                $parse: $ParseProvider,
-                $rootScope: $RootScopeProvider,
-                $q: $QProvider,
-                $$q: $$QProvider,
-                $sce: $SceProvider,
-                $sceDelegate: $SceDelegateProvider,
-                $sniffer: $SnifferProvider,
-                $templateCache: $TemplateCacheProvider,
-                $templateRequest: $TemplateRequestProvider,
-                $$testability: $$TestabilityProvider,
-                $timeout: $TimeoutProvider,
-                $window: $WindowProvider,
-                $$rAF: $$RAFProvider,
-                $$jqLite: $$jqLiteProvider,
-                $$Map: $$MapProvider,
-                $$cookieReader: $$CookieReaderProvider
-            });
-        } ]).info({
-            angularVersion: "1.6.4"
-        });
     }
     function jqNextId() {
         return ++jqId;
@@ -3822,7 +3629,7 @@ if (function(global, factory) {
         if (cssClasses && element.setAttribute) {
             var existingClasses = (" " + (element.getAttribute("class") || "") + " ").replace(/[\n\t]/g, " ");
             forEach(cssClasses.split(" "), function(cssClass) {
-                cssClass = trim(cssClass), existingClasses.indexOf(" " + cssClass + " ") === -1 && (existingClasses += cssClass + " ");
+                cssClass = trim(cssClass), -1 === existingClasses.indexOf(" " + cssClass + " ") && (existingClasses += cssClass + " ");
             }), element.setAttribute("class", trim(existingClasses));
         }
     }
@@ -3885,7 +3692,7 @@ if (function(global, factory) {
                     };
                 }
                 event.isImmediatePropagationStopped = function() {
-                    return event.immediatePropagationStopped === !0;
+                    return !0 === event.immediatePropagationStopped;
                 };
                 var handlerWrapper = eventFns.specialHandlerWrapper || defaultHandlerWrapper;
                 eventFnsLength > 1 && (eventFns = shallowCopy(eventFns));
@@ -3929,8 +3736,8 @@ if (function(global, factory) {
         return Function.prototype.toString.call(fn);
     }
     function extractArgs(fn) {
-        var fnText = stringifyFn(fn).replace(STRIP_COMMENTS, ""), args = fnText.match(ARROW_ARG) || fnText.match(FN_ARGS);
-        return args;
+        var fnText = stringifyFn(fn).replace(STRIP_COMMENTS, "");
+        return fnText.match(ARROW_ARG) || fnText.match(FN_ARGS);
     }
     function anonFn(fn) {
         var args = extractArgs(fn);
@@ -3973,7 +3780,7 @@ if (function(global, factory) {
         }
         function factory(name, factoryFn, enforce) {
             return provider(name, {
-                $get: enforce !== !1 ? enforceReturnValue(name, factoryFn) : factoryFn
+                $get: !1 !== enforce ? enforceReturnValue(name, factoryFn) : factoryFn
             });
         }
         function service(name, constructor) {
@@ -4014,7 +3821,7 @@ if (function(global, factory) {
                         runBlocks = runBlocks.concat(loadModules(moduleFn.requires)).concat(moduleFn._runBlocks), 
                         runInvokeQueue(moduleFn._invokeQueue), runInvokeQueue(moduleFn._configBlocks)) : isFunction(module) ? runBlocks.push(providerInjector.invoke(module)) : isArray(module) ? runBlocks.push(providerInjector.invoke(module)) : assertArgFn(module, "module");
                     } catch (e) {
-                        throw isArray(module) && (module = module[module.length - 1]), e.message && e.stack && e.stack.indexOf(e.message) === -1 && (e = e.message + "\n" + e.stack), 
+                        throw isArray(module) && (module = module[module.length - 1]), e.message && e.stack && -1 === e.stack.indexOf(e.message) && (e = e.message + "\n" + e.stack), 
                         $injectorMinErr("modulerr", "Failed to instantiate module {0} due to:\n{1}", module, e.stack || e.message || e);
                     }
                 }
@@ -4069,7 +3876,7 @@ if (function(global, factory) {
                 }
             };
         }
-        strictDi = strictDi === !0;
+        strictDi = !0 === strictDi;
         var INSTANTIATING = {}, providerSuffix = "Provider", path = [], loadedModules = new NgMap(), providerCache = {
             $provide: {
                 provider: supportObject(provider),
@@ -4163,7 +3970,7 @@ if (function(global, factory) {
             try {
                 fn.apply(null, sliceArgs(arguments, 1));
             } finally {
-                if (outstandingRequestCount--, 0 === outstandingRequestCount) for (;outstandingRequestCallbacks.length; ) try {
+                if (0 === --outstandingRequestCount) for (;outstandingRequestCallbacks.length; ) try {
                     outstandingRequestCallbacks.pop()();
                 } catch (e) {
                     $log.error(e);
@@ -4172,7 +3979,7 @@ if (function(global, factory) {
         }
         function getHash(url) {
             var index = url.indexOf("#");
-            return index === -1 ? "" : url.substr(index);
+            return -1 === index ? "" : url.substr(index);
         }
         function cacheStateAndFireUrlChange() {
             pendingLocation = null, fireStateOrUrlChange();
@@ -4260,10 +4067,9 @@ if (function(global, factory) {
                     put: function(key, value) {
                         if (!isUndefined(value)) {
                             if (capacity < Number.MAX_VALUE) {
-                                var lruEntry = lruHash[key] || (lruHash[key] = {
+                                refresh(lruHash[key] || (lruHash[key] = {
                                     key: key
-                                });
-                                refresh(lruEntry);
+                                }));
                             }
                             return key in data || size++, data[key] = value, size > capacity && this.remove(staleEnd.key), 
                             value;
@@ -4336,7 +4142,7 @@ if (function(global, factory) {
                 isolateScope: null,
                 bindToController: null
             };
-            if (isObject(directive.scope) && (directive.bindToController === !0 ? (bindings.bindToController = parseIsolateBindings(directive.scope, directiveName, !0), 
+            if (isObject(directive.scope) && (!0 === directive.bindToController ? (bindings.bindToController = parseIsolateBindings(directive.scope, directiveName, !0), 
             bindings.isolateScope = {}) : bindings.isolateScope = parseIsolateBindings(directive.scope, directiveName, !1)), 
             isObject(directive.bindToController) && (bindings.bindToController = parseIsolateBindings(directive.bindToController, directiveName, !0)), 
             bindings.bindToController && !directive.controller) throw $compileMinErr("noctrl", "Cannot bind to controller without directive '{0}'s controller.", directiveName);
@@ -4350,8 +4156,8 @@ if (function(global, factory) {
         function getDirectiveRequire(directive) {
             var require = directive.require || directive.controller && directive.name;
             return !isArray(require) && isObject(require) && forEach(require, function(value, key) {
-                var match = value.match(REQUIRE_PREFIX_REGEXP), name = value.substring(match[0].length);
-                name || (require[key] = match[0] + key);
+                var match = value.match(REQUIRE_PREFIX_REGEXP);
+                value.substring(match[0].length) || (require[key] = match[0] + key);
             }), require;
         }
         function getDirectiveRestrict(restrict, name) {
@@ -4514,8 +4320,7 @@ if (function(global, factory) {
             }
             function mergeConsecutiveTextNodes(nodeList, idx, notLiveList) {
                 var sibling, node = nodeList[idx], parent = node.parentNode;
-                if (node.nodeType === NODE_TYPE_TEXT) for (;sibling = parent ? node.nextSibling : nodeList[idx + 1], 
-                sibling && sibling.nodeType === NODE_TYPE_TEXT; ) node.nodeValue = node.nodeValue + sibling.nodeValue, 
+                if (node.nodeType === NODE_TYPE_TEXT) for (;(sibling = parent ? node.nextSibling : nodeList[idx + 1]) && sibling.nodeType === NODE_TYPE_TEXT; ) node.nodeValue = node.nodeValue + sibling.nodeValue, 
                 sibling.parentNode && sibling.parentNode.removeChild(sibling), notLiveList && sibling === nodeList[idx + 1] && nodeList.splice(idx + 1, 1);
             }
             function createBoundTranscludeFn(scope, transcludeFn, previousBoundTranscludeFn) {
@@ -4539,7 +4344,7 @@ if (function(global, factory) {
                     for (var attr, name, nName, ngAttrName, value, isNgAttr, nAttrs = node.attributes, j = 0, jj = nAttrs && nAttrs.length; j < jj; j++) {
                         var attrStartName = !1, attrEndName = !1;
                         attr = nAttrs[j], name = attr.name, value = attr.value, ngAttrName = directiveNormalize(name), 
-                        isNgAttr = NG_ATTR_BINDING.test(ngAttrName), isNgAttr && (name = name.replace(PREFIX_REGEXP, "").substr(8).replace(/_(.)/g, function(match, letter) {
+                        (isNgAttr = NG_ATTR_BINDING.test(ngAttrName)) && (name = name.replace(PREFIX_REGEXP, "").substr(8).replace(/_(.)/g, function(match, letter) {
                             return letter.toUpperCase();
                         }));
                         var multiElementMatch = ngAttrName.match(MULTI_ELEMENT_DIR_RE);
@@ -4578,13 +4383,11 @@ if (function(global, factory) {
             }
             function groupScan(node, attrStart, attrEnd) {
                 var nodes = [], depth = 0;
-                if (attrStart && node.hasAttribute && node.hasAttribute(attrStart)) {
-                    do {
-                        if (!node) throw $compileMinErr("uterdir", "Unterminated attribute, found '{0}' but no matching '{1}' found.", attrStart, attrEnd);
-                        node.nodeType === NODE_TYPE_ELEMENT && (node.hasAttribute(attrStart) && depth++, 
-                        node.hasAttribute(attrEnd) && depth--), nodes.push(node), node = node.nextSibling;
-                    } while (depth > 0);
-                } else nodes.push(node);
+                if (attrStart && node.hasAttribute && node.hasAttribute(attrStart)) do {
+                    if (!node) throw $compileMinErr("uterdir", "Unterminated attribute, found '{0}' but no matching '{1}' found.", attrStart, attrEnd);
+                    node.nodeType === NODE_TYPE_ELEMENT && (node.hasAttribute(attrStart) && depth++, 
+                    node.hasAttribute(attrEnd) && depth--), nodes.push(node), node = node.nextSibling;
+                } while (depth > 0); else nodes.push(node);
                 return jqLite(nodes);
             }
             function groupElementsLinkFnWrapper(linkFn, attrStart, attrEnd) {
@@ -4634,7 +4437,7 @@ if (function(global, factory) {
                     for (var name in elementControllers) {
                         var controllerDirective = controllerDirectives[name], controller = elementControllers[name], bindings = controllerDirective.$$bindings.bindToController;
                         if (preAssignBindingsEnabled) {
-                            bindings ? controller.bindingInfo = initializeDirectiveBindings(controllerScope, attrs, controller.instance, bindings, controllerDirective) : controller.bindingInfo = {};
+                            controller.bindingInfo = bindings ? initializeDirectiveBindings(controllerScope, attrs, controller.instance, bindings, controllerDirective) : {};
                             var controllerResult = controller();
                             controllerResult !== controller.instance && (controller.instance = controllerResult, 
                             $element.data("$" + controllerDirective.name + "Controller", controllerResult), 
@@ -4750,7 +4553,7 @@ if (function(global, factory) {
                     }
                     directive.terminal && (nodeLinkFn.terminal = !0, terminalPriority = Math.max(terminalPriority, directive.priority));
                 }
-                return nodeLinkFn.scope = newScopeDirective && newScopeDirective.scope === !0, nodeLinkFn.transcludeOnThisElement = hasTranscludeDirective, 
+                return nodeLinkFn.scope = newScopeDirective && !0 === newScopeDirective.scope, nodeLinkFn.transcludeOnThisElement = hasTranscludeDirective, 
                 nodeLinkFn.templateOnThisElement = hasTemplate, nodeLinkFn.transclude = childTranscludeFn, 
                 previousCompileContext.hasElementTranscludeDirective = hasElementTranscludeDirective, 
                 nodeLinkFn;
@@ -4798,7 +4601,7 @@ if (function(global, factory) {
                 if (name === ignoreDirective) return null;
                 var match = null;
                 if (hasDirectives.hasOwnProperty(name)) for (var directive, directives = $injector.get(name + Suffix), i = 0, ii = directives.length; i < ii; i++) if (directive = directives[i], 
-                (isUndefined(maxPriority) || maxPriority > directive.priority) && directive.restrict.indexOf(location) !== -1) {
+                (isUndefined(maxPriority) || maxPriority > directive.priority) && -1 !== directive.restrict.indexOf(location)) {
                     if (startAttrName && (directive = inherit(directive, {
                         $$start: startAttrName,
                         $$end: endAttrName
@@ -4859,7 +4662,7 @@ if (function(global, factory) {
                         }
                     }
                     linkQueue = null;
-                })["catch"](function(error) {
+                }).catch(function(error) {
                     error instanceof Error && $exceptionHandler(error);
                 }), function(ignoreChildLinkFn, scope, node, rootElement, boundTranscludeFn) {
                     var childBoundTranscludeFn = boundTranscludeFn;
@@ -4908,7 +4711,7 @@ if (function(global, factory) {
                 if ("srcdoc" === attrNormalizedName) return $sce.HTML;
                 var tag = nodeName_(node);
                 if ("src" === attrNormalizedName || "ngSrc" === attrNormalizedName) {
-                    if ([ "img", "video", "audio", "source", "track" ].indexOf(tag) === -1) return $sce.RESOURCE_URL;
+                    if (-1 === [ "img", "video", "audio", "source", "track" ].indexOf(tag)) return $sce.RESOURCE_URL;
                 } else if ("xlinkHref" === attrNormalizedName || "form" === tag && "action" === attrNormalizedName || "link" === tag && "href" === attrNormalizedName) return $sce.RESOURCE_URL;
             }
             function addAttrInterpolateDirective(node, directives, value, name, isNgAttr) {
@@ -4973,8 +4776,8 @@ if (function(global, factory) {
                 }
                 var changes, removeWatchCollection = [], initialChanges = {};
                 return forEach(bindings, function(definition, scopeName) {
-                    var lastValue, parentGet, parentSet, compare, removeWatch, attrName = definition.attrName, optional = definition.optional, mode = definition.mode;
-                    switch (mode) {
+                    var lastValue, parentGet, parentSet, compare, removeWatch, attrName = definition.attrName, optional = definition.optional;
+                    switch (definition.mode) {
                       case "@":
                         optional || hasOwnProperty.call(attrs, attrName) || (destination[scopeName] = attrs[attrName] = void 0), 
                         removeWatch = attrs.$observe(attrName, function(value) {
@@ -5024,8 +4827,7 @@ if (function(global, factory) {
                         break;
 
                       case "&":
-                        if (parentGet = attrs.hasOwnProperty(attrName) ? $parse(attrs[attrName]) : noop, 
-                        parentGet === noop && optional) break;
+                        if ((parentGet = attrs.hasOwnProperty(attrName) ? $parse(attrs[attrName]) : noop) === noop && optional) break;
                         destination[scopeName] = function(locals) {
                             return parentGet(scope, locals);
                         };
@@ -5055,9 +4857,8 @@ if (function(global, factory) {
                 $set: function(key, value, writeAttr, attrName) {
                     var nodeName, node = this.$$element[0], booleanKey = getBooleanAttrName(node, key), aliasedKey = getAliasedAttrName(key), observer = key;
                     if (booleanKey ? (this.$$element.prop(key, value), attrName = booleanKey) : aliasedKey && (this[aliasedKey] = value, 
-                    observer = aliasedKey), this[key] = value, attrName ? this.$attr[key] = attrName : (attrName = this.$attr[key], 
-                    attrName || (this.$attr[key] = attrName = snake_case(key, "-"))), nodeName = nodeName_(this.$$element), 
-                    "a" === nodeName && ("href" === key || "xlinkHref" === key) || "img" === nodeName && "src" === key) this[key] = value = $$sanitizeUri(value, "src" === key); else if ("img" === nodeName && "srcset" === key && isDefined(value)) {
+                    observer = aliasedKey), this[key] = value, attrName ? this.$attr[key] = attrName : (attrName = this.$attr[key]) || (this.$attr[key] = attrName = snake_case(key, "-")), 
+                    "a" === (nodeName = nodeName_(this.$$element)) && ("href" === key || "xlinkHref" === key) || "img" === nodeName && "src" === key) this[key] = value = $$sanitizeUri(value, "src" === key); else if ("img" === nodeName && "srcset" === key && isDefined(value)) {
                         for (var result = "", trimmedSrcset = trim(value), srcPattern = /(\s+\d+x\s*,|\s+\d+w\s*,|\s+,|,\s+)/, pattern = /\s/.test(trimmedSrcset) ? srcPattern : /(,)/, rawUris = trimmedSrcset.split(pattern), nbrUrisWith2parts = Math.floor(rawUris.length / 2), i = 0; i < nbrUrisWith2parts; i++) {
                             var innerIdx = 2 * i;
                             result += $$sanitizeUri(trim(rawUris[innerIdx]), !0), result += " " + trim(rawUris[innerIdx + 1]);
@@ -5066,7 +4867,7 @@ if (function(global, factory) {
                         result += $$sanitizeUri(trim(lastTuple[0]), !0), 2 === lastTuple.length && (result += " " + trim(lastTuple[1])), 
                         this[key] = value = result;
                     }
-                    writeAttr !== !1 && (null === value || isUndefined(value) ? this.$$element.removeAttr(attrName) : SIMPLE_ATTR_NAME.test(attrName) ? this.$$element.attr(attrName, value) : setSpecialAttr(this.$$element[0], attrName, value));
+                    !1 !== writeAttr && (null === value || isUndefined(value) ? this.$$element.removeAttr(attrName) : SIMPLE_ATTR_NAME.test(attrName) ? this.$$element.attr(attrName, value) : setSpecialAttr(this.$$element[0], attrName, value));
                     var $$observers = this.$$observers;
                     $$observers && forEach($$observers[observer], function(fn) {
                         try {
@@ -5152,10 +4953,9 @@ if (function(global, factory) {
             }
             return function(expression, locals, later, ident) {
                 var instance, match, constructor, identifier;
-                if (later = later === !0, ident && isString(ident) && (identifier = ident), isString(expression)) {
-                    if (match = expression.match(CNTRL_REG), !match) throw $controllerMinErr("ctrlfmt", "Badly formed controller string '{0}'. Must match `__name__ as __id__` or `__name__`.", expression);
-                    if (constructor = match[1], identifier = identifier || match[3], expression = controllers.hasOwnProperty(constructor) ? controllers[constructor] : getter(locals.$scope, constructor, !0) || (globals ? getter($window, constructor, !0) : void 0), 
-                    !expression) throw $controllerMinErr("ctrlreg", "The controller with the name '{0}' is not registered.", constructor);
+                if (later = !0 === later, ident && isString(ident) && (identifier = ident), isString(expression)) {
+                    if (!(match = expression.match(CNTRL_REG))) throw $controllerMinErr("ctrlfmt", "Badly formed controller string '{0}'. Must match `__name__ as __id__` or `__name__`.", expression);
+                    if (constructor = match[1], identifier = identifier || match[3], !(expression = controllers.hasOwnProperty(constructor) ? controllers[constructor] : getter(locals.$scope, constructor, !0) || (globals ? getter($window, constructor, !0) : void 0))) throw $controllerMinErr("ctrlreg", "The controller with the name '{0}' is not registered.", constructor);
                     assertArgFn(expression, constructor, !0);
                 }
                 if (later) {
@@ -5318,18 +5118,8 @@ if (function(global, factory) {
                 function executeHeaderFns(headers, config) {
                     var headerContent, processedHeaders = {};
                     return forEach(headers, function(headerFn, header) {
-                        isFunction(headerFn) ? (headerContent = headerFn(config), null != headerContent && (processedHeaders[header] = headerContent)) : processedHeaders[header] = headerFn;
+                        isFunction(headerFn) ? null != (headerContent = headerFn(config)) && (processedHeaders[header] = headerContent) : processedHeaders[header] = headerFn;
                     }), processedHeaders;
-                }
-                function mergeHeaders(config) {
-                    var defHeaderName, lowercaseDefHeaderName, reqHeaderName, defHeaders = defaults.headers, reqHeaders = extend({}, config.headers);
-                    defHeaders = extend({}, defHeaders.common, defHeaders[lowercase(config.method)]);
-                    defaultHeadersIteration: for (defHeaderName in defHeaders) {
-                        lowercaseDefHeaderName = lowercase(defHeaderName);
-                        for (reqHeaderName in reqHeaders) if (lowercase(reqHeaderName) === lowercaseDefHeaderName) continue defaultHeadersIteration;
-                        reqHeaders[defHeaderName] = defHeaders[defHeaderName];
-                    }
-                    return executeHeaderFns(reqHeaders, shallowCopy(config));
                 }
                 function serverRequest(config) {
                     var headers = config.headers, reqData = transformData(config.data, headersGetter(headers), void 0, config.transformRequest);
@@ -5352,36 +5142,23 @@ if (function(global, factory) {
                     paramSerializer: defaults.paramSerializer,
                     jsonpCallbackParam: defaults.jsonpCallbackParam
                 }, requestConfig);
-                config.headers = mergeHeaders(requestConfig), config.method = uppercase(config.method), 
-                config.paramSerializer = isString(config.paramSerializer) ? $injector.get(config.paramSerializer) : config.paramSerializer, 
+                config.headers = function(config) {
+                    var defHeaderName, lowercaseDefHeaderName, reqHeaderName, defHeaders = defaults.headers, reqHeaders = extend({}, config.headers);
+                    defHeaders = extend({}, defHeaders.common, defHeaders[lowercase(config.method)]);
+                    defaultHeadersIteration: for (defHeaderName in defHeaders) {
+                        lowercaseDefHeaderName = lowercase(defHeaderName);
+                        for (reqHeaderName in reqHeaders) if (lowercase(reqHeaderName) === lowercaseDefHeaderName) continue defaultHeadersIteration;
+                        reqHeaders[defHeaderName] = defHeaders[defHeaderName];
+                    }
+                    return executeHeaderFns(reqHeaders, shallowCopy(config));
+                }(requestConfig), config.method = uppercase(config.method), config.paramSerializer = isString(config.paramSerializer) ? $injector.get(config.paramSerializer) : config.paramSerializer, 
                 $browser.$$incOutstandingRequestCount();
                 var requestInterceptors = [], responseInterceptors = [], promise = $q.resolve(config);
                 return forEach(reversedInterceptors, function(interceptor) {
                     (interceptor.request || interceptor.requestError) && requestInterceptors.unshift(interceptor.request, interceptor.requestError), 
                     (interceptor.response || interceptor.responseError) && responseInterceptors.push(interceptor.response, interceptor.responseError);
                 }), promise = chainInterceptors(promise, requestInterceptors), promise = promise.then(serverRequest), 
-                promise = chainInterceptors(promise, responseInterceptors), promise = promise["finally"](completeOutstandingRequest);
-            }
-            function createShortMethods(names) {
-                forEach(arguments, function(name) {
-                    $http[name] = function(url, config) {
-                        return $http(extend({}, config || {}, {
-                            method: name,
-                            url: url
-                        }));
-                    };
-                });
-            }
-            function createShortMethodsWithData(name) {
-                forEach(arguments, function(name) {
-                    $http[name] = function(url, data, config) {
-                        return $http(extend({}, config || {}, {
-                            method: name,
-                            url: url,
-                            data: data
-                        }));
-                    };
-                });
+                promise = chainInterceptors(promise, responseInterceptors), promise = promise.finally(completeOutstandingRequest);
             }
             function sendReq(config, reqData) {
                 function createApplyHandlers(eventHandlers) {
@@ -5419,13 +5196,13 @@ if (function(global, factory) {
                 }
                 function removePendingReq() {
                     var idx = $http.pendingRequests.indexOf(config);
-                    idx !== -1 && $http.pendingRequests.splice(idx, 1);
+                    -1 !== idx && $http.pendingRequests.splice(idx, 1);
                 }
                 var cache, cachedResp, deferred = $q.defer(), promise = deferred.promise, reqHeaders = config.headers, isJsonp = "jsonp" === lowercase(config.method), url = config.url;
                 if (isJsonp ? url = $sce.getTrustedResourceUrl(url) : isString(url) || (url = $sce.valueOf(url)), 
                 url = buildUrl(url, config.paramSerializer(config.params)), isJsonp && (url = sanitizeJsonpCallbackParam(url, config.jsonpCallbackParam)), 
                 $http.pendingRequests.push(config), promise.then(removePendingReq, removePendingReq), 
-                !config.cache && !defaults.cache || config.cache === !1 || "GET" !== config.method && "JSONP" !== config.method || (cache = isObject(config.cache) ? config.cache : isObject(defaults.cache) ? defaults.cache : defaultCache), 
+                !config.cache && !defaults.cache || !1 === config.cache || "GET" !== config.method && "JSONP" !== config.method || (cache = isObject(config.cache) ? config.cache : isObject(defaults.cache) ? defaults.cache : defaultCache), 
                 cache && (cachedResp = cache.get(url), isDefined(cachedResp) ? isPromiseLike(cachedResp) ? cachedResp.then(resolvePromiseWithResult, resolvePromiseWithResult) : isArray(cachedResp) ? resolvePromise(cachedResp[1], cachedResp[0], shallowCopy(cachedResp[2]), cachedResp[3]) : resolvePromise(cachedResp, 200, {}, "OK") : cache.put(url, promise)), 
                 isUndefined(cachedResp)) {
                     var xsrfValue = urlIsSameOrigin(config.url) ? $$cookieReader()[config.xsrfCookieName || defaults.xsrfCookieName] : void 0;
@@ -5435,22 +5212,39 @@ if (function(global, factory) {
                 return promise;
             }
             function buildUrl(url, serializedParams) {
-                return serializedParams.length > 0 && (url += (url.indexOf("?") === -1 ? "?" : "&") + serializedParams), 
+                return serializedParams.length > 0 && (url += (-1 === url.indexOf("?") ? "?" : "&") + serializedParams), 
                 url;
             }
             function sanitizeJsonpCallbackParam(url, key) {
                 if (/[&?][^=]+=JSON_CALLBACK/.test(url)) throw $httpMinErr("badjsonp", 'Illegal use of JSON_CALLBACK in url, "{0}"', url);
-                var callbackParamRegex = new RegExp("[&?]" + key + "=");
-                if (callbackParamRegex.test(url)) throw $httpMinErr("badjsonp", 'Illegal use of callback param, "{0}", in url, "{1}"', key, url);
-                return url += (url.indexOf("?") === -1 ? "?" : "&") + key + "=JSON_CALLBACK";
+                if (new RegExp("[&?]" + key + "=").test(url)) throw $httpMinErr("badjsonp", 'Illegal use of callback param, "{0}", in url, "{1}"', key, url);
+                return url += (-1 === url.indexOf("?") ? "?" : "&") + key + "=JSON_CALLBACK";
             }
             var defaultCache = $cacheFactory("$http");
             defaults.paramSerializer = isString(defaults.paramSerializer) ? $injector.get(defaults.paramSerializer) : defaults.paramSerializer;
             var reversedInterceptors = [];
             return forEach(interceptorFactories, function(interceptorFactory) {
                 reversedInterceptors.unshift(isString(interceptorFactory) ? $injector.get(interceptorFactory) : $injector.invoke(interceptorFactory));
-            }), $http.pendingRequests = [], createShortMethods("get", "delete", "head", "jsonp"), 
-            createShortMethodsWithData("post", "put", "patch"), $http.defaults = defaults, $http;
+            }), $http.pendingRequests = [], function(names) {
+                forEach(arguments, function(name) {
+                    $http[name] = function(url, config) {
+                        return $http(extend({}, config || {}, {
+                            method: name,
+                            url: url
+                        }));
+                    };
+                });
+            }("get", "delete", "head", "jsonp"), function(name) {
+                forEach(arguments, function(name) {
+                    $http[name] = function(url, data, config) {
+                        return $http(extend({}, config || {}, {
+                            method: name,
+                            url: url,
+                            data: data
+                        }));
+                    };
+                });
+            }("post", "put", "patch"), $http.defaults = defaults, $http;
         } ];
     }
     function $xhrFactoryProvider() {
@@ -5544,18 +5338,17 @@ if (function(global, factory) {
                         $exceptionHandler($interpolateMinErr.interr(text, err));
                     }
                 }
-                if (!text.length || text.indexOf(startSymbol) === -1) {
+                if (!text.length || -1 === text.indexOf(startSymbol)) {
                     var constantInterp;
                     if (!mustHaveExpression) {
-                        var unescapedText = unescapeText(text);
-                        constantInterp = valueFn(unescapedText), constantInterp.exp = text, constantInterp.expressions = [], 
+                        constantInterp = valueFn(unescapeText(text)), constantInterp.exp = text, constantInterp.expressions = [], 
                         constantInterp.$$watchDelegate = constantWatchDelegate;
                     }
                     return constantInterp;
                 }
                 allOrNothing = !!allOrNothing;
                 for (var startIndex, endIndex, exp, index = 0, expressions = [], parseFns = [], textLength = text.length, concat = [], expressionPositions = []; index < textLength; ) {
-                    if ((startIndex = text.indexOf(startSymbol, index)) === -1 || (endIndex = text.indexOf(endSymbol, startIndex + startSymbolLength)) === -1) {
+                    if (-1 === (startIndex = text.indexOf(startSymbol, index)) || -1 === (endIndex = text.indexOf(endSymbol, startIndex + startSymbolLength))) {
                         index !== textLength && concat.push(unescapeText(text.substring(index)));
                         break;
                     }
@@ -5620,7 +5413,7 @@ if (function(global, factory) {
             }
             var intervals = {};
             return interval.cancel = function(promise) {
-                return !!(promise && promise.$$intervalId in intervals) && (intervals[promise.$$intervalId].promise["catch"](noop), 
+                return !!(promise && promise.$$intervalId in intervals) && (intervals[promise.$$intervalId].promise.catch(noop), 
                 intervals[promise.$$intervalId].reject("canceled"), $window.clearInterval(promise.$$intervalId), 
                 delete intervals[promise.$$intervalId], !0);
             }, interval;
@@ -5652,7 +5445,7 @@ if (function(global, factory) {
     }
     function stripHash(url) {
         var index = url.indexOf("#");
-        return index === -1 ? url : url.substr(0, index);
+        return -1 === index ? url : url.substr(0, index);
     }
     function trimEmptyHash(url) {
         return url.replace(/(#.+)|#$/, "$1");
@@ -5682,16 +5475,15 @@ if (function(global, factory) {
     }
     function LocationHashbangUrl(appBase, appBaseNoFile, hashPrefix) {
         parseAbsoluteUrl(appBase, this), this.$$parse = function(url) {
-            function removeWindowsDriveName(path, url, base) {
-                var firstPathSegmentMatch, windowsFilePathExp = /^\/[A-Z]:(\/.*)/;
-                return startsWith(url, base) && (url = url.replace(base, "")), windowsFilePathExp.exec(url) ? path : (firstPathSegmentMatch = windowsFilePathExp.exec(path), 
-                firstPathSegmentMatch ? firstPathSegmentMatch[1] : path);
-            }
             var withoutHashUrl, withoutBaseUrl = stripBaseUrl(appBase, url) || stripBaseUrl(appBaseNoFile, url);
             isUndefined(withoutBaseUrl) || "#" !== withoutBaseUrl.charAt(0) ? this.$$html5 ? withoutHashUrl = withoutBaseUrl : (withoutHashUrl = "", 
             isUndefined(withoutBaseUrl) && (appBase = url, this.replace())) : (withoutHashUrl = stripBaseUrl(hashPrefix, withoutBaseUrl), 
             isUndefined(withoutHashUrl) && (withoutHashUrl = withoutBaseUrl)), parseAppUrl(withoutHashUrl, this), 
-            this.$$path = removeWindowsDriveName(this.$$path, withoutHashUrl, appBase), this.$$compose();
+            this.$$path = function(path, url, base) {
+                var firstPathSegmentMatch, windowsFilePathExp = /^\/[A-Z]:(\/.*)/;
+                return startsWith(url, base) && (url = url.replace(base, "")), windowsFilePathExp.exec(url) ? path : (firstPathSegmentMatch = windowsFilePathExp.exec(path), 
+                firstPathSegmentMatch ? firstPathSegmentMatch[1] : path);
+            }(this.$$path, withoutHashUrl, appBase), this.$$compose();
         }, this.$$compose = function() {
             var search = toKeyValue(this.$$search), hash = this.$$hash ? "#" + encodeUriSegment(this.$$hash) : "";
             this.$$url = encodePath(this.$$path) + (search ? "?" + search : "") + hash, this.$$absUrl = appBase + (this.$$url ? hashPrefix + this.$$url : ""), 
@@ -5799,7 +5591,7 @@ if (function(global, factory) {
             return isDefined(flag) ? (debug = flag, this) : debug;
         }, this.$get = [ "$window", function($window) {
             function formatError(arg) {
-                return arg instanceof Error && (arg.stack && formatStackTrace ? arg = arg.message && arg.stack.indexOf(arg.message) === -1 ? "Error: " + arg.message + "\n" + arg.stack : arg.stack : arg.sourceURL && (arg = arg.message + "\n" + arg.sourceURL + ":" + arg.line)), 
+                return arg instanceof Error && (arg.stack && formatStackTrace ? arg = arg.message && -1 === arg.stack.indexOf(arg.message) ? "Error: " + arg.message + "\n" + arg.stack : arg.stack : arg.sourceURL && (arg = arg.message + "\n" + arg.sourceURL + ":" + arg.line)), 
                 arg;
             }
             function consoleLog(type) {
@@ -5835,14 +5627,13 @@ if (function(global, factory) {
         return name + "";
     }
     function ifDefined(v, d) {
-        return "undefined" != typeof v ? v : d;
+        return void 0 !== v ? v : d;
     }
     function plusFn(l, r) {
-        return "undefined" == typeof l ? r : "undefined" == typeof r ? l : l + r;
+        return void 0 === l ? r : void 0 === r ? l : l + r;
     }
     function isStateless($filter, filterName) {
-        var fn = $filter(filterName);
-        return !fn.$stateful;
+        return !$filter(filterName).$stateful;
     }
     function findConstantAndWatchExpressions(ast, $filter) {
         var allConstants, argsToWatch, isStatelessFilter;
@@ -5963,9 +5754,9 @@ if (function(global, factory) {
     }
     function $ParseProvider() {
         var identStart, identContinue, cache = createMap(), literals = {
-            "true": !0,
-            "false": !1,
-            "null": null,
+            true: !0,
+            false: !1,
+            null: null,
             undefined: void 0
         };
         this.addLiteral = function(literalName, literalValue) {
@@ -5977,10 +5768,10 @@ if (function(global, factory) {
                 var parsedExpression, oneTime, cacheKey;
                 switch (typeof exp) {
                   case "string":
-                    if (exp = exp.trim(), cacheKey = exp, parsedExpression = cache[cacheKey], !parsedExpression) {
+                    if (exp = exp.trim(), cacheKey = exp, !(parsedExpression = cache[cacheKey])) {
                         ":" === exp.charAt(0) && ":" === exp.charAt(1) && (oneTime = !0, exp = exp.substring(2));
-                        var lexer = new Lexer($parseOptions), parser = new Parser(lexer, $filter, $parseOptions);
-                        parsedExpression = parser.parse(exp), parsedExpression.constant ? parsedExpression.$$watchDelegate = constantWatchDelegate : oneTime ? (parsedExpression.oneTime = !0, 
+                        parsedExpression = new Parser(new Lexer($parseOptions), $filter, $parseOptions).parse(exp), 
+                        parsedExpression.constant ? parsedExpression.$$watchDelegate = constantWatchDelegate : oneTime ? (parsedExpression.oneTime = !0, 
                         parsedExpression.$$watchDelegate = oneTimeWatchDelegate) : parsedExpression.inputs && (parsedExpression.$$watchDelegate = inputsWatchDelegate), 
                         cache[cacheKey] = parsedExpression;
                     }
@@ -5994,8 +5785,7 @@ if (function(global, factory) {
                 }
             }
             function expressionInputDirtyCheck(newValue, oldValueOfValue, compareObjectIdentity) {
-                return null == newValue || null == oldValueOfValue ? newValue === oldValueOfValue : !("object" == typeof newValue && (newValue = getValueOf(newValue), 
-                "object" == typeof newValue && !compareObjectIdentity)) && (newValue === oldValueOfValue || newValue !== newValue && oldValueOfValue !== oldValueOfValue);
+                return null == newValue || null == oldValueOfValue ? newValue === oldValueOfValue : !("object" == typeof newValue && "object" == typeof (newValue = getValueOf(newValue)) && !compareObjectIdentity) && (newValue === oldValueOfValue || newValue !== newValue && oldValueOfValue !== oldValueOfValue);
             }
             function inputsWatchDelegate(scope, listener, objectEquality, parsedExpression, prettyPrintExpression) {
                 var lastResult, inputExpressions = parsedExpression.inputs;
@@ -6236,10 +6026,10 @@ if (function(global, factory) {
                 return this.$$state.pending = this.$$state.pending || [], this.$$state.pending.push([ result, onFulfilled, onRejected, progressBack ]), 
                 this.$$state.status > 0 && scheduleProcessQueue(this.$$state), result;
             },
-            "catch": function(callback) {
+            catch: function(callback) {
                 return this.then(null, callback);
             },
-            "finally": function(callback, progressBack) {
+            finally: function(callback, progressBack) {
                 return this.then(function(value) {
                     return handleCallback(value, resolve, callback);
                 }, function(error) {
@@ -6300,10 +6090,14 @@ if (function(global, factory) {
                 $rootScope.$$phase = null;
             }
             function incrementWatchersCount(current, count) {
-                do current.$$watchersCount += count; while (current = current.$parent);
+                do {
+                    current.$$watchersCount += count;
+                } while (current = current.$parent);
             }
             function decrementListenerCount(current, count, name) {
-                do current.$$listenerCount[name] -= count, 0 === current.$$listenerCount[name] && delete current.$$listenerCount[name]; while (current = current.$parent);
+                do {
+                    current.$$listenerCount[name] -= count, 0 === current.$$listenerCount[name] && delete current.$$listenerCount[name];
+                } while (current = current.$parent);
             }
             function initWatchVal() {}
             function flushApplyAsync() {
@@ -6374,22 +6168,21 @@ if (function(global, factory) {
                 $watchCollection: function(obj, listener) {
                     function $watchCollectionInterceptor(_value) {
                         newValue = _value;
-                        var newLength, key, bothNaN, newItem, oldItem;
+                        var newLength, key, newItem, oldItem;
                         if (!isUndefined(newValue)) {
                             if (isObject(newValue)) if (isArrayLike(newValue)) {
                                 oldValue !== internalArray && (oldValue = internalArray, oldLength = oldValue.length = 0, 
                                 changeDetected++), newLength = newValue.length, oldLength !== newLength && (changeDetected++, 
                                 oldValue.length = oldLength = newLength);
                                 for (var i = 0; i < newLength; i++) oldItem = oldValue[i], newItem = newValue[i], 
-                                bothNaN = oldItem !== oldItem && newItem !== newItem, bothNaN || oldItem === newItem || (changeDetected++, 
+                                oldItem !== oldItem && newItem !== newItem || oldItem === newItem || (changeDetected++, 
                                 oldValue[i] = newItem);
                             } else {
                                 oldValue !== internalObject && (oldValue = internalObject = {}, oldLength = 0, changeDetected++), 
                                 newLength = 0;
                                 for (key in newValue) hasOwnProperty.call(newValue, key) && (newLength++, newItem = newValue[key], 
-                                oldItem = oldValue[key], key in oldValue ? (bothNaN = oldItem !== oldItem && newItem !== newItem, 
-                                bothNaN || oldItem === newItem || (changeDetected++, oldValue[key] = newItem)) : (oldLength++, 
-                                oldValue[key] = newItem, changeDetected++));
+                                oldItem = oldValue[key], key in oldValue ? oldItem !== oldItem && newItem !== newItem || oldItem === newItem || (changeDetected++, 
+                                oldValue[key] = newItem) : (oldLength++, oldValue[key] = newItem, changeDetected++));
                                 if (oldLength > newLength) {
                                     changeDetected++;
                                     for (key in oldValue) hasOwnProperty.call(newValue, key) || (oldLength--, delete oldValue[key]);
@@ -6514,11 +6307,13 @@ if (function(global, factory) {
                     var namedListeners = this.$$listeners[name];
                     namedListeners || (this.$$listeners[name] = namedListeners = []), namedListeners.push(listener);
                     var current = this;
-                    do current.$$listenerCount[name] || (current.$$listenerCount[name] = 0), current.$$listenerCount[name]++; while (current = current.$parent);
+                    do {
+                        current.$$listenerCount[name] || (current.$$listenerCount[name] = 0), current.$$listenerCount[name]++;
+                    } while (current = current.$parent);
                     var self = this;
                     return function() {
                         var indexOfListener = namedListeners.indexOf(listener);
-                        indexOfListener !== -1 && (namedListeners[indexOfListener] = null, decrementListenerCount(self, 1, name));
+                        -1 !== indexOfListener && (namedListeners[indexOfListener] = null, decrementListenerCount(self, 1, name));
                     };
                 },
                 $emit: function(name, args) {
@@ -6744,7 +6539,7 @@ if (function(global, factory) {
                 $http.get(tpl, extend({
                     cache: $templateCache,
                     transformResponse: transformResponse
-                }, httpOptions))["finally"](function() {
+                }, httpOptions)).finally(function() {
                     handleRequestFn.totalPendingRequests--;
                 }).then(function(response) {
                     return $templateCache.put(tpl, response.data), response.data;
@@ -6762,9 +6557,8 @@ if (function(global, factory) {
                     var dataBinding = angular.element(binding).data("$binding");
                     dataBinding && forEach(dataBinding, function(bindingName) {
                         if (opt_exactMatch) {
-                            var matcher = new RegExp("(^|\\s)" + escapeForRegexp(expression) + "(\\s|\\||$)");
-                            matcher.test(bindingName) && matches.push(binding);
-                        } else bindingName.indexOf(expression) !== -1 && matches.push(binding);
+                            new RegExp("(^|\\s)" + escapeForRegexp(expression) + "(\\s|\\||$)").test(bindingName) && matches.push(binding);
+                        } else -1 !== bindingName.indexOf(expression) && matches.push(binding);
                     });
                 }), matches;
             }, testability.findModels = function(element, expression, opt_exactMatch) {
@@ -6799,7 +6593,7 @@ if (function(global, factory) {
             }
             var deferreds = {};
             return timeout.cancel = function(promise) {
-                return !!(promise && promise.$$timeoutId in deferreds) && (deferreds[promise.$$timeoutId].promise["catch"](noop), 
+                return !!(promise && promise.$$timeoutId in deferreds) && (deferreds[promise.$$timeoutId].promise.catch(noop), 
                 deferreds[promise.$$timeoutId].reject("canceled"), delete deferreds[promise.$$timeoutId], 
                 $browser.defer.cancel(promise.$$timeoutId));
             }, timeout;
@@ -6846,7 +6640,7 @@ if (function(global, factory) {
             var cookieArray, cookie, i, index, name, currentCookieString = safeGetCookie(rawDocument);
             if (currentCookieString !== lastCookieString) for (lastCookieString = currentCookieString, 
             cookieArray = lastCookieString.split("; "), lastCookies = {}, i = 0; i < cookieArray.length; i++) cookie = cookieArray[i], 
-            index = cookie.indexOf("="), index > 0 && (name = safeDecodeURIComponent(cookie.substring(0, index)), 
+            (index = cookie.indexOf("=")) > 0 && (name = safeDecodeURIComponent(cookie.substring(0, index)), 
             isUndefined(lastCookies[name]) && (lastCookies[name] = safeDecodeURIComponent(cookie.substring(index + 1))));
             return lastCookies;
         };
@@ -6880,8 +6674,8 @@ if (function(global, factory) {
                 throw minErr("filter")("notarray", "Expected array but received: {0}", array);
             }
             anyPropertyKey = anyPropertyKey || "$";
-            var predicateFn, matchAgainstAnyProp, expressionType = getTypeForFilter(expression);
-            switch (expressionType) {
+            var predicateFn, matchAgainstAnyProp;
+            switch (getTypeForFilter(expression)) {
               case "function":
                 predicateFn = expression;
                 break;
@@ -6903,11 +6697,11 @@ if (function(global, factory) {
         };
     }
     function createPredicateFn(expression, comparator, anyPropertyKey, matchAgainstAnyProp) {
-        var predicateFn, shouldMatchPrimitives = isObject(expression) && anyPropertyKey in expression;
-        return comparator === !0 ? comparator = equals : isFunction(comparator) || (comparator = function(actual, expected) {
+        var shouldMatchPrimitives = isObject(expression) && anyPropertyKey in expression;
+        return !0 === comparator ? comparator = equals : isFunction(comparator) || (comparator = function(actual, expected) {
             return !(isUndefined(actual) || (null === actual || null === expected ? actual !== expected : isObject(expected) || isObject(actual) && !hasCustomToString(actual) || (actual = lowercase("" + actual), 
-            expected = lowercase("" + expected), actual.indexOf(expected) === -1)));
-        }), predicateFn = function(item) {
+            expected = lowercase("" + expected), -1 === actual.indexOf(expected))));
+        }), function(item) {
             return shouldMatchPrimitives && !isObject(item) ? deepCompare(item, expression[anyPropertyKey], comparator, anyPropertyKey, !1) : deepCompare(item, expression, comparator, anyPropertyKey, matchAgainstAnyProp);
         };
     }
@@ -6928,8 +6722,8 @@ if (function(global, factory) {
                 for (key in expected) {
                     var expectedVal = expected[key];
                     if (!isFunction(expectedVal) && !isUndefined(expectedVal)) {
-                        var matchAnyProperty = key === anyPropertyKey, actualVal = matchAnyProperty ? actual : actual[key];
-                        if (!deepCompare(actualVal, expectedVal, comparator, anyPropertyKey, matchAnyProperty, matchAnyProperty)) return !1;
+                        var matchAnyProperty = key === anyPropertyKey;
+                        if (!deepCompare(matchAnyProperty ? actual : actual[key], expectedVal, comparator, anyPropertyKey, matchAnyProperty, matchAnyProperty)) return !1;
                     }
                 }
                 return !0;
@@ -7018,21 +6812,21 @@ if (function(global, factory) {
     }
     function padNumber(num, digits, trim, negWrap) {
         var neg = "";
-        for ((num < 0 || negWrap && num <= 0) && (negWrap ? num = -num + 1 : (num = -num, 
+        for ((num < 0 || negWrap && num <= 0) && (negWrap ? num = 1 - num : (num = -num, 
         neg = "-")), num = "" + num; num.length < digits; ) num = ZERO_CHAR + num;
         return trim && (num = num.substr(num.length - digits)), neg + num;
     }
     function dateGetter(name, size, offset, trim, negWrap) {
         return offset = offset || 0, function(date) {
             var value = date["get" + name]();
-            return (offset > 0 || value > -offset) && (value += offset), 0 === value && offset === -12 && (value = 12), 
+            return (offset > 0 || value > -offset) && (value += offset), 0 === value && -12 === offset && (value = 12), 
             padNumber(value, size, trim, negWrap);
         };
     }
     function dateStrGetter(name, shortForm, standAlone) {
         return function(date, formats) {
-            var value = date["get" + name](), propPrefix = (standAlone ? "STANDALONE" : "") + (shortForm ? "SHORT" : ""), get = uppercase(propPrefix + name);
-            return formats[get][value];
+            var value = date["get" + name]();
+            return formats[uppercase((standAlone ? "STANDALONE" : "") + (shortForm ? "SHORT" : "") + name)][value];
         };
     }
     function timeZoneGetter(date, formats, offset) {
@@ -7048,8 +6842,8 @@ if (function(global, factory) {
     }
     function weekGetter(size) {
         return function(date) {
-            var firstThurs = getFirstThursdayOfYear(date.getFullYear()), thisThurs = getThursdayThisWeek(date), diff = +thisThurs - +firstThurs, result = 1 + Math.round(diff / 6048e5);
-            return padNumber(result, size);
+            var firstThurs = getFirstThursdayOfYear(date.getFullYear()), thisThurs = getThursdayThisWeek(date), diff = +thisThurs - +firstThurs;
+            return padNumber(1 + Math.round(diff / 6048e5), size);
         };
     }
     function ampmGetter(date, formats) {
@@ -7133,8 +6927,8 @@ if (function(global, factory) {
             }
         }
         function objectValue(value) {
-            return isFunction(value.valueOf) && (value = value.valueOf(), isPrimitive(value)) ? value : hasCustomToString(value) && (value = value.toString(), 
-            isPrimitive(value)) ? value : value;
+            return isFunction(value.valueOf) && (value = value.valueOf(), isPrimitive(value)) ? value : (hasCustomToString(value) && (value = value.toString(), 
+            isPrimitive(value)), value);
         }
         function getPredicateValue(value, index) {
             var type = typeof value;
@@ -7216,7 +7010,7 @@ if (function(global, factory) {
         }
         function toggleValidationCss(ctrl, validationErrorKey, isValid) {
             validationErrorKey = validationErrorKey ? "-" + snake_case(validationErrorKey, "-") : "", 
-            cachedToggleClass(ctrl, VALID_CLASS + validationErrorKey, isValid === !0), cachedToggleClass(ctrl, INVALID_CLASS + validationErrorKey, isValid === !1);
+            cachedToggleClass(ctrl, VALID_CLASS + validationErrorKey, !0 === isValid), cachedToggleClass(ctrl, INVALID_CLASS + validationErrorKey, !1 === isValid);
         }
         var clazz = context.clazz, set = context.set, unset = context.unset;
         clazz.prototype.$setValidity = function(validationErrorKey, state, controller) {
@@ -7368,8 +7162,8 @@ if (function(global, factory) {
         };
     }
     function badInputChecker(scope, element, attr, ctrl) {
-        var node = element[0], nativeValidation = ctrl.$$hasNativeValidators = isObject(node.validity);
-        nativeValidation && ctrl.$parsers.push(function(value) {
+        var node = element[0];
+        (ctrl.$$hasNativeValidators = isObject(node.validity)) && ctrl.$parsers.push(function(value) {
             var validity = element.prop(VALIDITY_STATE_PROPERTY) || {};
             return validity.badInput || validity.typeMismatch ? void 0 : value;
         });
@@ -7393,7 +7187,7 @@ if (function(global, factory) {
     }
     function countDecimals(num) {
         var numString = num.toString(), decimalSymbolIndex = numString.indexOf(".");
-        if (decimalSymbolIndex === -1) {
+        if (-1 === decimalSymbolIndex) {
             if (-1 < num && num < 1) {
                 var match = /e-(\d+)$/.exec(numString);
                 if (match) return Number(match[1]);
@@ -7409,7 +7203,7 @@ if (function(global, factory) {
             value *= multiplier, stepBase *= multiplier, step *= multiplier, isNonIntegerValue && (value = Math.round(value)), 
             isNonIntegerStepBase && (stepBase = Math.round(stepBase)), isNonIntegerStep && (step = Math.round(step));
         }
-        return (value - stepBase) % step === 0;
+        return (value - stepBase) % step == 0;
     }
     function numberInputType(scope, element, attr, ctrl, $sniffer, $browser) {
         badInputChecker(scope, element, attr, ctrl), numberFormatterParser(ctrl), baseInputType(scope, element, attr, ctrl, $sniffer, $browser);
@@ -7510,7 +7304,7 @@ if (function(global, factory) {
         element.on("click", listener), ctrl.$render = function() {
             element[0].checked = ctrl.$viewValue;
         }, ctrl.$isEmpty = function(value) {
-            return value === !1;
+            return !1 === value;
         }, ctrl.$formatters.push(function(value) {
             return equals(value, trueValue);
         }), ctrl.$parsers.push(function(value) {
@@ -7627,7 +7421,7 @@ if (function(global, factory) {
         }) : s;
     }, manualUppercase = function(s) {
         return isString(s) ? s.replace(/[a-z]/g, function(ch) {
-            return String.fromCharCode(ch.charCodeAt(0) & -33);
+            return String.fromCharCode(-33 & ch.charCodeAt(0));
         }) : s;
     };
     "i" !== "I".toLowerCase() && (lowercase = manualLowercase, uppercase = manualUppercase);
@@ -7642,23 +7436,22 @@ if (function(global, factory) {
     }, escapeForRegexp = function(s) {
         return s.replace(/([-()[\]{}+?*.$^|,:#<!\\])/g, "\\$1").replace(/\x08/g, "\\x08");
     }, csp = function() {
-        function noUnsafeEval() {
-            try {
-                return new Function(""), !1;
-            } catch (e) {
-                return !0;
-            }
-        }
         if (!isDefined(csp.rules)) {
             var ngCspElement = window.document.querySelector("[ng-csp]") || window.document.querySelector("[data-ng-csp]");
             if (ngCspElement) {
                 var ngCspAttribute = ngCspElement.getAttribute("ng-csp") || ngCspElement.getAttribute("data-ng-csp");
                 csp.rules = {
-                    noUnsafeEval: !ngCspAttribute || ngCspAttribute.indexOf("no-unsafe-eval") !== -1,
-                    noInlineStyle: !ngCspAttribute || ngCspAttribute.indexOf("no-inline-style") !== -1
+                    noUnsafeEval: !ngCspAttribute || -1 !== ngCspAttribute.indexOf("no-unsafe-eval"),
+                    noInlineStyle: !ngCspAttribute || -1 !== ngCspAttribute.indexOf("no-inline-style")
                 };
             } else csp.rules = {
-                noUnsafeEval: noUnsafeEval(),
+                noUnsafeEval: function() {
+                    try {
+                        return new Function(""), !1;
+                    } catch (e) {
+                        return !0;
+                    }
+                }(),
                 noInlineStyle: !1
             };
         }
@@ -7671,7 +7464,30 @@ if (function(global, factory) {
             break;
         }
         return jq.name_ = name;
-    }, ALL_COLONS = /:/g, ngAttrPrefixes = [ "ng-", "data-ng-", "ng:", "x-ng-" ], isAutoBootstrapAllowed = allowAutoBootstrap(window.document), SNAKE_CASE_REGEXP = /[A-Z]/g, bindJQueryFired = !1, NODE_TYPE_ELEMENT = 1, NODE_TYPE_ATTRIBUTE = 2, NODE_TYPE_TEXT = 3, NODE_TYPE_COMMENT = 8, NODE_TYPE_DOCUMENT = 9, NODE_TYPE_DOCUMENT_FRAGMENT = 11, version = {
+    }, ALL_COLONS = /:/g, ngAttrPrefixes = [ "ng-", "data-ng-", "ng:", "x-ng-" ], isAutoBootstrapAllowed = function(document) {
+        var script = document.currentScript;
+        if (!script) return !0;
+        if (!(script instanceof window.HTMLScriptElement || script instanceof window.SVGScriptElement)) return !1;
+        var attributes = script.attributes;
+        return [ attributes.getNamedItem("src"), attributes.getNamedItem("href"), attributes.getNamedItem("xlink:href") ].every(function(src) {
+            if (!src) return !0;
+            if (!src.value) return !1;
+            var link = document.createElement("a");
+            if (link.href = src.value, document.location.origin === link.origin) return !0;
+            switch (link.protocol) {
+              case "http:":
+              case "https:":
+              case "ftp:":
+              case "blob:":
+              case "file:":
+              case "data:":
+                return !0;
+
+              default:
+                return !1;
+            }
+        });
+    }(window.document), SNAKE_CASE_REGEXP = /[A-Z]/g, bindJQueryFired = !1, NODE_TYPE_ELEMENT = 1, NODE_TYPE_TEXT = 3, NODE_TYPE_COMMENT = 8, NODE_TYPE_DOCUMENT = 9, NODE_TYPE_DOCUMENT_FRAGMENT = 11, version = {
         full: "1.6.4",
         major: 1,
         minor: 6,
@@ -7760,9 +7576,9 @@ if (function(global, factory) {
         },
         attr: function(element, name, value) {
             var ret, nodeType = element.nodeType;
-            if (nodeType !== NODE_TYPE_TEXT && nodeType !== NODE_TYPE_ATTRIBUTE && nodeType !== NODE_TYPE_COMMENT && element.getAttribute) {
+            if (nodeType !== NODE_TYPE_TEXT && 2 !== nodeType && nodeType !== NODE_TYPE_COMMENT && element.getAttribute) {
                 var lowercasedName = lowercase(name), isBooleanAttr = BOOLEAN_ATTR[lowercasedName];
-                return isDefined(value) ? void (null === value || value === !1 && isBooleanAttr ? element.removeAttribute(name) : element.setAttribute(name, isBooleanAttr ? lowercasedName : value)) : (ret = element.getAttribute(name), 
+                return isDefined(value) ? void (null === value || !1 === value && isBooleanAttr ? element.removeAttribute(name) : element.setAttribute(name, isBooleanAttr ? lowercasedName : value)) : (ret = element.getAttribute(name), 
                 isBooleanAttr && null !== ret && (ret = lowercasedName), null === ret ? void 0 : ret);
             }
         },
@@ -7912,13 +7728,13 @@ if (function(global, factory) {
                     this.defaultPrevented = !0;
                 },
                 isDefaultPrevented: function() {
-                    return this.defaultPrevented === !0;
+                    return !0 === this.defaultPrevented;
                 },
                 stopImmediatePropagation: function() {
                     this.immediatePropagationStopped = !0;
                 },
                 isImmediatePropagationStopped: function() {
-                    return this.immediatePropagationStopped === !0;
+                    return !0 === this.immediatePropagationStopped;
                 },
                 stopPropagation: noop,
                 type: eventName,
@@ -7948,18 +7764,18 @@ if (function(global, factory) {
         get: function(key) {
             key = this._transformKey(key);
             var idx = this._idx(key);
-            if (idx !== -1) return this._values[idx];
+            if (-1 !== idx) return this._values[idx];
         },
         set: function(key, value) {
             key = this._transformKey(key);
             var idx = this._idx(key);
-            idx === -1 && (idx = this._lastIndex = this._keys.length), this._keys[idx] = key, 
+            -1 === idx && (idx = this._lastIndex = this._keys.length), this._keys[idx] = key, 
             this._values[idx] = value;
         },
-        "delete": function(key) {
+        delete: function(key) {
             key = this._transformKey(key);
             var idx = this._idx(key);
-            return idx !== -1 && (this._keys.splice(idx, 1), this._values.splice(idx, 1), this._lastKey = NaN, 
+            return -1 !== idx && (this._keys.splice(idx, 1), this._values.splice(idx, 1), this._lastKey = NaN, 
             this._lastIndex = -1, !0);
         }
     };
@@ -7969,7 +7785,7 @@ if (function(global, factory) {
         } ];
     } ], ARROW_ARG = /^([^(]+?)=>/, FN_ARGS = /^[^(]*\(\s*([^)]*)\)/m, FN_ARG_SPLIT = /,/, FN_ARG = /^\s*(_?)(\S+?)\1\s*$/, STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/gm, $injectorMinErr = minErr("$injector");
     createInjector.$$annotate = annotate;
-    var $animateMinErr = minErr("$animate"), ELEMENT_NODE = 1, NG_ANIMATE_CLASSNAME = "ng-animate", $$CoreAnimateJsProvider = function() {
+    var $animateMinErr = minErr("$animate"), ELEMENT_NODE = 1, $$CoreAnimateJsProvider = function() {
         this.$get = noop;
     }, $$CoreAnimateQueueProvider = function() {
         var postDigestQueue = new NgMap(), postDigestElements = [];
@@ -7987,11 +7803,10 @@ if (function(global, factory) {
                     if (data) {
                         var existing = splitClasses(element.attr("class")), toAdd = "", toRemove = "";
                         forEach(data, function(status, className) {
-                            var hasClass = !!existing[className];
-                            status !== hasClass && (status ? toAdd += (toAdd.length ? " " : "") + className : toRemove += (toRemove.length ? " " : "") + className);
+                            status !== !!existing[className] && (status ? toAdd += (toAdd.length ? " " : "") + className : toRemove += (toRemove.length ? " " : "") + className);
                         }), forEach(element, function(elm) {
                             toAdd && jqLiteAddClass(elm, toAdd), toRemove && jqLiteRemoveClass(elm, toRemove);
-                        }), postDigestQueue["delete"](element);
+                        }), postDigestQueue.delete(element);
                     }
                 }), postDigestElements.length = 0;
             }
@@ -8021,9 +7836,8 @@ if (function(global, factory) {
             provider.$$registeredAnimations[name.substr(1)] = key, $provide.factory(key, factory);
         }, this.classNameFilter = function(expression) {
             if (1 === arguments.length && (classNameFilter = expression instanceof RegExp ? expression : null)) {
-                var reservedRegex = new RegExp("[(\\s|\\/)]" + NG_ANIMATE_CLASSNAME + "[(\\s|\\/)]");
-                if (reservedRegex.test(classNameFilter.toString())) throw classNameFilter = null, 
-                $animateMinErr("nongcls", '$animateProvider.classNameFilter(regex) prohibits accepting a regex value which matches/contains the "{0}" CSS class.', NG_ANIMATE_CLASSNAME);
+                if (new RegExp("[(\\s|\\/)]ng-animate[(\\s|\\/)]").test(classNameFilter.toString())) throw classNameFilter = null, 
+                $animateMinErr("nongcls", '$animateProvider.classNameFilter(regex) prohibits accepting a regex value which matches/contains the "{0}" CSS class.', "ng-animate");
             }
             return classNameFilter;
         }, this.$get = [ "$$animateQueue", function($$animateQueue) {
@@ -8103,11 +7917,10 @@ if (function(global, factory) {
                     $$isDocumentHidden() ? timeoutTick(fn) : rafTick(fn);
                 }, this._state = 0;
             }
-            var INITIAL_STATE = 0, DONE_PENDING_STATE = 1, DONE_COMPLETE_STATE = 2;
             return AnimateRunner.chain = function(chain, callback) {
                 function next() {
                     return index === chain.length ? void callback(!0) : void chain[index](function(response) {
-                        return response === !1 ? void callback(!1) : (index++, void next());
+                        return !1 === response ? void callback(!1) : (index++, void next());
                     });
                 }
                 var index = 0;
@@ -8125,7 +7938,7 @@ if (function(global, factory) {
                     this.host = host || {};
                 },
                 done: function(fn) {
-                    this._state === DONE_COMPLETE_STATE ? fn() : this._doneCallbacks.push(fn);
+                    2 === this._state ? fn() : this._doneCallbacks.push(fn);
                 },
                 progress: noop,
                 getPromise: function() {
@@ -8133,7 +7946,7 @@ if (function(global, factory) {
                         var self = this;
                         this.promise = $q(function(resolve, reject) {
                             self.done(function(status) {
-                                status === !1 ? reject() : resolve();
+                                !1 === status ? reject() : resolve();
                             });
                         });
                     }
@@ -8142,11 +7955,11 @@ if (function(global, factory) {
                 then: function(resolveHandler, rejectHandler) {
                     return this.getPromise().then(resolveHandler, rejectHandler);
                 },
-                "catch": function(handler) {
-                    return this.getPromise()["catch"](handler);
+                catch: function(handler) {
+                    return this.getPromise().catch(handler);
                 },
-                "finally": function(handler) {
-                    return this.getPromise()["finally"](handler);
+                finally: function(handler) {
+                    return this.getPromise().finally(handler);
                 },
                 pause: function() {
                     this.host.pause && this.host.pause();
@@ -8162,14 +7975,14 @@ if (function(global, factory) {
                 },
                 complete: function(response) {
                     var self = this;
-                    self._state === INITIAL_STATE && (self._state = DONE_PENDING_STATE, self._tick(function() {
+                    0 === self._state && (self._state = 1, self._tick(function() {
                         self._resolve(response);
                     }));
                 },
                 _resolve: function(response) {
-                    this._state !== DONE_COMPLETE_STATE && (forEach(this._doneCallbacks, function(fn) {
+                    2 !== this._state && (forEach(this._doneCallbacks, function(fn) {
                         fn(response);
-                    }), this._doneCallbacks.length = 0, this._state = DONE_COMPLETE_STATE);
+                    }), this._doneCallbacks.length = 0, this._state = 2);
                 }
             }, AnimateRunner;
         } ];
@@ -8308,7 +8121,7 @@ if (function(global, factory) {
         f: "\f",
         r: "\r",
         t: "\t",
-        v: "\x0B",
+        v: "\v",
         "'": "'",
         '"': '"'
     }, Lexer = function(options) {
@@ -8337,7 +8150,7 @@ if (function(global, factory) {
             return this.tokens;
         },
         is: function(ch, chars) {
-            return chars.indexOf(ch) !== -1;
+            return -1 !== chars.indexOf(ch);
         },
         peek: function(i) {
             var num = i || 1;
@@ -8347,7 +8160,7 @@ if (function(global, factory) {
             return "0" <= ch && ch <= "9" && "string" == typeof ch;
         },
         isWhitespace: function(ch) {
-            return " " === ch || "\r" === ch || "\t" === ch || "\n" === ch || "\x0B" === ch || " " === ch;
+            return " " === ch || "\r" === ch || "\t" === ch || "\n" === ch || "\v" === ch || " " === ch;
         },
         isIdentifierStart: function(ch) {
             return this.options.isIdentifierStart ? this.options.isIdentifierStart(ch, this.codePointAt(ch)) : this.isValidIdentifierStart(ch);
@@ -8421,8 +8234,7 @@ if (function(global, factory) {
                         hex.match(/[\da-f]{4}/i) || this.throwError("Invalid unicode escape [\\u" + hex + "]"), 
                         this.index += 4, string += String.fromCharCode(parseInt(hex, 16));
                     } else {
-                        var rep = ESCAPE[ch];
-                        string += rep || ch;
+                        string += ESCAPE[ch] || ch;
                     }
                     escape = !1;
                 } else if ("\\" === ch) escape = !0; else {
@@ -8596,7 +8408,9 @@ if (function(global, factory) {
         },
         parseArguments: function() {
             var args = [];
-            if (")" !== this.peekToken().text) do args.push(this.filterChain()); while (this.expect(","));
+            if (")" !== this.peekToken().text) do {
+                args.push(this.filterChain());
+            } while (this.expect(","));
             return args;
         },
         identifier: function() {
@@ -8671,7 +8485,7 @@ if (function(global, factory) {
             return !!token && (this.tokens.shift(), token);
         },
         selfReferential: {
-            "this": {
+            this: {
                 type: AST.ThisExpression
             },
             $locals: {
@@ -8893,7 +8707,7 @@ if (function(global, factory) {
             this.current().body.push("return ", id, ";");
         },
         if_: function(test, alternate, consequent) {
-            if (test === !0) alternate(); else {
+            if (!0 === test) alternate(); else {
                 var body = this.current().body;
                 body.push("if(", test, "){"), alternate(), body.push("}"), consequent && (body.push("else{"), 
                 consequent(), body.push("}"));
@@ -8940,10 +8754,10 @@ if (function(global, factory) {
         escape: function(value) {
             if (isString(value)) return "'" + value.replace(this.stringEscapeRegex, this.stringEscapeFn) + "'";
             if (isNumber(value)) return value.toString();
-            if (value === !0) return "true";
-            if (value === !1) return "false";
+            if (!0 === value) return "true";
+            if (!1 === value) return "false";
             if (null === value) return "null";
-            if ("undefined" == typeof value) return "undefined";
+            if (void 0 === value) return "undefined";
             throw $parseMinErr("esc", "IMPOSSIBLE");
         },
         nextId: function(skip, init) {
@@ -8989,8 +8803,6 @@ if (function(global, factory) {
                 return right = this.recurse(ast.argument), this["unary" + ast.operator](right, context);
 
               case AST.BinaryExpression:
-                return left = this.recurse(ast.left), right = this.recurse(ast.right), this["binary" + ast.operator](left, right, context);
-
               case AST.LogicalExpression:
                 return left = this.recurse(ast.left), right = this.recurse(ast.right), this["binary" + ast.operator](left, right, context);
 
@@ -9407,7 +9219,7 @@ if (function(global, factory) {
         $setDirty: noop,
         $setPristine: noop,
         $setSubmitted: noop
-    }, PENDING_CLASS = "ng-pending", SUBMITTED_CLASS = "ng-submitted";
+    }, PENDING_CLASS = "ng-pending";
     FormController.$inject = [ "$element", "$attrs", "$scope", "$animate", "$interpolate" ], 
     FormController.prototype = {
         $rollbackViewValue: function() {
@@ -9443,7 +9255,7 @@ if (function(global, factory) {
             this.$dirty = !0, this.$pristine = !1, this.$$parentForm.$setDirty();
         },
         $setPristine: function() {
-            this.$$animate.setClass(this.$$element, PRISTINE_CLASS, DIRTY_CLASS + " " + SUBMITTED_CLASS), 
+            this.$$animate.setClass(this.$$element, PRISTINE_CLASS, DIRTY_CLASS + " ng-submitted"), 
             this.$dirty = !1, this.$pristine = !0, this.$submitted = !1, forEach(this.$$controls, function(control) {
                 control.$setPristine();
             });
@@ -9454,16 +9266,14 @@ if (function(global, factory) {
             });
         },
         $setSubmitted: function() {
-            this.$$animate.addClass(this.$$element, SUBMITTED_CLASS), this.$submitted = !0, 
-            this.$$parentForm.$setSubmitted();
+            this.$$animate.addClass(this.$$element, "ng-submitted"), this.$submitted = !0, this.$$parentForm.$setSubmitted();
         }
     }, addSetValidityMethod({
         clazz: FormController,
         set: function(object, property, controller) {
             var list = object[property];
             if (list) {
-                var index = list.indexOf(controller);
-                index === -1 && list.push(controller);
+                -1 === list.indexOf(controller) && list.push(controller);
             } else object[property] = [ controller ];
         },
         unset: function(object, property, controller) {
@@ -9476,7 +9286,7 @@ if (function(global, factory) {
             function getSetter(expression) {
                 return "" === expression ? $parse('this[""]').assign : $parse(expression).assign || noop;
             }
-            var formDirective = {
+            return {
                 name: "form",
                 restrict: isNgForm ? "EAC" : "E",
                 require: [ "form", "^^?form" ],
@@ -9499,8 +9309,7 @@ if (function(global, factory) {
                                     }, 0, !1);
                                 });
                             }
-                            var parentFormCtrl = ctrls[1] || controller.$$parentForm;
-                            parentFormCtrl.$addControl(controller);
+                            (ctrls[1] || controller.$$parentForm).$addControl(controller);
                             var setter = nameAttr ? getSetter(controller.$name) : noop;
                             nameAttr && (setter(scope, controller), attr.$observe(nameAttr, function(newValue) {
                                 controller.$name !== newValue && (setter(scope, void 0), controller.$$parentForm.$$renameControl(controller, newValue), 
@@ -9512,7 +9321,6 @@ if (function(global, factory) {
                     };
                 }
             };
-            return formDirective;
         } ];
     }, formDirective = formDirectiveFactory(), ngFormDirective = formDirectiveFactory(!0), ISO_DATE_REGEXP = /^\d{4,}-[01]\d-[0-3]\dT[0-2]\d:[0-5]\d:[0-5]\d\.\d+(?:[+-][0-2]\d:[0-5]\d|Z)$/, URL_REGEXP = /^[a-z][a-z\d.+-]*:\/*(?:[^:@]+(?::[^@]+)?@)?(?:[^\s:\/?#]+|\[[a-f\d:]+])(?::\d+)?(?:\/[^?#]*)?(?:\?[^#]*)?(?:#.*)?$/i, EMAIL_REGEXP = /^(?=.{1,254}$)(?=.{1,64}@)[-!#$%&'*+\/0-9=?A-Z^_`a-z{|}~]+(\.[-!#$%&'*+\/0-9=?A-Z^_`a-z{|}~]+)*@[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?(\.[A-Za-z0-9]([A-Za-z0-9-]{0,61}[A-Za-z0-9])?)*$/, NUMBER_REGEXP = /^\s*(-|\+)?(\d+|(\d*(\.\d*)))([eE][+-]?\d+)?\s*$/, DATE_REGEXP = /^(\d{4,})-(\d{2})-(\d{2})$/, DATETIMELOCAL_REGEXP = /^(\d{4,})-(\d\d)-(\d\d)T(\d\d):(\d\d)(?::(\d\d)(\.\d{1,3})?)?$/, WEEK_REGEXP = /^(\d{4,})-W(\d\d)$/, MONTH_REGEXP = /^(\d{4,})-(\d\d)$/, TIME_REGEXP = /^(\d\d):(\d\d)(?::(\d\d)(\.\d{1,3})?)?$/, PARTIAL_VALIDATION_EVENTS = "keydown wheel mousedown", PARTIAL_VALIDATION_TYPES = createMap();
     forEach("date,datetime-local,month,time,week".split(","), function(type) {
@@ -9556,8 +9364,7 @@ if (function(global, factory) {
             priority: 100,
             compile: function(tpl, tplAttr) {
                 return CONSTANT_VALUE_REGEXP.test(tplAttr.ngValue) ? function(scope, elm, attr) {
-                    var value = scope.$eval(attr.ngValue);
-                    updateElementValue(elm, attr, value);
+                    updateElementValue(elm, attr, scope.$eval(attr.ngValue));
                 } : function(scope, elm, attr) {
                     scope.$watch(attr.ngValue, function(value) {
                         updateElementValue(elm, attr, value);
@@ -9666,7 +9473,7 @@ if (function(global, factory) {
                     }) : (previousElements && (previousElements.remove(), previousElements = null), 
                     childScope && (childScope.$destroy(), childScope = null), block && (previousElements = getBlockNodes(block.clone), 
                     $animate.leave(previousElements).done(function(response) {
-                        response !== !1 && (previousElements = null);
+                        !1 !== response && (previousElements = null);
                     }), block = null));
                 });
             }
@@ -9684,12 +9491,12 @@ if (function(global, factory) {
                     var currentScope, previousElement, currentElement, changeCounter = 0, cleanupLastIncludeContent = function() {
                         previousElement && (previousElement.remove(), previousElement = null), currentScope && (currentScope.$destroy(), 
                         currentScope = null), currentElement && ($animate.leave(currentElement).done(function(response) {
-                            response !== !1 && (previousElement = null);
+                            !1 !== response && (previousElement = null);
                         }), previousElement = currentElement, currentElement = null);
                     };
                     scope.$watch(srcExp, function(src) {
                         var afterAnimation = function(response) {
-                            response === !1 || !isDefined(autoScrollExp) || autoScrollExp && !scope.$eval(autoScrollExp) || $anchorScroll();
+                            !1 === response || !isDefined(autoScrollExp) || autoScrollExp && !scope.$eval(autoScrollExp) || $anchorScroll();
                         }, thisChangeId = ++changeCounter;
                         src ? ($templateRequest(src, !0).then(function(response) {
                             if (!scope.$$destroyed && thisChangeId === changeCounter) {
@@ -9753,7 +9560,7 @@ if (function(global, factory) {
                 };
             }
         };
-    }, VALID_CLASS = "ng-valid", INVALID_CLASS = "ng-invalid", PRISTINE_CLASS = "ng-pristine", DIRTY_CLASS = "ng-dirty", UNTOUCHED_CLASS = "ng-untouched", TOUCHED_CLASS = "ng-touched", EMPTY_CLASS = "ng-empty", NOT_EMPTY_CLASS = "ng-not-empty", ngModelMinErr = minErr("ngModel");
+    }, VALID_CLASS = "ng-valid", INVALID_CLASS = "ng-invalid", PRISTINE_CLASS = "ng-pristine", DIRTY_CLASS = "ng-dirty", ngModelMinErr = minErr("ngModel");
     NgModelController.$inject = [ "$scope", "$exceptionHandler", "$attrs", "$element", "$parse", "$animate", "$timeout", "$q", "$interpolate" ], 
     NgModelController.prototype = {
         $$initGetterSetters: function() {
@@ -9774,9 +9581,9 @@ if (function(global, factory) {
             return isUndefined(value) || "" === value || null === value || value !== value;
         },
         $$updateEmptyClasses: function(value) {
-            this.$isEmpty(value) ? (this.$$animate.removeClass(this.$$element, NOT_EMPTY_CLASS), 
-            this.$$animate.addClass(this.$$element, EMPTY_CLASS)) : (this.$$animate.removeClass(this.$$element, EMPTY_CLASS), 
-            this.$$animate.addClass(this.$$element, NOT_EMPTY_CLASS));
+            this.$isEmpty(value) ? (this.$$animate.removeClass(this.$$element, "ng-not-empty"), 
+            this.$$animate.addClass(this.$$element, "ng-empty")) : (this.$$animate.removeClass(this.$$element, "ng-empty"), 
+            this.$$animate.addClass(this.$$element, "ng-not-empty"));
         },
         $setPristine: function() {
             this.$dirty = !1, this.$pristine = !0, this.$$animate.removeClass(this.$$element, DIRTY_CLASS), 
@@ -9787,10 +9594,10 @@ if (function(global, factory) {
             this.$$animate.addClass(this.$$element, DIRTY_CLASS), this.$$parentForm.$setDirty();
         },
         $setUntouched: function() {
-            this.$touched = !1, this.$untouched = !0, this.$$animate.setClass(this.$$element, UNTOUCHED_CLASS, TOUCHED_CLASS);
+            this.$touched = !1, this.$untouched = !0, this.$$animate.setClass(this.$$element, "ng-untouched", "ng-touched");
         },
         $setTouched: function() {
-            this.$touched = !0, this.$untouched = !1, this.$$animate.setClass(this.$$element, TOUCHED_CLASS, UNTOUCHED_CLASS);
+            this.$touched = !0, this.$untouched = !1, this.$$animate.setClass(this.$$element, "ng-touched", "ng-untouched");
         },
         $rollbackViewValue: function() {
             this.$$timeout.cancel(this.$$pendingDebounce), this.$viewValue = this.$$lastCommittedViewValue, 
@@ -9806,15 +9613,22 @@ if (function(global, factory) {
             }
         },
         $$runValidators: function(modelValue, viewValue, doneCallback) {
-            function processParseErrors() {
+            function setValidity(name, isValid) {
+                localValidationRunId === that.$$currentValidationRunId && that.$setValidity(name, isValid);
+            }
+            function validationDone(allValid) {
+                localValidationRunId === that.$$currentValidationRunId && doneCallback(allValid);
+            }
+            this.$$currentValidationRunId++;
+            var localValidationRunId = this.$$currentValidationRunId, that = this;
+            return function() {
                 var errorKey = that.$$parserName || "parse";
                 return isUndefined(that.$$parserValid) ? (setValidity(errorKey, null), !0) : (that.$$parserValid || (forEach(that.$validators, function(v, name) {
                     setValidity(name, null);
                 }), forEach(that.$asyncValidators, function(v, name) {
                     setValidity(name, null);
                 })), setValidity(errorKey, that.$$parserValid), that.$$parserValid);
-            }
-            function processSyncValidators() {
+            }() && function() {
                 var syncValidatorsValid = !0;
                 return forEach(that.$validators, function(validator, name) {
                     var result = Boolean(validator(modelValue, viewValue));
@@ -9822,8 +9636,7 @@ if (function(global, factory) {
                 }), !!syncValidatorsValid || (forEach(that.$asyncValidators, function(v, name) {
                     setValidity(name, null);
                 }), !1);
-            }
-            function processAsyncValidators() {
+            }() ? void function() {
                 var validatorPromises = [], allValid = !0;
                 forEach(that.$asyncValidators, function(validator, name) {
                     var promise = validator(modelValue, viewValue);
@@ -9836,16 +9649,7 @@ if (function(global, factory) {
                 }), validatorPromises.length ? that.$$q.all(validatorPromises).then(function() {
                     validationDone(allValid);
                 }, noop) : validationDone(!0);
-            }
-            function setValidity(name, isValid) {
-                localValidationRunId === that.$$currentValidationRunId && that.$setValidity(name, isValid);
-            }
-            function validationDone(allValid) {
-                localValidationRunId === that.$$currentValidationRunId && doneCallback(allValid);
-            }
-            this.$$currentValidationRunId++;
-            var localValidationRunId = this.$$currentValidationRunId, that = this;
-            return processParseErrors() && processSyncValidators() ? void processAsyncValidators() : void validationDone(!1);
+            }() : void validationDone(!1);
         },
         $commitViewValue: function() {
             var viewValue = this.$viewValue;
@@ -9883,7 +9687,7 @@ if (function(global, factory) {
         },
         $$debounceViewValueCommit: function(trigger) {
             var debounceDelay = this.$options.getOption("debounce");
-            isNumber(debounceDelay[trigger]) ? debounceDelay = debounceDelay[trigger] : isNumber(debounceDelay["default"]) && (debounceDelay = debounceDelay["default"]), 
+            isNumber(debounceDelay[trigger]) ? debounceDelay = debounceDelay[trigger] : isNumber(debounceDelay.default) && (debounceDelay = debounceDelay.default), 
             this.$$timeout.cancel(this.$$pendingDebounce);
             var that = this;
             debounceDelay > 0 ? this.$$pendingDebounce = this.$$timeout(function() {
@@ -9911,7 +9715,7 @@ if (function(global, factory) {
             controller: NgModelController,
             priority: 1,
             compile: function(element) {
-                return element.addClass(PRISTINE_CLASS).addClass(UNTOUCHED_CLASS).addClass(VALID_CLASS), 
+                return element.addClass(PRISTINE_CLASS).addClass("ng-untouched").addClass(VALID_CLASS), 
                 {
                     pre: function(scope, element, attr, ctrls) {
                         var modelCtrl = ctrls[0], formCtrl = ctrls[1] || modelCtrl.$$parentForm, optionsCtrl = ctrls[2];
@@ -10072,8 +9876,8 @@ if (function(global, factory) {
                     listFragment.appendChild(groupElement), groupElement.label = null === option.group ? "null" : option.group, 
                     groupElementMap[option.group] = groupElement), addOptionElement(option, groupElement)) : addOptionElement(option, listFragment);
                 }), selectElement[0].appendChild(listFragment), ngModelCtrl.$render(), !ngModelCtrl.$isEmpty(previousValue)) {
-                    var nextValue = selectCtrl.readValue(), isNotPrimitive = ngOptions.trackBy || multiple;
-                    (isNotPrimitive ? equals(previousValue, nextValue) : previousValue === nextValue) || (ngModelCtrl.$setViewValue(nextValue), 
+                    var nextValue = selectCtrl.readValue();
+                    (ngOptions.trackBy || multiple ? equals(previousValue, nextValue) : previousValue === nextValue) || (ngModelCtrl.$setViewValue(nextValue), 
                     ngModelCtrl.$render());
                 }
             }
@@ -10081,8 +9885,8 @@ if (function(global, factory) {
                 selectCtrl.hasEmptyOption = !0, selectCtrl.emptyOption = children.eq(i);
                 break;
             }
-            var providedEmptyOption = !!selectCtrl.emptyOption, unknownOption = jqLite(optionTemplate.cloneNode(!1));
-            unknownOption.val("?");
+            var providedEmptyOption = !!selectCtrl.emptyOption;
+            jqLite(optionTemplate.cloneNode(!1)).val("?");
             var options, ngOptions = parseOptionsExpression(attr.ngOptions, selectElement, scope), listFragment = $document[0].createDocumentFragment();
             selectCtrl.generateUnknownOptionValue = function(val) {
                 return "?";
@@ -10168,10 +9972,10 @@ if (function(global, factory) {
             }
         };
     } ], ngRepeatDirective = [ "$parse", "$animate", "$compile", function($parse, $animate, $compile) {
-        var NG_REMOVED = "$$NG_REMOVED", ngRepeatMinErr = minErr("ngRepeat"), updateScope = function(scope, index, valueIdentifier, value, keyIdentifier, key, arrayLength) {
+        var ngRepeatMinErr = minErr("ngRepeat"), updateScope = function(scope, index, valueIdentifier, value, keyIdentifier, key, arrayLength) {
             scope[valueIdentifier] = value, keyIdentifier && (scope[keyIdentifier] = key), scope.$index = index, 
             scope.$first = 0 === index, scope.$last = index === arrayLength - 1, scope.$middle = !(scope.$first || scope.$last), 
-            scope.$odd = !(scope.$even = 0 === (1 & index));
+            scope.$odd = !(scope.$even = 0 == (1 & index));
         }, getBlockStart = function(block) {
             return block.clone[0];
         }, getBlockEnd = function(block) {
@@ -10188,7 +9992,7 @@ if (function(global, factory) {
                 var expression = $attr.ngRepeat, ngRepeatEndComment = $compile.$$createComment("end ngRepeat", expression), match = expression.match(/^\s*([\s\S]+?)\s+in\s+([\s\S]+?)(?:\s+as\s+([\s\S]+?))?(?:\s+track\s+by\s+([\s\S]+?))?\s*$/);
                 if (!match) throw ngRepeatMinErr("iexp", "Expected expression in form of '_item_ in _collection_[ track by _id_]' but got '{0}'.", expression);
                 var lhs = match[1], rhs = match[2], aliasAs = match[3], trackByExp = match[4];
-                if (match = lhs.match(/^(?:(\s*[$\w]+)|\(\s*([$\w]+)\s*,\s*([$\w]+)\s*\))$/), !match) throw ngRepeatMinErr("iidexp", "'_item_' in '_item_ in _collection_' should be an identifier or '(_key_, _value_)' expression, but got '{0}'.", lhs);
+                if (!(match = lhs.match(/^(?:(\s*[$\w]+)|\(\s*([$\w]+)\s*,\s*([$\w]+)\s*\))$/))) throw ngRepeatMinErr("iidexp", "'_item_' in '_item_ in _collection_' should be an identifier or '(_key_, _value_)' expression, but got '{0}'.", lhs);
                 var valueIdentifier = match[3] || match[1], keyIdentifier = match[2];
                 if (aliasAs && (!/^[$a-zA-Z_][$a-zA-Z0-9_]*$/.test(aliasAs) || /^(null|undefined|this|\$index|\$first|\$middle|\$last|\$even|\$odd|\$parent|\$root|\$id)$/.test(aliasAs))) throw ngRepeatMinErr("badident", "alias '{0}' is invalid --- must be a valid JS identifier which is not a reserved name.", aliasAs);
                 var trackByExpGetter, trackByIdExpFn, trackByIdArrayFn, trackByIdObjFn, hashFnLocals = {
@@ -10227,13 +10031,15 @@ if (function(global, factory) {
                         for (var blockKey in lastBlockMap) {
                             if (block = lastBlockMap[blockKey], elementsToRemove = getBlockNodes(block.clone), 
                             $animate.leave(elementsToRemove), elementsToRemove[0].parentNode) for (index = 0, 
-                            length = elementsToRemove.length; index < length; index++) elementsToRemove[index][NG_REMOVED] = !0;
+                            length = elementsToRemove.length; index < length; index++) elementsToRemove[index].$$NG_REMOVED = !0;
                             block.scope.$destroy();
                         }
                         for (index = 0; index < collectionLength; index++) if (key = collection === collectionKeys ? index : collectionKeys[index], 
                         value = collection[key], block = nextBlockOrder[index], block.scope) {
                             nextNode = previousNode;
-                            do nextNode = nextNode.nextSibling; while (nextNode && nextNode[NG_REMOVED]);
+                            do {
+                                nextNode = nextNode.nextSibling;
+                            } while (nextNode && nextNode.$$NG_REMOVED);
                             getBlockStart(block) !== nextNode && $animate.move(getBlockNodes(block.clone), null, previousNode), 
                             previousNode = getBlockEnd(block), updateScope(block.scope, index, valueIdentifier, value, keyIdentifier, key, collectionLength);
                         } else $transclude(function(clone, scope) {
@@ -10247,14 +10053,14 @@ if (function(global, factory) {
                 };
             }
         };
-    } ], NG_HIDE_CLASS = "ng-hide", NG_HIDE_IN_PROGRESS_CLASS = "ng-hide-animate", ngShowDirective = [ "$animate", function($animate) {
+    } ], ngShowDirective = [ "$animate", function($animate) {
         return {
             restrict: "A",
             multiElement: !0,
             link: function(scope, element, attr) {
                 scope.$watch(attr.ngShow, function(value) {
-                    $animate[value ? "removeClass" : "addClass"](element, NG_HIDE_CLASS, {
-                        tempClasses: NG_HIDE_IN_PROGRESS_CLASS
+                    $animate[value ? "removeClass" : "addClass"](element, "ng-hide", {
+                        tempClasses: "ng-hide-animate"
                     });
                 });
             }
@@ -10265,8 +10071,8 @@ if (function(global, factory) {
             multiElement: !0,
             link: function(scope, element, attr) {
                 scope.$watch(attr.ngHide, function(value) {
-                    $animate[value ? "addClass" : "removeClass"](element, NG_HIDE_CLASS, {
-                        tempClasses: NG_HIDE_IN_PROGRESS_CLASS
+                    $animate[value ? "addClass" : "removeClass"](element, "ng-hide", {
+                        tempClasses: "ng-hide-animate"
                     });
                 });
             }
@@ -10286,7 +10092,7 @@ if (function(global, factory) {
             link: function(scope, element, attr, ngSwitchController) {
                 var watchExpr = attr.ngSwitch || attr.on, selectedTranscludes = [], selectedElements = [], previousLeaveAnimations = [], selectedScopes = [], spliceFactory = function(array, index) {
                     return function(response) {
-                        response !== !1 && array.splice(index, 1);
+                        !1 !== response && array.splice(index, 1);
                     };
                 };
                 scope.$watch(watchExpr, function(value) {
@@ -10294,8 +10100,7 @@ if (function(global, factory) {
                     for (i = 0, ii = selectedScopes.length; i < ii; ++i) {
                         var selected = getBlockNodes(selectedElements[i].clone);
                         selectedScopes[i].$destroy();
-                        var runner = previousLeaveAnimations[i] = $animate.leave(selected);
-                        runner.done(spliceFactory(previousLeaveAnimations, i));
+                        (previousLeaveAnimations[i] = $animate.leave(selected)).done(spliceFactory(previousLeaveAnimations, i));
                     }
                     selectedElements.length = 0, selectedScopes.length = 0, (selectedTranscludes = ngSwitchController.cases["!" + value] || ngSwitchController.cases["?"]) && forEach(selectedTranscludes, function(selectedTransclude) {
                         selectedTransclude.transclude(function(caseElement, selectedScope) {
@@ -10317,10 +10122,9 @@ if (function(global, factory) {
         require: "^ngSwitch",
         multiElement: !0,
         link: function(scope, element, attrs, ctrl, $transclude) {
-            var cases = attrs.ngSwitchWhen.split(attrs.ngSwitchWhenSeparator).sort().filter(function(element, index, array) {
+            forEach(attrs.ngSwitchWhen.split(attrs.ngSwitchWhenSeparator).sort().filter(function(element, index, array) {
                 return array[index - 1] !== element;
-            });
-            forEach(cases, function(whenCase) {
+            }), function(whenCase) {
                 ctrl.cases["!" + whenCase] = ctrl.cases["!" + whenCase] || [], ctrl.cases["!" + whenCase].push({
                     transclude: $transclude,
                     element: element
@@ -10436,7 +10240,7 @@ if (function(global, factory) {
             }
         }, self.removeOption = function(value) {
             var count = optionsMap.get(value);
-            count && (1 === count ? (optionsMap["delete"](value), "" === value && (self.hasEmptyOption = !1, 
+            count && (1 === count ? (optionsMap.delete(value), "" === value && (self.hasEmptyOption = !1, 
             self.emptyOption = void 0)) : optionsMap.set(value, count - 1));
         }, self.hasOption = function(value) {
             return !!optionsMap.get(value);
@@ -10467,7 +10271,7 @@ if (function(global, factory) {
                 self.ngModelCtrl.$render()));
             }), optionElement.on("$destroy", function() {
                 var currentValue = self.readValue(), removeValue = optionAttrs.value;
-                self.removeOption(removeValue), scheduleRender(), (self.multiple && currentValue && currentValue.indexOf(removeValue) !== -1 || currentValue === removeValue) && scheduleViewValueUpdate(!0);
+                self.removeOption(removeValue), scheduleRender(), (self.multiple && currentValue && -1 !== currentValue.indexOf(removeValue) || currentValue === removeValue) && scheduleViewValueUpdate(!0);
             });
         };
     } ], selectDirective = function() {
@@ -10489,8 +10293,8 @@ if (function(global, factory) {
                     }), array;
                 }, selectCtrl.writeValue = function(value) {
                     forEach(element.find("option"), function(option) {
-                        var shouldBeSelected = !!value && (includes(value, option.value) || includes(value, selectCtrl.selectValueMap[option.value])), currentlySelected = option.selected;
-                        shouldBeSelected !== currentlySelected && setOptionSelectedStatus(jqLite(option), shouldBeSelected);
+                        var shouldBeSelected = !!value && (includes(value, option.value) || includes(value, selectCtrl.selectValueMap[option.value]));
+                        shouldBeSelected !== option.selected && setOptionSelectedStatus(jqLite(option), shouldBeSelected);
                     });
                 };
                 var lastView, lastViewRef = NaN;
@@ -10527,9 +10331,9 @@ if (function(global, factory) {
             priority: 100,
             compile: function(element, attr) {
                 var interpolateValueFn, interpolateTextFn;
-                return isDefined(attr.ngValue) || (isDefined(attr.value) ? interpolateValueFn = $interpolate(attr.value, !0) : (interpolateTextFn = $interpolate(element.text(), !0), 
-                interpolateTextFn || attr.$set("value", element.text()))), function(scope, element, attr) {
-                    var selectCtrlName = "$selectController", parent = element.parent(), selectCtrl = parent.data(selectCtrlName) || parent.parent().data(selectCtrlName);
+                return isDefined(attr.ngValue) || (isDefined(attr.value) ? interpolateValueFn = $interpolate(attr.value, !0) : (interpolateTextFn = $interpolate(element.text(), !0)) || attr.$set("value", element.text())), 
+                function(scope, element, attr) {
+                    var parent = element.parent(), selectCtrl = parent.data("$selectController") || parent.parent().data("$selectController");
                     selectCtrl && selectCtrl.registerOption(scope, element, attr, interpolateValueFn, interpolateTextFn);
                 };
             }
@@ -10595,20 +10399,168 @@ if (function(global, factory) {
             }
         };
     };
-    return window.angular.bootstrap ? void (window.console && console.log("WARNING: Tried to load angular more than once.")) : (bindJQuery(), 
-    publishExternalAPI(angular), angular.module("ngLocale", [], [ "$provide", function($provide) {
+    window.angular.bootstrap ? window.console && console.log("WARNING: Tried to load angular more than once.") : (function() {
+        var originalCleanData;
+        if (!bindJQueryFired) {
+            var jqName = jq();
+            jQuery = isUndefined(jqName) ? window.jQuery : jqName ? window[jqName] : void 0, 
+            jQuery && jQuery.fn.on ? (jqLite = jQuery, extend(jQuery.fn, {
+                scope: JQLitePrototype.scope,
+                isolateScope: JQLitePrototype.isolateScope,
+                controller: JQLitePrototype.controller,
+                injector: JQLitePrototype.injector,
+                inheritedData: JQLitePrototype.inheritedData
+            }), originalCleanData = jQuery.cleanData, jQuery.cleanData = function(elems) {
+                for (var events, elem, i = 0; null != (elem = elems[i]); i++) (events = jQuery._data(elem, "events")) && events.$destroy && jQuery(elem).triggerHandler("$destroy");
+                originalCleanData(elems);
+            }) : jqLite = JQLite, angular.element = jqLite, bindJQueryFired = !0;
+        }
+    }(), function(angular) {
+        extend(angular, {
+            errorHandlingConfig: errorHandlingConfig,
+            bootstrap: bootstrap,
+            copy: copy,
+            extend: extend,
+            merge: merge,
+            equals: equals,
+            element: jqLite,
+            forEach: forEach,
+            injector: createInjector,
+            noop: noop,
+            bind: bind,
+            toJson: toJson,
+            fromJson: fromJson,
+            identity: identity,
+            isUndefined: isUndefined,
+            isDefined: isDefined,
+            isString: isString,
+            isFunction: isFunction,
+            isObject: isObject,
+            isNumber: isNumber,
+            isElement: isElement,
+            isArray: isArray,
+            version: version,
+            isDate: isDate,
+            lowercase: lowercase,
+            uppercase: uppercase,
+            callbacks: {
+                $$counter: 0
+            },
+            getTestability: getTestability,
+            reloadWithDebugInfo: reloadWithDebugInfo,
+            $$minErr: minErr,
+            $$csp: csp,
+            $$encodeUriSegment: encodeUriSegment,
+            $$encodeUriQuery: encodeUriQuery,
+            $$stringify: stringify
+        }), angularModule = setupModuleLoader(window), angularModule("ng", [ "ngLocale" ], [ "$provide", function($provide) {
+            $provide.provider({
+                $$sanitizeUri: $$SanitizeUriProvider
+            }), $provide.provider("$compile", $CompileProvider).directive({
+                a: htmlAnchorDirective,
+                input: inputDirective,
+                textarea: inputDirective,
+                form: formDirective,
+                script: scriptDirective,
+                select: selectDirective,
+                option: optionDirective,
+                ngBind: ngBindDirective,
+                ngBindHtml: ngBindHtmlDirective,
+                ngBindTemplate: ngBindTemplateDirective,
+                ngClass: ngClassDirective,
+                ngClassEven: ngClassEvenDirective,
+                ngClassOdd: ngClassOddDirective,
+                ngCloak: ngCloakDirective,
+                ngController: ngControllerDirective,
+                ngForm: ngFormDirective,
+                ngHide: ngHideDirective,
+                ngIf: ngIfDirective,
+                ngInclude: ngIncludeDirective,
+                ngInit: ngInitDirective,
+                ngNonBindable: ngNonBindableDirective,
+                ngPluralize: ngPluralizeDirective,
+                ngRepeat: ngRepeatDirective,
+                ngShow: ngShowDirective,
+                ngStyle: ngStyleDirective,
+                ngSwitch: ngSwitchDirective,
+                ngSwitchWhen: ngSwitchWhenDirective,
+                ngSwitchDefault: ngSwitchDefaultDirective,
+                ngOptions: ngOptionsDirective,
+                ngTransclude: ngTranscludeDirective,
+                ngModel: ngModelDirective,
+                ngList: ngListDirective,
+                ngChange: ngChangeDirective,
+                pattern: patternDirective,
+                ngPattern: patternDirective,
+                required: requiredDirective,
+                ngRequired: requiredDirective,
+                minlength: minlengthDirective,
+                ngMinlength: minlengthDirective,
+                maxlength: maxlengthDirective,
+                ngMaxlength: maxlengthDirective,
+                ngValue: ngValueDirective,
+                ngModelOptions: ngModelOptionsDirective
+            }).directive({
+                ngInclude: ngIncludeFillContentDirective
+            }).directive(ngAttributeAliasDirectives).directive(ngEventDirectives), $provide.provider({
+                $anchorScroll: $AnchorScrollProvider,
+                $animate: $AnimateProvider,
+                $animateCss: $CoreAnimateCssProvider,
+                $$animateJs: $$CoreAnimateJsProvider,
+                $$animateQueue: $$CoreAnimateQueueProvider,
+                $$AnimateRunner: $$AnimateRunnerFactoryProvider,
+                $$animateAsyncRun: $$AnimateAsyncRunFactoryProvider,
+                $browser: $BrowserProvider,
+                $cacheFactory: $CacheFactoryProvider,
+                $controller: $ControllerProvider,
+                $document: $DocumentProvider,
+                $$isDocumentHidden: $$IsDocumentHiddenProvider,
+                $exceptionHandler: $ExceptionHandlerProvider,
+                $filter: $FilterProvider,
+                $$forceReflow: $$ForceReflowProvider,
+                $interpolate: $InterpolateProvider,
+                $interval: $IntervalProvider,
+                $http: $HttpProvider,
+                $httpParamSerializer: $HttpParamSerializerProvider,
+                $httpParamSerializerJQLike: $HttpParamSerializerJQLikeProvider,
+                $httpBackend: $HttpBackendProvider,
+                $xhrFactory: $xhrFactoryProvider,
+                $jsonpCallbacks: $jsonpCallbacksProvider,
+                $location: $LocationProvider,
+                $log: $LogProvider,
+                $parse: $ParseProvider,
+                $rootScope: $RootScopeProvider,
+                $q: $QProvider,
+                $$q: $$QProvider,
+                $sce: $SceProvider,
+                $sceDelegate: $SceDelegateProvider,
+                $sniffer: $SnifferProvider,
+                $templateCache: $TemplateCacheProvider,
+                $templateRequest: $TemplateRequestProvider,
+                $$testability: $$TestabilityProvider,
+                $timeout: $TimeoutProvider,
+                $window: $WindowProvider,
+                $$rAF: $$RAFProvider,
+                $$jqLite: $$jqLiteProvider,
+                $$Map: $$MapProvider,
+                $$cookieReader: $$CookieReaderProvider
+            });
+        } ]).info({
+            angularVersion: "1.6.4"
+        });
+    }(angular), angular.module("ngLocale", [], [ "$provide", function($provide) {
         function getDecimals(n) {
             n += "";
             var i = n.indexOf(".");
-            return i == -1 ? 0 : n.length - i - 1;
+            return -1 == i ? 0 : n.length - i - 1;
         }
         function getVF(n, opt_precision) {
             var v = opt_precision;
             void 0 === v && (v = Math.min(getDecimals(n), 3));
-            var base = Math.pow(10, v), f = (n * base | 0) % base;
+            var base = Math.pow(10, v);
             return {
                 v: v,
-                f: f
+                f: (n * base | 0) % base
             };
         }
         var PLURAL_CATEGORY = {
@@ -10636,7 +10588,7 @@ if (function(global, factory) {
                 medium: "MMM d, y h:mm:ss a",
                 mediumDate: "MMM d, y",
                 mediumTime: "h:mm:ss a",
-                "short": "M/d/yy h:mm a",
+                short: "M/d/yy h:mm a",
                 shortDate: "M/d/yy",
                 shortTime: "h:mm a"
             },
@@ -10673,7 +10625,7 @@ if (function(global, factory) {
                 return 1 == i && 0 == vf.v ? PLURAL_CATEGORY.ONE : PLURAL_CATEGORY.OTHER;
             }
         });
-    } ]), void jqLite(function() {
+    } ]), jqLite(function() {
         angularInit(window.document, bootstrap);
     }));
 }(window), !window.angular.$$csp().noInlineStyle && window.angular.element(document.head).prepend('<style type="text/css">@charset "UTF-8";[ng\\:cloak],[ng-cloak],[data-ng-cloak],[x-ng-cloak],.ng-cloak,.x-ng-cloak,.ng-hide:not(.ng-hide-animate){display:none !important;}ng\\:form{display:block;}.ng-animate-shim{visibility:hidden;}.ng-anchor{position:absolute;}</style>'), 
@@ -10756,8 +10708,7 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
     };
 }), define("services/dependencyResolverFor", [], function() {
     return function(dependencies) {
-        console.log("dependencyResolverFor", dependencies);
-        var definition = {
+        return console.log("dependencyResolverFor", dependencies), {
             resolver: [ "$q", "$rootScope", function($q, $rootScope) {
                 var deferred = $q.defer();
                 return require(dependencies, function() {
@@ -10767,16 +10718,15 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
                 }), deferred.promise;
             } ]
         };
-        return definition;
     };
 }), define("services/protectedRoute", [], function() {
     return function(route) {
-        var definition = {
+        return {
             resolver: [ "$q", "$rootScope", "$location", "AuthService", "ItemService", function($q, $rootScope, $location, AuthService, ItemService) {
                 var deferred = $q.defer();
-                return console.log("protected route"), route["protected"] ? (console.log("checking authentication state"), 
+                return console.log("protected route"), route.protected ? (console.log("checking authentication state"), 
                 AuthService.isTokenValid() ? deferred.resolve() : (AuthService.syncWithLocalStorage().then(function(profile) {
-                    $q.when(route["protected"].call({
+                    $q.when(route.protected.call({
                         $q: $q,
                         $rootScope: $rootScope,
                         $location: $location,
@@ -10793,7 +10743,6 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
                 }), deferred.promise)) : (console.log("route is not protected"), deferred.resolve());
             } ]
         };
-        return definition;
     };
 }), define("i18n/i18nLoader", [], function() {
     var userLang, listOfSupportedLanguages = [ "en", "es" ];
@@ -11171,7 +11120,7 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
                 return keys.push({
                     name: key,
                     optional: !!optional
-                }), slash = slash || "", "" + (optional ? "" : slash) + "(?:" + (optional ? slash : "") + (star && "(.+?)" || "([^/]+)") + (optional || "") + ")" + (optional || "");
+                }), slash = slash || "", (optional ? "" : slash) + "(?:" + (optional ? slash : "") + (star && "(.+?)" || "([^/]+)") + (optional || "") + ")" + (optional || "");
             }).replace(/([\/$*])/g, "\\$1"), ret.regexp = new RegExp("^" + path + "$", insensitive ? "i" : ""), 
             ret;
         }
@@ -11209,8 +11158,7 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
             }
             function prepareRoute($locationEvent) {
                 var lastRoute = $route.current;
-                preparedRoute = parseRoute(), preparedRouteIsUpdateOnly = preparedRoute && lastRoute && preparedRoute.$$route === lastRoute.$$route && angular.equals(preparedRoute.pathParams, lastRoute.pathParams) && !preparedRoute.reloadOnSearch && !forceReload, 
-                preparedRouteIsUpdateOnly || !lastRoute && !preparedRoute || $rootScope.$broadcast("$routeChangeStart", preparedRoute, lastRoute).defaultPrevented && $locationEvent && $locationEvent.preventDefault();
+                preparedRoute = parseRoute(), (preparedRouteIsUpdateOnly = preparedRoute && lastRoute && preparedRoute.$$route === lastRoute.$$route && angular.equals(preparedRoute.pathParams, lastRoute.pathParams) && !preparedRoute.reloadOnSearch && !forceReload) || !lastRoute && !preparedRoute || $rootScope.$broadcast("$routeChangeStart", preparedRoute, lastRoute).defaultPrevented && $locationEvent && $locationEvent.preventDefault();
             }
             function commitRoute() {
                 var lastRoute = $route.current, nextRoute = preparedRoute;
@@ -11223,9 +11171,9 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
                             nextRoute === $route.current && (nextRoute && (nextRoute.locals = locals, angular.copy(nextRoute.params, $routeParams)), 
                             $rootScope.$broadcast("$routeChangeSuccess", nextRoute, lastRoute));
                         });
-                    })["catch"](function(error) {
+                    }).catch(function(error) {
                         nextRoute === $route.current && $rootScope.$broadcast("$routeChangeError", nextRoute, lastRoute, error);
-                    })["finally"](function() {
+                    }).finally(function() {
                         $browser.$$completeOutstandingRequest(noop);
                     });
                 }
@@ -11334,7 +11282,7 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
                     previousLeaveAnimation && ($animate.cancel(previousLeaveAnimation), previousLeaveAnimation = null), 
                     currentScope && (currentScope.$destroy(), currentScope = null), currentElement && (previousLeaveAnimation = $animate.leave(currentElement), 
                     previousLeaveAnimation.done(function(response) {
-                        response !== !1 && (previousLeaveAnimation = null);
+                        !1 !== response && (previousLeaveAnimation = null);
                     }), currentElement = null);
                 }
                 function update() {
@@ -11342,7 +11290,7 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
                     if (angular.isDefined(template)) {
                         var newScope = scope.$new(), current = $route.current, clone = $transclude(newScope, function(clone) {
                             $animate.enter(clone, null, currentElement || $element).done(function(response) {
-                                response === !1 || !angular.isDefined(autoScrollExp) || autoScrollExp && !scope.$eval(autoScrollExp) || $anchorScroll();
+                                !1 === response || !angular.isDefined(autoScrollExp) || autoScrollExp && !scope.$eval(autoScrollExp) || $anchorScroll();
                             }), cleanupLastView();
                         });
                         currentElement = clone, currentScope = current.scope = newScope, currentScope.$emit("$viewContentLoaded"), 
@@ -11379,7 +11327,7 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
     ngRouteModule.directive("ngView", ngViewFactory), ngRouteModule.directive("ngView", ngViewFillContentFactory), 
     ngViewFactory.$inject = [ "$route", "$anchorScroll", "$animate" ], ngViewFillContentFactory.$inject = [ "$compile", "$controller", "$route" ];
 }(window, window.angular), define("angular-route", [ "angular" ], function() {}), 
-+function($) {
+function($) {
     "use strict";
     function Plugin(option, _relatedTarget) {
         return this.each(function() {
@@ -11515,7 +11463,7 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
     "use strict";
     var version = $.fn.jquery.split(" ")[0].split(".");
     if (version[0] < 2 && version[1] < 9 || 1 == version[0] && 9 == version[1] && version[2] < 1 || version[0] > 3) throw new Error("Bootstrap's JavaScript requires jQuery version 1.9.1 or higher, but lower than version 4");
-}(jQuery), +function($) {
+}(jQuery), function($) {
     "use strict";
     function transitionEnd() {
         var el = document.createElement("bootstrap"), transEndEventNames = {
@@ -11547,7 +11495,7 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
             }
         });
     });
-}(jQuery), +function($) {
+}(jQuery), function($) {
     "use strict";
     function Plugin(option) {
         return this.each(function() {
@@ -11573,7 +11521,7 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
     $.fn.alert = Plugin, $.fn.alert.Constructor = Alert, $.fn.alert.noConflict = function() {
         return $.fn.alert = old, this;
     }, $(document).on("click.bs.alert.data-api", dismiss, Alert.prototype.close);
-}(jQuery), +function($) {
+}(jQuery), function($) {
     "use strict";
     function Plugin(option) {
         return this.each(function() {
@@ -11614,7 +11562,7 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
     }).on("focus.bs.button.data-api blur.bs.button.data-api", '[data-toggle^="button"]', function(e) {
         $(e.target).closest(".btn").toggleClass("focus", /^focus(in)?$/.test(e.type));
     });
-}(jQuery), +function($) {
+}(jQuery), function($) {
     "use strict";
     function Plugin(option) {
         return this.each(function() {
@@ -11655,8 +11603,8 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
     }, Carousel.prototype.getItemIndex = function(item) {
         return this.$items = item.parent().children(".item"), this.$items.index(item || this.$active);
     }, Carousel.prototype.getItemForDirection = function(direction, active) {
-        var activeIndex = this.getItemIndex(active), willWrap = "prev" == direction && 0 === activeIndex || "next" == direction && activeIndex == this.$items.length - 1;
-        if (willWrap && !this.options.wrap) return active;
+        var activeIndex = this.getItemIndex(active);
+        if (("prev" == direction && 0 === activeIndex || "next" == direction && activeIndex == this.$items.length - 1) && !this.options.wrap) return active;
         var delta = "prev" == direction ? -1 : 1, itemIndex = (activeIndex + delta) % this.$items.length;
         return this.$items.eq(itemIndex);
     }, Carousel.prototype.to = function(pos) {
@@ -11718,7 +11666,7 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
             Plugin.call($carousel, $carousel.data());
         });
     });
-}(jQuery), +function($) {
+}(jQuery), function($) {
     "use strict";
     function getTargetFromTrigger($trigger) {
         var href, target = $trigger.attr("data-target") || (href = $trigger.attr("href")) && href.replace(/.*(?=#[^\s]+$)/, "");
@@ -11740,12 +11688,11 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
     Collapse.VERSION = "3.3.7", Collapse.TRANSITION_DURATION = 350, Collapse.DEFAULTS = {
         toggle: !0
     }, Collapse.prototype.dimension = function() {
-        var hasWidth = this.$element.hasClass("width");
-        return hasWidth ? "width" : "height";
+        return this.$element.hasClass("width") ? "width" : "height";
     }, Collapse.prototype.show = function() {
         if (!this.transitioning && !this.$element.hasClass("in")) {
             var activesData, actives = this.$parent && this.$parent.children(".panel").children(".in, .collapsing");
-            if (!(actives && actives.length && (activesData = actives.data("bs.collapse"), activesData && activesData.transitioning))) {
+            if (!(actives && actives.length && (activesData = actives.data("bs.collapse")) && activesData.transitioning)) {
                 var startEvent = $.Event("show.bs.collapse");
                 if (this.$element.trigger(startEvent), !startEvent.isDefaultPrevented()) {
                     actives && actives.length && (Plugin.call(actives, "hide"), activesData || actives.data("bs.collapse", null));
@@ -11795,7 +11742,7 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
         var $target = getTargetFromTrigger($this), data = $target.data("bs.collapse"), option = data ? "toggle" : $this.data();
         Plugin.call($target, option);
     });
-}(jQuery), +function($) {
+}(jQuery), function($) {
     "use strict";
     function getParent($this) {
         var selector = $this.attr("data-target");
@@ -11842,7 +11789,7 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
                 var $parent = getParent($this), isActive = $parent.hasClass("open");
                 if (!isActive && 27 != e.which || isActive && 27 == e.which) return 27 == e.which && $parent.find(toggle).trigger("focus"), 
                 $this.trigger("click");
-                var desc = " li:not(.disabled):visible a", $items = $parent.find(".dropdown-menu" + desc);
+                var $items = $parent.find(".dropdown-menu li:not(.disabled):visible a");
                 if ($items.length) {
                     var index = $items.index(e.target);
                     38 == e.which && index > 0 && index--, 40 == e.which && index < $items.length - 1 && index++, 
@@ -11857,7 +11804,7 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
     }, $(document).on("click.bs.dropdown.data-api", clearMenus).on("click.bs.dropdown.data-api", ".dropdown form", function(e) {
         e.stopPropagation();
     }).on("click.bs.dropdown.data-api", toggle, Dropdown.prototype.toggle).on("keydown.bs.dropdown.data-api", toggle, Dropdown.prototype.keydown).on("keydown.bs.dropdown.data-api", ".dropdown-menu", Dropdown.prototype.keydown);
-}(jQuery), +function($) {
+}(jQuery), function($) {
     "use strict";
     function Plugin(option, _relatedTarget) {
         return this.each(function() {
@@ -11987,7 +11934,7 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
             });
         }), Plugin.call($target, option, this);
     });
-}(jQuery), +function($) {
+}(jQuery), function($) {
     "use strict";
     function Plugin(option) {
         return this.each(function() {
@@ -12179,10 +12126,12 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
         }
         return delta;
     }, Tooltip.prototype.getTitle = function() {
-        var title, $e = this.$element, o = this.options;
-        return title = $e.attr("data-original-title") || ("function" == typeof o.title ? o.title.call($e[0]) : o.title);
+        var $e = this.$element, o = this.options;
+        return $e.attr("data-original-title") || ("function" == typeof o.title ? o.title.call($e[0]) : o.title);
     }, Tooltip.prototype.getUID = function(prefix) {
-        do prefix += ~~(1e6 * Math.random()); while (document.getElementById(prefix));
+        do {
+            prefix += ~~(1e6 * Math.random());
+        } while (document.getElementById(prefix));
         return prefix;
     }, Tooltip.prototype.tip = function() {
         if (!this.$tip && (this.$tip = $(this.options.template), 1 != this.$tip.length)) throw new Error(this.type + " `template` option must consist of exactly 1 top-level element!");
@@ -12197,7 +12146,7 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
         this.enabled = !this.enabled;
     }, Tooltip.prototype.toggle = function(e) {
         var self = this;
-        e && (self = $(e.currentTarget).data("bs." + this.type), self || (self = new this.constructor(e.currentTarget, this.getDelegateOptions()), 
+        e && ((self = $(e.currentTarget).data("bs." + this.type)) || (self = new this.constructor(e.currentTarget, this.getDelegateOptions()), 
         $(e.currentTarget).data("bs." + this.type, self))), e ? (self.inState.click = !self.inState.click, 
         self.isInStateTrue() ? self.enter(self) : self.leave(self)) : self.tip().hasClass("in") ? self.leave(self) : self.enter(self);
     }, Tooltip.prototype.destroy = function() {
@@ -12211,7 +12160,7 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
     $.fn.tooltip = Plugin, $.fn.tooltip.Constructor = Tooltip, $.fn.tooltip.noConflict = function() {
         return $.fn.tooltip = old, this;
     };
-}(jQuery), +function($) {
+}(jQuery), function($) {
     "use strict";
     function Plugin(option) {
         return this.each(function() {
@@ -12248,7 +12197,7 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
     $.fn.popover = Plugin, $.fn.popover.Constructor = Popover, $.fn.popover.noConflict = function() {
         return $.fn.popover = old, this;
     };
-}(jQuery), +function($) {
+}(jQuery), function($) {
     "use strict";
     function ScrollSpy(element, options) {
         this.$body = $(document.body), this.$scrollElement = $($(element).is(document.body) ? window : element), 
@@ -12301,7 +12250,7 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
             Plugin.call($spy, $spy.data());
         });
     });
-}(jQuery), +function($) {
+}(jQuery), function($) {
     "use strict";
     function Plugin(option) {
         return this.each(function() {
@@ -12354,7 +12303,7 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
         e.preventDefault(), Plugin.call($(this), "show");
     };
     $(document).on("click.bs.tab.data-api", '[data-toggle="tab"]', clickHandler).on("click.bs.tab.data-api", '[data-toggle="pill"]', clickHandler);
-}(jQuery), +function($) {
+}(jQuery), function($) {
     "use strict";
     function Plugin(option) {
         return this.each(function() {
@@ -12415,7 +12364,7 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
     "function" == typeof define && define.amd ? define("angular-translate", [], function() {
         return factory();
     }) : "object" == typeof exports ? module.exports = factory() : factory();
-}(this, function() {
+}(0, function() {
     function runTranslate($translate) {
         "use strict";
         var key = $translate.storageKey(), storage = $translate.storage(), fallbackFromIncorrectStorageValue = function() {
@@ -12423,7 +12372,7 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
             angular.isString(preferred) ? $translate.use(preferred) : storage.put(key, $translate.use());
         };
         fallbackFromIncorrectStorageValue.displayName = "fallbackFromIncorrectStorageValue", 
-        storage ? storage.get(key) ? $translate.use(storage.get(key))["catch"](fallbackFromIncorrectStorageValue) : fallbackFromIncorrectStorageValue() : angular.isString($translate.preferredLanguage()) && $translate.use($translate.preferredLanguage());
+        storage ? storage.get(key) ? $translate.use(storage.get(key)).catch(fallbackFromIncorrectStorageValue) : fallbackFromIncorrectStorageValue() : angular.isString($translate.preferredLanguage()) && $translate.use($translate.preferredLanguage());
     }
     function $translateSanitizationProvider() {
         "use strict";
@@ -12516,7 +12465,7 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
     function $translate($STORAGE_KEY, $windowProvider, $translateSanitizationProvider, pascalprechtTranslateOverrider) {
         "use strict";
         var $preferredLanguage, $languageKeyAliases, $fallbackLanguage, $fallbackWasString, $uses, $nextLang, $storageFactory, $storagePrefix, $missingTranslationHandlerFactory, $interpolationFactory, $loaderFactory, $loaderOptions, $notFoundIndicatorLeft, $notFoundIndicatorRight, loaderCache, postProcessFn, $translationTable = {}, $availableLanguageKeys = [], $storageKey = $STORAGE_KEY, $interpolatorFactories = [], $cloakClassName = "translate-cloak", $postCompilingEnabled = !1, $forceAsyncReloadEnabled = !1, $nestedObjectDelimeter = ".", $isReady = !1, $keepContent = !1, directivePriority = 0, statefulFilter = !0, uniformLanguageTagResolver = "default", languageTagResolver = {
-            "default": function(tag) {
+            default: function(tag) {
                 return (tag || "").split("-").join("_");
             },
             java: function(tag) {
@@ -12528,16 +12477,13 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
                 return parts.length > 1 ? parts[0].toLowerCase() + "-" + parts[1].toUpperCase() : temp;
             },
             "iso639-1": function(tag) {
-                var temp = (tag || "").split("_").join("-"), parts = temp.split("-");
-                return parts[0].toLowerCase();
+                return (tag || "").split("_").join("-").split("-")[0].toLowerCase();
             }
-        }, version = "2.14.0", getFirstBrowserLanguage = function() {
+        }, getFirstBrowserLanguage = function() {
             if (angular.isFunction(pascalprechtTranslateOverrider.getLocale)) return pascalprechtTranslateOverrider.getLocale();
             var i, language, nav = $windowProvider.$get().navigator, browserLanguagePropertyKeys = [ "language", "browserLanguage", "systemLanguage", "userLanguage" ];
-            if (angular.isArray(nav.languages)) for (i = 0; i < nav.languages.length; i++) if (language = nav.languages[i], 
-            language && language.length) return language;
-            for (i = 0; i < browserLanguagePropertyKeys.length; i++) if (language = nav[browserLanguagePropertyKeys[i]], 
-            language && language.length) return language;
+            if (angular.isArray(nav.languages)) for (i = 0; i < nav.languages.length; i++) if ((language = nav.languages[i]) && language.length) return language;
+            for (i = 0; i < browserLanguagePropertyKeys.length; i++) if ((language = nav[browserLanguagePropertyKeys[i]]) && language.length) return language;
             return null;
         };
         getFirstBrowserLanguage.displayName = "angular-translate/service: getFirstBrowserLanguage";
@@ -12666,7 +12612,7 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
             return languageKeys ? ($availableLanguageKeys = languageKeys, aliases && ($languageKeyAliases = aliases), 
             this) : $availableLanguageKeys;
         }, this.useLoaderCache = function(cache) {
-            return cache === !1 ? loaderCache = void 0 : cache === !0 ? loaderCache = !0 : "undefined" == typeof cache ? loaderCache = "$translationCache" : cache && (loaderCache = cache), 
+            return !1 === cache ? loaderCache = void 0 : !0 === cache ? loaderCache = !0 : void 0 === cache ? loaderCache = "$translationCache" : cache && (loaderCache = cache), 
             this;
         }, this.directivePriority = function(priority) {
             return void 0 === priority ? directivePriority : (directivePriority = priority, 
@@ -12674,7 +12620,7 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
         }, this.statefulFilter = function(state) {
             return void 0 === state ? statefulFilter : (statefulFilter = state, this);
         }, this.postProcess = function(fn) {
-            return postProcessFn = fn ? fn : void 0, this;
+            return postProcessFn = fn || void 0, this;
         }, this.keepContent = function(value) {
             return $keepContent = !!value, this;
         }, this.$get = [ "$log", "$injector", "$rootScope", "$q", function($log, $injector, $rootScope, $q) {
@@ -12682,19 +12628,18 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
                 !$uses && $preferredLanguage && ($uses = $preferredLanguage);
                 var uses = forceLanguage && forceLanguage !== $uses ? negotiateLocale(forceLanguage) || forceLanguage : $uses;
                 if (forceLanguage && loadTranslationsIfMissing(forceLanguage), angular.isArray(translationId)) {
-                    var translateAll = function(translationIds) {
-                        for (var results = {}, promises = [], translate = function(translationId) {
+                    return function(translationIds) {
+                        for (var results = {}, promises = [], i = 0, c = translationIds.length; i < c; i++) promises.push(function(translationId) {
                             var deferred = $q.defer(), regardless = function(value) {
                                 results[translationId] = value, deferred.resolve([ translationId, value ]);
                             };
                             return $translate(translationId, interpolateParams, interpolationId, defaultTranslationText, forceLanguage).then(regardless, regardless), 
                             deferred.promise;
-                        }, i = 0, c = translationIds.length; i < c; i++) promises.push(translate(translationIds[i]));
+                        }(translationIds[i]));
                         return $q.all(promises).then(function() {
                             return results;
                         });
-                    };
-                    return translateAll(translationId);
+                    }(translationId);
                 }
                 var deferred = $q.defer();
                 translationId && (translationId = trim.apply(translationId));
@@ -12713,7 +12658,7 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
                     var promiseResolved = function() {
                         forceLanguage || (uses = $uses), determineTranslation(translationId, interpolateParams, interpolationId, defaultTranslationText, uses).then(deferred.resolve, deferred.reject);
                     };
-                    promiseResolved.displayName = "promiseResolved", promiseToWaitFor["finally"](promiseResolved)["catch"](angular.noop);
+                    promiseResolved.displayName = "promiseResolved", promiseToWaitFor.finally(promiseResolved).catch(angular.noop);
                 } else determineTranslation(translationId, interpolateParams, interpolationId, defaultTranslationText, uses).then(deferred.resolve, deferred.reject);
                 return deferred.promise;
             }, applyNotFoundIndicators = function(translationId) {
@@ -12832,8 +12777,7 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
                 var result;
                 if (fallbackLanguageIndex < $fallbackLanguage.length) {
                     var langKey = $fallbackLanguage[fallbackLanguageIndex];
-                    result = getFallbackTranslationInstant(langKey, translationId, interpolateParams, Interpolator, sanitizeStrategy), 
-                    result || "" === result || (result = resolveForFallbackLanguageInstant(fallbackLanguageIndex + 1, translationId, interpolateParams, Interpolator));
+                    (result = getFallbackTranslationInstant(langKey, translationId, interpolateParams, Interpolator, sanitizeStrategy)) || "" === result || (result = resolveForFallbackLanguageInstant(fallbackLanguageIndex + 1, translationId, interpolateParams, Interpolator));
                 }
                 return result;
             }, fallbackTranslation = function(translationId, interpolateParams, Interpolator, defaultTranslationText, sanitizeStrategy) {
@@ -12925,9 +12869,9 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
                     }), deferred.reject(key), $rootScope.$emit("$translateChangeEnd", {
                         language: key
                     }), $q.reject(key);
-                }), langPromises[key]["finally"](function() {
+                }), langPromises[key].finally(function() {
                     clearNextLangAndPromise(key);
-                })["catch"](angular.noop)), deferred.promise);
+                }).catch(angular.noop)), deferred.promise);
             }, $translate.resolveClientLocale = function() {
                 return getLocale();
             }, $translate.storageKey = function() {
@@ -12953,13 +12897,13 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
                 if (deferred.promise.then(function() {
                     for (var key in $translationTable) $translationTable.hasOwnProperty(key) && (key in updatedLanguages || delete $translationTable[key]);
                     $uses && useLanguage($uses);
-                }, angular.noop)["finally"](function() {
+                }, angular.noop).finally(function() {
                     $rootScope.$emit("$translateRefreshEnd", {
                         language: langKey
                     });
                 }), langKey) $translationTable[langKey] ? loadNewData(langKey).then(deferred.resolve, deferred.reject) : deferred.reject(); else {
                     var languagesToReload = $fallbackLanguage && $fallbackLanguage.slice() || [];
-                    $uses && languagesToReload.indexOf($uses) === -1 && languagesToReload.push($uses), 
+                    $uses && -1 === languagesToReload.indexOf($uses) && languagesToReload.push($uses), 
                     $q.all(languagesToReload.map(loadNewData)).then(deferred.resolve, deferred.reject);
                 }
                 return deferred.promise;
@@ -12977,8 +12921,8 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
                 $fallbackLanguage && $fallbackLanguage.length && (possibleLangKeys = possibleLangKeys.concat($fallbackLanguage));
                 for (var j = 0, d = possibleLangKeys.length; j < d; j++) {
                     var possibleLangKey = possibleLangKeys[j];
-                    if ($translationTable[possibleLangKey] && "undefined" != typeof $translationTable[possibleLangKey][translationId] && (result = determineTranslationInstant(translationId, interpolateParams, interpolationId, uses, sanitizeStrategy)), 
-                    "undefined" != typeof result) break;
+                    if ($translationTable[possibleLangKey] && void 0 !== $translationTable[possibleLangKey][translationId] && (result = determineTranslationInstant(translationId, interpolateParams, interpolationId, uses, sanitizeStrategy)), 
+                    void 0 !== result) break;
                 }
                 if (!result && "" !== result) if ($notFoundIndicatorLeft || $notFoundIndicatorRight) result = applyNotFoundIndicators(translationId); else {
                     result = defaultInterpolator.interpolate(translationId, interpolateParams, "filter", sanitizeStrategy);
@@ -12988,7 +12932,7 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
                 }
                 return result;
             }, $translate.versionInfo = function() {
-                return version;
+                return "2.14.0";
             }, $translate.loaderCache = function() {
                 return loaderCache;
             }, $translate.directivePriority = function() {
@@ -13033,11 +12977,11 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
     }
     function $translateDefaultInterpolation($interpolate, $translateSanitization) {
         "use strict";
-        var $locale, $translateInterpolator = {}, $identifier = "default";
+        var $locale, $translateInterpolator = {};
         return $translateInterpolator.setLocale = function(locale) {
             $locale = locale;
         }, $translateInterpolator.getInterpolationIdentifier = function() {
-            return $identifier;
+            return "default";
         }, $translateInterpolator.useSanitizeValueStrategy = function(value) {
             return $translateSanitization.useStrategy(value), this;
         }, $translateInterpolator.interpolate = function(value, interpolationParams, context, sanitizeStrategy) {
@@ -13061,13 +13005,7 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
                 var translateValuesExist = tAttr.translateValues ? tAttr.translateValues : void 0, translateInterpolation = tAttr.translateInterpolation ? tAttr.translateInterpolation : void 0, translateValueExist = tElement[0].outerHTML.match(/translate-value-+/i), interpolateRegExp = "^(.*)(" + $interpolate.startSymbol() + ".*" + $interpolate.endSymbol() + ")(.*)", watcherRegExp = "^(.*)" + $interpolate.startSymbol() + "(.*)" + $interpolate.endSymbol() + "(.*)";
                 return function(scope, iElement, iAttr) {
                     scope.interpolateParams = {}, scope.preText = "", scope.postText = "", scope.translateNamespace = getTranslateNamespace(scope);
-                    var translationIds = {}, initInterpolationParams = function(interpolateParams, iAttr, tAttr) {
-                        if (iAttr.translateValues && angular.extend(interpolateParams, $parse(iAttr.translateValues)(scope.$parent)), 
-                        translateValueExist) for (var attr in tAttr) if (Object.prototype.hasOwnProperty.call(iAttr, attr) && "translateValue" === attr.substr(0, 14) && "translateValues" !== attr) {
-                            var attributeName = angular.lowercase(attr.substr(14, 1)) + attr.substr(15);
-                            interpolateParams[attributeName] = tAttr[attr];
-                        }
-                    }, observeElementTranslation = function(translationId) {
+                    var translationIds = {}, observeElementTranslation = function(translationId) {
                         if (angular.isFunction(observeElementTranslation._unwatchOld) && (observeElementTranslation._unwatchOld(), 
                         observeElementTranslation._unwatchOld = void 0), angular.equals(translationId, "") || !angular.isDefined(translationId)) {
                             var iElementText = trim.apply(iElement.text()), interpolateMatches = iElementText.match(interpolateRegExp);
@@ -13077,21 +13015,27 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
                                 angular.isArray(watcherMatches) && watcherMatches[2] && watcherMatches[2].length && (observeElementTranslation._unwatchOld = scope.$watch(watcherMatches[2], function(newValue) {
                                     translationIds.translate = newValue, updateTranslations();
                                 }));
-                            } else translationIds.translate = iElementText ? iElementText : void 0;
+                            } else translationIds.translate = iElementText || void 0;
                         } else translationIds.translate = translationId;
                         updateTranslations();
-                    }, observeAttributeTranslation = function(translateAttr) {
+                    };
+                    !function(interpolateParams, iAttr, tAttr) {
+                        if (iAttr.translateValues && angular.extend(interpolateParams, $parse(iAttr.translateValues)(scope.$parent)), 
+                        translateValueExist) for (var attr in tAttr) if (Object.prototype.hasOwnProperty.call(iAttr, attr) && "translateValue" === attr.substr(0, 14) && "translateValues" !== attr) {
+                            var attributeName = angular.lowercase(attr.substr(14, 1)) + attr.substr(15);
+                            interpolateParams[attributeName] = tAttr[attr];
+                        }
+                    }(scope.interpolateParams, iAttr, tAttr);
+                    var firstAttributeChangedEvent = !0;
+                    iAttr.$observe("translate", function(translationId) {
+                        void 0 === translationId ? observeElementTranslation("") : "" === translationId && firstAttributeChangedEvent || (translationIds.translate = translationId, 
+                        updateTranslations()), firstAttributeChangedEvent = !1;
+                    });
+                    for (var translateAttr in iAttr) iAttr.hasOwnProperty(translateAttr) && "translateAttr" === translateAttr.substr(0, 13) && translateAttr.length > 13 && function(translateAttr) {
                         iAttr.$observe(translateAttr, function(translationId) {
                             translationIds[translateAttr] = translationId, updateTranslations();
                         });
-                    };
-                    initInterpolationParams(scope.interpolateParams, iAttr, tAttr);
-                    var firstAttributeChangedEvent = !0;
-                    iAttr.$observe("translate", function(translationId) {
-                        "undefined" == typeof translationId ? observeElementTranslation("") : "" === translationId && firstAttributeChangedEvent || (translationIds.translate = translationId, 
-                        updateTranslations()), firstAttributeChangedEvent = !1;
-                    });
-                    for (var translateAttr in iAttr) iAttr.hasOwnProperty(translateAttr) && "translateAttr" === translateAttr.substr(0, 13) && translateAttr.length > 13 && observeAttributeTranslation(translateAttr);
+                    }(translateAttr);
                     if (iAttr.$observe("translateDefault", function(value) {
                         scope.defaultText = value, updateTranslations();
                     }), translateValuesExist && iAttr.$observe("translateValues", function(interpolateParams) {
@@ -13099,13 +13043,12 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
                             angular.extend(scope.interpolateParams, $parse(interpolateParams)(scope.$parent));
                         });
                     }), translateValueExist) {
-                        var observeValueAttribute = function(attrName) {
+                        for (var attr in iAttr) Object.prototype.hasOwnProperty.call(iAttr, attr) && "translateValue" === attr.substr(0, 14) && "translateValues" !== attr && function(attrName) {
                             iAttr.$observe(attrName, function(value) {
                                 var attributeName = angular.lowercase(attrName.substr(14, 1)) + attrName.substr(15);
                                 scope.interpolateParams[attributeName] = value;
                             });
-                        };
-                        for (var attr in iAttr) Object.prototype.hasOwnProperty.call(iAttr, attr) && "translateValue" === attr.substr(0, 14) && "translateValues" !== attr && observeValueAttribute(attr);
+                        }(attr);
                     }
                     var updateTranslations = function() {
                         for (var key in translationIds) translationIds.hasOwnProperty(key) && void 0 !== translationIds[key] && updateTranslation(key, translationIds[key], scope, scope.interpolateParams, scope.defaultText, scope.translateNamespace);
@@ -13117,10 +13060,9 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
                             applyTranslation(translationId, scope, !1, translateAttr);
                         })) : applyTranslation(translationId, scope, !1, translateAttr);
                     }, applyTranslation = function(value, scope, successful, translateAttr) {
-                        if (successful || "undefined" != typeof scope.defaultText && (value = scope.defaultText), 
-                        "translate" === translateAttr) {
-                            (successful || !successful && !$translate.isKeepContent() && "undefined" == typeof iAttr.translateKeepContent) && iElement.empty().append(scope.preText + value + scope.postText);
-                            var globallyEnabled = $translate.isPostCompilingEnabled(), locallyDefined = "undefined" != typeof tAttr.translateCompile, locallyEnabled = locallyDefined && "false" !== tAttr.translateCompile;
+                        if (successful || void 0 !== scope.defaultText && (value = scope.defaultText), "translate" === translateAttr) {
+                            (successful || !successful && !$translate.isKeepContent() && void 0 === iAttr.translateKeepContent) && iElement.empty().append(scope.preText + value + scope.postText);
+                            var globallyEnabled = $translate.isPostCompilingEnabled(), locallyDefined = void 0 !== tAttr.translateCompile, locallyEnabled = locallyDefined && "false" !== tAttr.translateCompile;
                             (globallyEnabled && !locallyDefined || locallyEnabled) && $compile(iElement.contents())(scope);
                         } else {
                             var attributeName = iAttr.$attr[translateAttr];
@@ -13402,7 +13344,7 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
                     expiry = "; expires=" + expiryDate.toGMTString()) : 0 !== cookie.expiry && (expiryDate.setTime(expiryDate.getTime() + 24 * cookie.expiry * 60 * 60 * 1e3), 
                     expiry = "; expires=" + expiryDate.toGMTString()), key) {
                         var cookiePath = "; path=" + cookie.path;
-                        cookie.domain && (cookieDomain = "; domain=" + cookie.domain), "boolean" == typeof secure ? secure === !0 && (cookieDomain += "; secure") : cookie.secure === !0 && (cookieDomain += "; secure"), 
+                        cookie.domain && (cookieDomain = "; domain=" + cookie.domain), "boolean" == typeof secure ? !0 === secure && (cookieDomain += "; secure") : !0 === cookie.secure && (cookieDomain += "; secure"), 
                         $document.cookie = deriveQualifiedKey(key) + "=" + encodeURIComponent(value) + expiry + cookiePath + cookieDomain;
                     }
                 } catch (e) {
@@ -13447,19 +13389,13 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
                     addToLocalStorage(lsKey, newVal, type);
                 }, isObject(scope[key]));
             };
-            browserSupportsLocalStorage && ($window.addEventListener ? ($window.addEventListener("storage", handleStorageChangeCallback, !1), 
+            return browserSupportsLocalStorage && ($window.addEventListener ? ($window.addEventListener("storage", handleStorageChangeCallback, !1), 
             $rootScope.$on("$destroy", function() {
                 $window.removeEventListener("storage", handleStorageChangeCallback);
             })) : $window.attachEvent && ($window.attachEvent("onstorage", handleStorageChangeCallback), 
             $rootScope.$on("$destroy", function() {
                 $window.detachEvent("onstorage", handleStorageChangeCallback);
-            })));
-            var lengthOfLocalStorage = function(type) {
-                setStorageType(type);
-                for (var count = 0, storage = $window[storageType], i = 0; i < storage.length; i++) 0 === storage.key(i).indexOf(prefix) && count++;
-                return count;
-            };
-            return {
+            }))), {
                 isSupported: browserSupportsLocalStorage,
                 getStorageType: getStorageType,
                 setStorageType: setStorageType,
@@ -13472,7 +13408,11 @@ define("angular", [ "jquery" ], function() {}), define("routes", [], function() 
                 bind: bindToScope,
                 deriveKey: deriveQualifiedKey,
                 underiveKey: underiveQualifiedKey,
-                length: lengthOfLocalStorage,
+                length: function(type) {
+                    setStorageType(type);
+                    for (var count = 0, storage = $window[storageType], i = 0; i < storage.length; i++) 0 === storage.key(i).indexOf(prefix) && count++;
+                    return count;
+                },
                 defaultToCookie: this.defaultToCookie,
                 cookie: {
                     isSupported: browserSupportsCookies,
@@ -13586,12 +13526,12 @@ function(window, angular) {
                 klass.length && (obj[klass] = !0);
             }), obj;
         }
-        var ADD_CLASS = 1, REMOVE_CLASS = -1, flags = {};
+        var flags = {};
         existing = splitClassesToLookup(existing), toAdd = splitClassesToLookup(toAdd), 
         forEach(toAdd, function(value, key) {
-            flags[key] = ADD_CLASS;
+            flags[key] = 1;
         }), toRemove = splitClassesToLookup(toRemove), forEach(toRemove, function(value, key) {
-            flags[key] = flags[key] === ADD_CLASS ? null : REMOVE_CLASS;
+            flags[key] = 1 === flags[key] ? null : -1;
         });
         var classes = {
             addClass: "",
@@ -13599,7 +13539,7 @@ function(window, angular) {
         };
         return forEach(flags, function(val, klass) {
             var prop, allow;
-            val === ADD_CLASS ? (prop = "addClass", allow = !existing[klass] || existing[klass + REMOVE_CLASS_SUFFIX]) : val === REMOVE_CLASS && (prop = "removeClass", 
+            1 === val ? (prop = "addClass", allow = !existing[klass] || existing[klass + REMOVE_CLASS_SUFFIX]) : -1 === val && (prop = "removeClass", 
             allow = existing[klass] || existing[klass + ADD_CLASS_SUFFIX]), allow && (classes[prop].length && (classes[prop] += " "), 
             classes[prop] += klass);
         }), classes;
@@ -13637,8 +13577,7 @@ function(window, angular) {
         return [ ANIMATION_DURATION_PROP, duration + "s" ];
     }
     function getCssDelayStyle(delay, isKeyframeAnimation) {
-        var prop = isKeyframeAnimation ? ANIMATION_DELAY_PROP : TRANSITION_DELAY_PROP;
-        return [ prop, delay + "s" ];
+        return [ isKeyframeAnimation ? ANIMATION_DELAY_PROP : TRANSITION_DELAY_PROP, delay + "s" ];
     }
     function computeCssStyles($window, element, properties) {
         var styles = Object.create(null), detectedStyles = $window.getComputedStyle(element) || {};
@@ -13692,13 +13631,13 @@ function(window, angular) {
             backup[prop] = isDefined(backup[prop]) ? backup[prop] : node.style.getPropertyValue(prop);
         });
     }
-    var TRANSITION_PROP, TRANSITIONEND_EVENT, ANIMATION_PROP, ANIMATIONEND_EVENT, ELEMENT_NODE = 1, ADD_CLASS_SUFFIX = "-add", REMOVE_CLASS_SUFFIX = "-remove", EVENT_CLASS_PREFIX = "ng-", ACTIVE_CLASS_SUFFIX = "-active", PREPARE_CLASS_SUFFIX = "-prepare", NG_ANIMATE_CLASSNAME = "ng-animate", NG_ANIMATE_CHILDREN_DATA = "$$ngAnimateChildren", CSS_PREFIX = "";
-    void 0 === window.ontransitionend && void 0 !== window.onwebkittransitionend ? (CSS_PREFIX = "-webkit-", 
+    var TRANSITION_PROP, TRANSITIONEND_EVENT, ANIMATION_PROP, ANIMATIONEND_EVENT, ELEMENT_NODE = 1, ADD_CLASS_SUFFIX = "-add", REMOVE_CLASS_SUFFIX = "-remove", EVENT_CLASS_PREFIX = "ng-", NG_ANIMATE_CLASSNAME = "ng-animate", NG_ANIMATE_CHILDREN_DATA = "$$ngAnimateChildren";
+    void 0 === window.ontransitionend && void 0 !== window.onwebkittransitionend ? ("-webkit-", 
     TRANSITION_PROP = "WebkitTransition", TRANSITIONEND_EVENT = "webkitTransitionEnd transitionend") : (TRANSITION_PROP = "transition", 
-    TRANSITIONEND_EVENT = "transitionend"), void 0 === window.onanimationend && void 0 !== window.onwebkitanimationend ? (CSS_PREFIX = "-webkit-", 
+    TRANSITIONEND_EVENT = "transitionend"), void 0 === window.onanimationend && void 0 !== window.onwebkitanimationend ? ("-webkit-", 
     ANIMATION_PROP = "WebkitAnimation", ANIMATIONEND_EVENT = "webkitAnimationEnd animationend") : (ANIMATION_PROP = "animation", 
     ANIMATIONEND_EVENT = "animationend");
-    var copy, extend, forEach, isArray, isDefined, isElement, isFunction, isObject, isString, isUndefined, jqLite, noop, DURATION_KEY = "Duration", PROPERTY_KEY = "Property", DELAY_KEY = "Delay", TIMING_KEY = "TimingFunction", ANIMATION_ITERATION_COUNT_KEY = "IterationCount", ANIMATION_PLAYSTATE_KEY = "PlayState", SAFE_FAST_FORWARD_DURATION_VALUE = 9999, ANIMATION_DELAY_PROP = ANIMATION_PROP + DELAY_KEY, ANIMATION_DURATION_PROP = ANIMATION_PROP + DURATION_KEY, TRANSITION_DELAY_PROP = TRANSITION_PROP + DELAY_KEY, TRANSITION_DURATION_PROP = TRANSITION_PROP + DURATION_KEY, ngMinErr = angular.$$minErr("ng"), $$rAFSchedulerFactory = [ "$$rAF", function($$rAF) {
+    var copy, extend, forEach, isArray, isDefined, isElement, isFunction, isObject, isString, isUndefined, jqLite, noop, DURATION_KEY = "Duration", TIMING_KEY = "TimingFunction", ANIMATION_PLAYSTATE_KEY = "PlayState", ANIMATION_DELAY_PROP = ANIMATION_PROP + "Delay", ANIMATION_DURATION_PROP = ANIMATION_PROP + DURATION_KEY, TRANSITION_DELAY_PROP = TRANSITION_PROP + "Delay", TRANSITION_DURATION_PROP = TRANSITION_PROP + DURATION_KEY, ngMinErr = angular.$$minErr("ng"), $$rAFSchedulerFactory = [ "$$rAF", function($$rAF) {
         function scheduler(tasks) {
             queue = queue.concat(tasks), nextTick();
         }
@@ -13730,10 +13669,10 @@ function(window, angular) {
     } ], ANIMATE_TIMER_KEY = "$$animateCss", ONE_SECOND = 1e3, ELAPSED_TIME_MAX_DECIMAL_PLACES = 3, CLOSING_TIME_BUFFER = 1.5, DETECT_CSS_PROPERTIES = {
         transitionDuration: TRANSITION_DURATION_PROP,
         transitionDelay: TRANSITION_DELAY_PROP,
-        transitionProperty: TRANSITION_PROP + PROPERTY_KEY,
+        transitionProperty: TRANSITION_PROP + "Property",
         animationDuration: ANIMATION_DURATION_PROP,
         animationDelay: ANIMATION_DELAY_PROP,
-        animationIterationCount: ANIMATION_PROP + ANIMATION_ITERATION_COUNT_KEY
+        animationIterationCount: ANIMATION_PROP + "IterationCount"
     }, DETECT_STAGGER_CSS_PROPERTIES = {
         transitionDuration: TRANSITION_DURATION_PROP,
         transitionDelay: TRANSITION_DELAY_PROP,
@@ -13743,8 +13682,8 @@ function(window, angular) {
         var gcsLookup = createLocalCacheLookup(), gcsStaggerLookup = createLocalCacheLookup();
         this.$get = [ "$window", "$$jqLite", "$$AnimateRunner", "$timeout", "$$forceReflow", "$sniffer", "$$rAFScheduler", "$$animateQueue", function($window, $$jqLite, $$AnimateRunner, $timeout, $$forceReflow, $sniffer, $$rAFScheduler, $$animateQueue) {
             function gcsHashFn(node, extraClasses) {
-                var KEY = "$$ngAnimateParentKey", parentNode = node.parentNode, parentID = parentNode[KEY] || (parentNode[KEY] = ++parentCounter);
-                return parentID + "-" + node.getAttribute("class") + "-" + extraClasses;
+                var KEY = "$$ngAnimateParentKey", parentNode = node.parentNode;
+                return (parentNode[KEY] || (parentNode[KEY] = ++parentCounter)) + "-" + node.getAttribute("class") + "-" + extraClasses;
             }
             function computeCachedCssStyles(node, className, cacheKey, properties) {
                 var timings = gcsLookup.get(cacheKey);
@@ -13753,8 +13692,7 @@ function(window, angular) {
             }
             function computeCachedCssStaggerStyles(node, className, cacheKey, properties) {
                 var stagger;
-                if (gcsLookup.count(cacheKey) > 0 && (stagger = gcsStaggerLookup.get(cacheKey), 
-                !stagger)) {
+                if (gcsLookup.count(cacheKey) > 0 && !(stagger = gcsStaggerLookup.get(cacheKey))) {
                     var staggerClassName = pendClasses(className, "-stagger");
                     $$jqLite.addClass(node, staggerClassName), stagger = computeCssStyles($window, node, properties), 
                     stagger.animationDuration = Math.max(stagger.animationDuration, 0), stagger.transitionDuration = Math.max(stagger.transitionDuration, 0), 
@@ -13828,7 +13766,7 @@ function(window, angular) {
                             flags.recalculateTimingStyles) {
                                 if (fullClassName = node.getAttribute("class") + " " + preparationClasses, cacheKey = gcsHashFn(node, fullClassName), 
                                 timings = computeTimings(node, fullClassName, cacheKey), relativeDelay = timings.maxDelay, 
-                                maxDelay = Math.max(relativeDelay, 0), maxDuration = timings.maxDuration, 0 === maxDuration) return void close();
+                                maxDelay = Math.max(relativeDelay, 0), 0 === (maxDuration = timings.maxDuration)) return void close();
                                 flags.hasTransitions = timings.transitionDuration > 0, flags.hasAnimations = timings.animationDuration > 0;
                             }
                             if (flags.applyAnimationDelay && (relativeDelay = "boolean" != typeof options.delay && truthyTimingValue(options.delay) ? parseFloat(options.delay) : relativeDelay, 
@@ -13893,8 +13831,8 @@ function(window, angular) {
                 options.addClass && (addRemoveClassName += pendClasses(options.addClass, ADD_CLASS_SUFFIX)), 
                 options.removeClass && (addRemoveClassName.length && (addRemoveClassName += " "), 
                 addRemoveClassName += pendClasses(options.removeClass, REMOVE_CLASS_SUFFIX)), options.applyClassesEarly && addRemoveClassName.length && applyAnimationClasses(element, options);
-                var preparationClasses = [ structuralClassName, addRemoveClassName ].join(" ").trim(), fullClassName = classes + " " + preparationClasses, activeClasses = pendClasses(preparationClasses, ACTIVE_CLASS_SUFFIX), hasToStyles = styles.to && Object.keys(styles.to).length > 0, containsKeyframeAnimation = (options.keyframeStyle || "").length > 0;
-                if (!containsKeyframeAnimation && !hasToStyles && !preparationClasses) return closeAndReturnNoopAnimator();
+                var preparationClasses = [ structuralClassName, addRemoveClassName ].join(" ").trim(), fullClassName = classes + " " + preparationClasses, activeClasses = pendClasses(preparationClasses, "-active"), hasToStyles = styles.to && Object.keys(styles.to).length > 0;
+                if (!((options.keyframeStyle || "").length > 0 || hasToStyles || preparationClasses)) return closeAndReturnNoopAnimator();
                 var cacheKey, stagger;
                 if (options.stagger > 0) {
                     var staggerVal = parseFloat(options.stagger);
@@ -13921,7 +13859,7 @@ function(window, angular) {
                     applyInlineStyle(node, keyframeStyle), temporaryStyles.push(keyframeStyle);
                 }
                 var itemIndex = stagger ? options.staggerIndex >= 0 ? options.staggerIndex : gcsLookup.count(cacheKey) : 0, isFirst = 0 === itemIndex;
-                isFirst && !options.skipBlocking && blockTransitions(node, SAFE_FAST_FORWARD_DURATION_VALUE);
+                isFirst && !options.skipBlocking && blockTransitions(node, 9999);
                 var timings = computeTimings(node, fullClassName, cacheKey), relativeDelay = timings.maxDelay;
                 maxDelay = Math.max(relativeDelay, 0), maxDuration = timings.maxDuration;
                 var flags = {};
@@ -13932,7 +13870,7 @@ function(window, angular) {
                 flags.applyAnimationDelay = truthyTimingValue(options.delay) && flags.hasAnimations, 
                 flags.recalculateTimingStyles = addRemoveClassName.length > 0, (flags.applyTransitionDuration || flags.applyAnimationDuration) && (maxDuration = options.duration ? parseFloat(options.duration) : maxDuration, 
                 flags.applyTransitionDuration && (flags.hasTransitions = !0, timings.transitionDuration = maxDuration, 
-                applyOnlyDuration = node.style[TRANSITION_PROP + PROPERTY_KEY].length > 0, temporaryStyles.push(getCssTransitionDurationStyle(maxDuration, applyOnlyDuration))), 
+                applyOnlyDuration = node.style[TRANSITION_PROP + "Property"].length > 0, temporaryStyles.push(getCssTransitionDurationStyle(maxDuration, applyOnlyDuration))), 
                 flags.applyAnimationDuration && (flags.hasAnimations = !0, timings.animationDuration = maxDuration, 
                 temporaryStyles.push(getCssKeyframeDurationStyle(maxDuration)))), 0 === maxDuration && !flags.recalculateTimingStyles) return closeAndReturnNoopAnimator();
                 if (null != options.delay) {
@@ -13966,14 +13904,14 @@ function(window, angular) {
             return node.parentNode && 11 === node.parentNode.nodeType;
         }
         $$animationProvider.drivers.push("$$animateCssDriver");
-        var NG_ANIMATE_SHIM_CLASS_NAME = "ng-animate-shim", NG_ANIMATE_ANCHOR_CLASS_NAME = "ng-anchor", NG_OUT_ANCHOR_CLASS_NAME = "ng-anchor-out", NG_IN_ANCHOR_CLASS_NAME = "ng-anchor-in";
+        var NG_ANIMATE_SHIM_CLASS_NAME = "ng-animate-shim", NG_OUT_ANCHOR_CLASS_NAME = "ng-anchor-out";
         this.$get = [ "$animateCss", "$rootScope", "$$AnimateRunner", "$rootElement", "$sniffer", "$$jqLite", "$document", function($animateCss, $rootScope, $$AnimateRunner, $rootElement, $sniffer, $$jqLite, $document) {
             function filterCssClasses(classes) {
                 return classes.replace(/\bng-\S+\b/g, "");
             }
             function getUniqueValues(a, b) {
                 return isString(a) && (a = a.split(" ")), isString(b) && (b = b.split(" ")), a.filter(function(val) {
-                    return b.indexOf(val) === -1;
+                    return -1 === b.indexOf(val);
                 }).join(" ");
             }
             function prepareAnchoredAnimation(classes, outAnchor, inAnchor) {
@@ -13992,21 +13930,13 @@ function(window, angular) {
                         styles[key] = Math.floor(value) + "px";
                     }), styles;
                 }
-                function prepareOutAnimation() {
-                    var animator = $animateCss(clone, {
-                        addClass: NG_OUT_ANCHOR_CLASS_NAME,
-                        delay: !0,
-                        from: calculateAnchorStyles(outAnchor)
-                    });
-                    return animator.$$willAnimate ? animator : null;
-                }
                 function getClassVal(element) {
                     return element.attr("class") || "";
                 }
                 function prepareInAnimation() {
                     var endingClasses = filterCssClasses(getClassVal(inAnchor)), toAdd = getUniqueValues(endingClasses, startingClasses), toRemove = getUniqueValues(startingClasses, endingClasses), animator = $animateCss(clone, {
                         to: calculateAnchorStyles(inAnchor),
-                        addClass: NG_IN_ANCHOR_CLASS_NAME + " " + toAdd,
+                        addClass: "ng-anchor-in " + toAdd,
                         removeClass: NG_OUT_ANCHOR_CLASS_NAME + " " + toRemove,
                         delay: !0
                     });
@@ -14017,9 +13947,16 @@ function(window, angular) {
                 }
                 var clone = jqLite(getDomNode(outAnchor).cloneNode(!0)), startingClasses = filterCssClasses(getClassVal(clone));
                 outAnchor.addClass(NG_ANIMATE_SHIM_CLASS_NAME), inAnchor.addClass(NG_ANIMATE_SHIM_CLASS_NAME), 
-                clone.addClass(NG_ANIMATE_ANCHOR_CLASS_NAME), rootBodyElement.append(clone);
-                var animatorIn, animatorOut = prepareOutAnimation();
-                if (!animatorOut && (animatorIn = prepareInAnimation(), !animatorIn)) return end();
+                clone.addClass("ng-anchor"), rootBodyElement.append(clone);
+                var animatorIn, animatorOut = function() {
+                    var animator = $animateCss(clone, {
+                        addClass: NG_OUT_ANCHOR_CLASS_NAME,
+                        delay: !0,
+                        from: calculateAnchorStyles(outAnchor)
+                    });
+                    return animator.$$willAnimate ? animator : null;
+                }();
+                if (!animatorOut && !(animatorIn = prepareInAnimation())) return end();
                 var startingAnimator = animatorOut || animatorIn;
                 return {
                     start: function() {
@@ -14040,9 +13977,9 @@ function(window, angular) {
                 };
             }
             function prepareFromToAnchorAnimation(from, to, classes, anchors) {
-                var fromAnimation = prepareRegularAnimation(from, noop), toAnimation = prepareRegularAnimation(to, noop), anchorAnimations = [];
+                var fromAnimation = prepareRegularAnimation(from), toAnimation = prepareRegularAnimation(to), anchorAnimations = [];
                 if (forEach(anchors, function(anchor) {
-                    var outElement = anchor.out, inElement = anchor["in"], animator = prepareAnchoredAnimation(classes, outElement, inElement);
+                    var outElement = anchor.out, inElement = anchor.in, animator = prepareAnchoredAnimation(classes, outElement, inElement);
                     animator && anchorAnimations.push(animator);
                 }), fromAnimation || toAnimation || 0 !== anchorAnimations.length) return {
                     start: function() {
@@ -14142,8 +14079,7 @@ function(window, angular) {
                                     onAnimationComplete(!0);
                                 }
                             }), endProgressCb = executeAnimationFn(animation, element, event, options, function(result) {
-                                var cancelled = result === !1;
-                                onAnimationComplete(cancelled);
+                                onAnimationComplete(!1 === result);
                             }), runner;
                         });
                     }), operations;
@@ -14319,8 +14255,7 @@ function(window, angular) {
             function filterFromRegistry(list, matchContainer, matchCallback) {
                 var containerNode = extractElementNode(matchContainer);
                 return list.filter(function(entry) {
-                    var isMatch = entry.node === containerNode && (!matchCallback || entry.callback === matchCallback);
-                    return !isMatch;
+                    return !(entry.node === containerNode && (!matchCallback || entry.callback === matchCallback));
                 });
             }
             function cleanupEventListeners(phase, node) {
@@ -14367,17 +14302,14 @@ function(window, angular) {
                     runner: runner
                 };
                 if (hasExistingAnimation) {
-                    var skipAnimationFlag = isAllowed("skip", newAnimation, existingAnimation);
-                    if (skipAnimationFlag) return existingAnimation.state === RUNNING_STATE ? (close(), 
+                    if (isAllowed("skip", newAnimation, existingAnimation)) return existingAnimation.state === RUNNING_STATE ? (close(), 
                     runner) : (mergeAnimationDetails(element, existingAnimation, newAnimation), existingAnimation.runner);
-                    var cancelAnimationFlag = isAllowed("cancel", newAnimation, existingAnimation);
-                    if (cancelAnimationFlag) if (existingAnimation.state === RUNNING_STATE) existingAnimation.runner.end(); else {
+                    if (isAllowed("cancel", newAnimation, existingAnimation)) if (existingAnimation.state === RUNNING_STATE) existingAnimation.runner.end(); else {
                         if (!existingAnimation.structural) return mergeAnimationDetails(element, existingAnimation, newAnimation), 
                         existingAnimation.runner;
                         existingAnimation.close();
                     } else {
-                        var joinAnimationFlag = isAllowed("join", newAnimation, existingAnimation);
-                        if (joinAnimationFlag) {
+                        if (isAllowed("join", newAnimation, existingAnimation)) {
                             if (existingAnimation.state !== RUNNING_STATE) return applyGeneratedPreparationClasses(element, isStructural ? event : null, options), 
                             event = newAnimation.event = existingAnimation.event, options = mergeAnimationDetails(element, existingAnimation, newAnimation), 
                             existingAnimation.runner;
@@ -14418,12 +14350,12 @@ function(window, angular) {
                         animationDetails.runner.end();
 
                       case PRE_DIGEST_STATE:
-                        activeAnimationsLookup["delete"](child);
+                        activeAnimationsLookup.delete(child);
                     }
                 });
             }
             function clearElementAnimationState(node) {
-                node.removeAttribute(NG_ANIMATE_ATTR_NAME), activeAnimationsLookup["delete"](node);
+                node.removeAttribute(NG_ANIMATE_ATTR_NAME), activeAnimationsLookup.delete(node);
             }
             function areAnimationsAllowed(node, parentNode, event) {
                 var animateChildren, bodyNode = $document[0].body, rootNode = getDomNode($rootElement), bodyNodeDetected = node === bodyNode || "HTML" === node.nodeName, rootNodeDetected = node === rootNode, parentAnimationDetected = !1, elementDisabled = disabledElementsLookup.get(node), parentHost = jqLite.data(node, NG_ANIMATE_PIN_DATA);
@@ -14432,22 +14364,21 @@ function(window, angular) {
                     var details = activeAnimationsLookup.get(parentNode) || {};
                     if (!parentAnimationDetected) {
                         var parentNodeDisabled = disabledElementsLookup.get(parentNode);
-                        if (parentNodeDisabled === !0 && elementDisabled !== !1) {
+                        if (!0 === parentNodeDisabled && !1 !== elementDisabled) {
                             elementDisabled = !0;
                             break;
                         }
-                        parentNodeDisabled === !1 && (elementDisabled = !1), parentAnimationDetected = details.structural;
+                        !1 === parentNodeDisabled && (elementDisabled = !1), parentAnimationDetected = details.structural;
                     }
-                    if (isUndefined(animateChildren) || animateChildren === !0) {
+                    if (isUndefined(animateChildren) || !0 === animateChildren) {
                         var value = jqLite.data(parentNode, NG_ANIMATE_CHILDREN_DATA);
                         isDefined(value) && (animateChildren = value);
                     }
-                    if (parentAnimationDetected && animateChildren === !1) break;
+                    if (parentAnimationDetected && !1 === animateChildren) break;
                     if (bodyNodeDetected || (bodyNodeDetected = parentNode === bodyNode), bodyNodeDetected && rootNodeDetected) break;
                     parentNode = rootNodeDetected || !(parentHost = jqLite.data(parentNode, NG_ANIMATE_PIN_DATA)) ? parentNode.parentNode : getDomNode(parentHost);
                 }
-                var allowAnimation = (!parentAnimationDetected || animateChildren) && elementDisabled !== !0;
-                return allowAnimation && rootNodeDetected && bodyNodeDetected;
+                return (!parentAnimationDetected || animateChildren) && !0 !== elementDisabled && rootNodeDetected && bodyNodeDetected;
             }
             function markElementAnimationState(node, state, details) {
                 details = details || {}, details.state = state, node.setAttribute(NG_ANIMATE_ATTR_NAME, state);
@@ -14475,8 +14406,7 @@ function(window, angular) {
                         node: node,
                         callback: callback
                     }), jqLite(container).on("$destroy", function() {
-                        var animationDetails = activeAnimationsLookup.get(node);
-                        animationDetails || $animate.off(event, container, callback);
+                        activeAnimationsLookup.get(node) || $animate.off(event, container, callback);
                     });
                 },
                 off: function(event, container, callback) {
@@ -14498,8 +14428,7 @@ function(window, angular) {
                 enabled: function(element, bool) {
                     var argCount = arguments.length;
                     if (0 === argCount) bool = !!animationsEnabled; else {
-                        var hasElement = isElement(element);
-                        if (hasElement) {
+                        if (isElement(element)) {
                             var node = getDomNode(element);
                             1 === argCount ? bool = !disabledElementsLookup.get(node) : disabledElementsLookup.set(node, !bool);
                         } else bool = animationsEnabled = !!element;
@@ -14536,19 +14465,6 @@ function(window, angular) {
                     }
                     return (parentEntry || tree).children.push(entry), entry;
                 }
-                function flatten(tree) {
-                    var i, result = [], queue = [];
-                    for (i = 0; i < tree.children.length; i++) queue.push(tree.children[i]);
-                    var remainingLevelEntries = queue.length, nextLevelEntries = 0, row = [];
-                    for (i = 0; i < queue.length; i++) {
-                        var entry = queue[i];
-                        remainingLevelEntries <= 0 && (remainingLevelEntries = nextLevelEntries, nextLevelEntries = 0, 
-                        result.push(row), row = []), row.push(entry.fn), entry.children.forEach(function(childEntry) {
-                            nextLevelEntries++, queue.push(childEntry);
-                        }), remainingLevelEntries--;
-                    }
-                    return row.length && result.push(row), result;
-                }
                 var i, tree = {
                     children: []
                 }, lookup = new $$Map();
@@ -14561,7 +14477,19 @@ function(window, angular) {
                     });
                 }
                 for (i = 0; i < animations.length; i++) processNode(animations[i]);
-                return flatten(tree);
+                return function(tree) {
+                    var i, result = [], queue = [];
+                    for (i = 0; i < tree.children.length; i++) queue.push(tree.children[i]);
+                    var remainingLevelEntries = queue.length, nextLevelEntries = 0, row = [];
+                    for (i = 0; i < queue.length; i++) {
+                        var entry = queue[i];
+                        remainingLevelEntries <= 0 && (remainingLevelEntries = nextLevelEntries, nextLevelEntries = 0, 
+                        result.push(row), row = []), row.push(entry.fn), entry.children.forEach(function(childEntry) {
+                            nextLevelEntries++, queue.push(childEntry);
+                        }), remainingLevelEntries--;
+                    }
+                    return row.length && result.push(row), result;
+                }(tree);
             }
             var animationQueue = [], applyAnimationClasses = applyAnimationClassesFactory($$jqLite);
             return function(element, event, options) {
@@ -14614,7 +14542,7 @@ function(window, angular) {
                         }
                         anchorGroups[lookupKey].anchors.push({
                             out: from.element,
-                            "in": to.element
+                            in: to.element
                         });
                     }), preparedAnimations;
                 }
@@ -14669,8 +14597,8 @@ function(window, angular) {
                 var classes = mergeClasses(element.attr("class"), mergeClasses(options.addClass, options.removeClass)), tempClasses = options.tempClasses;
                 tempClasses && (classes += " " + tempClasses, options.tempClasses = null);
                 var prepareClassName;
-                return isStructural && (prepareClassName = "ng-" + event + PREPARE_CLASS_SUFFIX, 
-                $$jqLite.addClass(element, prepareClassName)), animationQueue.push({
+                return isStructural && (prepareClassName = "ng-" + event + "-prepare", $$jqLite.addClass(element, prepareClassName)), 
+                animationQueue.push({
                     element: element,
                     classes: classes,
                     event: event,
@@ -14689,8 +14617,8 @@ function(window, angular) {
                             domNode: getDomNode(animationEntry.from ? animationEntry.from.element : animationEntry.element),
                             fn: function() {
                                 animationEntry.beforeStart();
-                                var startAnimationFn, closeFn = animationEntry.close, targetElement = animationEntry.anchors ? animationEntry.from.element || animationEntry.to.element : animationEntry.element;
-                                if (getRunner(targetElement)) {
+                                var startAnimationFn, closeFn = animationEntry.close;
+                                if (getRunner(animationEntry.anchors ? animationEntry.from.element || animationEntry.to.element : animationEntry.element)) {
                                     var operation = invokeFirstDriver(animationEntry);
                                     operation && (startAnimationFn = operation.start);
                                 }
@@ -14714,7 +14642,7 @@ function(window, angular) {
             priority: 600,
             link: function(scope, $element, attrs, ctrl, $transclude) {
                 var previousElement, previousScope;
-                scope.$watchCollection(attrs.ngAnimateSwap || attrs["for"], function(value) {
+                scope.$watchCollection(attrs.ngAnimateSwap || attrs.for, function(value) {
                     previousElement && $animate.leave(previousElement), previousScope && (previousScope.$destroy(), 
                     previousScope = null), (value || 0 === value) && (previousScope = scope.$new(), 
                     $transclude(previousScope, function(element) {
@@ -14743,32 +14671,27 @@ function() {
             if (1 !== arguments.length || toast) if (toast) remove(toast.toastId); else for (var i = 0; i < toasts.length; i++) remove(toasts[i].toastId);
         }
         function error(message, title, optionsOverride) {
-            var type = _getOptions().iconClasses.error;
-            return _buildNotification(type, message, title, optionsOverride);
+            return _buildNotification(_getOptions().iconClasses.error, message, title, optionsOverride);
         }
         function info(message, title, optionsOverride) {
-            var type = _getOptions().iconClasses.info;
-            return _buildNotification(type, message, title, optionsOverride);
+            return _buildNotification(_getOptions().iconClasses.info, message, title, optionsOverride);
         }
         function success(message, title, optionsOverride) {
-            var type = _getOptions().iconClasses.success;
-            return _buildNotification(type, message, title, optionsOverride);
+            return _buildNotification(_getOptions().iconClasses.success, message, title, optionsOverride);
         }
         function warning(message, title, optionsOverride) {
-            var type = _getOptions().iconClasses.warning;
-            return _buildNotification(type, message, title, optionsOverride);
+            return _buildNotification(_getOptions().iconClasses.warning, message, title, optionsOverride);
         }
         function refreshTimer(toast, newTime) {
             toast && toast.isOpened && toasts.indexOf(toast) >= 0 && toast.scope.refreshTimer(newTime);
         }
         function remove(toastId, wasClicked) {
-            function findToast(toastId) {
-                for (var i = 0; i < toasts.length; i++) if (toasts[i].toastId === toastId) return toasts[i];
-            }
             function lastToast() {
                 return !toasts.length;
             }
-            var toast = findToast(toastId);
+            var toast = function(toastId) {
+                for (var i = 0; i < toasts.length; i++) if (toasts[i].toastId === toastId) return toasts[i];
+            }(toastId);
             toast && !toast.deleting && (toast.deleting = !0, toast.isOpened = !1, $animate.leave(toast.el).then(function() {
                 toast.scope.options.onHidden && toast.scope.options.onHidden(!!wasClicked, toast), 
                 toast.scope.$destroy();
@@ -14803,9 +14726,6 @@ function() {
             }), containerDefer.promise;
         }
         function _notify(map) {
-            function ifMaxOpenedAndAutoDismiss() {
-                return options.autoDismiss && options.maxOpened && toasts.length > options.maxOpened;
-            }
             function createScope(toast, map, options) {
                 function generateEvent(event) {
                     if (options[event]) return function() {
@@ -14828,38 +14748,36 @@ function() {
                     toastClass: options.toastClass
                 }, options.closeButton && (toast.scope.options.closeHtml = options.closeHtml);
             }
-            function createToast() {
-                function cleanOptionsOverride(options) {
-                    for (var badOptions = [ "containerId", "iconClasses", "maxOpened", "newestOnTop", "positionClass", "preventDuplicates", "preventOpenDuplicates", "templates" ], i = 0, l = badOptions.length; i < l; i++) delete options[badOptions[i]];
-                    return options;
-                }
-                var newToast = {
-                    toastId: index++,
-                    isOpened: !1,
-                    scope: $rootScope.$new(),
-                    open: $q.defer()
-                };
-                return newToast.iconClass = map.iconClass, map.optionsOverride && (angular.extend(options, cleanOptionsOverride(map.optionsOverride)), 
-                newToast.iconClass = map.optionsOverride.iconClass || newToast.iconClass), createScope(newToast, map, options), 
-                newToast.el = createToastEl(newToast.scope), newToast;
-            }
             function createToastEl(scope) {
-                var angularDomEl = angular.element("<div toast></div>"), $compile = $injector.get("$compile");
-                return $compile(angularDomEl)(scope);
+                var angularDomEl = angular.element("<div toast></div>");
+                return $injector.get("$compile")(angularDomEl)(scope);
             }
-            function maxOpenedNotReached() {
-                return options.maxOpened && toasts.length <= options.maxOpened || !options.maxOpened;
-            }
-            function shouldExit() {
+            var options = _getOptions();
+            if (!function() {
                 var isDuplicateOfLast = options.preventDuplicates && map.message === previousToastMessage, isDuplicateOpen = options.preventOpenDuplicates && openToasts[map.message];
                 return !(!isDuplicateOfLast && !isDuplicateOpen && (previousToastMessage = map.message, 
                 openToasts[map.message] = !0, 1));
-            }
-            var options = _getOptions();
-            if (!shouldExit()) {
-                var newToast = createToast();
-                if (toasts.push(newToast), ifMaxOpenedAndAutoDismiss()) for (var oldToasts = toasts.slice(0, toasts.length - options.maxOpened), i = 0, len = oldToasts.length; i < len; i++) remove(oldToasts[i].toastId);
-                return maxOpenedNotReached() && newToast.open.resolve(), newToast.open.promise.then(function() {
+            }()) {
+                var newToast = function() {
+                    var newToast = {
+                        toastId: index++,
+                        isOpened: !1,
+                        scope: $rootScope.$new(),
+                        open: $q.defer()
+                    };
+                    return newToast.iconClass = map.iconClass, map.optionsOverride && (angular.extend(options, function(options) {
+                        for (var badOptions = [ "containerId", "iconClasses", "maxOpened", "newestOnTop", "positionClass", "preventDuplicates", "preventOpenDuplicates", "templates" ], i = 0, l = badOptions.length; i < l; i++) delete options[badOptions[i]];
+                        return options;
+                    }(map.optionsOverride)), newToast.iconClass = map.optionsOverride.iconClass || newToast.iconClass), 
+                    createScope(newToast, map, options), newToast.el = createToastEl(newToast.scope), 
+                    newToast;
+                }();
+                if (toasts.push(newToast), function() {
+                    return options.autoDismiss && options.maxOpened && toasts.length > options.maxOpened;
+                }()) for (var oldToasts = toasts.slice(0, toasts.length - options.maxOpened), i = 0, len = oldToasts.length; i < len; i++) remove(oldToasts[i].toastId);
+                return function() {
+                    return options.maxOpened && toasts.length <= options.maxOpened || !options.maxOpened;
+                }() && newToast.open.resolve(), newToast.open.promise.then(function() {
                     _createOrGetContainer(options).then(function() {
                         if (newToast.isOpened = !0, options.newestOnTop) $animate.enter(newToast.el, container).then(function() {
                             newToast.scope.init();
@@ -14873,7 +14791,8 @@ function() {
                 }), newToast;
             }
         }
-        var container, index = 0, toasts = [], previousToastMessage = "", openToasts = {}, containerDefer = $q.defer(), toast = {
+        var container, index = 0, toasts = [], previousToastMessage = "", openToasts = {}, containerDefer = $q.defer();
+        return {
             active: active,
             clear: clear,
             error: error,
@@ -14883,7 +14802,6 @@ function() {
             warning: warning,
             refreshTimer: refreshTimer
         };
-        return toast;
     }
     angular.module("toastr", []).factory("toastr", toastr), toastr.$inject = [ "$animate", "$injector", "$document", "$rootScope", "$sce", "toastrConfig", "$q" ];
 }(), function() {
@@ -14970,13 +14888,12 @@ function() {
             function hideAndStopProgressBar() {
                 scope.progressBar = !1, toastCtrl.stopProgressBar();
             }
-            function wantsCloseButton() {
-                return scope.options.closeHtml;
-            }
             var timeout;
             if (scope.toastClass = scope.options.toastClass, scope.titleClass = scope.options.titleClass, 
             scope.messageClass = scope.options.messageClass, scope.progressBar = scope.options.progressBar, 
-            wantsCloseButton()) {
+            function() {
+                return scope.options.closeHtml;
+            }()) {
                 var button = angular.element(scope.options.closeHtml), $compile = $injector.get("$compile");
                 button.addClass("toast-close-button"), button.attr("ng-click", "close(true, $event)"), 
                 $compile(button)(scope), element.children().prepend(button);
@@ -15015,8 +14932,7 @@ function() {
     angular.module("angular-jwt.authManager", []).provider("authManager", function() {
         this.$get = [ "$rootScope", "$injector", "$location", "jwtHelper", "jwtInterceptor", "jwtOptions", function($rootScope, $injector, $location, jwtHelper, jwtInterceptor, jwtOptions) {
             function invokeToken(tokenGetter) {
-                var token = null;
-                return token = Array.isArray(tokenGetter) ? $injector.invoke(tokenGetter, this, {
+                return Array.isArray(tokenGetter) ? $injector.invoke(tokenGetter, this, {
                     options: null
                 }) : tokenGetter();
             }
@@ -15048,7 +14964,7 @@ function() {
             function verifyRoute(event, next) {
                 if (!next) return !1;
                 var routeData = next.$$route ? next.$$route : next.data;
-                if (routeData && routeData.requiresLogin === !0) {
+                if (routeData && !0 === routeData.requiresLogin) {
                     var token = invokeToken(config.tokenGetter);
                     token && !jwtHelper.isTokenExpired(token) || (event.preventDefault(), invokeRedirector(config.unauthenticatedRedirector));
                 }
@@ -15089,10 +15005,9 @@ function() {
                     if (options.urlParam) {
                         if (request.params = request.params || {}, request.params[options.urlParam]) return request;
                     } else if (request.headers = request.headers || {}, request.headers[options.authHeader]) return request;
-                    var tokenPromise = $q.when($injector.invoke(options.tokenGetter, this, {
+                    return $q.when($injector.invoke(options.tokenGetter, this, {
                         options: request
-                    }));
-                    return tokenPromise.then(function(token) {
+                    })).then(function(token) {
                         return token && (options.urlParam ? request.params[options.urlParam] = token : request.headers[options.authHeader] = options.authPrefix + token), 
                         request;
                     });
@@ -15130,7 +15045,7 @@ function() {
             return angular.fromJson(decoded);
         }, this.getTokenExpirationDate = function(token) {
             var decoded = this.decodeToken(token);
-            if ("undefined" == typeof decoded.exp) return null;
+            if (void 0 === decoded.exp) return null;
             var d = new Date(0);
             return d.setUTCSeconds(decoded.exp), d;
         }, this.isTokenExpired = function(token, offsetSeconds) {
@@ -15194,17 +15109,6 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     var $animateCss = $injector.has("$animateCss") ? $injector.get("$animateCss") : null;
     return {
         link: function(scope, element, attrs) {
-            function init() {
-                horizontal = !!("horizontal" in attrs), horizontal ? (css = {
-                    width: ""
-                }, cssTo = {
-                    width: "0"
-                }) : (css = {
-                    height: ""
-                }, cssTo = {
-                    height: "0"
-                }), scope.$eval(attrs.uibCollapse) || element.addClass("in").addClass("collapse").attr("aria-expanded", !0).attr("aria-hidden", !1).css(css);
-            }
             function getScrollFromElement(element) {
                 return horizontal ? {
                     width: element.scrollWidth + "px"
@@ -15222,7 +15126,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                             overflow: "hidden"
                         },
                         to: getScrollFromElement(element[0])
-                    }).start()["finally"](expandDone) : $animate.addClass(element, "in", {
+                    }).start().finally(expandDone) : $animate.addClass(element, "in", {
                         css: {
                             overflow: "hidden"
                         },
@@ -15239,7 +15143,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                     $animateCss ? $animateCss(element, {
                         removeClass: "in",
                         to: cssTo
-                    }).start()["finally"](collapseDone) : $animate.removeClass(element, "in", {
+                    }).start().finally(collapseDone) : $animate.removeClass(element, "in", {
                         to: cssTo
                     }).then(collapseDone);
                 }, angular.noop) : collapseDone();
@@ -15248,7 +15152,17 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                 element.css(cssTo), element.removeClass("collapsing").addClass("collapse"), collapsedExpr(scope);
             }
             var expandingExpr = $parse(attrs.expanding), expandedExpr = $parse(attrs.expanded), collapsingExpr = $parse(attrs.collapsing), collapsedExpr = $parse(attrs.collapsed), horizontal = !1, css = {}, cssTo = {};
-            init(), scope.$watch(attrs.uibCollapse, function(shouldCollapse) {
+            (function() {
+                horizontal = !!("horizontal" in attrs), horizontal ? (css = {
+                    width: ""
+                }, cssTo = {
+                    width: "0"
+                }) : (css = {
+                    height: ""
+                }, cssTo = {
+                    height: "0"
+                }), scope.$eval(attrs.uibCollapse) || element.addClass("in").addClass("collapse").attr("aria-expanded", !0).attr("aria-hidden", !1).css(css);
+            })(), scope.$watch(attrs.uibCollapse, function(shouldCollapse) {
                 shouldCollapse ? collapse() : expand();
             });
         }
@@ -15266,8 +15180,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     closeOthers: !0
 }).controller("UibAccordionController", [ "$scope", "$attrs", "uibAccordionConfig", function($scope, $attrs, accordionConfig) {
     this.groups = [], this.closeOthers = function(openGroup) {
-        var closeOthers = angular.isDefined($attrs.closeOthers) ? $scope.$eval($attrs.closeOthers) : accordionConfig.closeOthers;
-        closeOthers && angular.forEach(this.groups, function(group) {
+        (angular.isDefined($attrs.closeOthers) ? $scope.$eval($attrs.closeOthers) : accordionConfig.closeOthers) && angular.forEach(this.groups, function(group) {
             group !== openGroup && (group.isOpen = !1);
         });
     }, this.addGroup = function(groupScope) {
@@ -15277,7 +15190,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         });
     }, this.removeGroup = function(group) {
         var index = this.groups.indexOf(group);
-        index !== -1 && this.groups.splice(index, 1);
+        -1 !== index && this.groups.splice(index, 1);
     };
 } ]).directive("uibAccordion", function() {
     return {
@@ -15329,9 +15242,6 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         }
     };
 }).directive("uibAccordionTransclude", function() {
-    function getHeaderSelectors() {
-        return "uib-accordion-header,data-uib-accordion-header,x-uib-accordion-header,uib\\:accordion-header,[uib-accordion-header],[data-uib-accordion-header],[x-uib-accordion-header]";
-    }
     return {
         require: "^uibAccordionGroup",
         link: function(scope, element, attrs, controller) {
@@ -15339,7 +15249,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                 return controller[attrs.uibAccordionTransclude];
             }, function(heading) {
                 if (heading) {
-                    var elem = angular.element(element[0].querySelector(getHeaderSelectors()));
+                    var elem = angular.element(element[0].querySelector("uib-accordion-header,data-uib-accordion-header,x-uib-accordion-header,uib\\:accordion-header,[uib-accordion-header],[data-uib-accordion-header],[x-uib-accordion-header]"));
                     elem.html(""), elem.append(heading);
                 }
             });
@@ -15512,8 +15422,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                 index = i;
                 break;
             }
-            var slide = slides[index];
-            slide && (setActive(index), self.select(slides[index]), currentIndex = index);
+            slides[index] && (setActive(index), self.select(slides[index]), currentIndex = index);
         }
     });
 } ]).directive("uibCarousel", function() {
@@ -15557,11 +15466,10 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     function removeClass(element, className, callback) {
         element.removeClass(className), callback && callback();
     }
-    var SLIDE_DIRECTION = "uib-slideDirection";
     return {
         beforeAddClass: function(element, className, done) {
             if ("active" === className) {
-                var stopped = !1, direction = element.data(SLIDE_DIRECTION), directionClass = "next" === direction ? "left" : "right", removeClassFn = removeClass.bind(this, element, directionClass + " " + direction, done);
+                var stopped = !1, direction = element.data("uib-slideDirection"), directionClass = "next" === direction ? "left" : "right", removeClassFn = removeClass.bind(this, element, directionClass + " " + direction, done);
                 return element.addClass(direction), $animateCss(element, {
                     addClass: directionClass
                 }).start().done(removeClassFn), function() {
@@ -15572,7 +15480,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         },
         beforeRemoveClass: function(element, className, done) {
             if ("active" === className) {
-                var stopped = !1, direction = element.data(SLIDE_DIRECTION), directionClass = "next" === direction ? "left" : "right", removeClassFn = removeClass.bind(this, element, directionClass, done);
+                var stopped = !1, direction = element.data("uib-slideDirection"), directionClass = "next" === direction ? "left" : "right", removeClassFn = removeClass.bind(this, element, directionClass, done);
                 return $animateCss(element, {
                     addClass: directionClass
                 }).start().done(removeClassFn), function() {
@@ -15647,7 +15555,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         };
     }
     function isValid(year, month, date) {
-        return !(date < 1) && (1 === month && date > 28 ? 29 === date && (year % 4 === 0 && year % 100 !== 0 || year % 400 === 0) : 3 !== month && 5 !== month && 8 !== month && 10 !== month || date < 31);
+        return !(date < 1) && (1 === month && date > 28 ? 29 === date && (year % 4 == 0 && year % 100 != 0 || year % 400 == 0) : 3 !== month && 5 !== month && 8 !== month && 10 !== month || date < 31);
     }
     function toInt(str) {
         return parseInt(str, 10);
@@ -15669,8 +15577,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     }
     function convertTimezoneToLocal(date, timezone, reverse) {
         reverse = reverse ? -1 : 1;
-        var dateTimezoneOffset = date.getTimezoneOffset(), timezoneOffset = timezoneToOffset(timezone, dateTimezoneOffset);
-        return addDateMinutes(date, reverse * (timezoneOffset - dateTimezoneOffset));
+        var dateTimezoneOffset = date.getTimezoneOffset();
+        return addDateMinutes(date, reverse * (timezoneToOffset(timezone, dateTimezoneOffset) - dateTimezoneOffset));
     }
     var localeId, formatCodeToRegex, SPECIAL_CHARACTERS_REGEXP = /[\\\^\$\*\+\?\|\[\]\(\)\.\{\}]/g;
     this.init = function() {
@@ -15711,8 +15619,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                 this.month = value - 1;
             },
             formatter: function(date) {
-                var value = date.getMonth();
-                return /^[0-9]$/.test(value) ? dateFilter(date, "MM") : dateFilter(date, "M");
+                return /^[0-9]$/.test(date.getMonth()) ? dateFilter(date, "MM") : dateFilter(date, "M");
             }
         }, {
             key: "MMMM",
@@ -15757,8 +15664,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                 this.date = +value;
             },
             formatter: function(date) {
-                var value = date.getDate();
-                return /^[1-9]$/.test(value) ? dateFilter(date, "dd") : dateFilter(date, "d");
+                return /^[1-9]$/.test(date.getDate()) ? dateFilter(date, "dd") : dateFilter(date, "d");
             }
         }, {
             key: "dd",
@@ -15943,17 +15849,15 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         var f = getFormatCodeToRegex(key);
         f && angular.isFunction(parser) && (this.parsers = {}, f.apply = parser);
     }.bind(this), this.filter = function(date, format) {
-        if (!angular.isDate(date) || isNaN(date) || !format) return "";
-        format = $locale.DATETIME_FORMATS[format] || format, $locale.id !== localeId && this.init(), 
-        this.formatters[format] || (this.formatters[format] = createFormatter(format));
-        var formatters = this.formatters[format];
-        return formatters.reduce(function(str, formatter) {
+        return angular.isDate(date) && !isNaN(date) && format ? (format = $locale.DATETIME_FORMATS[format] || format, 
+        $locale.id !== localeId && this.init(), this.formatters[format] || (this.formatters[format] = createFormatter(format)), 
+        this.formatters[format].reduce(function(str, formatter) {
             return str + formatter(date);
-        }, "");
+        }, "")) : "";
     }, this.parse = function(input, format, baseDate) {
         if (!angular.isString(input) || !format) return input;
         format = $locale.DATETIME_FORMATS[format] || format, format = format.replace(SPECIAL_CHARACTERS_REGEXP, "\\$&"), 
-        $locale.id !== localeId && this.init(), this.parsers[format] || (this.parsers[format] = createParser(format, "apply"));
+        $locale.id !== localeId && this.init(), this.parsers[format] || (this.parsers[format] = createParser(format));
         var parser = this.parsers[format], regex = parser.regex, map = parser.map, results = input.match(regex), tzOffset = !1;
         if (results && results.length) {
             var fields, dt;
@@ -16005,8 +15909,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                     var watchFn = function(compareWithVal) {
                         var newActivated = null;
                         instances.some(function(instance) {
-                            var thisVal = instance.scope.$eval(onExp);
-                            if (thisVal === compareWithVal) return newActivated = instance, !0;
+                            if (instance.scope.$eval(onExp) === compareWithVal) return newActivated = instance, 
+                            !0;
                         }), data.lastActivated !== newActivated && (data.lastActivated && $animate.removeClass(data.lastActivated.element, clazz), 
                         newActivated && $animate.addClass(newActivated.element, clazz), data.lastActivated = newActivated);
                     };
@@ -16143,8 +16047,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         };
     }, this.render = function() {
         if (ngModelCtrl.$viewValue) {
-            var date = new Date(ngModelCtrl.$viewValue), isValid = !isNaN(date);
-            isValid ? this.activeDate = dateParser.fromTimezone(date, ngModelOptions.getOption("timezone")) : $datepickerSuppressError || $log.error('Datepicker directive: "ng-model" value must be a Date object');
+            var date = new Date(ngModelCtrl.$viewValue);
+            !isNaN(date) ? this.activeDate = dateParser.fromTimezone(date, ngModelOptions.getOption("timezone")) : $datepickerSuppressError || $log.error('Datepicker directive: "ng-model" value must be a Date object');
         }
         this.refreshView();
     }, this.refreshView = function() {
@@ -16195,7 +16099,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         var year = self.activeDate.getFullYear() + direction * (self.step.years || 0), month = self.activeDate.getMonth() + direction * (self.step.months || 0);
         self.activeDate.setFullYear(year, month, 1), self.refreshView();
     }, $scope.toggleMode = function(direction) {
-        direction = direction || 1, $scope.datepickerMode === self.maxMode && 1 === direction || $scope.datepickerMode === self.minMode && direction === -1 || (setMode(self.modes[self.modes.indexOf($scope.datepickerMode) + direction]), 
+        direction = direction || 1, $scope.datepickerMode === self.maxMode && 1 === direction || $scope.datepickerMode === self.minMode && -1 === direction || (setMode(self.modes[self.modes.indexOf($scope.datepickerMode) + direction]), 
         $scope.$emit("uib:datepicker.mode"));
     }, $scope.keys = {
         13: "enter",
@@ -16229,7 +16133,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     });
 } ]).controller("UibDaypickerController", [ "$scope", "$element", "dateFilter", function(scope, $element, dateFilter) {
     function getDaysInMonth(year, month) {
-        return 1 !== month || year % 4 !== 0 || year % 100 === 0 && year % 400 !== 0 ? DAYS_IN_MONTH[month] : 29;
+        return 1 !== month || year % 4 != 0 || year % 100 == 0 && year % 400 != 0 ? DAYS_IN_MONTH[month] : 29;
     }
     function getISO8601WeekNumber(date) {
         var checkDate = new Date(date);
@@ -16250,7 +16154,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         var year = this.activeDate.getFullYear(), month = this.activeDate.getMonth(), firstDayOfMonth = new Date(this.activeDate);
         firstDayOfMonth.setFullYear(year, month, 1);
         var difference = this.startingDay - firstDayOfMonth.getDay(), numDisplayedFromPreviousMonth = difference > 0 ? 7 - difference : -difference, firstDate = new Date(firstDayOfMonth);
-        numDisplayedFromPreviousMonth > 0 && firstDate.setDate(-numDisplayedFromPreviousMonth + 1);
+        numDisplayedFromPreviousMonth > 0 && firstDate.setDate(1 - numDisplayedFromPreviousMonth);
         for (var days = this.getDates(firstDate, 42), i = 0; i < 42; i++) days[i] = angular.extend(this.createDateObject(days[i], this.formatDay), {
             secondary: days[i].getMonth() !== month,
             uid: scope.uniqueId + "-" + i
@@ -16350,8 +16254,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         restrict: "A",
         controller: "UibDaypickerController",
         link: function(scope, element, attrs, ctrls) {
-            var datepickerCtrl = ctrls[0], daypickerCtrl = ctrls[1];
-            daypickerCtrl.init(datepickerCtrl);
+            var datepickerCtrl = ctrls[0];
+            ctrls[1].init(datepickerCtrl);
         }
     };
 }).directive("uibMonthpicker", function() {
@@ -16363,8 +16267,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         restrict: "A",
         controller: "UibMonthpickerController",
         link: function(scope, element, attrs, ctrls) {
-            var datepickerCtrl = ctrls[0], monthpickerCtrl = ctrls[1];
-            monthpickerCtrl.init(datepickerCtrl);
+            var datepickerCtrl = ctrls[0];
+            ctrls[1].init(datepickerCtrl);
         }
     };
 }).directive("uibYearpicker", function() {
@@ -16398,11 +16302,10 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return value = parseFloat(value), isFinite(value) ? value : 0;
         },
         offsetParent: function(elem) {
-            function isStaticPositioned(el) {
-                return "static" === ($window.getComputedStyle(el).position || "static");
-            }
             elem = this.getRawNode(elem);
-            for (var offsetParent = elem.offsetParent || $document[0].documentElement; offsetParent && offsetParent !== $document[0].documentElement && isStaticPositioned(offsetParent); ) offsetParent = offsetParent.offsetParent;
+            for (var offsetParent = elem.offsetParent || $document[0].documentElement; offsetParent && offsetParent !== $document[0].documentElement && function(el) {
+                return "static" === ($window.getComputedStyle(el).position || "static");
+            }(offsetParent); ) offsetParent = offsetParent.offsetParent;
             return offsetParent || $document[0].documentElement;
         },
         scrollbarWidth: function(isBody) {
@@ -16484,7 +16387,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             };
         },
         viewportOffset: function(elem, useDocument, includePadding) {
-            elem = this.getRawNode(elem), includePadding = includePadding !== !1;
+            elem = this.getRawNode(elem), includePadding = !1 !== includePadding;
             var elemBCR = elem.getBoundingClientRect(), offsetBCR = {
                 top: 0,
                 left: 0,
@@ -16511,7 +16414,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return autoPlace && (placement = placement.replace(PLACEMENT_REGEX.auto, "")), placement = placement.split("-"), 
             placement[0] = placement[0] || "top", PLACEMENT_REGEX.primary.test(placement[0]) || (placement[0] = "top"), 
             placement[1] = placement[1] || "center", PLACEMENT_REGEX.secondary.test(placement[1]) || (placement[1] = "center"), 
-            autoPlace ? placement[2] = !0 : placement[2] = !1, placement;
+            placement[2] = !!autoPlace, placement;
         },
         positionElements: function(hostElem, targetElem, placement, appendToBody) {
             hostElem = this.getRawNode(hostElem), targetElem = this.getRawNode(targetElem);
@@ -16578,7 +16481,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             targetElemPos;
         },
         adjustTop: function(placementClasses, containerPosition, initialHeight, currentHeight) {
-            if (placementClasses.indexOf("top") !== -1 && initialHeight !== currentHeight) return {
+            if (-1 !== placementClasses.indexOf("top") && initialHeight !== currentHeight) return {
                 top: containerPosition.top - currentHeight + "px"
             };
         },
@@ -16731,7 +16634,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         }), $element.on("keydown", inputKeydownBind), $popup = $compile(popupEl)($scope), 
         popupEl.remove(), appendToBody ? $document.find("body").append($popup) : $element.after($popup), 
         $scope.$on("$destroy", function() {
-            for ($scope.isOpen === !0 && ($rootScope.$$phase || $scope.$apply(function() {
+            for (!0 === $scope.isOpen && ($rootScope.$$phase || $scope.$apply(function() {
                 $scope.isOpen = !1;
             })), $popup.remove(), $element.off("keydown", inputKeydownBind), $document.off("click", documentClickBind), 
             scrollParentEl && scrollParentEl.off("scroll", positionPopup), angular.element($window).off("resize", positionPopup); watchListeners.length; ) watchListeners.shift()();
@@ -16769,8 +16672,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         value ? $scope.disabled ? $scope.isOpen = !1 : $timeout(function() {
             positionPopup(), onOpenFocus && $scope.$broadcast("uib:datepicker.focus"), $document.on("click", documentClickBind);
             var placement = $attrs.popupPlacement ? $attrs.popupPlacement : datepickerPopupConfig.placement;
-            appendToBody || $position.parsePlacement(placement)[2] ? (scrollParentEl = scrollParentEl || angular.element($position.scrollParent($element)), 
-            scrollParentEl && scrollParentEl.on("scroll", positionPopup)) : scrollParentEl = null, 
+            appendToBody || $position.parsePlacement(placement)[2] ? (scrollParentEl = scrollParentEl || angular.element($position.scrollParent($element))) && scrollParentEl.on("scroll", positionPopup) : scrollParentEl = null, 
             angular.element($window).on("resize", positionPopup);
         }, 0, !1) : ($document.off("click", documentClickBind), scrollParentEl && scrollParentEl.off("scroll", positionPopup), 
         angular.element($window).off("resize", positionPopup));
@@ -16789,8 +16691,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             closeText: "@"
         },
         link: function(scope, element, attrs, ctrls) {
-            var ngModel = ctrls[0], ctrl = ctrls[1];
-            ctrl.init(ngModel);
+            var ngModel = ctrls[0];
+            ctrls[1].init(ngModel);
         }
     };
 }).directive("uibDatepickerPopupWrap", function() {
@@ -16840,7 +16742,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                     var values = map[key];
                     if (values) {
                         var idx = values.indexOf(value);
-                        idx !== -1 && values.splice(idx, 1), values.length || delete map[key];
+                        -1 !== idx && values.splice(idx, 1), values.length || delete map[key];
                     }
                 }
             };
@@ -16854,10 +16756,9 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     this.isOnlyOpen = function(dropdownScope, appendTo) {
         var openedDropdowns = openedContainers.get(appendTo);
         if (openedDropdowns) {
-            var openDropdown = openedDropdowns.reduce(function(toClose, dropdown) {
+            if (openedDropdowns.reduce(function(toClose, dropdown) {
                 return dropdown.scope === dropdownScope ? dropdown : toClose;
-            }, {});
-            if (openDropdown) return 1 === openedDropdowns.length;
+            }, {})) return 1 === openedDropdowns.length;
         }
         return !1;
     }, this.open = function(dropdownScope, element, appendTo) {
@@ -16865,10 +16766,9 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         openScope = dropdownScope, appendTo) {
             var openedDropdowns = openedContainers.get(appendTo);
             if (openedDropdowns) {
-                var openedScopes = openedDropdowns.map(function(dropdown) {
+                -1 === openedDropdowns.map(function(dropdown) {
                     return dropdown.scope;
-                });
-                openedScopes.indexOf(dropdownScope) === -1 && openedContainers.put(appendTo, {
+                }).indexOf(dropdownScope) && openedContainers.put(appendTo, {
                     scope: dropdownScope
                 });
             } else openedContainers.put(appendTo, {
@@ -16900,7 +16800,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     this.keybindFilter = function(evt) {
         if (openScope) {
             var dropdownElement = openScope.getDropdownElement(), toggleElement = openScope.getToggleElement(), dropdownElementTargeted = dropdownElement && dropdownElement[0].contains(evt.target), toggleElementTargeted = toggleElement && toggleElement[0].contains(evt.target);
-            27 === evt.which ? (evt.stopPropagation(), openScope.focusToggleElement(), closeDropdown()) : openScope.isKeynavEnabled() && [ 38, 40 ].indexOf(evt.which) !== -1 && openScope.isOpen && (dropdownElementTargeted || toggleElementTargeted) && (evt.preventDefault(), 
+            27 === evt.which ? (evt.stopPropagation(), openScope.focusToggleElement(), closeDropdown()) : openScope.isKeynavEnabled() && -1 !== [ 38, 40 ].indexOf(evt.which) && openScope.isOpen && (dropdownElementTargeted || toggleElementTargeted) && (evt.preventDefault(), 
             evt.stopPropagation(), openScope.focusDropdownEntry(evt.which));
         }
     };
@@ -16949,8 +16849,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             appendToEl && (appendTo = angular.element(appendToEl));
         }
         if (angular.isDefined($attrs.dropdownAppendToBody)) {
-            var appendToBodyValue = $parse($attrs.dropdownAppendToBody)(scope);
-            appendToBodyValue !== !1 && (appendToBody = !0);
+            !1 !== $parse($attrs.dropdownAppendToBody)(scope) && (appendToBody = !0);
         }
         if (appendToBody && !appendTo && (appendTo = body), appendTo && self.dropdownMenu && (isOpen ? (appendTo.append(self.dropdownMenu), 
         $element.on("$destroy", removeDropdownMenu)) : ($element.off("$destroy", removeDropdownMenu), 
@@ -16968,7 +16867,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             }
             self.dropdownMenu.css(css);
         }
-        var openContainer = appendTo ? appendTo : $element, dropdownOpenClass = appendTo ? appendToOpenClass : openClass, hasOpenClass = openContainer.hasClass(dropdownOpenClass), isOnlyOpen = uibDropdownService.isOnlyOpen($scope, appendTo);
+        var openContainer = appendTo || $element, dropdownOpenClass = appendTo ? appendToOpenClass : openClass, hasOpenClass = openContainer.hasClass(dropdownOpenClass), isOnlyOpen = uibDropdownService.isOnlyOpen($scope, appendTo);
         if (hasOpenClass === !isOpen) {
             var toggleClass;
             toggleClass = appendTo ? isOnlyOpen ? "removeClass" : "addClass" : isOpen ? "addClass" : "removeClass", 
@@ -17160,9 +17059,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     };
 } ]).factory("$uibModalStack", [ "$animate", "$animateCss", "$document", "$compile", "$rootScope", "$q", "$$multiMap", "$$stackedMap", "$uibPosition", function($animate, $animateCss, $document, $compile, $rootScope, $q, $$multiMap, $$stackedMap, $uibPosition) {
     function snake_case(name) {
-        var separator = "-";
         return name.replace(SNAKE_CASE_REGEXP, function(letter, pos) {
-            return (pos ? separator : "") + letter.toLowerCase();
+            return (pos ? "-" : "") + letter.toLowerCase();
         });
     }
     function isVisible(element) {
@@ -17193,7 +17091,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         openedWindows.length() > 0 && (modalWindow = openedWindows.top().value, modalWindow.modalDomEl.toggleClass(modalWindow.windowTopClass || "", toggleSwitch));
     }
     function checkRemoveBackdrop() {
-        if (backdropDomEl && backdropIndex() === -1) {
+        if (backdropDomEl && -1 === backdropIndex()) {
             var backdropScopeRef = backdropScope;
             removeAfterAnimate(backdropDomEl, backdropScope, function() {
                 backdropScopeRef = null;
@@ -17242,20 +17140,19 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     }
     var backdropDomEl, backdropScope, scrollbarPadding, OPENED_MODAL_CLASS = "modal-open", openedWindows = $$stackedMap.createNew(), openedClasses = $$multiMap.createNew(), $modalStack = {
         NOW_CLOSING_EVENT: "modal.stack.now-closing"
-    }, topModalIndex = 0, previousTopOpenedModal = null, ARIA_HIDDEN_ATTRIBUTE_NAME = "data-bootstrap-modal-aria-hidden-count", tabbableSelector = "a[href], area[href], input:not([disabled]):not([tabindex='-1']), button:not([disabled]):not([tabindex='-1']),select:not([disabled]):not([tabindex='-1']), textarea:not([disabled]):not([tabindex='-1']), iframe, object, embed, *[tabindex]:not([tabindex='-1']), *[contenteditable=true]", SNAKE_CASE_REGEXP = /[A-Z]/g;
+    }, topModalIndex = 0, previousTopOpenedModal = null, ARIA_HIDDEN_ATTRIBUTE_NAME = "data-bootstrap-modal-aria-hidden-count", SNAKE_CASE_REGEXP = /[A-Z]/g;
     return $rootScope.$watch(backdropIndex, function(newBackdropIndex) {
         backdropScope && (backdropScope.index = newBackdropIndex);
     }), $document.on("keydown", keydownListener), $rootScope.$on("$destroy", function() {
         $document.off("keydown", keydownListener);
     }), $modalStack.open = function(modalInstance, modal) {
         function applyAriaHidden(el) {
-            function getSiblings(el) {
+            if (el && "BODY" !== el[0].tagName) return function(el) {
                 var children = el.parent() ? el.parent().children() : [];
                 return Array.prototype.filter.call(children, function(child) {
                     return child !== el[0];
                 });
-            }
-            if (el && "BODY" !== el[0].tagName) return getSiblings(el).forEach(function(sibling) {
+            }(el).forEach(function(sibling) {
                 var elemIsAlreadyHidden = "true" === sibling.getAttribute("aria-hidden"), ariaHiddenCount = parseInt(sibling.getAttribute(ARIA_HIDDEN_ATTRIBUTE_NAME), 10);
                 ariaHiddenCount || (ariaHiddenCount = elemIsAlreadyHidden ? 1 : 0), sibling.setAttribute(ARIA_HIDDEN_ATTRIBUTE_NAME, ariaHiddenCount + 1), 
                 sibling.setAttribute("aria-hidden", "true");
@@ -17278,7 +17175,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         currBackdropIndex >= 0 && !backdropDomEl && (backdropScope = $rootScope.$new(!0), 
         backdropScope.modalOptions = modal, backdropScope.index = currBackdropIndex, backdropDomEl = angular.element('<div uib-modal-backdrop="modal-backdrop"></div>'), 
         backdropDomEl.attr({
-            "class": "modal-backdrop",
+            class: "modal-backdrop",
             "ng-style": "{'z-index': 1040 + (index && 1 || 0) + index*10}",
             "uib-modal-animation-class": "fade",
             "modal-in-class": "in"
@@ -17298,7 +17195,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         })) : content = modal.content, topModalIndex = previousTopOpenedModal ? parseInt(previousTopOpenedModal.value.modalDomEl.attr("index"), 10) + 1 : 0;
         var angularDomEl = angular.element('<div uib-modal-window="modal-window"></div>');
         angularDomEl.attr({
-            "class": "modal",
+            class: "modal",
             "template-url": modal.windowTemplateUrl,
             "window-top-class": modal.windowTopClass,
             role: "dialog",
@@ -17351,7 +17248,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         if (modalWindow) {
             var modalDomE1 = modalWindow.value.modalDomEl;
             if (modalDomE1 && modalDomE1.length) {
-                var elements = modalDomE1[0].querySelectorAll(tabbableSelector);
+                var elements = modalDomE1[0].querySelectorAll("a[href], area[href], input:not([disabled]):not([tabindex='-1']), button:not([disabled]):not([tabindex='-1']),select:not([disabled]):not([tabindex='-1']), textarea:not([disabled]):not([tabindex='-1']), iframe, object, embed, *[tabindex]:not([tabindex='-1']), *[contenteditable=true]");
                 return elements ? Array.prototype.filter.call(elements, function(element) {
                     return isVisible(element);
                 }) : elements;
@@ -17437,7 +17334,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                     modalOpenedDeferred.resolve(!0);
                 }, function(reason) {
                     modalOpenedDeferred.reject(reason), modalResultDeferred.reject(reason);
-                })["finally"](function() {
+                }).finally(function() {
                     promiseChain === samePromise && (promiseChain = null);
                 }), modalInstance;
             }, $modal;
@@ -17466,9 +17363,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             }, ctrl.render = function() {
                 $scope.page = parseInt(ctrl.ngModelCtrl.$viewValue, 10) || 1;
             }, $scope.selectPage = function(page, evt) {
-                evt && evt.preventDefault();
-                var clickAllowed = !$scope.ngDisabled || !evt;
-                clickAllowed && $scope.page !== page && page > 0 && page <= $scope.totalPages && (evt && evt.target && evt.target.blur(), 
+                evt && evt.preventDefault(), (!$scope.ngDisabled || !evt) && $scope.page !== page && page > 0 && page <= $scope.totalPages && (evt && evt.target && evt.target.blur(), 
                 ctrl.ngModelCtrl.$setViewValue(page), ctrl.ngModelCtrl.$render());
             }, $scope.getText = function(key) {
                 return $scope[key + "Text"] || ctrl.config[key + "Text"];
@@ -17523,8 +17418,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     function getPages(currentPage, totalPages) {
         var pages = [], startPage = 1, endPage = totalPages, isMaxSized = angular.isDefined(maxSize) && maxSize < totalPages;
         isMaxSized && (rotate ? (startPage = Math.max(currentPage - Math.floor(maxSize / 2), 1), 
-        endPage = startPage + maxSize - 1, endPage > totalPages && (endPage = totalPages, 
-        startPage = endPage - maxSize + 1)) : (startPage = (Math.ceil(currentPage / maxSize) - 1) * maxSize + 1, 
+        (endPage = startPage + maxSize - 1) > totalPages && (endPage = totalPages, startPage = endPage - maxSize + 1)) : (startPage = (Math.ceil(currentPage / maxSize) - 1) * maxSize + 1, 
         endPage = Math.min(startPage + maxSize - 1, totalPages)));
         for (var number = startPage; number <= endPage; number++) {
             var page = makePage(number, pageLabel(number), number === currentPage);
@@ -17612,9 +17506,9 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     };
 } ]), angular.module("ui.bootstrap.tooltip", [ "ui.bootstrap.position", "ui.bootstrap.stackedMap" ]).provider("$uibTooltip", function() {
     function snake_case(name) {
-        var regexp = /[A-Z]/g, separator = "-";
+        var regexp = /[A-Z]/g;
         return name.replace(regexp, function(letter, pos) {
-            return (pos ? separator : "") + letter.toLowerCase();
+            return (pos ? "-" : "") + letter.toLowerCase();
         });
     }
     var defaultOptions = {
@@ -17647,12 +17541,12 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             $document.off("keyup", keypressListener);
         }), function(ttType, prefix, defaultTriggerShow, options) {
             function getTriggers(trigger) {
-                var show = (trigger || options.trigger || defaultTriggerShow).split(" "), hide = show.map(function(trigger) {
-                    return triggerMap[trigger] || trigger;
-                });
+                var show = (trigger || options.trigger || defaultTriggerShow).split(" ");
                 return {
                     show: show,
-                    hide: hide
+                    hide: show.map(function(trigger) {
+                        return triggerMap[trigger] || trigger;
+                    })
                 };
             }
             options = angular.extend({}, defaultOptions, globalOptions, options);
@@ -17702,7 +17596,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                             tooltipLinkedScope && (tooltipLinkedScope.$destroy(), tooltipLinkedScope = null);
                         }
                         function prepareTooltip() {
-                            ttScope.title = attrs[prefix + "Title"], contentParse ? ttScope.content = contentParse(scope) : ttScope.content = attrs[ttType], 
+                            ttScope.title = attrs[prefix + "Title"], ttScope.content = contentParse ? contentParse(scope) : attrs[ttType], 
                             ttScope.popupClass = attrs[prefix + "Class"], ttScope.placement = angular.isDefined(attrs[prefix + "Placement"]) ? attrs[prefix + "Placement"] : options.placement;
                             var placement = $position.parsePlacement(ttScope.placement);
                             lastPlacement = placement[1] ? placement[0] + "-" + placement[1] : placement[0];
@@ -17724,7 +17618,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                             })), observers.push(attrs.$observe(prefix + "Title", function(val) {
                                 ttScope.title = val, ttScope.isOpen && positionTooltip();
                             })), observers.push(attrs.$observe(prefix + "Placement", function(val) {
-                                ttScope.placement = val ? val : options.placement, ttScope.isOpen && positionTooltip();
+                                ttScope.placement = val || options.placement, ttScope.isOpen && positionTooltip();
                             }));
                         }
                         function unregisterObservers() {
@@ -17737,18 +17631,6 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                         }
                         function hideOnEscapeKey(e) {
                             27 === e.which && hideTooltipBind();
-                        }
-                        function prepTriggers() {
-                            var showTriggers = [], hideTriggers = [], val = scope.$eval(attrs[prefix + "Trigger"]);
-                            unregisterTriggers(), angular.isObject(val) ? (Object.keys(val).forEach(function(key) {
-                                showTriggers.push(key), hideTriggers.push(val[key]);
-                            }), triggers = {
-                                show: showTriggers,
-                                hide: hideTriggers
-                            }) : triggers = getTriggers(val), "none" !== triggers.show && triggers.show.forEach(function(trigger, idx) {
-                                "outsideClick" === trigger ? (element.on("click", toggleTooltipBind), $document.on("click", bodyHideTooltipBind)) : trigger === triggers.hide[idx] ? element.on(trigger, toggleTooltipBind) : trigger && (element.on(trigger, showTooltipBind), 
-                                element.on(triggers.hide[idx], hideTooltipBind)), element.on("keypress", hideOnEscapeKey);
-                            });
                         }
                         var tooltip, tooltipLinkedScope, transitionTimeout, showTimeout, hideTimeout, positionTimeout, adjustmentTimeout, lastPlacement, appendToBody = !!angular.isDefined(options.appendToBody) && options.appendToBody, triggers = getTriggers(void 0), hasEnableExp = angular.isDefined(attrs[prefix + "Enable"]), ttScope = scope.$new(!0), repositionScheduled = !1, isOpenParse = !!angular.isDefined(attrs[prefix + "IsOpen"]) && $parse(attrs[prefix + "IsOpen"]), contentParse = !!options.useContentExp && $parse(attrs[ttType]), observers = [], positionTooltip = function() {
                             tooltip && tooltip.html() && (positionTimeout || (positionTimeout = $timeout(function() {
@@ -17783,7 +17665,18 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                                 "outsideClick" === trigger ? $document.off("click", bodyHideTooltipBind) : element.off(trigger, hideTooltipBind);
                             });
                         };
-                        prepTriggers();
+                        !function() {
+                            var showTriggers = [], hideTriggers = [], val = scope.$eval(attrs[prefix + "Trigger"]);
+                            unregisterTriggers(), angular.isObject(val) ? (Object.keys(val).forEach(function(key) {
+                                showTriggers.push(key), hideTriggers.push(val[key]);
+                            }), triggers = {
+                                show: showTriggers,
+                                hide: hideTriggers
+                            }) : triggers = getTriggers(val), "none" !== triggers.show && triggers.show.forEach(function(trigger, idx) {
+                                "outsideClick" === trigger ? (element.on("click", toggleTooltipBind), $document.on("click", bodyHideTooltipBind)) : trigger === triggers.hide[idx] ? element.on(trigger, toggleTooltipBind) : trigger && (element.on(trigger, showTooltipBind), 
+                                element.on(triggers.hide[idx], hideTooltipBind)), element.on("keypress", hideOnEscapeKey);
+                            });
+                        }();
                         var animation = scope.$eval(attrs[prefix + "Animation"]);
                         ttScope.animation = angular.isDefined(animation) ? !!animation : options.animation;
                         var appendToBodyVal, appendKey = prefix + "AppendToBody";
@@ -18186,13 +18079,13 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     templateUrl: "uib/template/timepicker/timepicker.html"
 }).controller("UibTimepickerController", [ "$scope", "$element", "$attrs", "$parse", "$log", "$locale", "uibTimepickerConfig", function($scope, $element, $attrs, $parse, $log, $locale, timepickerConfig) {
     function getHoursFromTemplate() {
-        var hours = +$scope.hours, valid = $scope.showMeridian ? hours > 0 && hours < 13 : hours >= 0 && hours < 24;
-        if (valid && "" !== $scope.hours) return $scope.showMeridian && (12 === hours && (hours = 0), 
+        var hours = +$scope.hours;
+        if (($scope.showMeridian ? hours > 0 && hours < 13 : hours >= 0 && hours < 24) && "" !== $scope.hours) return $scope.showMeridian && (12 === hours && (hours = 0), 
         $scope.meridian === meridians[1] && (hours += 12)), hours;
     }
     function getMinutesFromTemplate() {
-        var minutes = +$scope.minutes, valid = minutes >= 0 && minutes < 60;
-        if (valid && "" !== $scope.minutes) return minutes;
+        var minutes = +$scope.minutes;
+        if (minutes >= 0 && minutes < 60 && "" !== $scope.minutes) return minutes;
     }
     function getSecondsFromTemplate() {
         var seconds = +$scope.seconds;
@@ -18241,11 +18134,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         });
         var hoursInputEl = inputs.eq(0), minutesInputEl = inputs.eq(1), secondsInputEl = inputs.eq(2);
         hoursModelCtrl = hoursInputEl.controller("ngModel"), minutesModelCtrl = minutesInputEl.controller("ngModel"), 
-        secondsModelCtrl = secondsInputEl.controller("ngModel");
-        var mousewheel = angular.isDefined($attrs.mousewheel) ? $scope.$parent.$eval($attrs.mousewheel) : timepickerConfig.mousewheel;
-        mousewheel && this.setupMousewheelEvents(hoursInputEl, minutesInputEl, secondsInputEl);
-        var arrowkeys = angular.isDefined($attrs.arrowkeys) ? $scope.$parent.$eval($attrs.arrowkeys) : timepickerConfig.arrowkeys;
-        arrowkeys && this.setupArrowkeyEvents(hoursInputEl, minutesInputEl, secondsInputEl), 
+        secondsModelCtrl = secondsInputEl.controller("ngModel"), (angular.isDefined($attrs.mousewheel) ? $scope.$parent.$eval($attrs.mousewheel) : timepickerConfig.mousewheel) && this.setupMousewheelEvents(hoursInputEl, minutesInputEl, secondsInputEl), 
+        (angular.isDefined($attrs.arrowkeys) ? $scope.$parent.$eval($attrs.arrowkeys) : timepickerConfig.arrowkeys) && this.setupArrowkeyEvents(hoursInputEl, minutesInputEl, secondsInputEl), 
         $scope.readonlyInput = angular.isDefined($attrs.readonlyInput) ? $scope.$parent.$eval($attrs.readonlyInput) : timepickerConfig.readonlyInput, 
         this.setupInputEvents(hoursInputEl, minutesInputEl, secondsInputEl);
     };
@@ -18433,18 +18323,18 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return ngModelOptions[key];
         }) : ngModelOptions = ngModelCtrl.$options, ngModelOptions;
     }
-    var modelCtrl, ngModelOptions, HOT_KEYS = [ 9, 13, 27, 38, 40 ], eventDebounceTime = 200, minLength = originalScope.$eval(attrs.typeaheadMinLength);
+    var modelCtrl, ngModelOptions, HOT_KEYS = [ 9, 13, 27, 38, 40 ], minLength = originalScope.$eval(attrs.typeaheadMinLength);
     minLength || 0 === minLength || (minLength = 1), originalScope.$watch(attrs.typeaheadMinLength, function(newVal) {
         minLength = newVal || 0 === newVal ? newVal : 1;
     });
-    var waitTime = originalScope.$eval(attrs.typeaheadWaitMs) || 0, isEditable = originalScope.$eval(attrs.typeaheadEditable) !== !1;
+    var waitTime = originalScope.$eval(attrs.typeaheadWaitMs) || 0, isEditable = !1 !== originalScope.$eval(attrs.typeaheadEditable);
     originalScope.$watch(attrs.typeaheadEditable, function(newVal) {
-        isEditable = newVal !== !1;
+        isEditable = !1 !== newVal;
     });
     var hasFocus, selected, isLoadingSetter = $parse(attrs.typeaheadLoading).assign || angular.noop, isSelectEvent = attrs.typeaheadShouldSelect ? $parse(attrs.typeaheadShouldSelect) : function(scope, vals) {
         var evt = vals.$event;
         return 13 === evt.which || 9 === evt.which;
-    }, onSelectCallback = $parse(attrs.typeaheadOnSelect), isSelectOnBlur = !!angular.isDefined(attrs.typeaheadSelectOnBlur) && originalScope.$eval(attrs.typeaheadSelectOnBlur), isNoResultsSetter = $parse(attrs.typeaheadNoResults).assign || angular.noop, inputFormatter = attrs.typeaheadInputFormatter ? $parse(attrs.typeaheadInputFormatter) : void 0, appendToBody = !!attrs.typeaheadAppendToBody && originalScope.$eval(attrs.typeaheadAppendToBody), appendTo = attrs.typeaheadAppendTo ? originalScope.$eval(attrs.typeaheadAppendTo) : null, focusFirst = originalScope.$eval(attrs.typeaheadFocusFirst) !== !1, selectOnExact = !!attrs.typeaheadSelectOnExact && originalScope.$eval(attrs.typeaheadSelectOnExact), isOpenSetter = $parse(attrs.typeaheadIsOpen).assign || angular.noop, showHint = originalScope.$eval(attrs.typeaheadShowHint) || !1, parsedModel = $parse(attrs.ngModel), invokeModelSetter = $parse(attrs.ngModel + "($$$p)"), $setModelValue = function(scope, newValue) {
+    }, onSelectCallback = $parse(attrs.typeaheadOnSelect), isSelectOnBlur = !!angular.isDefined(attrs.typeaheadSelectOnBlur) && originalScope.$eval(attrs.typeaheadSelectOnBlur), isNoResultsSetter = $parse(attrs.typeaheadNoResults).assign || angular.noop, inputFormatter = attrs.typeaheadInputFormatter ? $parse(attrs.typeaheadInputFormatter) : void 0, appendToBody = !!attrs.typeaheadAppendToBody && originalScope.$eval(attrs.typeaheadAppendToBody), appendTo = attrs.typeaheadAppendTo ? originalScope.$eval(attrs.typeaheadAppendTo) : null, focusFirst = !1 !== originalScope.$eval(attrs.typeaheadFocusFirst), selectOnExact = !!attrs.typeaheadSelectOnExact && originalScope.$eval(attrs.typeaheadSelectOnExact), isOpenSetter = $parse(attrs.typeaheadIsOpen).assign || angular.noop, showHint = originalScope.$eval(attrs.typeaheadShowHint) || !1, parsedModel = $parse(attrs.ngModel), invokeModelSetter = $parse(attrs.ngModel + "($$$p)"), $setModelValue = function(scope, newValue) {
         return angular.isFunction(parsedModel(originalScope)) && ngModelOptions.getOption("getterSetter") ? invokeModelSetter(scope, {
             $$$p: newValue
         }) : parsedModel.assign(scope, newValue);
@@ -18518,7 +18408,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                 if (scope.query = inputValue, recalculatePosition(), element.attr("aria-expanded", !0), 
                 selectOnExact && 1 === scope.matches.length && inputIsExactMatch(inputValue, 0) && (angular.isNumber(scope.debounceUpdate) || angular.isObject(scope.debounceUpdate) ? $$debounce(function() {
                     scope.select(0, evt);
-                }, angular.isNumber(scope.debounceUpdate) ? scope.debounceUpdate : scope.debounceUpdate["default"]) : scope.select(0, evt)), 
+                }, angular.isNumber(scope.debounceUpdate) ? scope.debounceUpdate : scope.debounceUpdate.default) : scope.select(0, evt)), 
                 showHint) {
                     var firstLabel = scope.matches[0].label;
                     angular.isString(inputValue) && inputValue.length > 0 && firstLabel.slice(0, inputValue.length).toUpperCase() === inputValue.toUpperCase() ? hintInputElem.val(inputValue + firstLabel.slice(inputValue.length)) : hintInputElem.val("");
@@ -18532,7 +18422,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     appendToBody && (angular.element($window).on("resize", fireRecalculating), $document.find("body").on("scroll", fireRecalculating));
     var debouncedRecalculate = $$debounce(function() {
         scope.matches.length && recalculatePosition(), scope.moveInProgress = !1;
-    }, eventDebounceTime);
+    }, 200);
     scope.moveInProgress = !1, scope.query = void 0;
     var timeoutPromise, scheduleSearchWithTimeout = function(inputValue) {
         timeoutPromise = $timeout(function() {
@@ -18552,15 +18442,15 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             $model: model,
             $label: parserResult.viewMapper(originalScope, locals),
             $event: evt
-        }), resetMatches(), scope.$eval(attrs.typeaheadFocusOnSelect) !== !1 && $timeout(function() {
+        }), resetMatches(), !1 !== scope.$eval(attrs.typeaheadFocusOnSelect) && $timeout(function() {
             element[0].focus();
         }, 0, !1);
     }, element.on("keydown", function(evt) {
-        if (0 !== scope.matches.length && HOT_KEYS.indexOf(evt.which) !== -1) {
+        if (0 !== scope.matches.length && -1 !== HOT_KEYS.indexOf(evt.which)) {
             var shouldSelect = isSelectEvent(originalScope, {
                 $event: evt
             });
-            if (scope.activeIdx === -1 && shouldSelect || 9 === evt.which && evt.shiftKey) return resetMatches(), 
+            if (-1 === scope.activeIdx && shouldSelect || 9 === evt.which && evt.shiftKey) return resetMatches(), 
             void scope.$digest();
             evt.preventDefault();
             var target;
@@ -18584,7 +18474,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                 shouldSelect && scope.$apply(function() {
                     angular.isNumber(scope.debounceUpdate) || angular.isObject(scope.debounceUpdate) ? $$debounce(function() {
                         scope.select(scope.activeIdx, evt);
-                    }, angular.isNumber(scope.debounceUpdate) ? scope.debounceUpdate : scope.debounceUpdate["default"]) : scope.select(scope.activeIdx, evt);
+                    }, angular.isNumber(scope.debounceUpdate) ? scope.debounceUpdate : scope.debounceUpdate.default) : scope.select(scope.activeIdx, evt);
                 });
             }
         }
@@ -18593,7 +18483,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             getMatchesAsync(modelCtrl.$viewValue, evt);
         }, 0);
     }), element.on("blur", function(evt) {
-        isSelectOnBlur && scope.matches.length && scope.activeIdx !== -1 && !selected && (selected = !0, 
+        isSelectOnBlur && scope.matches.length && -1 !== scope.activeIdx && !selected && (selected = !0, 
         scope.$apply(function() {
             angular.isObject(scope.debounceUpdate) && angular.isNumber(scope.debounceUpdate.blur) ? $$debounce(function() {
                 scope.select(scope.activeIdx, evt);
@@ -18669,7 +18559,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                         activeIdx: activeIdx,
                         evt: evt
                     });
-                }, angular.isNumber(debounce) ? debounce : debounce["default"]) : scope.select({
+                }, angular.isNumber(debounce) ? debounce : debounce.default) : scope.select({
                     activeIdx: activeIdx,
                     evt: evt
                 });
@@ -18812,11 +18702,11 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         return accumulator;
     }
     function arrayEach(array, iteratee) {
-        for (var index = -1, length = null == array ? 0 : array.length; ++index < length && iteratee(array[index], index, array) !== !1; ) ;
+        for (var index = -1, length = null == array ? 0 : array.length; ++index < length && !1 !== iteratee(array[index], index, array); ) ;
         return array;
     }
     function arrayEachRight(array, iteratee) {
-        for (var length = null == array ? 0 : array.length; length-- && iteratee(array[length], length, array) !== !1; ) ;
+        for (var length = null == array ? 0 : array.length; length-- && !1 !== iteratee(array[length], length, array); ) ;
         return array;
     }
     function arrayEvery(array, predicate) {
@@ -18831,8 +18721,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         return result;
     }
     function arrayIncludes(array, value) {
-        var length = null == array ? 0 : array.length;
-        return !!length && baseIndexOf(array, value, 0) > -1;
+        return !!(null == array ? 0 : array.length) && baseIndexOf(array, value, 0) > -1;
     }
     function arrayIncludesWith(array, value, comparator) {
         for (var index = -1, length = null == array ? 0 : array.length; ++index < length; ) if (comparator(value, array[index])) return !0;
@@ -19021,7 +18910,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     function unicodeWords(string) {
         return string.match(reUnicodeWord) || [];
     }
-    var undefined, VERSION = "4.17.4", LARGE_ARRAY_SIZE = 200, CORE_ERROR_TEXT = "Unsupported core-js use. Try https://npms.io/search?q=ponyfill.", FUNC_ERROR_TEXT = "Expected a function", HASH_UNDEFINED = "__lodash_hash_undefined__", MAX_MEMOIZE_SIZE = 500, PLACEHOLDER = "__lodash_placeholder__", CLONE_DEEP_FLAG = 1, CLONE_FLAT_FLAG = 2, CLONE_SYMBOLS_FLAG = 4, COMPARE_PARTIAL_FLAG = 1, COMPARE_UNORDERED_FLAG = 2, WRAP_BIND_FLAG = 1, WRAP_BIND_KEY_FLAG = 2, WRAP_CURRY_BOUND_FLAG = 4, WRAP_CURRY_FLAG = 8, WRAP_CURRY_RIGHT_FLAG = 16, WRAP_PARTIAL_FLAG = 32, WRAP_PARTIAL_RIGHT_FLAG = 64, WRAP_ARY_FLAG = 128, WRAP_REARG_FLAG = 256, WRAP_FLIP_FLAG = 512, DEFAULT_TRUNC_LENGTH = 30, DEFAULT_TRUNC_OMISSION = "...", HOT_COUNT = 800, HOT_SPAN = 16, LAZY_FILTER_FLAG = 1, LAZY_MAP_FLAG = 2, LAZY_WHILE_FLAG = 3, INFINITY = 1 / 0, MAX_SAFE_INTEGER = 9007199254740991, MAX_INTEGER = 1.7976931348623157e308, NAN = NaN, MAX_ARRAY_LENGTH = 4294967295, MAX_ARRAY_INDEX = MAX_ARRAY_LENGTH - 1, HALF_MAX_ARRAY_LENGTH = MAX_ARRAY_LENGTH >>> 1, wrapFlags = [ [ "ary", WRAP_ARY_FLAG ], [ "bind", WRAP_BIND_FLAG ], [ "bindKey", WRAP_BIND_KEY_FLAG ], [ "curry", WRAP_CURRY_FLAG ], [ "curryRight", WRAP_CURRY_RIGHT_FLAG ], [ "flip", WRAP_FLIP_FLAG ], [ "partial", WRAP_PARTIAL_FLAG ], [ "partialRight", WRAP_PARTIAL_RIGHT_FLAG ], [ "rearg", WRAP_REARG_FLAG ] ], argsTag = "[object Arguments]", arrayTag = "[object Array]", asyncTag = "[object AsyncFunction]", boolTag = "[object Boolean]", dateTag = "[object Date]", domExcTag = "[object DOMException]", errorTag = "[object Error]", funcTag = "[object Function]", genTag = "[object GeneratorFunction]", mapTag = "[object Map]", numberTag = "[object Number]", nullTag = "[object Null]", objectTag = "[object Object]", promiseTag = "[object Promise]", proxyTag = "[object Proxy]", regexpTag = "[object RegExp]", setTag = "[object Set]", stringTag = "[object String]", symbolTag = "[object Symbol]", undefinedTag = "[object Undefined]", weakMapTag = "[object WeakMap]", weakSetTag = "[object WeakSet]", arrayBufferTag = "[object ArrayBuffer]", dataViewTag = "[object DataView]", float32Tag = "[object Float32Array]", float64Tag = "[object Float64Array]", int8Tag = "[object Int8Array]", int16Tag = "[object Int16Array]", int32Tag = "[object Int32Array]", uint8Tag = "[object Uint8Array]", uint8ClampedTag = "[object Uint8ClampedArray]", uint16Tag = "[object Uint16Array]", uint32Tag = "[object Uint32Array]", reEmptyStringLeading = /\b__p \+= '';/g, reEmptyStringMiddle = /\b(__p \+=) '' \+/g, reEmptyStringTrailing = /(__e\(.*?\)|\b__t\)) \+\n'';/g, reEscapedHtml = /&(?:amp|lt|gt|quot|#39);/g, reUnescapedHtml = /[&<>"']/g, reHasEscapedHtml = RegExp(reEscapedHtml.source), reHasUnescapedHtml = RegExp(reUnescapedHtml.source), reEscape = /<%-([\s\S]+?)%>/g, reEvaluate = /<%([\s\S]+?)%>/g, reInterpolate = /<%=([\s\S]+?)%>/g, reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/, reIsPlainProp = /^\w*$/, reLeadingDot = /^\./, rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g, reRegExpChar = /[\\^$.*+?()[\]{}|]/g, reHasRegExpChar = RegExp(reRegExpChar.source), reTrim = /^\s+|\s+$/g, reTrimStart = /^\s+/, reTrimEnd = /\s+$/, reWrapComment = /\{(?:\n\/\* \[wrapped with .+\] \*\/)?\n?/, reWrapDetails = /\{\n\/\* \[wrapped with (.+)\] \*/, reSplitDetails = /,? & /, reAsciiWord = /[^\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7f]+/g, reEscapeChar = /\\(\\)?/g, reEsTemplate = /\$\{([^\\}]*(?:\\.[^\\}]*)*)\}/g, reFlags = /\w*$/, reIsBadHex = /^[-+]0x[0-9a-f]+$/i, reIsBinary = /^0b[01]+$/i, reIsHostCtor = /^\[object .+?Constructor\]$/, reIsOctal = /^0o[0-7]+$/i, reIsUint = /^(?:0|[1-9]\d*)$/, reLatin = /[\xc0-\xd6\xd8-\xf6\xf8-\xff\u0100-\u017f]/g, reNoMatch = /($^)/, reUnescapedString = /['\n\r\u2028\u2029\\]/g, rsAstralRange = "\\ud800-\\udfff", rsComboMarksRange = "\\u0300-\\u036f", reComboHalfMarksRange = "\\ufe20-\\ufe2f", rsComboSymbolsRange = "\\u20d0-\\u20ff", rsComboRange = rsComboMarksRange + reComboHalfMarksRange + rsComboSymbolsRange, rsDingbatRange = "\\u2700-\\u27bf", rsLowerRange = "a-z\\xdf-\\xf6\\xf8-\\xff", rsMathOpRange = "\\xac\\xb1\\xd7\\xf7", rsNonCharRange = "\\x00-\\x2f\\x3a-\\x40\\x5b-\\x60\\x7b-\\xbf", rsPunctuationRange = "\\u2000-\\u206f", rsSpaceRange = " \\t\\x0b\\f\\xa0\\ufeff\\n\\r\\u2028\\u2029\\u1680\\u180e\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200a\\u202f\\u205f\\u3000", rsUpperRange = "A-Z\\xc0-\\xd6\\xd8-\\xde", rsVarRange = "\\ufe0e\\ufe0f", rsBreakRange = rsMathOpRange + rsNonCharRange + rsPunctuationRange + rsSpaceRange, rsApos = "['’]", rsAstral = "[" + rsAstralRange + "]", rsBreak = "[" + rsBreakRange + "]", rsCombo = "[" + rsComboRange + "]", rsDigits = "\\d+", rsDingbat = "[" + rsDingbatRange + "]", rsLower = "[" + rsLowerRange + "]", rsMisc = "[^" + rsAstralRange + rsBreakRange + rsDigits + rsDingbatRange + rsLowerRange + rsUpperRange + "]", rsFitz = "\\ud83c[\\udffb-\\udfff]", rsModifier = "(?:" + rsCombo + "|" + rsFitz + ")", rsNonAstral = "[^" + rsAstralRange + "]", rsRegional = "(?:\\ud83c[\\udde6-\\uddff]){2}", rsSurrPair = "[\\ud800-\\udbff][\\udc00-\\udfff]", rsUpper = "[" + rsUpperRange + "]", rsZWJ = "\\u200d", rsMiscLower = "(?:" + rsLower + "|" + rsMisc + ")", rsMiscUpper = "(?:" + rsUpper + "|" + rsMisc + ")", rsOptContrLower = "(?:" + rsApos + "(?:d|ll|m|re|s|t|ve))?", rsOptContrUpper = "(?:" + rsApos + "(?:D|LL|M|RE|S|T|VE))?", reOptMod = rsModifier + "?", rsOptVar = "[" + rsVarRange + "]?", rsOptJoin = "(?:" + rsZWJ + "(?:" + [ rsNonAstral, rsRegional, rsSurrPair ].join("|") + ")" + rsOptVar + reOptMod + ")*", rsOrdLower = "\\d*(?:(?:1st|2nd|3rd|(?![123])\\dth)\\b)", rsOrdUpper = "\\d*(?:(?:1ST|2ND|3RD|(?![123])\\dTH)\\b)", rsSeq = rsOptVar + reOptMod + rsOptJoin, rsEmoji = "(?:" + [ rsDingbat, rsRegional, rsSurrPair ].join("|") + ")" + rsSeq, rsSymbol = "(?:" + [ rsNonAstral + rsCombo + "?", rsCombo, rsRegional, rsSurrPair, rsAstral ].join("|") + ")", reApos = RegExp(rsApos, "g"), reComboMark = RegExp(rsCombo, "g"), reUnicode = RegExp(rsFitz + "(?=" + rsFitz + ")|" + rsSymbol + rsSeq, "g"), reUnicodeWord = RegExp([ rsUpper + "?" + rsLower + "+" + rsOptContrLower + "(?=" + [ rsBreak, rsUpper, "$" ].join("|") + ")", rsMiscUpper + "+" + rsOptContrUpper + "(?=" + [ rsBreak, rsUpper + rsMiscLower, "$" ].join("|") + ")", rsUpper + "?" + rsMiscLower + "+" + rsOptContrLower, rsUpper + "+" + rsOptContrUpper, rsOrdUpper, rsOrdLower, rsDigits, rsEmoji ].join("|"), "g"), reHasUnicode = RegExp("[" + rsZWJ + rsAstralRange + rsComboRange + rsVarRange + "]"), reHasUnicodeWord = /[a-z][A-Z]|[A-Z]{2,}[a-z]|[0-9][a-zA-Z]|[a-zA-Z][0-9]|[^a-zA-Z0-9 ]/, contextProps = [ "Array", "Buffer", "DataView", "Date", "Error", "Float32Array", "Float64Array", "Function", "Int8Array", "Int16Array", "Int32Array", "Map", "Math", "Object", "Promise", "RegExp", "Set", "String", "Symbol", "TypeError", "Uint8Array", "Uint8ClampedArray", "Uint16Array", "Uint32Array", "WeakMap", "_", "clearTimeout", "isFinite", "parseInt", "setTimeout" ], templateCounter = -1, typedArrayTags = {};
+    var undefined, LARGE_ARRAY_SIZE = 200, CORE_ERROR_TEXT = "Unsupported core-js use. Try https://npms.io/search?q=ponyfill.", FUNC_ERROR_TEXT = "Expected a function", HASH_UNDEFINED = "__lodash_hash_undefined__", MAX_MEMOIZE_SIZE = 500, PLACEHOLDER = "__lodash_placeholder__", CLONE_DEEP_FLAG = 1, CLONE_FLAT_FLAG = 2, CLONE_SYMBOLS_FLAG = 4, COMPARE_PARTIAL_FLAG = 1, COMPARE_UNORDERED_FLAG = 2, WRAP_BIND_FLAG = 1, WRAP_BIND_KEY_FLAG = 2, WRAP_CURRY_BOUND_FLAG = 4, WRAP_CURRY_FLAG = 8, WRAP_CURRY_RIGHT_FLAG = 16, WRAP_PARTIAL_FLAG = 32, WRAP_PARTIAL_RIGHT_FLAG = 64, WRAP_ARY_FLAG = 128, WRAP_REARG_FLAG = 256, WRAP_FLIP_FLAG = 512, DEFAULT_TRUNC_LENGTH = 30, DEFAULT_TRUNC_OMISSION = "...", HOT_COUNT = 800, HOT_SPAN = 16, LAZY_FILTER_FLAG = 1, LAZY_MAP_FLAG = 2, INFINITY = 1 / 0, MAX_SAFE_INTEGER = 9007199254740991, MAX_INTEGER = 1.7976931348623157e308, NAN = NaN, MAX_ARRAY_LENGTH = 4294967295, MAX_ARRAY_INDEX = MAX_ARRAY_LENGTH - 1, HALF_MAX_ARRAY_LENGTH = MAX_ARRAY_LENGTH >>> 1, wrapFlags = [ [ "ary", WRAP_ARY_FLAG ], [ "bind", WRAP_BIND_FLAG ], [ "bindKey", WRAP_BIND_KEY_FLAG ], [ "curry", WRAP_CURRY_FLAG ], [ "curryRight", WRAP_CURRY_RIGHT_FLAG ], [ "flip", WRAP_FLIP_FLAG ], [ "partial", WRAP_PARTIAL_FLAG ], [ "partialRight", WRAP_PARTIAL_RIGHT_FLAG ], [ "rearg", WRAP_REARG_FLAG ] ], argsTag = "[object Arguments]", arrayTag = "[object Array]", asyncTag = "[object AsyncFunction]", boolTag = "[object Boolean]", dateTag = "[object Date]", domExcTag = "[object DOMException]", errorTag = "[object Error]", funcTag = "[object Function]", genTag = "[object GeneratorFunction]", mapTag = "[object Map]", numberTag = "[object Number]", nullTag = "[object Null]", objectTag = "[object Object]", proxyTag = "[object Proxy]", regexpTag = "[object RegExp]", setTag = "[object Set]", stringTag = "[object String]", symbolTag = "[object Symbol]", undefinedTag = "[object Undefined]", weakMapTag = "[object WeakMap]", weakSetTag = "[object WeakSet]", arrayBufferTag = "[object ArrayBuffer]", dataViewTag = "[object DataView]", float32Tag = "[object Float32Array]", float64Tag = "[object Float64Array]", int8Tag = "[object Int8Array]", int16Tag = "[object Int16Array]", int32Tag = "[object Int32Array]", uint8Tag = "[object Uint8Array]", uint8ClampedTag = "[object Uint8ClampedArray]", uint16Tag = "[object Uint16Array]", uint32Tag = "[object Uint32Array]", reEmptyStringLeading = /\b__p \+= '';/g, reEmptyStringMiddle = /\b(__p \+=) '' \+/g, reEmptyStringTrailing = /(__e\(.*?\)|\b__t\)) \+\n'';/g, reEscapedHtml = /&(?:amp|lt|gt|quot|#39);/g, reUnescapedHtml = /[&<>"']/g, reHasEscapedHtml = RegExp(reEscapedHtml.source), reHasUnescapedHtml = RegExp(reUnescapedHtml.source), reEscape = /<%-([\s\S]+?)%>/g, reEvaluate = /<%([\s\S]+?)%>/g, reInterpolate = /<%=([\s\S]+?)%>/g, reIsDeepProp = /\.|\[(?:[^[\]]*|(["'])(?:(?!\1)[^\\]|\\.)*?\1)\]/, reIsPlainProp = /^\w*$/, reLeadingDot = /^\./, rePropName = /[^.[\]]+|\[(?:(-?\d+(?:\.\d+)?)|(["'])((?:(?!\2)[^\\]|\\.)*?)\2)\]|(?=(?:\.|\[\])(?:\.|\[\]|$))/g, reRegExpChar = /[\\^$.*+?()[\]{}|]/g, reHasRegExpChar = RegExp(reRegExpChar.source), reTrim = /^\s+|\s+$/g, reTrimStart = /^\s+/, reTrimEnd = /\s+$/, reWrapComment = /\{(?:\n\/\* \[wrapped with .+\] \*\/)?\n?/, reWrapDetails = /\{\n\/\* \[wrapped with (.+)\] \*/, reSplitDetails = /,? & /, reAsciiWord = /[^\x00-\x2f\x3a-\x40\x5b-\x60\x7b-\x7f]+/g, reEscapeChar = /\\(\\)?/g, reEsTemplate = /\$\{([^\\}]*(?:\\.[^\\}]*)*)\}/g, reFlags = /\w*$/, reIsBadHex = /^[-+]0x[0-9a-f]+$/i, reIsBinary = /^0b[01]+$/i, reIsHostCtor = /^\[object .+?Constructor\]$/, reIsOctal = /^0o[0-7]+$/i, reIsUint = /^(?:0|[1-9]\d*)$/, reLatin = /[\xc0-\xd6\xd8-\xf6\xf8-\xff\u0100-\u017f]/g, reNoMatch = /($^)/, reUnescapedString = /['\n\r\u2028\u2029\\]/g, rsComboRange = "\\u0300-\\u036f\\ufe20-\\ufe2f\\u20d0-\\u20ff", rsBreakRange = "\\xac\\xb1\\xd7\\xf7\\x00-\\x2f\\x3a-\\x40\\x5b-\\x60\\x7b-\\xbf\\u2000-\\u206f \\t\\x0b\\f\\xa0\\ufeff\\n\\r\\u2028\\u2029\\u1680\\u180e\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200a\\u202f\\u205f\\u3000", rsBreak = "[" + rsBreakRange + "]", rsCombo = "[" + rsComboRange + "]", rsLower = "[a-z\\xdf-\\xf6\\xf8-\\xff]", rsMisc = "[^\\ud800-\\udfff" + rsBreakRange + "\\d+\\u2700-\\u27bfa-z\\xdf-\\xf6\\xf8-\\xffA-Z\\xc0-\\xd6\\xd8-\\xde]", rsFitz = "\\ud83c[\\udffb-\\udfff]", rsRegional = "(?:\\ud83c[\\udde6-\\uddff]){2}", rsSurrPair = "[\\ud800-\\udbff][\\udc00-\\udfff]", rsUpper = "[A-Z\\xc0-\\xd6\\xd8-\\xde]", rsMiscLower = "(?:" + rsLower + "|" + rsMisc + ")", reOptMod = "(?:[\\u0300-\\u036f\\ufe20-\\ufe2f\\u20d0-\\u20ff]|\\ud83c[\\udffb-\\udfff])?", rsOptJoin = "(?:\\u200d(?:" + [ "[^\\ud800-\\udfff]", rsRegional, rsSurrPair ].join("|") + ")[\\ufe0e\\ufe0f]?" + reOptMod + ")*", rsSeq = "[\\ufe0e\\ufe0f]?" + reOptMod + rsOptJoin, rsEmoji = "(?:" + [ "[\\u2700-\\u27bf]", rsRegional, rsSurrPair ].join("|") + ")" + rsSeq, rsSymbol = "(?:" + [ "[^\\ud800-\\udfff]" + rsCombo + "?", rsCombo, rsRegional, rsSurrPair, "[\\ud800-\\udfff]" ].join("|") + ")", reApos = RegExp("['’]", "g"), reComboMark = RegExp(rsCombo, "g"), reUnicode = RegExp(rsFitz + "(?=" + rsFitz + ")|" + rsSymbol + rsSeq, "g"), reUnicodeWord = RegExp([ rsUpper + "?" + rsLower + "+(?:['’](?:d|ll|m|re|s|t|ve))?(?=" + [ rsBreak, rsUpper, "$" ].join("|") + ")", "(?:[A-Z\\xc0-\\xd6\\xd8-\\xde]|[^\\ud800-\\udfff\\xac\\xb1\\xd7\\xf7\\x00-\\x2f\\x3a-\\x40\\x5b-\\x60\\x7b-\\xbf\\u2000-\\u206f \\t\\x0b\\f\\xa0\\ufeff\\n\\r\\u2028\\u2029\\u1680\\u180e\\u2000\\u2001\\u2002\\u2003\\u2004\\u2005\\u2006\\u2007\\u2008\\u2009\\u200a\\u202f\\u205f\\u3000\\d+\\u2700-\\u27bfa-z\\xdf-\\xf6\\xf8-\\xffA-Z\\xc0-\\xd6\\xd8-\\xde])+(?:['’](?:D|LL|M|RE|S|T|VE))?(?=" + [ rsBreak, rsUpper + rsMiscLower, "$" ].join("|") + ")", rsUpper + "?" + rsMiscLower + "+(?:['’](?:d|ll|m|re|s|t|ve))?", rsUpper + "+(?:['’](?:D|LL|M|RE|S|T|VE))?", "\\d*(?:(?:1ST|2ND|3RD|(?![123])\\dTH)\\b)", "\\d*(?:(?:1st|2nd|3rd|(?![123])\\dth)\\b)", "\\d+", rsEmoji ].join("|"), "g"), reHasUnicode = RegExp("[\\u200d\\ud800-\\udfff" + rsComboRange + "\\ufe0e\\ufe0f]"), reHasUnicodeWord = /[a-z][A-Z]|[A-Z]{2,}[a-z]|[0-9][a-zA-Z]|[a-zA-Z][0-9]|[^a-zA-Z0-9 ]/, contextProps = [ "Array", "Buffer", "DataView", "Date", "Error", "Float32Array", "Float64Array", "Function", "Int8Array", "Int16Array", "Int32Array", "Map", "Math", "Object", "Promise", "RegExp", "Set", "String", "Symbol", "TypeError", "Uint8Array", "Uint8ClampedArray", "Uint16Array", "Uint32Array", "WeakMap", "_", "clearTimeout", "isFinite", "parseInt", "setTimeout" ], templateCounter = -1, typedArrayTags = {};
     typedArrayTags[float32Tag] = typedArrayTags[float64Tag] = typedArrayTags[int8Tag] = typedArrayTags[int16Tag] = typedArrayTags[int32Tag] = typedArrayTags[uint8Tag] = typedArrayTags[uint8ClampedTag] = typedArrayTags[uint16Tag] = typedArrayTags[uint32Tag] = !0, 
     typedArrayTags[argsTag] = typedArrayTags[arrayTag] = typedArrayTags[arrayBufferTag] = typedArrayTags[boolTag] = typedArrayTags[dataViewTag] = typedArrayTags[dateTag] = typedArrayTags[errorTag] = typedArrayTags[funcTag] = typedArrayTags[mapTag] = typedArrayTags[numberTag] = typedArrayTags[objectTag] = typedArrayTags[regexpTag] = typedArrayTags[setTag] = typedArrayTags[stringTag] = typedArrayTags[weakMapTag] = !1;
     var cloneableTags = {};
@@ -19241,7 +19130,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         try {
             return freeProcess && freeProcess.binding && freeProcess.binding("util");
         } catch (e) {}
-    }(), nodeIsArrayBuffer = nodeUtil && nodeUtil.isArrayBuffer, nodeIsDate = nodeUtil && nodeUtil.isDate, nodeIsMap = nodeUtil && nodeUtil.isMap, nodeIsRegExp = nodeUtil && nodeUtil.isRegExp, nodeIsSet = nodeUtil && nodeUtil.isSet, nodeIsTypedArray = nodeUtil && nodeUtil.isTypedArray, asciiSize = baseProperty("length"), deburrLetter = basePropertyOf(deburredLetters), escapeHtmlChar = basePropertyOf(htmlEscapes), unescapeHtmlChar = basePropertyOf(htmlUnescapes), runInContext = function runInContext(context) {
+    }(), nodeIsArrayBuffer = nodeUtil && nodeUtil.isArrayBuffer, nodeIsDate = nodeUtil && nodeUtil.isDate, nodeIsMap = nodeUtil && nodeUtil.isMap, nodeIsRegExp = nodeUtil && nodeUtil.isRegExp, nodeIsSet = nodeUtil && nodeUtil.isSet, nodeIsTypedArray = nodeUtil && nodeUtil.isTypedArray, asciiSize = baseProperty("length"), deburrLetter = basePropertyOf(deburredLetters), escapeHtmlChar = basePropertyOf(htmlEscapes), unescapeHtmlChar = basePropertyOf(htmlUnescapes), _ = function runInContext(context) {
         function lodash(value) {
             if (isObjectLike(value) && !isArray(value) && !(value instanceof LazyWrapper)) {
                 if (value instanceof LodashWrapper) return value;
@@ -19332,10 +19221,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         }
         function listCacheDelete(key) {
             var data = this.__data__, index = assocIndexOf(data, key);
-            if (index < 0) return !1;
-            var lastIndex = data.length - 1;
-            return index == lastIndex ? data.pop() : splice.call(data, index, 1), --this.size, 
-            !0;
+            return !(index < 0) && (index == data.length - 1 ? data.pop() : splice.call(data, index, 1), 
+            --this.size, !0);
         }
         function listCacheGet(key) {
             var data = this.__data__, index = assocIndexOf(data, key);
@@ -19364,7 +19251,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             };
         }
         function mapCacheDelete(key) {
-            var result = getMapData(this, key)["delete"](key);
+            var result = getMapData(this, key).delete(key);
             return this.size -= result ? 1 : 0, result;
         }
         function mapCacheGet(key) {
@@ -19395,7 +19282,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             this.__data__ = new ListCache(), this.size = 0;
         }
         function stackDelete(key) {
-            var data = this.__data__, result = data["delete"](key);
+            var data = this.__data__, result = data.delete(key);
             return this.size = data.size, result;
         }
         function stackGet(key) {
@@ -19683,9 +19570,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return !0;
         }
         function baseIsNative(value) {
-            if (!isObject(value) || isMasked(value)) return !1;
-            var pattern = isFunction(value) ? reIsNative : reIsHostCtor;
-            return pattern.test(toSource(value));
+            return !(!isObject(value) || isMasked(value)) && (isFunction(value) ? reIsNative : reIsHostCtor).test(toSource(value));
         }
         function baseIsRegExp(value) {
             return isObjectLike(value) && baseGetTag(value) == regexpTag;
@@ -19751,7 +19636,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                 isArguments(objValue) ? newValue = toPlainObject(objValue) : (!isObject(objValue) || srcIndex && isFunction(objValue)) && (newValue = initCloneObject(srcValue))) : isCommon = !1;
             }
             isCommon && (stack.set(srcValue, newValue), mergeFunc(newValue, srcValue, srcIndex, customizer, stack), 
-            stack["delete"](srcValue)), assignMergeValue(object, key, newValue);
+            stack.delete(srcValue)), assignMergeValue(object, key, newValue);
         }
         function baseNth(array, n) {
             var length = array.length;
@@ -19759,18 +19644,16 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         }
         function baseOrderBy(collection, iteratees, orders) {
             var index = -1;
-            iteratees = arrayMap(iteratees.length ? iteratees : [ identity ], baseUnary(getIteratee()));
-            var result = baseMap(collection, function(value, key, collection) {
-                var criteria = arrayMap(iteratees, function(iteratee) {
-                    return iteratee(value);
-                });
+            return iteratees = arrayMap(iteratees.length ? iteratees : [ identity ], baseUnary(getIteratee())), 
+            baseSortBy(baseMap(collection, function(value, key, collection) {
                 return {
-                    criteria: criteria,
+                    criteria: arrayMap(iteratees, function(iteratee) {
+                        return iteratee(value);
+                    }),
                     index: ++index,
                     value: value
                 };
-            });
-            return baseSortBy(result, function(object, other) {
+            }), function(object, other) {
                 return compareMultiple(object, other, orders);
             });
         }
@@ -19818,7 +19701,9 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         function baseRepeat(string, n) {
             var result = "";
             if (!string || n < 1 || n > MAX_SAFE_INTEGER) return result;
-            do n % 2 && (result += string), n = nativeFloor(n / 2), n && (string += string); while (n);
+            do {
+                n % 2 && (result += string), (n = nativeFloor(n / 2)) && (string += string);
+            } while (n);
             return result;
         }
         function baseRest(func, start) {
@@ -19838,7 +19723,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                 var key = toKey(path[index]), newValue = value;
                 if (index != lastIndex) {
                     var objValue = nested[key];
-                    newValue = customizer ? customizer(objValue, key, nested) : undefined, newValue === undefined && (newValue = isObject(objValue) ? objValue : isIndex(path[index + 1]) ? [] : {});
+                    (newValue = customizer ? customizer(objValue, key, nested) : undefined) === undefined && (newValue = isObject(objValue) ? objValue : isIndex(path[index + 1]) ? [] : {});
                 }
                 assignValue(nested, key, newValue), nested = nested[key];
             }
@@ -19857,7 +19742,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         function baseSome(collection, predicate) {
             var result;
             return baseEach(collection, function(value, index, collection) {
-                return result = predicate(value, index, collection), !result;
+                return !(result = predicate(value, index, collection));
             }), !!result;
         }
         function baseSortedIndex(array, value, retHighest) {
@@ -19918,7 +19803,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return result;
         }
         function baseUnset(object, path) {
-            return path = castPath(path, object), object = parent(object, path), null == object || delete object[toKey(last(path))];
+            return path = castPath(path, object), null == (object = parent(object, path)) || delete object[toKey(last(path))];
         }
         function baseUpdate(object, path, updater, customizer) {
             return baseSet(object, path, updater(baseGet(object, path)), customizer);
@@ -19973,16 +19858,14 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return new dataView.constructor(buffer, dataView.byteOffset, dataView.byteLength);
         }
         function cloneMap(map, isDeep, cloneFunc) {
-            var array = isDeep ? cloneFunc(mapToArray(map), CLONE_DEEP_FLAG) : mapToArray(map);
-            return arrayReduce(array, addMapEntry, new map.constructor());
+            return arrayReduce(isDeep ? cloneFunc(mapToArray(map), CLONE_DEEP_FLAG) : mapToArray(map), addMapEntry, new map.constructor());
         }
         function cloneRegExp(regexp) {
             var result = new regexp.constructor(regexp.source, reFlags.exec(regexp));
             return result.lastIndex = regexp.lastIndex, result;
         }
         function cloneSet(set, isDeep, cloneFunc) {
-            var array = isDeep ? cloneFunc(setToArray(set), CLONE_DEEP_FLAG) : setToArray(set);
-            return arrayReduce(array, addSetEntry, new set.constructor());
+            return arrayReduce(isDeep ? cloneFunc(setToArray(set), CLONE_DEEP_FLAG) : setToArray(set), addSetEntry, new set.constructor());
         }
         function cloneSymbol(symbol) {
             return symbolValueOf ? Object(symbolValueOf.call(symbol)) : {};
@@ -20004,8 +19887,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                 var result = compareAscending(objCriteria[index], othCriteria[index]);
                 if (result) {
                     if (index >= ordersLength) return result;
-                    var order = orders[index];
-                    return result * ("desc" == order ? -1 : 1);
+                    return result * ("desc" == orders[index] ? -1 : 1);
                 }
             }
             return object.index - other.index;
@@ -20064,7 +19946,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return function(collection, iteratee) {
                 if (null == collection) return collection;
                 if (!isArrayLike(collection)) return eachFunc(collection, iteratee);
-                for (var length = collection.length, index = fromRight ? length : -1, iterable = Object(collection); (fromRight ? index-- : ++index < length) && iteratee(iterable[index], index, iterable) !== !1; ) ;
+                for (var length = collection.length, index = fromRight ? length : -1, iterable = Object(collection); (fromRight ? index-- : ++index < length) && !1 !== iteratee(iterable[index], index, iterable); ) ;
                 return collection;
             };
         }
@@ -20072,15 +19954,14 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return function(object, iteratee, keysFunc) {
                 for (var index = -1, iterable = Object(object), props = keysFunc(object), length = props.length; length--; ) {
                     var key = props[fromRight ? length : ++index];
-                    if (iteratee(iterable[key], key, iterable) === !1) break;
+                    if (!1 === iteratee(iterable[key], key, iterable)) break;
                 }
                 return object;
             };
         }
         function createBind(func, bitmask, thisArg) {
             function wrapper() {
-                var fn = this && this !== root && this instanceof wrapper ? Ctor : func;
-                return fn.apply(isBind ? thisArg : this, arguments);
+                return (this && this !== root && this instanceof wrapper ? Ctor : func).apply(isBind ? thisArg : this, arguments);
             }
             var isBind = bitmask & WRAP_BIND_FLAG, Ctor = createCtor(func);
             return wrapper;
@@ -20133,9 +20014,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             function wrapper() {
                 for (var length = arguments.length, args = Array(length), index = length, placeholder = getHolder(wrapper); index--; ) args[index] = arguments[index];
                 var holders = length < 3 && args[0] !== placeholder && args[length - 1] !== placeholder ? [] : replaceHolders(args, placeholder);
-                if (length -= holders.length, length < arity) return createRecurry(func, bitmask, createHybrid, wrapper.placeholder, undefined, args, holders, undefined, undefined, arity - length);
-                var fn = this && this !== root && this instanceof wrapper ? Ctor : func;
-                return apply(fn, this, args);
+                return (length -= holders.length) < arity ? createRecurry(func, bitmask, createHybrid, wrapper.placeholder, undefined, args, holders, undefined, undefined, arity - length) : apply(this && this !== root && this instanceof wrapper ? Ctor : func, this, args);
             }
             var Ctor = createCtor(func);
             return wrapper;
@@ -20159,7 +20038,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                 for (fromRight && funcs.reverse(); index--; ) {
                     var func = funcs[index];
                     if ("function" != typeof func) throw new TypeError(FUNC_ERROR_TEXT);
-                    if (prereq && !wrapper && "wrapper" == getFuncName(func)) var wrapper = new LodashWrapper([], (!0));
+                    if (prereq && !wrapper && "wrapper" == getFuncName(func)) var wrapper = new LodashWrapper([], !0);
                 }
                 for (index = wrapper ? index : length; ++index < length; ) {
                     func = funcs[index];
@@ -20250,8 +20129,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         }
         function createRecurry(func, bitmask, wrapFunc, placeholder, thisArg, partials, holders, argPos, ary, arity) {
             var isCurry = bitmask & WRAP_CURRY_FLAG, newHolders = isCurry ? holders : undefined, newHoldersRight = isCurry ? undefined : holders, newPartials = isCurry ? partials : undefined, newPartialsRight = isCurry ? undefined : partials;
-            bitmask |= isCurry ? WRAP_PARTIAL_FLAG : WRAP_PARTIAL_RIGHT_FLAG, bitmask &= ~(isCurry ? WRAP_PARTIAL_RIGHT_FLAG : WRAP_PARTIAL_FLAG), 
-            bitmask & WRAP_CURRY_BOUND_FLAG || (bitmask &= ~(WRAP_BIND_FLAG | WRAP_BIND_KEY_FLAG));
+            bitmask |= isCurry ? WRAP_PARTIAL_FLAG : WRAP_PARTIAL_RIGHT_FLAG, (bitmask &= ~(isCurry ? WRAP_PARTIAL_RIGHT_FLAG : WRAP_PARTIAL_FLAG)) & WRAP_CURRY_BOUND_FLAG || (bitmask &= ~(WRAP_BIND_FLAG | WRAP_BIND_KEY_FLAG));
             var newData = [ func, bitmask, thisArg, newPartials, newHolders, newPartialsRight, newHoldersRight, argPos, ary, arity ], result = wrapFunc.apply(undefined, newData);
             return isLaziable(func) && setData(result, newData), result.placeholder = placeholder, 
             setWrapToString(result, func, bitmask);
@@ -20260,8 +20138,9 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             var func = Math[methodName];
             return function(number, precision) {
                 if (number = toNumber(number), precision = null == precision ? 0 : nativeMin(toInteger(precision), 292)) {
-                    var pair = (toString(number) + "e").split("e"), value = func(pair[0] + "e" + (+pair[1] + precision));
-                    return pair = (toString(value) + "e").split("e"), +(pair[0] + "e" + (+pair[1] - precision));
+                    var pair = (toString(number) + "e").split("e");
+                    return pair = (toString(func(pair[0] + "e" + (+pair[1] + precision))) + "e").split("e"), 
+                    +(pair[0] + "e" + (+pair[1] - precision));
                 }
                 return func(number);
             };
@@ -20287,15 +20166,14 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             partials = newData[3], holders = newData[4], arity = newData[9] = newData[9] === undefined ? isBindKey ? 0 : func.length : nativeMax(newData[9] - length, 0), 
             !arity && bitmask & (WRAP_CURRY_FLAG | WRAP_CURRY_RIGHT_FLAG) && (bitmask &= ~(WRAP_CURRY_FLAG | WRAP_CURRY_RIGHT_FLAG)), 
             bitmask && bitmask != WRAP_BIND_FLAG) result = bitmask == WRAP_CURRY_FLAG || bitmask == WRAP_CURRY_RIGHT_FLAG ? createCurry(func, bitmask, arity) : bitmask != WRAP_PARTIAL_FLAG && bitmask != (WRAP_BIND_FLAG | WRAP_PARTIAL_FLAG) || holders.length ? createHybrid.apply(undefined, newData) : createPartial(func, bitmask, thisArg, partials); else var result = createBind(func, bitmask, thisArg);
-            var setter = data ? baseSetData : setData;
-            return setWrapToString(setter(result, newData), func, bitmask);
+            return setWrapToString((data ? baseSetData : setData)(result, newData), func, bitmask);
         }
         function customDefaultsAssignIn(objValue, srcValue, key, object) {
             return objValue === undefined || eq(objValue, objectProto[key]) && !hasOwnProperty.call(object, key) ? srcValue : objValue;
         }
         function customDefaultsMerge(objValue, srcValue, key, object, source, stack) {
             return isObject(objValue) && isObject(srcValue) && (stack.set(srcValue, objValue), 
-            baseMerge(objValue, srcValue, undefined, customDefaultsMerge, stack), stack["delete"](srcValue)), 
+            baseMerge(objValue, srcValue, undefined, customDefaultsMerge, stack), stack.delete(srcValue)), 
             objValue;
         }
         function customOmitClone(value) {
@@ -20327,7 +20205,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                     break;
                 }
             }
-            return stack["delete"](array), stack["delete"](other), result;
+            return stack.delete(array), stack.delete(other), result;
         }
         function equalByTag(object, other, tag, bitmask, customizer, equalFunc, stack) {
             switch (tag) {
@@ -20360,7 +20238,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                 if (stacked) return stacked == other;
                 bitmask |= COMPARE_UNORDERED_FLAG, stack.set(object, other);
                 var result = equalArrays(convert(object), convert(other), bitmask, customizer, equalFunc, stack);
-                return stack["delete"](object), result;
+                return stack.delete(object), result;
 
               case symbolTag:
                 if (symbolValueOf) return symbolValueOf.call(object) == symbolValueOf.call(other);
@@ -20368,8 +20246,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return !1;
         }
         function equalObjects(object, other, bitmask, customizer, equalFunc, stack) {
-            var isPartial = bitmask & COMPARE_PARTIAL_FLAG, objProps = getAllKeys(object), objLength = objProps.length, othProps = getAllKeys(other), othLength = othProps.length;
-            if (objLength != othLength && !isPartial) return !1;
+            var isPartial = bitmask & COMPARE_PARTIAL_FLAG, objProps = getAllKeys(object), objLength = objProps.length;
+            if (objLength != getAllKeys(other).length && !isPartial) return !1;
             for (var index = objLength; index--; ) {
                 var key = objProps[index];
                 if (!(isPartial ? key in other : hasOwnProperty.call(other, key))) return !1;
@@ -20392,7 +20270,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                 var objCtor = object.constructor, othCtor = other.constructor;
                 objCtor != othCtor && "constructor" in object && "constructor" in other && !("function" == typeof objCtor && objCtor instanceof objCtor && "function" == typeof othCtor && othCtor instanceof othCtor) && (result = !1);
             }
-            return stack["delete"](object), stack["delete"](other), result;
+            return stack.delete(object), stack.delete(other), result;
         }
         function flatRest(func) {
             return setToString(overRest(func, undefined, flatten), func + "");
@@ -20411,8 +20289,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return result;
         }
         function getHolder(func) {
-            var object = hasOwnProperty.call(lodash, "placeholder") ? lodash : func;
-            return object.placeholder;
+            return (hasOwnProperty.call(lodash, "placeholder") ? lodash : func).placeholder;
         }
         function getIteratee() {
             var result = lodash.iteratee || iteratee;
@@ -20479,8 +20356,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                 if (!(result = null != object && hasFunc(object, key))) break;
                 object = object[key];
             }
-            return result || ++index != length ? result : (length = null == object ? 0 : object.length, 
-            !!length && isLength(length) && isIndex(key, length) && (isArray(object) || isArguments(object)));
+            return result || ++index != length ? result : !!(length = null == object ? 0 : object.length) && isLength(length) && isIndex(key, length) && (isArray(object) || isArguments(object));
         }
         function initCloneArray(array) {
             var length = array.length, result = array.constructor(length);
@@ -20498,7 +20374,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
 
               case boolTag:
               case dateTag:
-                return new Ctor((+object));
+                return new Ctor(+object);
 
               case dataViewTag:
                 return cloneDataView(object, isDeep);
@@ -20542,7 +20418,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return isArray(value) || isArguments(value) || !!(spreadableSymbol && value && value[spreadableSymbol]);
         }
         function isIndex(value, length) {
-            return length = null == length ? MAX_SAFE_INTEGER : length, !!length && ("number" == typeof value || reIsUint.test(value)) && value > -1 && value % 1 == 0 && value < length;
+            return !!(length = null == length ? MAX_SAFE_INTEGER : length) && ("number" == typeof value || reIsUint.test(value)) && value > -1 && value % 1 == 0 && value < length;
         }
         function isIterateeCall(value, index, object) {
             if (!isObject(object)) return !1;
@@ -20569,8 +20445,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return !!maskSrcKey && maskSrcKey in func;
         }
         function isPrototype(value) {
-            var Ctor = value && value.constructor, proto = "function" == typeof Ctor && Ctor.prototype || objectProto;
-            return value === proto;
+            var Ctor = value && value.constructor;
+            return value === ("function" == typeof Ctor && Ctor.prototype || objectProto);
         }
         function isStrictComparable(value) {
             return value === value && !isObject(value);
@@ -20579,12 +20455,6 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return function(object) {
                 return null != object && object[key] === srcValue && (srcValue !== undefined || key in Object(object));
             };
-        }
-        function memoizeCapped(func) {
-            var result = memoize(func, function(key) {
-                return cache.size === MAX_MEMOIZE_SIZE && cache.clear(), key;
-            }), cache = result.cache;
-            return result;
         }
         function mergeData(data, source) {
             var bitmask = data[1], srcBitmask = source[1], newBitmask = bitmask | srcBitmask, isCommon = newBitmask < (WRAP_BIND_FLAG | WRAP_BIND_KEY_FLAG | WRAP_ARY_FLAG), isCombo = srcBitmask == WRAP_ARY_FLAG && bitmask == WRAP_CURRY_FLAG || srcBitmask == WRAP_ARY_FLAG && bitmask == WRAP_REARG_FLAG && data[7].length <= source[8] || srcBitmask == (WRAP_ARY_FLAG | WRAP_REARG_FLAG) && source[7].length <= source[8] && bitmask == WRAP_CURRY_FLAG;
@@ -20731,16 +20601,14 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             baseFindIndex(array, getIteratee(predicate, 3), index, !0);
         }
         function flatten(array) {
-            var length = null == array ? 0 : array.length;
-            return length ? baseFlatten(array, 1) : [];
+            return (null == array ? 0 : array.length) ? baseFlatten(array, 1) : [];
         }
         function flattenDeep(array) {
-            var length = null == array ? 0 : array.length;
-            return length ? baseFlatten(array, INFINITY) : [];
+            return (null == array ? 0 : array.length) ? baseFlatten(array, INFINITY) : [];
         }
         function flattenDepth(array, depth) {
-            var length = null == array ? 0 : array.length;
-            return length ? (depth = depth === undefined ? 1 : toInteger(depth), baseFlatten(array, depth)) : [];
+            return (null == array ? 0 : array.length) ? (depth = depth === undefined ? 1 : toInteger(depth), 
+            baseFlatten(array, depth)) : [];
         }
         function fromPairs(pairs) {
             for (var index = -1, length = null == pairs ? 0 : pairs.length, result = {}; ++index < length; ) {
@@ -20759,8 +20627,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return index < 0 && (index = nativeMax(length + index, 0)), baseIndexOf(array, value, index);
         }
         function initial(array) {
-            var length = null == array ? 0 : array.length;
-            return length ? baseSlice(array, 0, -1) : [];
+            return (null == array ? 0 : array.length) ? baseSlice(array, 0, -1) : [];
         }
         function join(array, separator) {
             return null == array ? "" : nativeJoin.call(array, separator);
@@ -20828,8 +20695,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return baseSortedIndexBy(array, value, getIteratee(iteratee, 2), !0);
         }
         function sortedLastIndexOf(array, value) {
-            var length = null == array ? 0 : array.length;
-            if (length) {
+            if (null == array ? 0 : array.length) {
                 var index = baseSortedIndex(array, value, !0) - 1;
                 if (eq(array[index], value)) return index;
             }
@@ -20909,10 +20775,10 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         }
         function wrapperNext() {
             this.__values__ === undefined && (this.__values__ = toArray(this.value()));
-            var done = this.__index__ >= this.__values__.length, value = done ? undefined : this.__values__[this.__index__++];
+            var done = this.__index__ >= this.__values__.length;
             return {
                 done: done,
-                value: value
+                value: done ? undefined : this.__values__[this.__index__++]
             };
         }
         function wrapperToIterator() {
@@ -20949,8 +20815,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             func(collection, getIteratee(predicate, 3));
         }
         function filter(collection, predicate) {
-            var func = isArray(collection) ? arrayFilter : baseFilter;
-            return func(collection, getIteratee(predicate, 3));
+            return (isArray(collection) ? arrayFilter : baseFilter)(collection, getIteratee(predicate, 3));
         }
         function flatMap(collection, iteratee) {
             return baseFlatten(map(collection, iteratee), 1);
@@ -20962,12 +20827,10 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return depth = depth === undefined ? 1 : toInteger(depth), baseFlatten(map(collection, iteratee), depth);
         }
         function forEach(collection, iteratee) {
-            var func = isArray(collection) ? arrayEach : baseEach;
-            return func(collection, getIteratee(iteratee, 3));
+            return (isArray(collection) ? arrayEach : baseEach)(collection, getIteratee(iteratee, 3));
         }
         function forEachRight(collection, iteratee) {
-            var func = isArray(collection) ? arrayEachRight : baseEachRight;
-            return func(collection, getIteratee(iteratee, 3));
+            return (isArray(collection) ? arrayEachRight : baseEachRight)(collection, getIteratee(iteratee, 3));
         }
         function includes(collection, value, fromIndex, guard) {
             collection = isArrayLike(collection) ? collection : values(collection), fromIndex = fromIndex && !guard ? toInteger(fromIndex) : 0;
@@ -20975,8 +20838,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return fromIndex < 0 && (fromIndex = nativeMax(length + fromIndex, 0)), isString(collection) ? fromIndex <= length && collection.indexOf(value, fromIndex) > -1 : !!length && baseIndexOf(collection, value, fromIndex) > -1;
         }
         function map(collection, iteratee) {
-            var func = isArray(collection) ? arrayMap : baseMap;
-            return func(collection, getIteratee(iteratee, 3));
+            return (isArray(collection) ? arrayMap : baseMap)(collection, getIteratee(iteratee, 3));
         }
         function orderBy(collection, iteratees, orders, guard) {
             return null == collection ? [] : (isArray(iteratees) || (iteratees = null == iteratees ? [] : [ iteratees ]), 
@@ -20992,21 +20854,17 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return func(collection, getIteratee(iteratee, 4), accumulator, initAccum, baseEachRight);
         }
         function reject(collection, predicate) {
-            var func = isArray(collection) ? arrayFilter : baseFilter;
-            return func(collection, negate(getIteratee(predicate, 3)));
+            return (isArray(collection) ? arrayFilter : baseFilter)(collection, negate(getIteratee(predicate, 3)));
         }
         function sample(collection) {
-            var func = isArray(collection) ? arraySample : baseSample;
-            return func(collection);
+            return (isArray(collection) ? arraySample : baseSample)(collection);
         }
         function sampleSize(collection, n, guard) {
-            n = (guard ? isIterateeCall(collection, n, guard) : n === undefined) ? 1 : toInteger(n);
-            var func = isArray(collection) ? arraySampleSize : baseSampleSize;
-            return func(collection, n);
+            return n = (guard ? isIterateeCall(collection, n, guard) : n === undefined) ? 1 : toInteger(n), 
+            (isArray(collection) ? arraySampleSize : baseSampleSize)(collection, n);
         }
         function shuffle(collection) {
-            var func = isArray(collection) ? arrayShuffle : baseShuffle;
-            return func(collection);
+            return (isArray(collection) ? arrayShuffle : baseShuffle)(collection);
         }
         function size(collection) {
             if (null == collection) return 0;
@@ -21184,7 +21042,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return isObjectLike(value) && isArrayLike(value);
         }
         function isBoolean(value) {
-            return value === !0 || value === !1 || isObjectLike(value) && baseGetTag(value) == boolTag;
+            return !0 === value || !1 === value || isObjectLike(value) && baseGetTag(value) == boolTag;
         }
         function isElement(value) {
             return isObjectLike(value) && 1 === value.nodeType && !isPlainObject(value);
@@ -21283,14 +21141,13 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             if (!value) return [];
             if (isArrayLike(value)) return isString(value) ? stringToArray(value) : copyArray(value);
             if (symIterator && value[symIterator]) return iteratorToArray(value[symIterator]());
-            var tag = getTag(value), func = tag == mapTag ? mapToArray : tag == setTag ? setToArray : values;
-            return func(value);
+            var tag = getTag(value);
+            return (tag == mapTag ? mapToArray : tag == setTag ? setToArray : values)(value);
         }
         function toFinite(value) {
             if (!value) return 0 === value ? value : 0;
-            if (value = toNumber(value), value === INFINITY || value === -INFINITY) {
-                var sign = value < 0 ? -1 : 1;
-                return sign * MAX_INTEGER;
+            if ((value = toNumber(value)) === INFINITY || value === -INFINITY) {
+                return (value < 0 ? -1 : 1) * MAX_INTEGER;
             }
             return value === value ? value : 0;
         }
@@ -21457,14 +21314,14 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return upperFirst(toString(string).toLowerCase());
         }
         function deburr(string) {
-            return string = toString(string), string && string.replace(reLatin, deburrLetter).replace(reComboMark, "");
+            return (string = toString(string)) && string.replace(reLatin, deburrLetter).replace(reComboMark, "");
         }
         function endsWith(string, target, position) {
             string = toString(string), target = baseToString(target);
             var length = string.length;
             position = position === undefined ? length : baseClamp(toInteger(position), 0, length);
             var end = position;
-            return position -= target.length, position >= 0 && string.slice(position, end) == target;
+            return (position -= target.length) >= 0 && string.slice(position, end) == target;
         }
         function escape(string) {
             return string = toString(string), string && reHasUnescapedHtml.test(string) ? string.replace(reUnescapedHtml, escapeHtmlChar) : string;
@@ -21503,8 +21360,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         function split(string, separator, limit) {
             return limit && "number" != typeof limit && isIterateeCall(string, separator, limit) && (separator = limit = undefined), 
             (limit = limit === undefined ? MAX_ARRAY_LENGTH : limit >>> 0) ? (string = toString(string), 
-            string && ("string" == typeof separator || null != separator && !isRegExp(separator)) && (separator = baseToString(separator), 
-            !separator && hasUnicode(string)) ? castSlice(stringToArray(string), 0, limit) : string.split(separator, limit)) : [];
+            string && ("string" == typeof separator || null != separator && !isRegExp(separator)) && !(separator = baseToString(separator)) && hasUnicode(string) ? castSlice(stringToArray(string), 0, limit) : string.split(separator, limit)) : [];
         }
         function startsWith(string, target, position) {
             return string = toString(string), position = null == position ? 0 : baseClamp(toInteger(position), 0, string.length), 
@@ -21538,22 +21394,22 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return toString(value).toUpperCase();
         }
         function trim(string, chars, guard) {
-            if (string = toString(string), string && (guard || chars === undefined)) return string.replace(reTrim, "");
+            if ((string = toString(string)) && (guard || chars === undefined)) return string.replace(reTrim, "");
             if (!string || !(chars = baseToString(chars))) return string;
-            var strSymbols = stringToArray(string), chrSymbols = stringToArray(chars), start = charsStartIndex(strSymbols, chrSymbols), end = charsEndIndex(strSymbols, chrSymbols) + 1;
-            return castSlice(strSymbols, start, end).join("");
+            var strSymbols = stringToArray(string), chrSymbols = stringToArray(chars);
+            return castSlice(strSymbols, charsStartIndex(strSymbols, chrSymbols), charsEndIndex(strSymbols, chrSymbols) + 1).join("");
         }
         function trimEnd(string, chars, guard) {
-            if (string = toString(string), string && (guard || chars === undefined)) return string.replace(reTrimEnd, "");
+            if ((string = toString(string)) && (guard || chars === undefined)) return string.replace(reTrimEnd, "");
             if (!string || !(chars = baseToString(chars))) return string;
-            var strSymbols = stringToArray(string), end = charsEndIndex(strSymbols, stringToArray(chars)) + 1;
-            return castSlice(strSymbols, 0, end).join("");
+            var strSymbols = stringToArray(string);
+            return castSlice(strSymbols, 0, charsEndIndex(strSymbols, stringToArray(chars)) + 1).join("");
         }
         function trimStart(string, chars, guard) {
-            if (string = toString(string), string && (guard || chars === undefined)) return string.replace(reTrimStart, "");
+            if ((string = toString(string)) && (guard || chars === undefined)) return string.replace(reTrimStart, "");
             if (!string || !(chars = baseToString(chars))) return string;
-            var strSymbols = stringToArray(string), start = charsStartIndex(strSymbols, stringToArray(chars));
-            return castSlice(strSymbols, start).join("");
+            var strSymbols = stringToArray(string);
+            return castSlice(strSymbols, charsStartIndex(strSymbols, stringToArray(chars))).join("");
         }
         function truncate(string, options) {
             var length = DEFAULT_TRUNC_LENGTH, omission = DEFAULT_TRUNC_OMISSION;
@@ -21636,8 +21492,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                 object[methodName] = func, isFunc && (object.prototype[methodName] = function() {
                     var chainAll = this.__chain__;
                     if (chain || chainAll) {
-                        var result = object(this.__wrapped__), actions = result.__actions__ = copyArray(this.__actions__);
-                        return actions.push({
+                        var result = object(this.__wrapped__);
+                        return (result.__actions__ = copyArray(this.__actions__)).push({
                             func: func,
                             args: arguments,
                             thisArg: object
@@ -21680,7 +21536,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return !0;
         }
         function times(n, iteratee) {
-            if (n = toInteger(n), n < 1 || n > MAX_SAFE_INTEGER) return [];
+            if ((n = toInteger(n)) < 1 || n > MAX_SAFE_INTEGER) return [];
             var index = MAX_ARRAY_LENGTH, length = nativeMin(n, MAX_ARRAY_LENGTH);
             iteratee = getIteratee(iteratee), n -= MAX_ARRAY_LENGTH;
             for (var result = baseTimes(length, iteratee); ++index < n; ) iteratee(index);
@@ -21747,14 +21603,14 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         }, lodash.prototype = baseLodash.prototype, lodash.prototype.constructor = lodash, 
         LodashWrapper.prototype = baseCreate(baseLodash.prototype), LodashWrapper.prototype.constructor = LodashWrapper, 
         LazyWrapper.prototype = baseCreate(baseLodash.prototype), LazyWrapper.prototype.constructor = LazyWrapper, 
-        Hash.prototype.clear = hashClear, Hash.prototype["delete"] = hashDelete, Hash.prototype.get = hashGet, 
+        Hash.prototype.clear = hashClear, Hash.prototype.delete = hashDelete, Hash.prototype.get = hashGet, 
         Hash.prototype.has = hashHas, Hash.prototype.set = hashSet, ListCache.prototype.clear = listCacheClear, 
-        ListCache.prototype["delete"] = listCacheDelete, ListCache.prototype.get = listCacheGet, 
+        ListCache.prototype.delete = listCacheDelete, ListCache.prototype.get = listCacheGet, 
         ListCache.prototype.has = listCacheHas, ListCache.prototype.set = listCacheSet, 
-        MapCache.prototype.clear = mapCacheClear, MapCache.prototype["delete"] = mapCacheDelete, 
+        MapCache.prototype.clear = mapCacheClear, MapCache.prototype.delete = mapCacheDelete, 
         MapCache.prototype.get = mapCacheGet, MapCache.prototype.has = mapCacheHas, MapCache.prototype.set = mapCacheSet, 
         SetCache.prototype.add = SetCache.prototype.push = setCacheAdd, SetCache.prototype.has = setCacheHas, 
-        Stack.prototype.clear = stackClear, Stack.prototype["delete"] = stackDelete, Stack.prototype.get = stackGet, 
+        Stack.prototype.clear = stackClear, Stack.prototype.delete = stackDelete, Stack.prototype.get = stackGet, 
         Stack.prototype.has = stackHas, Stack.prototype.set = stackSet;
         var baseEach = createBaseEach(baseForOwn), baseEachRight = createBaseEach(baseForOwnRight, !0), baseFor = createBaseFor(), baseForRight = createBaseFor(!0), baseSetData = metaMap ? function(func, data) {
             return metaMap.set(func, data), func;
@@ -21779,7 +21635,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             for (var result = []; object; ) arrayPush(result, getSymbols(object)), object = getPrototype(object);
             return result;
         } : stubArray, getTag = baseGetTag;
-        (DataView && getTag(new DataView(new ArrayBuffer(1))) != dataViewTag || Map && getTag(new Map()) != mapTag || Promise && getTag(Promise.resolve()) != promiseTag || Set && getTag(new Set()) != setTag || WeakMap && getTag(new WeakMap()) != weakMapTag) && (getTag = function(value) {
+        (DataView && getTag(new DataView(new ArrayBuffer(1))) != dataViewTag || Map && getTag(new Map()) != mapTag || Promise && "[object Promise]" != getTag(Promise.resolve()) || Set && getTag(new Set()) != setTag || WeakMap && getTag(new WeakMap()) != weakMapTag) && (getTag = function(value) {
             var result = baseGetTag(value), Ctor = result == objectTag ? value.constructor : undefined, ctorString = Ctor ? toSource(Ctor) : "";
             if (ctorString) switch (ctorString) {
               case dataViewCtorString:
@@ -21789,7 +21645,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                 return mapTag;
 
               case promiseCtorString:
-                return promiseTag;
+                return "[object Promise]";
 
               case setCtorString:
                 return setTag;
@@ -21801,7 +21657,12 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         });
         var isMaskable = coreJsData ? isFunction : stubFalse, setData = shortOut(baseSetData), setTimeout = ctxSetTimeout || function(func, wait) {
             return root.setTimeout(func, wait);
-        }, setToString = shortOut(baseSetToString), stringToPath = memoizeCapped(function(string) {
+        }, setToString = shortOut(baseSetToString), stringToPath = function(func) {
+            var result = memoize(func, function(key) {
+                return cache.size === MAX_MEMOIZE_SIZE && cache.clear(), key;
+            }), cache = result.cache;
+            return result;
+        }(function(string) {
             var result = [];
             return reLeadingDot.test(string) && result.push(""), string.replace(rePropName, function(match, number, quote, string) {
                 result.push(quote ? string.replace(reEscapeChar, "$1") : number || match);
@@ -22093,7 +21954,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             }), source;
         }(), {
             chain: !1
-        }), lodash.VERSION = VERSION, arrayEach([ "bind", "bindKey", "curry", "curryRight", "partial", "partialRight" ], function(methodName) {
+        }), lodash.VERSION = "4.17.4", arrayEach([ "bind", "bindKey", "curry", "curryRight", "partial", "partialRight" ], function(methodName) {
             lodash[methodName].placeholder = lodash;
         }), arrayEach([ "drop", "take" ], function(methodName, index) {
             LazyWrapper.prototype[methodName] = function(n) {
@@ -22107,7 +21968,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                 return this.reverse()[methodName](n).reverse();
             };
         }), arrayEach([ "filter", "map", "takeWhile" ], function(methodName, index) {
-            var type = index + 1, isFilter = type == LAZY_FILTER_FLAG || type == LAZY_WHILE_FLAG;
+            var type = index + 1, isFilter = type == LAZY_FILTER_FLAG || 3 == type;
             LazyWrapper.prototype[methodName] = function(iteratee) {
                 var result = this.clone();
                 return result.__iteratees__.push({
@@ -22183,8 +22044,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         }), baseForOwn(LazyWrapper.prototype, function(func, methodName) {
             var lodashFunc = lodash[methodName];
             if (lodashFunc) {
-                var key = lodashFunc.name + "", names = realNames[key] || (realNames[key] = []);
-                names.push({
+                var key = lodashFunc.name + "";
+                (realNames[key] || (realNames[key] = [])).push({
                     name: methodName,
                     func: lodashFunc
                 });
@@ -22198,7 +22059,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         lodash.prototype.reverse = wrapperReverse, lodash.prototype.toJSON = lodash.prototype.valueOf = lodash.prototype.value = wrapperValue, 
         lodash.prototype.first = lodash.prototype.head, symIterator && (lodash.prototype[symIterator] = wrapperToIterator), 
         lodash;
-    }, _ = runInContext();
+    }();
     "function" == typeof define && "object" == typeof define.amd && define.amd ? (root._ = _, 
     define("lodash", [], function() {
         return _;
@@ -22207,108 +22068,95 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     "object" == typeof exports && "undefined" != typeof module ? factory(exports) : "function" == typeof define && define.amd ? define("async", [ "exports" ], factory) : factory(global.async = global.async || {});
 }(this, function(exports) {
     "use strict";
-    function apply(func, thisArg, args) {
-        var length = args.length;
-        switch (length) {
-          case 0:
-            return func.call(thisArg);
-
-          case 1:
-            return func.call(thisArg, args[0]);
-
-          case 2:
-            return func.call(thisArg, args[0], args[1]);
-
-          case 3:
-            return func.call(thisArg, args[0], args[1], args[2]);
-        }
-        return func.apply(thisArg, args);
+    function slice(arrayLike, start) {
+        start |= 0;
+        for (var newLen = Math.max(arrayLike.length - start, 0), newArr = Array(newLen), idx = 0; idx < newLen; idx++) newArr[idx] = arrayLike[start + idx];
+        return newArr;
     }
     function isObject(value) {
         var type = typeof value;
-        return !!value && ("object" == type || "function" == type);
+        return null != value && ("object" == type || "function" == type);
     }
-    function isFunction(value) {
-        var tag = isObject(value) ? objectToString.call(value) : "";
-        return tag == funcTag || tag == genTag;
+    function fallback(fn) {
+        setTimeout(fn, 0);
     }
-    function isObjectLike(value) {
-        return !!value && "object" == typeof value;
-    }
-    function isSymbol(value) {
-        return "symbol" == typeof value || isObjectLike(value) && objectToString$1.call(value) == symbolTag;
-    }
-    function toNumber(value) {
-        if ("number" == typeof value) return value;
-        if (isSymbol(value)) return NAN;
-        if (isObject(value)) {
-            var other = isFunction(value.valueOf) ? value.valueOf() : value;
-            value = isObject(other) ? other + "" : other;
-        }
-        if ("string" != typeof value) return 0 === value ? value : +value;
-        value = value.replace(reTrim, "");
-        var isBinary = reIsBinary.test(value);
-        return isBinary || reIsOctal.test(value) ? freeParseInt(value.slice(2), isBinary ? 2 : 8) : reIsBadHex.test(value) ? NAN : +value;
-    }
-    function toFinite(value) {
-        if (!value) return 0 === value ? value : 0;
-        if (value = toNumber(value), value === INFINITY || value === -INFINITY) {
-            var sign = value < 0 ? -1 : 1;
-            return sign * MAX_INTEGER;
-        }
-        return value === value ? value : 0;
-    }
-    function toInteger(value) {
-        var result = toFinite(value), remainder = result % 1;
-        return result === result ? remainder ? result - remainder : result : 0;
-    }
-    function rest(func, start) {
-        if ("function" != typeof func) throw new TypeError(FUNC_ERROR_TEXT);
-        return start = nativeMax(void 0 === start ? func.length - 1 : toInteger(start), 0), 
-        function() {
-            for (var args = arguments, index = -1, length = nativeMax(args.length - start, 0), array = Array(length); ++index < length; ) array[index] = args[start + index];
-            switch (start) {
-              case 0:
-                return func.call(this, array);
-
-              case 1:
-                return func.call(this, args[0], array);
-
-              case 2:
-                return func.call(this, args[0], args[1], array);
-            }
-            var otherArgs = Array(start + 1);
-            for (index = -1; ++index < start; ) otherArgs[index] = args[index];
-            return otherArgs[start] = array, apply(func, this, otherArgs);
+    function wrap(defer) {
+        return function(fn) {
+            var args = slice(arguments, 1);
+            defer(function() {
+                fn.apply(null, args);
+            });
         };
     }
-    function initialParams(fn) {
-        return rest(function(args) {
-            var callback = args.pop();
-            fn.call(this, args, callback);
+    function asyncify(func) {
+        return initialParams(function(args, callback) {
+            var result;
+            try {
+                result = func.apply(this, args);
+            } catch (e) {
+                return callback(e);
+            }
+            isObject(result) && "function" == typeof result.then ? result.then(function(value) {
+                invokeCallback(callback, null, value);
+            }, function(err) {
+                invokeCallback(callback, err.message ? err : new Error(err));
+            }) : callback(null, result);
         });
     }
+    function invokeCallback(callback, error, value) {
+        try {
+            callback(error, value);
+        } catch (e) {
+            setImmediate$1(rethrow, e);
+        }
+    }
+    function rethrow(error) {
+        throw error;
+    }
+    function isAsync(fn) {
+        return supportsSymbol && "AsyncFunction" === fn[Symbol.toStringTag];
+    }
+    function wrapAsync(asyncFn) {
+        return isAsync(asyncFn) ? asyncify(asyncFn) : asyncFn;
+    }
     function applyEach$1(eachfn) {
-        return rest(function(fns, args) {
-            var go = initialParams(function(args, callback) {
+        return function(fns) {
+            var args = slice(arguments, 1), go = initialParams(function(args, callback) {
                 var that = this;
                 return eachfn(fns, function(fn, cb) {
-                    fn.apply(that, args.concat([ cb ]));
+                    wrapAsync(fn).apply(that, args.concat(cb));
                 }, callback);
             });
             return args.length ? go.apply(this, args) : go;
-        });
-    }
-    function baseProperty(key) {
-        return function(object) {
-            return null == object ? void 0 : object[key];
         };
+    }
+    function getRawTag(value) {
+        var isOwn = hasOwnProperty.call(value, symToStringTag$1), tag = value[symToStringTag$1];
+        try {
+            value[symToStringTag$1] = void 0;
+            var unmasked = !0;
+        } catch (e) {}
+        var result = nativeObjectToString.call(value);
+        return unmasked && (isOwn ? value[symToStringTag$1] = tag : delete value[symToStringTag$1]), 
+        result;
+    }
+    function objectToString(value) {
+        return nativeObjectToString$1.call(value);
+    }
+    function baseGetTag(value) {
+        return null == value ? void 0 === value ? undefinedTag : nullTag : (value = Object(value), 
+        symToStringTag && symToStringTag in value ? getRawTag(value) : objectToString(value));
+    }
+    function isFunction(value) {
+        if (!isObject(value)) return !1;
+        var tag = baseGetTag(value);
+        return tag == funcTag || tag == genTag || tag == asyncTag || tag == proxyTag;
     }
     function isLength(value) {
         return "number" == typeof value && value > -1 && value % 1 == 0 && value <= MAX_SAFE_INTEGER;
     }
     function isArrayLike(value) {
-        return null != value && isLength(getLength(value)) && !isFunction(value);
+        return null != value && isLength(value.length) && !isFunction(value);
     }
     function noop() {}
     function once(fn) {
@@ -22319,48 +22167,42 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             }
         };
     }
-    function getIterator(coll) {
-        return iteratorSymbol && coll[iteratorSymbol] && coll[iteratorSymbol]();
-    }
-    function getPrototype(value) {
-        return nativeGetPrototype(Object(value));
-    }
-    function baseHas(object, key) {
-        return null != object && (hasOwnProperty.call(object, key) || "object" == typeof object && key in object && null === getPrototype(object));
-    }
-    function baseKeys(object) {
-        return nativeKeys(Object(object));
-    }
     function baseTimes(n, iteratee) {
         for (var index = -1, result = Array(n); ++index < n; ) result[index] = iteratee(index);
         return result;
     }
-    function isArrayLikeObject(value) {
-        return isObjectLike(value) && isArrayLike(value);
+    function isObjectLike(value) {
+        return null != value && "object" == typeof value;
     }
-    function isArguments(value) {
-        return isArrayLikeObject(value) && hasOwnProperty$1.call(value, "callee") && (!propertyIsEnumerable.call(value, "callee") || objectToString$2.call(value) == argsTag);
+    function baseIsArguments(value) {
+        return isObjectLike(value) && baseGetTag(value) == argsTag;
     }
-    function isString(value) {
-        return "string" == typeof value || !isArray(value) && isObjectLike(value) && objectToString$3.call(value) == stringTag;
-    }
-    function indexKeys(object) {
-        var length = object ? object.length : void 0;
-        return isLength(length) && (isArray(object) || isString(object) || isArguments(object)) ? baseTimes(length, String) : null;
+    function stubFalse() {
+        return !1;
     }
     function isIndex(value, length) {
-        return length = null == length ? MAX_SAFE_INTEGER$1 : length, !!length && ("number" == typeof value || reIsUint.test(value)) && value > -1 && value % 1 == 0 && value < length;
+        return !!(length = null == length ? MAX_SAFE_INTEGER$1 : length) && ("number" == typeof value || reIsUint.test(value)) && value > -1 && value % 1 == 0 && value < length;
+    }
+    function baseIsTypedArray(value) {
+        return isObjectLike(value) && isLength(value.length) && !!typedArrayTags[baseGetTag(value)];
+    }
+    function arrayLikeKeys(value, inherited) {
+        var isArr = isArray(value), isArg = !isArr && isArguments(value), isBuff = !isArr && !isArg && isBuffer(value), isType = !isArr && !isArg && !isBuff && isTypedArray(value), skipIndexes = isArr || isArg || isBuff || isType, result = skipIndexes ? baseTimes(value.length, String) : [], length = result.length;
+        for (var key in value) !inherited && !hasOwnProperty$1.call(value, key) || skipIndexes && ("length" == key || isBuff && ("offset" == key || "parent" == key) || isType && ("buffer" == key || "byteLength" == key || "byteOffset" == key) || isIndex(key, length)) || result.push(key);
+        return result;
     }
     function isPrototype(value) {
-        var Ctor = value && value.constructor, proto = "function" == typeof Ctor && Ctor.prototype || objectProto$5;
-        return value === proto;
+        var Ctor = value && value.constructor;
+        return value === ("function" == typeof Ctor && Ctor.prototype || objectProto$5);
+    }
+    function baseKeys(object) {
+        if (!isPrototype(object)) return nativeKeys(object);
+        var result = [];
+        for (var key in Object(object)) hasOwnProperty$3.call(object, key) && "constructor" != key && result.push(key);
+        return result;
     }
     function keys(object) {
-        var isProto = isPrototype(object);
-        if (!isProto && !isArrayLike(object)) return baseKeys(object);
-        var indexes = indexKeys(object), skipIndexes = !!indexes, result = indexes || [], length = result.length;
-        for (var key in object) !baseHas(object, key) || skipIndexes && ("length" == key || isIndex(key, length)) || isProto && "constructor" == key || result.push(key);
-        return result;
+        return isArrayLike(object) ? arrayLikeKeys(object) : baseKeys(object);
     }
     function createArrayIterator(coll) {
         var i = -1, len = coll.length;
@@ -22405,9 +22247,9 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     }
     function _eachOfLimit(limit) {
         return function(obj, iteratee, callback) {
-            function iterateeCallback(err) {
+            function iterateeCallback(err, value) {
                 if (running -= 1, err) done = !0, callback(err); else {
-                    if (done && running <= 0) return callback(null);
+                    if (value === breakLoop || done && running <= 0) return done = !0, callback(null);
                     replenish();
                 }
             }
@@ -22424,47 +22266,32 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         };
     }
     function eachOfLimit(coll, limit, iteratee, callback) {
-        _eachOfLimit(limit)(coll, iteratee, callback);
+        _eachOfLimit(limit)(coll, wrapAsync(iteratee), callback);
     }
     function doLimit(fn, limit) {
         return function(iterable, iteratee, callback) {
             return fn(iterable, limit, iteratee, callback);
         };
     }
-    function before(n, func) {
-        var result;
-        if ("function" != typeof func) throw new TypeError(FUNC_ERROR_TEXT$1);
-        return n = toInteger(n), function() {
-            return --n > 0 && (result = func.apply(this, arguments)), n <= 1 && (func = void 0), 
-            result;
-        };
-    }
-    function once$1(func) {
-        return before(2, func);
-    }
     function eachOfArrayLike(coll, iteratee, callback) {
-        function iteratorCallback(err) {
-            err ? callback(err) : ++completed === length && callback(null);
+        function iteratorCallback(err, value) {
+            err ? callback(err) : ++completed !== length && value !== breakLoop || callback(null);
         }
-        callback = once$1(callback || noop);
+        callback = once(callback || noop);
         var index = 0, completed = 0, length = coll.length;
         for (0 === length && callback(null); index < length; index++) iteratee(coll[index], index, onlyOnce(iteratorCallback));
     }
-    function eachOf(coll, iteratee, callback) {
-        var eachOfImplementation = isArrayLike(coll) ? eachOfArrayLike : eachOfGeneric;
-        eachOfImplementation(coll, iteratee, callback);
-    }
     function doParallel(fn) {
         return function(obj, iteratee, callback) {
-            return fn(eachOf, obj, iteratee, callback);
+            return fn(eachOf, obj, wrapAsync(iteratee), callback);
         };
     }
     function _asyncMap(eachfn, arr, iteratee, callback) {
-        callback = once(callback || noop), arr = arr || [];
-        var results = [], counter = 0;
+        callback = callback || noop, arr = arr || [];
+        var results = [], counter = 0, _iteratee = wrapAsync(iteratee);
         eachfn(arr, function(value, _, callback) {
             var index = counter++;
-            iteratee(value, function(err, v) {
+            _iteratee(value, function(err, v) {
                 results[index] = v, callback(err);
             });
         }, function(err) {
@@ -22473,138 +22300,43 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     }
     function doParallelLimit(fn) {
         return function(obj, limit, iteratee, callback) {
-            return fn(_eachOfLimit(limit), obj, iteratee, callback);
+            return fn(_eachOfLimit(limit), obj, wrapAsync(iteratee), callback);
         };
-    }
-    function asyncify(func) {
-        return initialParams(function(args, callback) {
-            var result;
-            try {
-                result = func.apply(this, args);
-            } catch (e) {
-                return callback(e);
-            }
-            isObject(result) && "function" == typeof result.then ? result.then(function(value) {
-                callback(null, value);
-            }, function(err) {
-                callback(err.message ? err : new Error(err));
-            }) : callback(null, result);
-        });
     }
     function arrayEach(array, iteratee) {
-        for (var index = -1, length = array ? array.length : 0; ++index < length && iteratee(array[index], index, array) !== !1; ) ;
+        for (var index = -1, length = null == array ? 0 : array.length; ++index < length && !1 !== iteratee(array[index], index, array); ) ;
         return array;
-    }
-    function createBaseFor(fromRight) {
-        return function(object, iteratee, keysFunc) {
-            for (var index = -1, iterable = Object(object), props = keysFunc(object), length = props.length; length--; ) {
-                var key = props[fromRight ? length : ++index];
-                if (iteratee(iterable[key], key, iterable) === !1) break;
-            }
-            return object;
-        };
     }
     function baseForOwn(object, iteratee) {
         return object && baseFor(object, iteratee, keys);
     }
-    function indexOfNaN(array, fromIndex, fromRight) {
-        for (var length = array.length, index = fromIndex + (fromRight ? 1 : -1); fromRight ? index-- : ++index < length; ) {
-            var other = array[index];
-            if (other !== other) return index;
-        }
+    function baseFindIndex(array, predicate, fromIndex, fromRight) {
+        for (var length = array.length, index = fromIndex + (fromRight ? 1 : -1); fromRight ? index-- : ++index < length; ) if (predicate(array[index], index, array)) return index;
         return -1;
     }
-    function baseIndexOf(array, value, fromIndex) {
-        if (value !== value) return indexOfNaN(array, fromIndex);
+    function baseIsNaN(value) {
+        return value !== value;
+    }
+    function strictIndexOf(array, value, fromIndex) {
         for (var index = fromIndex - 1, length = array.length; ++index < length; ) if (array[index] === value) return index;
         return -1;
     }
-    function auto(tasks, concurrency, callback) {
-        function enqueueTask(key, task) {
-            readyTasks.push(function() {
-                runTask(key, task);
-            });
-        }
-        function processQueue() {
-            if (0 === readyTasks.length && 0 === runningTasks) return callback(null, results);
-            for (;readyTasks.length && runningTasks < concurrency; ) {
-                var run = readyTasks.shift();
-                run();
-            }
-        }
-        function addListener(taskName, fn) {
-            var taskListeners = listeners[taskName];
-            taskListeners || (taskListeners = listeners[taskName] = []), taskListeners.push(fn);
-        }
-        function taskComplete(taskName) {
-            var taskListeners = listeners[taskName] || [];
-            arrayEach(taskListeners, function(fn) {
-                fn();
-            }), processQueue();
-        }
-        function runTask(key, task) {
-            if (!hasError) {
-                var taskCallback = onlyOnce(rest(function(err, args) {
-                    if (runningTasks--, args.length <= 1 && (args = args[0]), err) {
-                        var safeResults = {};
-                        baseForOwn(results, function(val, rkey) {
-                            safeResults[rkey] = val;
-                        }), safeResults[key] = args, hasError = !0, listeners = [], callback(err, safeResults);
-                    } else results[key] = args, taskComplete(key);
-                }));
-                runningTasks++;
-                var taskFn = task[task.length - 1];
-                task.length > 1 ? taskFn(results, taskCallback) : taskFn(taskCallback);
-            }
-        }
-        function checkForDeadlocks() {
-            for (var currentTask, counter = 0; readyToCheck.length; ) currentTask = readyToCheck.pop(), 
-            counter++, arrayEach(getDependents(currentTask), function(dependent) {
-                0 === --uncheckedDependencies[dependent] && readyToCheck.push(dependent);
-            });
-            if (counter !== numTasks) throw new Error("async.auto cannot execute tasks due to a recursive dependency");
-        }
-        function getDependents(taskName) {
-            var result = [];
-            return baseForOwn(tasks, function(task, key) {
-                isArray(task) && baseIndexOf(task, taskName, 0) >= 0 && result.push(key);
-            }), result;
-        }
-        "function" == typeof concurrency && (callback = concurrency, concurrency = null), 
-        callback = once(callback || noop);
-        var keys$$ = keys(tasks), numTasks = keys$$.length;
-        if (!numTasks) return callback(null);
-        concurrency || (concurrency = numTasks);
-        var results = {}, runningTasks = 0, hasError = !1, listeners = {}, readyTasks = [], readyToCheck = [], uncheckedDependencies = {};
-        baseForOwn(tasks, function(task, key) {
-            if (!isArray(task)) return enqueueTask(key, [ task ]), void readyToCheck.push(key);
-            var dependencies = task.slice(0, task.length - 1), remainingDependencies = dependencies.length;
-            return 0 === remainingDependencies ? (enqueueTask(key, task), void readyToCheck.push(key)) : (uncheckedDependencies[key] = remainingDependencies, 
-            void arrayEach(dependencies, function(dependencyName) {
-                if (!tasks[dependencyName]) throw new Error("async.auto task `" + key + "` has a non-existent dependency in " + dependencies.join(", "));
-                addListener(dependencyName, function() {
-                    remainingDependencies--, 0 === remainingDependencies && enqueueTask(key, task);
-                });
-            }));
-        }), checkForDeadlocks(), processQueue();
+    function baseIndexOf(array, value, fromIndex) {
+        return value === value ? strictIndexOf(array, value, fromIndex) : baseFindIndex(array, baseIsNaN, fromIndex);
     }
     function arrayMap(array, iteratee) {
-        for (var index = -1, length = array ? array.length : 0, result = Array(length); ++index < length; ) result[index] = iteratee(array[index], index, array);
+        for (var index = -1, length = null == array ? 0 : array.length, result = Array(length); ++index < length; ) result[index] = iteratee(array[index], index, array);
         return result;
     }
-    function copyArray(source, array) {
-        var index = -1, length = source.length;
-        for (array || (array = Array(length)); ++index < length; ) array[index] = source[index];
-        return array;
-    }
-    function checkGlobal(value) {
-        return value && value.Object === Object ? value : null;
+    function isSymbol(value) {
+        return "symbol" == typeof value || isObjectLike(value) && baseGetTag(value) == symbolTag;
     }
     function baseToString(value) {
         if ("string" == typeof value) return value;
+        if (isArray(value)) return arrayMap(value, baseToString) + "";
         if (isSymbol(value)) return symbolToString ? symbolToString.call(value) : "";
         var result = value + "";
-        return "0" == result && 1 / value == -INFINITY$1 ? "-0" : result;
+        return "0" == result && 1 / value == -INFINITY ? "-0" : result;
     }
     function baseSlice(array, start, end) {
         var index = -1, length = array.length;
@@ -22625,17 +22357,26 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         for (var index = -1, length = strSymbols.length; ++index < length && baseIndexOf(chrSymbols, strSymbols[index], 0) > -1; ) ;
         return index;
     }
+    function asciiToArray(string) {
+        return string.split("");
+    }
+    function hasUnicode(string) {
+        return reHasUnicode.test(string);
+    }
+    function unicodeToArray(string) {
+        return string.match(reUnicode) || [];
+    }
     function stringToArray(string) {
-        return string.match(reComplexSymbol);
+        return hasUnicode(string) ? unicodeToArray(string) : asciiToArray(string);
     }
     function toString(value) {
         return null == value ? "" : baseToString(value);
     }
     function trim(string, chars, guard) {
-        if (string = toString(string), string && (guard || void 0 === chars)) return string.replace(reTrim$1, "");
+        if ((string = toString(string)) && (guard || void 0 === chars)) return string.replace(reTrim, "");
         if (!string || !(chars = baseToString(chars))) return string;
-        var strSymbols = stringToArray(string), chrSymbols = stringToArray(chars), start = charsStartIndex(strSymbols, chrSymbols), end = charsEndIndex(strSymbols, chrSymbols) + 1;
-        return castSlice(strSymbols, start, end).join("");
+        var strSymbols = stringToArray(string), chrSymbols = stringToArray(chars);
+        return castSlice(strSymbols, charsStartIndex(strSymbols, chrSymbols), charsEndIndex(strSymbols, chrSymbols) + 1).join("");
     }
     function parseParams(func) {
         return func = func.toString().replace(STRIP_COMMENTS, ""), func = func.match(FN_ARGS)[2].replace(" ", ""), 
@@ -22650,24 +22391,15 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                 var newArgs = arrayMap(params, function(name) {
                     return results[name];
                 });
-                newArgs.push(taskCb), taskFn.apply(null, newArgs);
+                newArgs.push(taskCb), wrapAsync(taskFn).apply(null, newArgs);
             }
-            var params;
-            if (isArray(taskFn)) params = copyArray(taskFn), taskFn = params.pop(), newTasks[key] = params.concat(params.length > 0 ? newTask : taskFn); else if (1 === taskFn.length) newTasks[key] = taskFn; else {
-                if (params = parseParams(taskFn), 0 === taskFn.length && 0 === params.length) throw new Error("autoInject task functions require explicit parameters.");
-                params.pop(), newTasks[key] = params.concat(newTask);
+            var params, fnIsAsync = isAsync(taskFn), hasNoDeps = !fnIsAsync && 1 === taskFn.length || fnIsAsync && 0 === taskFn.length;
+            if (isArray(taskFn)) params = taskFn.slice(0, -1), taskFn = taskFn[taskFn.length - 1], 
+            newTasks[key] = params.concat(params.length > 0 ? newTask : taskFn); else if (hasNoDeps) newTasks[key] = taskFn; else {
+                if (params = parseParams(taskFn), 0 === taskFn.length && !fnIsAsync && 0 === params.length) throw new Error("autoInject task functions require explicit parameters.");
+                fnIsAsync || params.pop(), newTasks[key] = params.concat(newTask);
             }
         }), auto(newTasks, callback);
-    }
-    function fallback(fn) {
-        setTimeout(fn, 0);
-    }
-    function wrap(defer) {
-        return rest(function(fn, args) {
-            defer(function() {
-                fn.apply(null, args);
-            });
-        });
     }
     function DLL() {
         this.head = this.tail = null, this.length = 0;
@@ -22678,28 +22410,32 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     function queue(worker, concurrency, payload) {
         function _insert(data, insertAtFront, callback) {
             if (null != callback && "function" != typeof callback) throw new Error("task callback must be a function");
-            return q.started = !0, isArray(data) || (data = [ data ]), 0 === data.length && q.idle() ? setImmediate$1(function() {
+            if (q.started = !0, isArray(data) || (data = [ data ]), 0 === data.length && q.idle()) return setImmediate$1(function() {
                 q.drain();
-            }) : (arrayEach(data, function(task) {
+            });
+            for (var i = 0, l = data.length; i < l; i++) {
                 var item = {
-                    data: task,
+                    data: data[i],
                     callback: callback || noop
                 };
                 insertAtFront ? q._tasks.unshift(item) : q._tasks.push(item);
-            }), void setImmediate$1(q.process));
+            }
+            setImmediate$1(q.process);
         }
         function _next(tasks) {
-            return rest(function(args) {
-                workers -= 1, arrayEach(tasks, function(task) {
-                    arrayEach(workersList, function(worker, index) {
-                        if (worker === task) return workersList.splice(index, 1), !1;
-                    }), task.callback.apply(task, args), null != args[0] && q.error(args[0], task.data);
-                }), workers <= q.concurrency - q.buffer && q.unsaturated(), q.idle() && q.drain(), 
+            return function(err) {
+                numRunning -= 1;
+                for (var i = 0, l = tasks.length; i < l; i++) {
+                    var task = tasks[i], index = baseIndexOf(workersList, task, 0);
+                    index >= 0 && workersList.splice(index, 1), task.callback.apply(task, arguments), 
+                    null != err && q.error(err, task.data);
+                }
+                numRunning <= q.concurrency - q.buffer && q.unsaturated(), q.idle() && q.drain(), 
                 q.process();
-            });
+            };
         }
         if (null == concurrency) concurrency = 1; else if (0 === concurrency) throw new Error("Concurrency must not be zero");
-        var workers = 0, workersList = [], q = {
+        var _worker = wrapAsync(worker), numRunning = 0, workersList = [], isProcessing = !1, q = {
             _tasks: new DLL(),
             concurrency: concurrency,
             payload: payload,
@@ -22720,39 +22456,42 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             unshift: function(data, callback) {
                 _insert(data, !0, callback);
             },
+            remove: function(testFn) {
+                q._tasks.remove(testFn);
+            },
             process: function() {
-                for (;!q.paused && workers < q.concurrency && q._tasks.length; ) {
-                    var tasks = [], data = [], l = q._tasks.length;
-                    q.payload && (l = Math.min(l, q.payload));
-                    for (var i = 0; i < l; i++) {
-                        var node = q._tasks.shift();
-                        tasks.push(node), data.push(node.data);
+                if (!isProcessing) {
+                    for (isProcessing = !0; !q.paused && numRunning < q.concurrency && q._tasks.length; ) {
+                        var tasks = [], data = [], l = q._tasks.length;
+                        q.payload && (l = Math.min(l, q.payload));
+                        for (var i = 0; i < l; i++) {
+                            var node = q._tasks.shift();
+                            tasks.push(node), workersList.push(node), data.push(node.data);
+                        }
+                        numRunning += 1, 0 === q._tasks.length && q.empty(), numRunning === q.concurrency && q.saturated();
+                        var cb = onlyOnce(_next(tasks));
+                        _worker(data, cb);
                     }
-                    0 === q._tasks.length && q.empty(), workers += 1, workersList.push(tasks[0]), workers === q.concurrency && q.saturated();
-                    var cb = onlyOnce(_next(tasks));
-                    worker(data, cb);
+                    isProcessing = !1;
                 }
             },
             length: function() {
                 return q._tasks.length;
             },
             running: function() {
-                return workers;
+                return numRunning;
             },
             workersList: function() {
                 return workersList;
             },
             idle: function() {
-                return q._tasks.length + workers === 0;
+                return q._tasks.length + numRunning === 0;
             },
             pause: function() {
                 q.paused = !0;
             },
             resume: function() {
-                if (q.paused !== !1) {
-                    q.paused = !1;
-                    for (var resumeCount = Math.min(q.concurrency, q._tasks.length), w = 1; w <= resumeCount; w++) setImmediate$1(q.process);
-                }
+                !1 !== q.paused && (q.paused = !1, setImmediate$1(q.process));
             }
         };
         return q;
@@ -22761,89 +22500,98 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         return queue(worker, 1, payload);
     }
     function reduce(coll, memo, iteratee, callback) {
-        callback = once(callback || noop), eachOfSeries(coll, function(x, i, callback) {
-            iteratee(memo, x, function(err, v) {
+        callback = once(callback || noop);
+        var _iteratee = wrapAsync(iteratee);
+        eachOfSeries(coll, function(x, i, callback) {
+            _iteratee(memo, x, function(err, v) {
                 memo = v, callback(err);
             });
         }, function(err) {
             callback(err, memo);
         });
     }
-    function concat$1(eachfn, arr, fn, callback) {
-        var result = [];
-        eachfn(arr, function(x, index, cb) {
-            fn(x, function(err, y) {
-                result = result.concat(y || []), cb(err);
+    function seq() {
+        var _functions = arrayMap(arguments, wrapAsync);
+        return function() {
+            var args = slice(arguments), that = this, cb = args[args.length - 1];
+            "function" == typeof cb ? args.pop() : cb = noop, reduce(_functions, args, function(newargs, fn, cb) {
+                fn.apply(that, newargs.concat(function(err) {
+                    var nextargs = slice(arguments, 1);
+                    cb(err, nextargs);
+                }));
+            }, function(err, results) {
+                cb.apply(that, [ err ].concat(results));
             });
-        }, function(err) {
-            callback(err, result);
-        });
-    }
-    function doSeries(fn) {
-        return function(obj, iteratee, callback) {
-            return fn(eachOfSeries, obj, iteratee, callback);
         };
     }
     function identity(value) {
         return value;
     }
-    function _createTester(eachfn, check, getResult) {
-        return function(arr, limit, iteratee, cb) {
-            function done(err) {
-                cb && (err ? cb(err) : cb(null, getResult(!1)));
-            }
-            function wrappedIteratee(x, _, callback) {
-                return cb ? void iteratee(x, function(err, v) {
-                    cb && (err ? (cb(err), cb = iteratee = !1) : check(v) && (cb(null, getResult(!0, x)), 
-                    cb = iteratee = !1)), callback();
-                }) : callback();
-            }
-            arguments.length > 3 ? (cb = cb || noop, eachfn(arr, limit, wrappedIteratee, done)) : (cb = iteratee, 
-            cb = cb || noop, iteratee = limit, eachfn(arr, wrappedIteratee, done));
+    function _createTester(check, getResult) {
+        return function(eachfn, arr, iteratee, cb) {
+            cb = cb || noop;
+            var testResult, testPassed = !1;
+            eachfn(arr, function(value, _, callback) {
+                iteratee(value, function(err, result) {
+                    err ? callback(err) : check(result) && !testResult ? (testPassed = !0, testResult = getResult(!0, value), 
+                    callback(null, breakLoop)) : callback();
+                });
+            }, function(err) {
+                err ? cb(err) : cb(null, testPassed ? testResult : getResult(!1));
+            });
         };
     }
     function _findGetResult(v, x) {
         return x;
     }
     function consoleFunc(name) {
-        return rest(function(fn, args) {
-            fn.apply(null, args.concat([ rest(function(err, args) {
+        return function(fn) {
+            var args = slice(arguments, 1);
+            args.push(function(err) {
+                var args = slice(arguments, 1);
                 "object" == typeof console && (err ? console.error && console.error(err) : console[name] && arrayEach(args, function(x) {
                     console[name](x);
                 }));
-            }) ]));
-        });
+            }), wrapAsync(fn).apply(null, args);
+        };
     }
     function doDuring(fn, test, callback) {
+        function next(err) {
+            if (err) return callback(err);
+            var args = slice(arguments, 1);
+            args.push(check), _test.apply(this, args);
+        }
         function check(err, truth) {
-            return err ? callback(err) : truth ? void fn(next) : callback(null);
+            return err ? callback(err) : truth ? void _fn(next) : callback(null);
         }
         callback = onlyOnce(callback || noop);
-        var next = rest(function(err, args) {
-            return err ? callback(err) : (args.push(check), void test.apply(this, args));
-        });
+        var _fn = wrapAsync(fn), _test = wrapAsync(test);
         check(null, !0);
     }
     function doWhilst(iteratee, test, callback) {
         callback = onlyOnce(callback || noop);
-        var next = rest(function(err, args) {
-            return err ? callback(err) : test.apply(this, args) ? iteratee(next) : void callback.apply(null, [ null ].concat(args));
-        });
-        iteratee(next);
+        var _iteratee = wrapAsync(iteratee), next = function(err) {
+            if (err) return callback(err);
+            var args = slice(arguments, 1);
+            return test.apply(this, args) ? _iteratee(next) : void callback.apply(null, [ null ].concat(args));
+        };
+        _iteratee(next);
     }
-    function doUntil(fn, test, callback) {
-        doWhilst(fn, function() {
+    function doUntil(iteratee, test, callback) {
+        doWhilst(iteratee, function() {
             return !test.apply(this, arguments);
         }, callback);
     }
     function during(test, fn, callback) {
         function next(err) {
-            return err ? callback(err) : void test(check);
+            return err ? callback(err) : void _test(check);
         }
         function check(err, truth) {
-            return err ? callback(err) : truth ? void fn(next) : callback(null);
+            return err ? callback(err) : truth ? void _fn(next) : callback(null);
         }
-        callback = onlyOnce(callback || noop), test(check);
+        callback = onlyOnce(callback || noop);
+        var _fn = wrapAsync(fn), _test = wrapAsync(test);
+        _test(check);
     }
     function _withoutIndex(iteratee) {
         return function(value, index, callback) {
@@ -22851,13 +22599,13 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         };
     }
     function eachLimit(coll, iteratee, callback) {
-        eachOf(coll, _withoutIndex(iteratee), callback);
+        eachOf(coll, _withoutIndex(wrapAsync(iteratee)), callback);
     }
     function eachLimit$1(coll, limit, iteratee, callback) {
-        _eachOfLimit(limit)(coll, _withoutIndex(iteratee), callback);
+        _eachOfLimit(limit)(coll, _withoutIndex(wrapAsync(iteratee)), callback);
     }
     function ensureAsync(fn) {
-        return initialParams(function(args, callback) {
+        return isAsync(fn) ? fn : initialParams(function(args, callback) {
             var sync = !0;
             args.push(function() {
                 var innerArgs = arguments;
@@ -22870,10 +22618,26 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     function notId(v) {
         return !v;
     }
-    function _filter(eachfn, arr, iteratee, callback) {
-        callback = once(callback || noop);
-        var results = [];
+    function baseProperty(key) {
+        return function(object) {
+            return null == object ? void 0 : object[key];
+        };
+    }
+    function filterArray(eachfn, arr, iteratee, callback) {
+        var truthValues = new Array(arr.length);
         eachfn(arr, function(x, index, callback) {
+            iteratee(x, function(err, v) {
+                truthValues[index] = !!v, callback(err);
+            });
+        }, function(err) {
+            if (err) return callback(err);
+            for (var results = [], i = 0; i < arr.length; i++) truthValues[i] && results.push(arr[i]);
+            callback(null, results);
+        });
+    }
+    function filterGeneric(eachfn, coll, iteratee, callback) {
+        var results = [];
+        eachfn(coll, function(x, index, callback) {
             iteratee(x, function(err, v) {
                 err ? callback(err) : (v && results.push({
                     index: index,
@@ -22886,18 +22650,21 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             }), baseProperty("value")));
         });
     }
+    function _filter(eachfn, coll, iteratee, callback) {
+        (isArrayLike(coll) ? filterArray : filterGeneric)(eachfn, coll, wrapAsync(iteratee), callback || noop);
+    }
     function forever(fn, errback) {
         function next(err) {
             return err ? done(err) : void task(next);
         }
-        var done = onlyOnce(errback || noop), task = ensureAsync(fn);
+        var done = onlyOnce(errback || noop), task = wrapAsync(ensureAsync(fn));
         next();
     }
     function mapValuesLimit(obj, limit, iteratee, callback) {
         callback = once(callback || noop);
-        var newObj = {};
+        var newObj = {}, _iteratee = wrapAsync(iteratee);
         eachOfLimit(obj, limit, function(val, key, next) {
-            iteratee(val, key, function(err, result) {
+            _iteratee(val, key, function(err, result) {
                 return err ? next(err) : (newObj[key] = result, void next());
             });
         }, function(err) {
@@ -22910,17 +22677,18 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     function memoize(fn, hasher) {
         var memo = Object.create(null), queues = Object.create(null);
         hasher = hasher || identity;
-        var memoized = initialParams(function(args, callback) {
+        var _fn = wrapAsync(fn), memoized = initialParams(function(args, callback) {
             var key = hasher.apply(null, args);
             has(memo, key) ? setImmediate$1(function() {
                 callback.apply(null, memo[key]);
             }) : has(queues, key) ? queues[key].push(callback) : (queues[key] = [ callback ], 
-            fn.apply(null, args.concat([ rest(function(args) {
+            _fn.apply(null, args.concat(function() {
+                var args = slice(arguments);
                 memo[key] = args;
                 var q = queues[key];
                 delete queues[key];
                 for (var i = 0, l = q.length; i < l; i++) q[i].apply(null, args);
-            }) ])));
+            })));
         });
         return memoized.memo = memo, memoized.unmemoized = fn, memoized;
     }
@@ -22928,9 +22696,9 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         callback = callback || noop;
         var results = isArrayLike(tasks) ? [] : {};
         eachfn(tasks, function(task, key, callback) {
-            task(rest(function(err, args) {
-                args.length <= 1 && (args = args[0]), results[key] = args, callback(err);
-            }));
+            wrapAsync(task)(function(err, result) {
+                arguments.length > 2 && (result = slice(arguments, 1)), results[key] = result, callback(err);
+            });
         }, function(err) {
             callback(err, results);
         });
@@ -22941,58 +22709,33 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     function parallelLimit$1(tasks, limit, callback) {
         _parallel(_eachOfLimit(limit), tasks, callback);
     }
-    function queue$1(worker, concurrency) {
-        return queue(function(items, cb) {
-            worker(items[0], cb);
-        }, concurrency, 1);
-    }
-    function priorityQueue(worker, concurrency) {
-        var q = queue$1(worker, concurrency);
-        return q.push = function(data, priority, callback) {
-            if (null == callback && (callback = noop), "function" != typeof callback) throw new Error("task callback must be a function");
-            if (q.started = !0, isArray(data) || (data = [ data ]), 0 === data.length) return setImmediate$1(function() {
-                q.drain();
-            });
-            priority = priority || 0;
-            for (var nextNode = q._tasks.head; nextNode && priority >= nextNode.priority; ) nextNode = nextNode.next;
-            arrayEach(data, function(task) {
-                var item = {
-                    data: task,
-                    priority: priority,
-                    callback: callback
-                };
-                nextNode ? q._tasks.insertBefore(nextNode, item) : q._tasks.push(item);
-            }), setImmediate$1(q.process);
-        }, delete q.unshift, q;
-    }
     function race(tasks, callback) {
-        return callback = once(callback || noop), isArray(tasks) ? tasks.length ? void arrayEach(tasks, function(task) {
-            task(callback);
-        }) : callback() : callback(new TypeError("First argument to race must be an array of functions"));
+        if (callback = once(callback || noop), !isArray(tasks)) return callback(new TypeError("First argument to race must be an array of functions"));
+        if (!tasks.length) return callback();
+        for (var i = 0, l = tasks.length; i < l; i++) wrapAsync(tasks[i])(callback);
     }
     function reduceRight(array, memo, iteratee, callback) {
-        var reversed = slice.call(array).reverse();
-        reduce(reversed, memo, iteratee, callback);
+        reduce(slice(array).reverse(), memo, iteratee, callback);
     }
     function reflect(fn) {
+        var _fn = wrapAsync(fn);
         return initialParams(function(args, reflectCallback) {
-            return args.push(rest(function(err, cbArgs) {
-                if (err) reflectCallback(null, {
-                    error: err
+            return args.push(function(error, cbArg) {
+                if (error) reflectCallback(null, {
+                    error: error
                 }); else {
-                    var value = null;
-                    1 === cbArgs.length ? value = cbArgs[0] : cbArgs.length > 1 && (value = cbArgs), 
-                    reflectCallback(null, {
+                    var value;
+                    value = arguments.length <= 2 ? cbArg : slice(arguments, 1), reflectCallback(null, {
                         value: value
                     });
                 }
-            })), fn.apply(this, args);
+            }), _fn.apply(this, args);
         });
     }
     function reject$1(eachfn, arr, iteratee, callback) {
         _filter(eachfn, arr, function(value, cb) {
             iteratee(value, function(err, v) {
-                err ? cb(err) : cb(null, !v);
+                cb(err, !v);
             });
         }, callback);
     }
@@ -23008,15 +22751,9 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         };
     }
     function retry(opts, task, callback) {
-        function parseTimes(acc, t) {
-            if ("object" == typeof t) acc.times = +t.times || DEFAULT_TIMES, acc.intervalFunc = "function" == typeof t.interval ? t.interval : constant$1(+t.interval || DEFAULT_INTERVAL); else {
-                if ("number" != typeof t && "string" != typeof t) throw new Error("Invalid arguments for async.retry");
-                acc.times = +t || DEFAULT_TIMES;
-            }
-        }
         function retryAttempt() {
-            task(function(err) {
-                err && attempt++ < options.times ? setTimeout(retryAttempt, options.intervalFunc(attempt)) : callback.apply(null, arguments);
+            _task(function(err) {
+                err && attempt++ < options.times && ("function" != typeof options.errorFilter || options.errorFilter(err)) ? setTimeout(retryAttempt, options.intervalFunc(attempt)) : callback.apply(null, arguments);
             });
         }
         var DEFAULT_TIMES = 5, DEFAULT_INTERVAL = 0, options = {
@@ -23024,17 +22761,15 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             intervalFunc: constant$1(DEFAULT_INTERVAL)
         };
         if (arguments.length < 3 && "function" == typeof opts ? (callback = task || noop, 
-        task = opts) : (parseTimes(options, opts), callback = callback || noop), "function" != typeof task) throw new Error("Invalid arguments for async.retry");
-        var attempt = 1;
-        retryAttempt();
-    }
-    function retryable(opts, task) {
-        return task || (task = opts, opts = null), initialParams(function(args, callback) {
-            function taskFn(cb) {
-                task.apply(null, args.concat([ cb ]));
+        task = opts) : (function(acc, t) {
+            if ("object" == typeof t) acc.times = +t.times || DEFAULT_TIMES, acc.intervalFunc = "function" == typeof t.interval ? t.interval : constant$1(+t.interval || DEFAULT_INTERVAL), 
+            acc.errorFilter = t.errorFilter; else {
+                if ("number" != typeof t && "string" != typeof t) throw new Error("Invalid arguments for async.retry");
+                acc.times = +t || DEFAULT_TIMES;
             }
-            opts ? retry(opts, taskFn, callback) : retry(taskFn, callback);
-        });
+        }(options, opts), callback = callback || noop), "function" != typeof task) throw new Error("Invalid arguments for async.retry");
+        var _task = wrapAsync(task), attempt = 1;
+        retryAttempt();
     }
     function series(tasks, callback) {
         _parallel(eachOfSeries, tasks, callback);
@@ -23044,8 +22779,9 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             var a = left.criteria, b = right.criteria;
             return a < b ? -1 : a > b ? 1 : 0;
         }
+        var _iteratee = wrapAsync(iteratee);
         map(coll, function(x, callback) {
-            iteratee(x, function(err, criteria) {
+            _iteratee(x, function(err, criteria) {
                 return err ? callback(err) : void callback(null, {
                     value: x,
                     criteria: criteria
@@ -23056,33 +22792,45 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         });
     }
     function timeout(asyncFn, milliseconds, info) {
-        function injectedCallback() {
-            timedOut || (originalCallback.apply(null, arguments), clearTimeout(timer));
-        }
-        function timeoutCallback() {
-            var name = asyncFn.name || "anonymous", error = new Error('Callback function "' + name + '" timed out.');
-            error.code = "ETIMEDOUT", info && (error.info = info), timedOut = !0, originalCallback(error);
-        }
-        var originalCallback, timer, timedOut = !1;
-        return initialParams(function(args, origCallback) {
-            originalCallback = origCallback, timer = setTimeout(timeoutCallback, milliseconds), 
-            asyncFn.apply(null, args.concat(injectedCallback));
+        var fn = wrapAsync(asyncFn);
+        return initialParams(function(args, callback) {
+            function timeoutCallback() {
+                var name = asyncFn.name || "anonymous", error = new Error('Callback function "' + name + '" timed out.');
+                error.code = "ETIMEDOUT", info && (error.info = info), timedOut = !0, callback(error);
+            }
+            var timer, timedOut = !1;
+            args.push(function() {
+                timedOut || (callback.apply(null, arguments), clearTimeout(timer));
+            }), timer = setTimeout(timeoutCallback, milliseconds), fn.apply(null, args);
         });
     }
     function baseRange(start, end, step, fromRight) {
-        for (var index = -1, length = nativeMax$1(nativeCeil((end - start) / (step || 1)), 0), result = Array(length); length--; ) result[fromRight ? length : ++index] = start, 
+        for (var index = -1, length = nativeMax(nativeCeil((end - start) / (step || 1)), 0), result = Array(length); length--; ) result[fromRight ? length : ++index] = start, 
         start += step;
         return result;
     }
     function timeLimit(count, limit, iteratee, callback) {
-        mapLimit(baseRange(0, count, 1), limit, iteratee, callback);
+        var _iteratee = wrapAsync(iteratee);
+        mapLimit(baseRange(0, count, 1), limit, _iteratee, callback);
     }
     function transform(coll, accumulator, iteratee, callback) {
-        3 === arguments.length && (callback = iteratee, iteratee = accumulator, accumulator = isArray(coll) ? [] : {}), 
-        callback = once(callback || noop), eachOf(coll, function(v, k, cb) {
-            iteratee(accumulator, v, k, cb);
+        arguments.length <= 3 && (callback = iteratee, iteratee = accumulator, accumulator = isArray(coll) ? [] : {}), 
+        callback = once(callback || noop);
+        var _iteratee = wrapAsync(iteratee);
+        eachOf(coll, function(v, k, cb) {
+            _iteratee(accumulator, v, k, cb);
         }, function(err) {
             callback(err, accumulator);
+        });
+    }
+    function tryEach(tasks, callback) {
+        var result, error = null;
+        callback = callback || noop, eachSeries(tasks, function(task, callback) {
+            wrapAsync(task)(function(err, res) {
+                result = arguments.length > 2 ? slice(arguments, 1) : res, error = err, callback(!err);
+            });
+        }, function() {
+            callback(error, result);
         });
     }
     function unmemoize(fn) {
@@ -23091,43 +22839,139 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         };
     }
     function whilst(test, iteratee, callback) {
-        if (callback = onlyOnce(callback || noop), !test()) return callback(null);
-        var next = rest(function(err, args) {
-            return err ? callback(err) : test() ? iteratee(next) : void callback.apply(null, [ null ].concat(args));
-        });
-        iteratee(next);
+        callback = onlyOnce(callback || noop);
+        var _iteratee = wrapAsync(iteratee);
+        if (!test()) return callback(null);
+        var next = function(err) {
+            if (err) return callback(err);
+            if (test()) return _iteratee(next);
+            var args = slice(arguments, 1);
+            callback.apply(null, [ null ].concat(args));
+        };
+        _iteratee(next);
     }
-    function until(test, fn, callback) {
+    function until(test, iteratee, callback) {
         whilst(function() {
             return !test.apply(this, arguments);
-        }, fn, callback);
+        }, iteratee, callback);
     }
-    function waterfall(tasks, callback) {
-        function nextTask(args) {
-            if (taskIndex === tasks.length) return callback.apply(null, [ null ].concat(args));
-            var taskCallback = onlyOnce(rest(function(err, args) {
-                return err ? callback.apply(null, [ err ].concat(args)) : void nextTask(args);
-            }));
-            args.push(taskCallback);
-            var task = tasks[taskIndex++];
-            task.apply(null, args);
-        }
-        if (callback = once(callback || noop), !isArray(tasks)) return callback(new Error("First argument to waterfall must be an array of functions"));
-        if (!tasks.length) return callback();
-        var taskIndex = 0;
-        nextTask([]);
-    }
-    var _defer, funcTag = "[object Function]", genTag = "[object GeneratorFunction]", objectProto = Object.prototype, objectToString = objectProto.toString, symbolTag = "[object Symbol]", objectProto$1 = Object.prototype, objectToString$1 = objectProto$1.toString, NAN = NaN, reTrim = /^\s+|\s+$/g, reIsBadHex = /^[-+]0x[0-9a-f]+$/i, reIsBinary = /^0b[01]+$/i, reIsOctal = /^0o[0-7]+$/i, freeParseInt = parseInt, INFINITY = 1 / 0, MAX_INTEGER = 1.7976931348623157e308, FUNC_ERROR_TEXT = "Expected a function", nativeMax = Math.max, getLength = baseProperty("length"), MAX_SAFE_INTEGER = 9007199254740991, iteratorSymbol = "function" == typeof Symbol && Symbol.iterator, nativeGetPrototype = Object.getPrototypeOf, objectProto$2 = Object.prototype, hasOwnProperty = objectProto$2.hasOwnProperty, nativeKeys = Object.keys, argsTag = "[object Arguments]", objectProto$3 = Object.prototype, hasOwnProperty$1 = objectProto$3.hasOwnProperty, objectToString$2 = objectProto$3.toString, propertyIsEnumerable = objectProto$3.propertyIsEnumerable, isArray = Array.isArray, stringTag = "[object String]", objectProto$4 = Object.prototype, objectToString$3 = objectProto$4.toString, MAX_SAFE_INTEGER$1 = 9007199254740991, reIsUint = /^(?:0|[1-9]\d*)$/, objectProto$5 = Object.prototype, FUNC_ERROR_TEXT$1 = "Expected a function", eachOfGeneric = doLimit(eachOfLimit, 1 / 0), map = doParallel(_asyncMap), applyEach = applyEach$1(map), mapLimit = doParallelLimit(_asyncMap), mapSeries = doLimit(mapLimit, 1), applyEachSeries = applyEach$1(mapSeries), apply$1 = rest(function(fn, args) {
-        return rest(function(callArgs) {
-            return fn.apply(null, args.concat(callArgs));
-        });
-    }), baseFor = createBaseFor(), freeGlobal = checkGlobal("object" == typeof global && global), freeSelf = checkGlobal("object" == typeof self && self), thisGlobal = checkGlobal("object" == typeof this && this), root = freeGlobal || freeSelf || thisGlobal || Function("return this")(), Symbol$1 = root.Symbol, INFINITY$1 = 1 / 0, symbolProto = Symbol$1 ? Symbol$1.prototype : void 0, symbolToString = symbolProto ? symbolProto.toString : void 0, rsAstralRange = "\\ud800-\\udfff", rsComboMarksRange = "\\u0300-\\u036f\\ufe20-\\ufe23", rsComboSymbolsRange = "\\u20d0-\\u20f0", rsVarRange = "\\ufe0e\\ufe0f", rsAstral = "[" + rsAstralRange + "]", rsCombo = "[" + rsComboMarksRange + rsComboSymbolsRange + "]", rsFitz = "\\ud83c[\\udffb-\\udfff]", rsModifier = "(?:" + rsCombo + "|" + rsFitz + ")", rsNonAstral = "[^" + rsAstralRange + "]", rsRegional = "(?:\\ud83c[\\udde6-\\uddff]){2}", rsSurrPair = "[\\ud800-\\udbff][\\udc00-\\udfff]", rsZWJ = "\\u200d", reOptMod = rsModifier + "?", rsOptVar = "[" + rsVarRange + "]?", rsOptJoin = "(?:" + rsZWJ + "(?:" + [ rsNonAstral, rsRegional, rsSurrPair ].join("|") + ")" + rsOptVar + reOptMod + ")*", rsSeq = rsOptVar + reOptMod + rsOptJoin, rsSymbol = "(?:" + [ rsNonAstral + rsCombo + "?", rsCombo, rsRegional, rsSurrPair, rsAstral ].join("|") + ")", reComplexSymbol = RegExp(rsFitz + "(?=" + rsFitz + ")|" + rsSymbol + rsSeq, "g"), reTrim$1 = /^\s+|\s+$/g, FN_ARGS = /^(function)?\s*[^\(]*\(\s*([^\)]*)\)/m, FN_ARG_SPLIT = /,/, FN_ARG = /(=.+)?(\s*)$/, STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/gm, hasSetImmediate = "function" == typeof setImmediate && setImmediate, hasNextTick = "object" == typeof process && "function" == typeof process.nextTick;
+    var _defer, initialParams = function(fn) {
+        return function() {
+            var args = slice(arguments), callback = args.pop();
+            fn.call(this, args, callback);
+        };
+    }, hasSetImmediate = "function" == typeof setImmediate && setImmediate, hasNextTick = "object" == typeof process && "function" == typeof process.nextTick;
     _defer = hasSetImmediate ? setImmediate : hasNextTick ? process.nextTick : fallback;
-    var setImmediate$1 = wrap(_defer);
+    var setImmediate$1 = wrap(_defer), supportsSymbol = "function" == typeof Symbol, freeGlobal = "object" == typeof global && global && global.Object === Object && global, freeSelf = "object" == typeof self && self && self.Object === Object && self, root = freeGlobal || freeSelf || Function("return this")(), Symbol$1 = root.Symbol, objectProto = Object.prototype, hasOwnProperty = objectProto.hasOwnProperty, nativeObjectToString = objectProto.toString, symToStringTag$1 = Symbol$1 ? Symbol$1.toStringTag : void 0, objectProto$1 = Object.prototype, nativeObjectToString$1 = objectProto$1.toString, nullTag = "[object Null]", undefinedTag = "[object Undefined]", symToStringTag = Symbol$1 ? Symbol$1.toStringTag : void 0, asyncTag = "[object AsyncFunction]", funcTag = "[object Function]", genTag = "[object GeneratorFunction]", proxyTag = "[object Proxy]", MAX_SAFE_INTEGER = 9007199254740991, breakLoop = {}, iteratorSymbol = "function" == typeof Symbol && Symbol.iterator, getIterator = function(coll) {
+        return iteratorSymbol && coll[iteratorSymbol] && coll[iteratorSymbol]();
+    }, argsTag = "[object Arguments]", objectProto$3 = Object.prototype, hasOwnProperty$2 = objectProto$3.hasOwnProperty, propertyIsEnumerable = objectProto$3.propertyIsEnumerable, isArguments = baseIsArguments(function() {
+        return arguments;
+    }()) ? baseIsArguments : function(value) {
+        return isObjectLike(value) && hasOwnProperty$2.call(value, "callee") && !propertyIsEnumerable.call(value, "callee");
+    }, isArray = Array.isArray, freeExports = "object" == typeof exports && exports && !exports.nodeType && exports, freeModule = freeExports && "object" == typeof module && module && !module.nodeType && module, moduleExports = freeModule && freeModule.exports === freeExports, Buffer = moduleExports ? root.Buffer : void 0, nativeIsBuffer = Buffer ? Buffer.isBuffer : void 0, isBuffer = nativeIsBuffer || stubFalse, MAX_SAFE_INTEGER$1 = 9007199254740991, reIsUint = /^(?:0|[1-9]\d*)$/, typedArrayTags = {};
+    typedArrayTags["[object Float32Array]"] = typedArrayTags["[object Float64Array]"] = typedArrayTags["[object Int8Array]"] = typedArrayTags["[object Int16Array]"] = typedArrayTags["[object Int32Array]"] = typedArrayTags["[object Uint8Array]"] = typedArrayTags["[object Uint8ClampedArray]"] = typedArrayTags["[object Uint16Array]"] = typedArrayTags["[object Uint32Array]"] = !0, 
+    typedArrayTags["[object Arguments]"] = typedArrayTags["[object Array]"] = typedArrayTags["[object ArrayBuffer]"] = typedArrayTags["[object Boolean]"] = typedArrayTags["[object DataView]"] = typedArrayTags["[object Date]"] = typedArrayTags["[object Error]"] = typedArrayTags["[object Function]"] = typedArrayTags["[object Map]"] = typedArrayTags["[object Number]"] = typedArrayTags["[object Object]"] = typedArrayTags["[object RegExp]"] = typedArrayTags["[object Set]"] = typedArrayTags["[object String]"] = typedArrayTags["[object WeakMap]"] = !1;
+    var freeExports$1 = "object" == typeof exports && exports && !exports.nodeType && exports, freeModule$1 = freeExports$1 && "object" == typeof module && module && !module.nodeType && module, moduleExports$1 = freeModule$1 && freeModule$1.exports === freeExports$1, freeProcess = moduleExports$1 && freeGlobal.process, nodeUtil = function() {
+        try {
+            return freeProcess && freeProcess.binding("util");
+        } catch (e) {}
+    }(), nodeIsTypedArray = nodeUtil && nodeUtil.isTypedArray, isTypedArray = nodeIsTypedArray ? function(func) {
+        return function(value) {
+            return func(value);
+        };
+    }(nodeIsTypedArray) : baseIsTypedArray, objectProto$2 = Object.prototype, hasOwnProperty$1 = objectProto$2.hasOwnProperty, objectProto$5 = Object.prototype, nativeKeys = function(func, transform) {
+        return function(arg) {
+            return func(transform(arg));
+        };
+    }(Object.keys, Object), objectProto$4 = Object.prototype, hasOwnProperty$3 = objectProto$4.hasOwnProperty, eachOfGeneric = doLimit(eachOfLimit, 1 / 0), eachOf = function(coll, iteratee, callback) {
+        (isArrayLike(coll) ? eachOfArrayLike : eachOfGeneric)(coll, wrapAsync(iteratee), callback);
+    }, map = doParallel(_asyncMap), applyEach = applyEach$1(map), mapLimit = doParallelLimit(_asyncMap), mapSeries = doLimit(mapLimit, 1), applyEachSeries = applyEach$1(mapSeries), apply = function(fn) {
+        var args = slice(arguments, 1);
+        return function() {
+            var callArgs = slice(arguments);
+            return fn.apply(null, args.concat(callArgs));
+        };
+    }, baseFor = function(fromRight) {
+        return function(object, iteratee, keysFunc) {
+            for (var index = -1, iterable = Object(object), props = keysFunc(object), length = props.length; length--; ) {
+                var key = props[fromRight ? length : ++index];
+                if (!1 === iteratee(iterable[key], key, iterable)) break;
+            }
+            return object;
+        };
+    }(), auto = function(tasks, concurrency, callback) {
+        function enqueueTask(key, task) {
+            readyTasks.push(function() {
+                runTask(key, task);
+            });
+        }
+        function processQueue() {
+            if (0 === readyTasks.length && 0 === runningTasks) return callback(null, results);
+            for (;readyTasks.length && runningTasks < concurrency; ) {
+                readyTasks.shift()();
+            }
+        }
+        function addListener(taskName, fn) {
+            var taskListeners = listeners[taskName];
+            taskListeners || (taskListeners = listeners[taskName] = []), taskListeners.push(fn);
+        }
+        function taskComplete(taskName) {
+            arrayEach(listeners[taskName] || [], function(fn) {
+                fn();
+            }), processQueue();
+        }
+        function runTask(key, task) {
+            if (!hasError) {
+                var taskCallback = onlyOnce(function(err, result) {
+                    if (runningTasks--, arguments.length > 2 && (result = slice(arguments, 1)), err) {
+                        var safeResults = {};
+                        baseForOwn(results, function(val, rkey) {
+                            safeResults[rkey] = val;
+                        }), safeResults[key] = result, hasError = !0, listeners = Object.create(null), callback(err, safeResults);
+                    } else results[key] = result, taskComplete(key);
+                });
+                runningTasks++;
+                var taskFn = wrapAsync(task[task.length - 1]);
+                task.length > 1 ? taskFn(results, taskCallback) : taskFn(taskCallback);
+            }
+        }
+        function getDependents(taskName) {
+            var result = [];
+            return baseForOwn(tasks, function(task, key) {
+                isArray(task) && baseIndexOf(task, taskName, 0) >= 0 && result.push(key);
+            }), result;
+        }
+        "function" == typeof concurrency && (callback = concurrency, concurrency = null), 
+        callback = once(callback || noop);
+        var keys$$1 = keys(tasks), numTasks = keys$$1.length;
+        if (!numTasks) return callback(null);
+        concurrency || (concurrency = numTasks);
+        var results = {}, runningTasks = 0, hasError = !1, listeners = Object.create(null), readyTasks = [], readyToCheck = [], uncheckedDependencies = {};
+        baseForOwn(tasks, function(task, key) {
+            if (!isArray(task)) return enqueueTask(key, [ task ]), void readyToCheck.push(key);
+            var dependencies = task.slice(0, task.length - 1), remainingDependencies = dependencies.length;
+            return 0 === remainingDependencies ? (enqueueTask(key, task), void readyToCheck.push(key)) : (uncheckedDependencies[key] = remainingDependencies, 
+            void arrayEach(dependencies, function(dependencyName) {
+                if (!tasks[dependencyName]) throw new Error("async.auto task `" + key + "` has a non-existent dependency `" + dependencyName + "` in " + dependencies.join(", "));
+                addListener(dependencyName, function() {
+                    0 === --remainingDependencies && enqueueTask(key, task);
+                });
+            }));
+        }), function() {
+            for (var currentTask, counter = 0; readyToCheck.length; ) currentTask = readyToCheck.pop(), 
+            counter++, arrayEach(getDependents(currentTask), function(dependent) {
+                0 == --uncheckedDependencies[dependent] && readyToCheck.push(dependent);
+            });
+            if (counter !== numTasks) throw new Error("async.auto cannot execute tasks due to a recursive dependency");
+        }(), processQueue();
+    }, symbolTag = "[object Symbol]", INFINITY = 1 / 0, symbolProto = Symbol$1 ? Symbol$1.prototype : void 0, symbolToString = symbolProto ? symbolProto.toString : void 0, reHasUnicode = RegExp("[\\u200d\\ud800-\\udfff\\u0300-\\u036f\\ufe20-\\ufe23\\u20d0-\\u20f0\\ufe0e\\ufe0f]"), rsCombo = "[\\u0300-\\u036f\\ufe20-\\ufe23\\u20d0-\\u20f0]", rsFitz = "\\ud83c[\\udffb-\\udfff]", rsRegional = "(?:\\ud83c[\\udde6-\\uddff]){2}", rsSurrPair = "[\\ud800-\\udbff][\\udc00-\\udfff]", reOptMod = "(?:[\\u0300-\\u036f\\ufe20-\\ufe23\\u20d0-\\u20f0]|\\ud83c[\\udffb-\\udfff])?", rsOptJoin = "(?:\\u200d(?:" + [ "[^\\ud800-\\udfff]", rsRegional, rsSurrPair ].join("|") + ")[\\ufe0e\\ufe0f]?" + reOptMod + ")*", rsSeq = "[\\ufe0e\\ufe0f]?" + reOptMod + rsOptJoin, rsSymbol = "(?:" + [ "[^\\ud800-\\udfff]" + rsCombo + "?", rsCombo, rsRegional, rsSurrPair, "[\\ud800-\\udfff]" ].join("|") + ")", reUnicode = RegExp(rsFitz + "(?=" + rsFitz + ")|" + rsSymbol + rsSeq, "g"), reTrim = /^\s+|\s+$/g, FN_ARGS = /^(?:async\s+)?(function)?\s*[^\(]*\(\s*([^\)]*)\)/m, FN_ARG_SPLIT = /,/, FN_ARG = /(=.+)?(\s*)$/, STRIP_COMMENTS = /((\/\/.*$)|(\/\*[\s\S]*?\*\/))/gm;
     DLL.prototype.removeLink = function(node) {
         return node.prev ? node.prev.next = node.next : this.head = node.next, node.next ? node.next.prev = node.prev : this.tail = node.prev, 
         node.prev = node.next = null, this.length -= 1, node;
-    }, DLL.prototype.empty = DLL, DLL.prototype.insertAfter = function(node, newNode) {
+    }, DLL.prototype.empty = function() {
+        for (;this.head; ) this.shift();
+        return this;
+    }, DLL.prototype.insertAfter = function(node, newNode) {
         newNode.prev = node, newNode.next = node.next, node.next ? node.next.prev = newNode : this.tail = newNode, 
         node.next = newNode, this.length += 1;
     }, DLL.prototype.insertBefore = function(node, newNode) {
@@ -23141,37 +22985,110 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         return this.head && this.removeLink(this.head);
     }, DLL.prototype.pop = function() {
         return this.tail && this.removeLink(this.tail);
+    }, DLL.prototype.toArray = function() {
+        for (var arr = Array(this.length), curr = this.head, idx = 0; idx < this.length; idx++) arr[idx] = curr.data, 
+        curr = curr.next;
+        return arr;
+    }, DLL.prototype.remove = function(testFn) {
+        for (var curr = this.head; curr; ) {
+            var next = curr.next;
+            testFn(curr) && this.removeLink(curr), curr = next;
+        }
+        return this;
     };
-    var _defer$1, eachOfSeries = doLimit(eachOfLimit, 1), seq = rest(function(functions) {
-        return rest(function(args) {
-            var that = this, cb = args[args.length - 1];
-            "function" == typeof cb ? args.pop() : cb = noop, reduce(functions, args, function(newargs, fn, cb) {
-                fn.apply(that, newargs.concat([ rest(function(err, nextargs) {
-                    cb(err, nextargs);
-                }) ]));
-            }, function(err, results) {
-                cb.apply(that, [ err ].concat(results));
+    var _defer$1, eachOfSeries = doLimit(eachOfLimit, 1), compose = function() {
+        return seq.apply(null, slice(arguments).reverse());
+    }, _concat = Array.prototype.concat, concatLimit = function(coll, limit, iteratee, callback) {
+        callback = callback || noop;
+        var _iteratee = wrapAsync(iteratee);
+        mapLimit(coll, limit, function(val, callback) {
+            _iteratee(val, function(err) {
+                return err ? callback(err) : callback(null, slice(arguments, 1));
             });
+        }, function(err, mapResults) {
+            for (var result = [], i = 0; i < mapResults.length; i++) mapResults[i] && (result = _concat.apply(result, mapResults[i]));
+            return callback(err, result);
         });
-    }), compose = rest(function(args) {
-        return seq.apply(null, args.reverse());
-    }), concat = doParallel(concat$1), concatSeries = doSeries(concat$1), constant = rest(function(values) {
-        var args = [ null ].concat(values);
-        return initialParams(function(ignoredArgs, callback) {
-            return callback.apply(this, args);
+    }, concat = doLimit(concatLimit, 1 / 0), concatSeries = doLimit(concatLimit, 1), constant = function() {
+        var values = slice(arguments), args = [ null ].concat(values);
+        return function() {
+            return arguments[arguments.length - 1].apply(this, args);
+        };
+    }, detect = doParallel(_createTester(identity, _findGetResult)), detectLimit = doParallelLimit(_createTester(identity, _findGetResult)), detectSeries = doLimit(detectLimit, 1), dir = consoleFunc("dir"), eachSeries = doLimit(eachLimit$1, 1), every = doParallel(_createTester(notId, notId)), everyLimit = doParallelLimit(_createTester(notId, notId)), everySeries = doLimit(everyLimit, 1), filter = doParallel(_filter), filterLimit = doParallelLimit(_filter), filterSeries = doLimit(filterLimit, 1), groupByLimit = function(coll, limit, iteratee, callback) {
+        callback = callback || noop;
+        var _iteratee = wrapAsync(iteratee);
+        mapLimit(coll, limit, function(val, callback) {
+            _iteratee(val, function(err, key) {
+                return err ? callback(err) : callback(null, {
+                    key: key,
+                    val: val
+                });
+            });
+        }, function(err, mapResults) {
+            for (var result = {}, hasOwnProperty = Object.prototype.hasOwnProperty, i = 0; i < mapResults.length; i++) if (mapResults[i]) {
+                var key = mapResults[i].key, val = mapResults[i].val;
+                hasOwnProperty.call(result, key) ? result[key].push(val) : result[key] = [ val ];
+            }
+            return callback(err, result);
         });
-    }), detect = _createTester(eachOf, identity, _findGetResult), detectLimit = _createTester(eachOfLimit, identity, _findGetResult), detectSeries = _createTester(eachOfSeries, identity, _findGetResult), dir = consoleFunc("dir"), eachSeries = doLimit(eachLimit$1, 1), every = _createTester(eachOf, notId, notId), everyLimit = _createTester(eachOfLimit, notId, notId), everySeries = doLimit(everyLimit, 1), filter = doParallel(_filter), filterLimit = doParallelLimit(_filter), filterSeries = doLimit(filterLimit, 1), log = consoleFunc("log"), mapValues = doLimit(mapValuesLimit, 1 / 0), mapValuesSeries = doLimit(mapValuesLimit, 1);
+    }, groupBy = doLimit(groupByLimit, 1 / 0), groupBySeries = doLimit(groupByLimit, 1), log = consoleFunc("log"), mapValues = doLimit(mapValuesLimit, 1 / 0), mapValuesSeries = doLimit(mapValuesLimit, 1);
     _defer$1 = hasNextTick ? process.nextTick : hasSetImmediate ? setImmediate : fallback;
-    var nextTick = wrap(_defer$1), slice = Array.prototype.slice, reject = doParallel(reject$1), rejectLimit = doParallelLimit(reject$1), rejectSeries = doLimit(rejectLimit, 1), some = _createTester(eachOf, Boolean, identity), someLimit = _createTester(eachOfLimit, Boolean, identity), someSeries = doLimit(someLimit, 1), nativeCeil = Math.ceil, nativeMax$1 = Math.max, times = doLimit(timeLimit, 1 / 0), timesSeries = doLimit(timeLimit, 1), index = {
+    var nextTick = wrap(_defer$1), queue$1 = function(worker, concurrency) {
+        var _worker = wrapAsync(worker);
+        return queue(function(items, cb) {
+            _worker(items[0], cb);
+        }, concurrency, 1);
+    }, priorityQueue = function(worker, concurrency) {
+        var q = queue$1(worker, concurrency);
+        return q.push = function(data, priority, callback) {
+            if (null == callback && (callback = noop), "function" != typeof callback) throw new Error("task callback must be a function");
+            if (q.started = !0, isArray(data) || (data = [ data ]), 0 === data.length) return setImmediate$1(function() {
+                q.drain();
+            });
+            priority = priority || 0;
+            for (var nextNode = q._tasks.head; nextNode && priority >= nextNode.priority; ) nextNode = nextNode.next;
+            for (var i = 0, l = data.length; i < l; i++) {
+                var item = {
+                    data: data[i],
+                    priority: priority,
+                    callback: callback
+                };
+                nextNode ? q._tasks.insertBefore(nextNode, item) : q._tasks.push(item);
+            }
+            setImmediate$1(q.process);
+        }, delete q.unshift, q;
+    }, reject = doParallel(reject$1), rejectLimit = doParallelLimit(reject$1), rejectSeries = doLimit(rejectLimit, 1), retryable = function(opts, task) {
+        task || (task = opts, opts = null);
+        var _task = wrapAsync(task);
+        return initialParams(function(args, callback) {
+            function taskFn(cb) {
+                _task.apply(null, args.concat(cb));
+            }
+            opts ? retry(opts, taskFn, callback) : retry(taskFn, callback);
+        });
+    }, some = doParallel(_createTester(Boolean, identity)), someLimit = doParallelLimit(_createTester(Boolean, identity)), someSeries = doLimit(someLimit, 1), nativeCeil = Math.ceil, nativeMax = Math.max, times = doLimit(timeLimit, 1 / 0), timesSeries = doLimit(timeLimit, 1), waterfall = function(tasks, callback) {
+        function nextTask(args) {
+            var task = wrapAsync(tasks[taskIndex++]);
+            args.push(onlyOnce(next)), task.apply(null, args);
+        }
+        function next(err) {
+            return err || taskIndex === tasks.length ? callback.apply(null, arguments) : void nextTask(slice(arguments, 1));
+        }
+        if (callback = once(callback || noop), !isArray(tasks)) return callback(new Error("First argument to waterfall must be an array of functions"));
+        if (!tasks.length) return callback();
+        var taskIndex = 0;
+        nextTask([]);
+    }, index = {
         applyEach: applyEach,
         applyEachSeries: applyEachSeries,
-        apply: apply$1,
+        apply: apply,
         asyncify: asyncify,
         auto: auto,
         autoInject: autoInject,
         cargo: cargo,
         compose: compose,
         concat: concat,
+        concatLimit: concatLimit,
         concatSeries: concatSeries,
         constant: constant,
         detect: detect,
@@ -23196,6 +23113,9 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         filterLimit: filterLimit,
         filterSeries: filterSeries,
         forever: forever,
+        groupBy: groupBy,
+        groupByLimit: groupByLimit,
+        groupBySeries: groupBySeries,
         log: log,
         map: map,
         mapLimit: mapLimit,
@@ -23231,6 +23151,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         timesLimit: timeLimit,
         timesSeries: timesSeries,
         transform: transform,
+        tryEach: tryEach,
         unmemoize: unmemoize,
         until: until,
         waterfall: waterfall,
@@ -23251,19 +23172,20 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         selectSeries: filterSeries,
         wrapSync: asyncify
     };
-    exports["default"] = index, exports.applyEach = applyEach, exports.applyEachSeries = applyEachSeries, 
-    exports.apply = apply$1, exports.asyncify = asyncify, exports.auto = auto, exports.autoInject = autoInject, 
-    exports.cargo = cargo, exports.compose = compose, exports.concat = concat, exports.concatSeries = concatSeries, 
-    exports.constant = constant, exports.detect = detect, exports.detectLimit = detectLimit, 
-    exports.detectSeries = detectSeries, exports.dir = dir, exports.doDuring = doDuring, 
-    exports.doUntil = doUntil, exports.doWhilst = doWhilst, exports.during = during, 
-    exports.each = eachLimit, exports.eachLimit = eachLimit$1, exports.eachOf = eachOf, 
-    exports.eachOfLimit = eachOfLimit, exports.eachOfSeries = eachOfSeries, exports.eachSeries = eachSeries, 
-    exports.ensureAsync = ensureAsync, exports.every = every, exports.everyLimit = everyLimit, 
-    exports.everySeries = everySeries, exports.filter = filter, exports.filterLimit = filterLimit, 
-    exports.filterSeries = filterSeries, exports.forever = forever, exports.log = log, 
-    exports.map = map, exports.mapLimit = mapLimit, exports.mapSeries = mapSeries, exports.mapValues = mapValues, 
-    exports.mapValuesLimit = mapValuesLimit, exports.mapValuesSeries = mapValuesSeries, 
+    exports.default = index, exports.applyEach = applyEach, exports.applyEachSeries = applyEachSeries, 
+    exports.apply = apply, exports.asyncify = asyncify, exports.auto = auto, exports.autoInject = autoInject, 
+    exports.cargo = cargo, exports.compose = compose, exports.concat = concat, exports.concatLimit = concatLimit, 
+    exports.concatSeries = concatSeries, exports.constant = constant, exports.detect = detect, 
+    exports.detectLimit = detectLimit, exports.detectSeries = detectSeries, exports.dir = dir, 
+    exports.doDuring = doDuring, exports.doUntil = doUntil, exports.doWhilst = doWhilst, 
+    exports.during = during, exports.each = eachLimit, exports.eachLimit = eachLimit$1, 
+    exports.eachOf = eachOf, exports.eachOfLimit = eachOfLimit, exports.eachOfSeries = eachOfSeries, 
+    exports.eachSeries = eachSeries, exports.ensureAsync = ensureAsync, exports.every = every, 
+    exports.everyLimit = everyLimit, exports.everySeries = everySeries, exports.filter = filter, 
+    exports.filterLimit = filterLimit, exports.filterSeries = filterSeries, exports.forever = forever, 
+    exports.groupBy = groupBy, exports.groupByLimit = groupByLimit, exports.groupBySeries = groupBySeries, 
+    exports.log = log, exports.map = map, exports.mapLimit = mapLimit, exports.mapSeries = mapSeries, 
+    exports.mapValues = mapValues, exports.mapValuesLimit = mapValuesLimit, exports.mapValuesSeries = mapValuesSeries, 
     exports.memoize = memoize, exports.nextTick = nextTick, exports.parallel = parallelLimit, 
     exports.parallelLimit = parallelLimit$1, exports.priorityQueue = priorityQueue, 
     exports.queue = queue$1, exports.race = race, exports.reduce = reduce, exports.reduceRight = reduceRight, 
@@ -23272,24 +23194,24 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     exports.retryable = retryable, exports.seq = seq, exports.series = series, exports.setImmediate = setImmediate$1, 
     exports.some = some, exports.someLimit = someLimit, exports.someSeries = someSeries, 
     exports.sortBy = sortBy, exports.timeout = timeout, exports.times = times, exports.timesLimit = timeLimit, 
-    exports.timesSeries = timesSeries, exports.transform = transform, exports.unmemoize = unmemoize, 
-    exports.until = until, exports.waterfall = waterfall, exports.whilst = whilst, exports.all = every, 
-    exports.allLimit = everyLimit, exports.allSeries = everySeries, exports.any = some, 
-    exports.anyLimit = someLimit, exports.anySeries = someSeries, exports.find = detect, 
-    exports.findLimit = detectLimit, exports.findSeries = detectSeries, exports.forEach = eachLimit, 
-    exports.forEachSeries = eachSeries, exports.forEachLimit = eachLimit$1, exports.forEachOf = eachOf, 
-    exports.forEachOfSeries = eachOfSeries, exports.forEachOfLimit = eachOfLimit, exports.inject = reduce, 
-    exports.foldl = reduce, exports.foldr = reduceRight, exports.select = filter, exports.selectLimit = filterLimit, 
-    exports.selectSeries = filterSeries, exports.wrapSync = asyncify;
+    exports.timesSeries = timesSeries, exports.transform = transform, exports.tryEach = tryEach, 
+    exports.unmemoize = unmemoize, exports.until = until, exports.waterfall = waterfall, 
+    exports.whilst = whilst, exports.all = every, exports.allLimit = everyLimit, exports.allSeries = everySeries, 
+    exports.any = some, exports.anyLimit = someLimit, exports.anySeries = someSeries, 
+    exports.find = detect, exports.findLimit = detectLimit, exports.findSeries = detectSeries, 
+    exports.forEach = eachLimit, exports.forEachSeries = eachSeries, exports.forEachLimit = eachLimit$1, 
+    exports.forEachOf = eachOf, exports.forEachOfSeries = eachOfSeries, exports.forEachOfLimit = eachOfLimit, 
+    exports.inject = reduce, exports.foldl = reduce, exports.foldr = reduceRight, exports.select = filter, 
+    exports.selectLimit = filterLimit, exports.selectSeries = filterSeries, exports.wrapSync = asyncify, 
+    Object.defineProperty(exports, "__esModule", {
+        value: !0
+    });
 }), function(global, factory) {
     "object" == typeof exports && "undefined" != typeof module ? module.exports = factory() : "function" == typeof define && define.amd ? define("moment", factory) : global.moment = factory();
 }(this, function() {
     "use strict";
-    function utils_hooks__hooks() {
+    function hooks() {
         return hookCallback.apply(null, arguments);
-    }
-    function setHookCallback(callback) {
-        hookCallback = callback;
     }
     function isArray(input) {
         return input instanceof Array || "[object Array]" === Object.prototype.toString.call(input);
@@ -23301,6 +23223,12 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         var k;
         for (k in obj) return !1;
         return !0;
+    }
+    function isUndefined(input) {
+        return void 0 === input;
+    }
+    function isNumber(input) {
+        return "number" == typeof input || "[object Number]" === Object.prototype.toString.call(input);
     }
     function isDate(input) {
         return input instanceof Date || "[object Date]" === Object.prototype.toString.call(input);
@@ -23318,7 +23246,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         return hasOwnProp(b, "toString") && (a.toString = b.toString), hasOwnProp(b, "valueOf") && (a.valueOf = b.valueOf), 
         a;
     }
-    function create_utc__createUTC(input, format, locale, strict) {
+    function createUTC(input, format, locale, strict) {
         return createLocalOrUTC(input, format, locale, strict, !0).utc();
     }
     function defaultParsingFlags() {
@@ -23334,15 +23262,17 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             userInvalidated: !1,
             iso: !1,
             parsedDateParts: [],
-            meridiem: null
+            meridiem: null,
+            rfc2822: !1,
+            weekdayMismatch: !1
         };
     }
     function getParsingFlags(m) {
         return null == m._pf && (m._pf = defaultParsingFlags()), m._pf;
     }
-    function valid__isValid(m) {
+    function isValid(m) {
         if (null == m._isValid) {
-            var flags = getParsingFlags(m), parsedParts = some.call(flags.parsedDateParts, function(i) {
+            var flags = getParsingFlags(m), parsedParts = some$1.call(flags.parsedDateParts, function(i) {
                 return null != i;
             }), isNowValid = !isNaN(m._d.getTime()) && flags.overflow < 0 && !flags.empty && !flags.invalidMonth && !flags.invalidWeekday && !flags.nullInput && !flags.invalidFormat && !flags.userInvalidated && (!flags.meridiem || flags.meridiem && parsedParts);
             if (m._strict && (isNowValid = isNowValid && 0 === flags.charsLeftOver && 0 === flags.unusedTokens.length && void 0 === flags.bigHour), 
@@ -23351,13 +23281,10 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         }
         return m._isValid;
     }
-    function valid__createInvalid(flags) {
-        var m = create_utc__createUTC(NaN);
+    function createInvalid(flags) {
+        var m = createUTC(NaN);
         return null != flags ? extend(getParsingFlags(m), flags) : getParsingFlags(m).userInvalidated = !0, 
         m;
-    }
-    function isUndefined(input) {
-        return void 0 === input;
     }
     function copyConfig(to, from) {
         var i, prop, val;
@@ -23366,14 +23293,14 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         isUndefined(from._l) || (to._l = from._l), isUndefined(from._strict) || (to._strict = from._strict), 
         isUndefined(from._tzm) || (to._tzm = from._tzm), isUndefined(from._isUTC) || (to._isUTC = from._isUTC), 
         isUndefined(from._offset) || (to._offset = from._offset), isUndefined(from._pf) || (to._pf = getParsingFlags(from)), 
-        isUndefined(from._locale) || (to._locale = from._locale), momentProperties.length > 0) for (i in momentProperties) prop = momentProperties[i], 
+        isUndefined(from._locale) || (to._locale = from._locale), momentProperties.length > 0) for (i = 0; i < momentProperties.length; i++) prop = momentProperties[i], 
         val = from[prop], isUndefined(val) || (to[prop] = val);
         return to;
     }
     function Moment(config) {
         copyConfig(this, config), this._d = new Date(null != config._d ? config._d.getTime() : NaN), 
-        updateInProgress === !1 && (updateInProgress = !0, utils_hooks__hooks.updateOffset(this), 
-        updateInProgress = !1);
+        this.isValid() || (this._d = new Date(NaN)), !1 === updateInProgress && (updateInProgress = !0, 
+        hooks.updateOffset(this), updateInProgress = !1);
     }
     function isMoment(obj) {
         return obj instanceof Moment || null != obj && null != obj._isAMomentObject;
@@ -23392,13 +23319,12 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         return diffs + lengthDiff;
     }
     function warn(msg) {
-        utils_hooks__hooks.suppressDeprecationWarnings === !1 && "undefined" != typeof console && console.warn && console.warn("Deprecation warning: " + msg);
+        !1 === hooks.suppressDeprecationWarnings && "undefined" != typeof console && console.warn && console.warn("Deprecation warning: " + msg);
     }
     function deprecate(msg, fn) {
         var firstTime = !0;
         return extend(function() {
-            if (null != utils_hooks__hooks.deprecationHandler && utils_hooks__hooks.deprecationHandler(null, msg), 
-            firstTime) {
+            if (null != hooks.deprecationHandler && hooks.deprecationHandler(null, msg), firstTime) {
                 for (var arg, args = [], i = 0; i < arguments.length; i++) {
                     if (arg = "", "object" == typeof arguments[i]) {
                         arg += "\n[" + i + "] ";
@@ -23414,16 +23340,16 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         }, fn);
     }
     function deprecateSimple(name, msg) {
-        null != utils_hooks__hooks.deprecationHandler && utils_hooks__hooks.deprecationHandler(name, msg), 
-        deprecations[name] || (warn(msg), deprecations[name] = !0);
+        null != hooks.deprecationHandler && hooks.deprecationHandler(name, msg), deprecations[name] || (warn(msg), 
+        deprecations[name] = !0);
     }
     function isFunction(input) {
         return input instanceof Function || "[object Function]" === Object.prototype.toString.call(input);
     }
-    function locale_set__set(config) {
+    function set(config) {
         var prop, i;
         for (i in config) prop = config[i], isFunction(prop) ? this[i] = prop : this["_" + i] = prop;
-        this._config = config, this._ordinalParseLenient = new RegExp(this._ordinalParse.source + "|" + /\d{1,2}/.source);
+        this._config = config, this._dayOfMonthOrdinalParseLenient = new RegExp((this._dayOfMonthOrdinalParse.source || this._ordinalParse.source) + "|" + /\d{1,2}/.source);
     }
     function mergeConfigs(parentConfig, childConfig) {
         var prop, res = extend({}, parentConfig);
@@ -23435,7 +23361,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     function Locale(config) {
         null != config && this.set(config);
     }
-    function locale_calendar__calendar(key, mom, now) {
+    function calendar(key, mom, now) {
         var output = this._calendar[key] || this._calendar.sameElse;
         return isFunction(output) ? output.call(mom, now) : output;
     }
@@ -23451,7 +23377,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     function ordinal(number) {
         return this._ordinal.replace("%d", number);
     }
-    function relative__relativeTime(number, withoutSuffix, string, isFuture) {
+    function relativeTime(number, withoutSuffix, string, isFuture) {
         var output = this._relativeTime[string];
         return isFunction(output) ? output(number, withoutSuffix, string, isFuture) : output.replace(/%d/i, number);
     }
@@ -23468,8 +23394,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     }
     function normalizeObjectUnits(inputObject) {
         var normalizedProp, prop, normalizedInput = {};
-        for (prop in inputObject) hasOwnProp(inputObject, prop) && (normalizedProp = normalizeUnits(prop), 
-        normalizedProp && (normalizedInput[normalizedProp] = inputObject[prop]));
+        for (prop in inputObject) hasOwnProp(inputObject, prop) && (normalizedProp = normalizeUnits(prop)) && (normalizedInput[normalizedProp] = inputObject[prop]);
         return normalizedInput;
     }
     function addUnitPriority(unit, priority) {
@@ -23487,14 +23412,14 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     }
     function makeGetSet(unit, keepTime) {
         return function(value) {
-            return null != value ? (get_set__set(this, unit, value), utils_hooks__hooks.updateOffset(this, keepTime), 
-            this) : get_set__get(this, unit);
+            return null != value ? (set$1(this, unit, value), hooks.updateOffset(this, keepTime), 
+            this) : get(this, unit);
         };
     }
-    function get_set__get(mom, unit) {
+    function get(mom, unit) {
         return mom.isValid() ? mom._d["get" + (mom._isUTC ? "UTC" : "") + unit]() : NaN;
     }
-    function get_set__set(mom, unit, value) {
+    function set$1(mom, unit, value) {
         mom.isValid() && mom._d["set" + (mom._isUTC ? "UTC" : "") + unit](value);
     }
     function stringGet(units) {
@@ -23508,8 +23433,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         return this;
     }
     function zeroFill(number, targetLength, forceSign) {
-        var absNumber = "" + Math.abs(number), zerosToFill = targetLength - absNumber.length, sign = number >= 0;
-        return (sign ? forceSign ? "+" : "" : "-") + Math.pow(10, Math.max(0, zerosToFill)).toString().substr(1) + absNumber;
+        var absNumber = "" + Math.abs(number), zerosToFill = targetLength - absNumber.length;
+        return (number >= 0 ? forceSign ? "+" : "" : "-") + Math.pow(10, Math.max(0, zerosToFill)).toString().substr(1) + absNumber;
     }
     function addFormatToken(token, padded, ordinal, callback) {
         var func = callback;
@@ -23529,7 +23454,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         for (i = 0, length = array.length; i < length; i++) formatTokenFunctions[array[i]] ? array[i] = formatTokenFunctions[array[i]] : array[i] = removeFormattingTokens(array[i]);
         return function(mom) {
             var i, output = "";
-            for (i = 0; i < length; i++) output += array[i] instanceof Function ? array[i].call(mom, format) : array[i];
+            for (i = 0; i < length; i++) output += isFunction(array[i]) ? array[i].call(mom, format) : array[i];
             return output;
         };
     }
@@ -23564,7 +23489,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     }
     function addParseToken(token, callback) {
         var i, func = callback;
-        for ("string" == typeof token && (token = [ token ]), "number" == typeof callback && (func = function(input, array) {
+        for ("string" == typeof token && (token = [ token ]), isNumber(callback) && (func = function(input, array) {
             array[callback] = toInt(input);
         }), i = 0; i < token.length; i++) tokens[token[i]] = func;
     }
@@ -23580,27 +23505,27 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         return new Date(Date.UTC(year, month + 1, 0)).getUTCDate();
     }
     function localeMonths(m, format) {
-        return m ? isArray(this._months) ? this._months[m.month()] : this._months[(this._months.isFormat || MONTHS_IN_FORMAT).test(format) ? "format" : "standalone"][m.month()] : this._months;
+        return m ? isArray(this._months) ? this._months[m.month()] : this._months[(this._months.isFormat || MONTHS_IN_FORMAT).test(format) ? "format" : "standalone"][m.month()] : isArray(this._months) ? this._months : this._months.standalone;
     }
     function localeMonthsShort(m, format) {
-        return m ? isArray(this._monthsShort) ? this._monthsShort[m.month()] : this._monthsShort[MONTHS_IN_FORMAT.test(format) ? "format" : "standalone"][m.month()] : this._monthsShort;
+        return m ? isArray(this._monthsShort) ? this._monthsShort[m.month()] : this._monthsShort[MONTHS_IN_FORMAT.test(format) ? "format" : "standalone"][m.month()] : isArray(this._monthsShort) ? this._monthsShort : this._monthsShort.standalone;
     }
-    function units_month__handleStrictParse(monthName, format, strict) {
+    function handleStrictParse(monthName, format, strict) {
         var i, ii, mom, llc = monthName.toLocaleLowerCase();
         if (!this._monthsParse) for (this._monthsParse = [], this._longMonthsParse = [], 
-        this._shortMonthsParse = [], i = 0; i < 12; ++i) mom = create_utc__createUTC([ 2e3, i ]), 
-        this._shortMonthsParse[i] = this.monthsShort(mom, "").toLocaleLowerCase(), this._longMonthsParse[i] = this.months(mom, "").toLocaleLowerCase();
-        return strict ? "MMM" === format ? (ii = indexOf.call(this._shortMonthsParse, llc), 
-        ii !== -1 ? ii : null) : (ii = indexOf.call(this._longMonthsParse, llc), ii !== -1 ? ii : null) : "MMM" === format ? (ii = indexOf.call(this._shortMonthsParse, llc), 
-        ii !== -1 ? ii : (ii = indexOf.call(this._longMonthsParse, llc), ii !== -1 ? ii : null)) : (ii = indexOf.call(this._longMonthsParse, llc), 
-        ii !== -1 ? ii : (ii = indexOf.call(this._shortMonthsParse, llc), ii !== -1 ? ii : null));
+        this._shortMonthsParse = [], i = 0; i < 12; ++i) mom = createUTC([ 2e3, i ]), this._shortMonthsParse[i] = this.monthsShort(mom, "").toLocaleLowerCase(), 
+        this._longMonthsParse[i] = this.months(mom, "").toLocaleLowerCase();
+        return strict ? "MMM" === format ? (ii = indexOf$1.call(this._shortMonthsParse, llc), 
+        -1 !== ii ? ii : null) : (ii = indexOf$1.call(this._longMonthsParse, llc), -1 !== ii ? ii : null) : "MMM" === format ? (ii = indexOf$1.call(this._shortMonthsParse, llc), 
+        -1 !== ii ? ii : (ii = indexOf$1.call(this._longMonthsParse, llc), -1 !== ii ? ii : null)) : (ii = indexOf$1.call(this._longMonthsParse, llc), 
+        -1 !== ii ? ii : (ii = indexOf$1.call(this._shortMonthsParse, llc), -1 !== ii ? ii : null));
     }
     function localeMonthsParse(monthName, format, strict) {
         var i, mom, regex;
-        if (this._monthsParseExact) return units_month__handleStrictParse.call(this, monthName, format, strict);
+        if (this._monthsParseExact) return handleStrictParse.call(this, monthName, format, strict);
         for (this._monthsParse || (this._monthsParse = [], this._longMonthsParse = [], this._shortMonthsParse = []), 
         i = 0; i < 12; i++) {
-            if (mom = create_utc__createUTC([ 2e3, i ]), strict && !this._longMonthsParse[i] && (this._longMonthsParse[i] = new RegExp("^" + this.months(mom, "").replace(".", "") + "$", "i"), 
+            if (mom = createUTC([ 2e3, i ]), strict && !this._longMonthsParse[i] && (this._longMonthsParse[i] = new RegExp("^" + this.months(mom, "").replace(".", "") + "$", "i"), 
             this._shortMonthsParse[i] = new RegExp("^" + this.monthsShort(mom, "").replace(".", "") + "$", "i")), 
             strict || this._monthsParse[i] || (regex = "^" + this.months(mom, "") + "|^" + this.monthsShort(mom, ""), 
             this._monthsParse[i] = new RegExp(regex.replace(".", ""), "i")), strict && "MMMM" === format && this._longMonthsParse[i].test(monthName)) return i;
@@ -23612,13 +23537,12 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         var dayOfMonth;
         if (!mom.isValid()) return mom;
         if ("string" == typeof value) if (/^\d+$/.test(value)) value = toInt(value); else if (value = mom.localeData().monthsParse(value), 
-        "number" != typeof value) return mom;
+        !isNumber(value)) return mom;
         return dayOfMonth = Math.min(mom.date(), daysInMonth(mom.year(), value)), mom._d["set" + (mom._isUTC ? "UTC" : "") + "Month"](value, dayOfMonth), 
         mom;
     }
     function getSetMonth(value) {
-        return null != value ? (setMonth(this, value), utils_hooks__hooks.updateOffset(this, !0), 
-        this) : get_set__get(this, "Month");
+        return null != value ? (setMonth(this, value), hooks.updateOffset(this, !0), this) : get(this, "Month");
     }
     function getDaysInMonth() {
         return daysInMonth(this.year(), this.month());
@@ -23628,7 +23552,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         isStrict ? this._monthsShortStrictRegex : this._monthsShortRegex) : (hasOwnProp(this, "_monthsShortRegex") || (this._monthsShortRegex = defaultMonthsShortRegex), 
         this._monthsShortStrictRegex && isStrict ? this._monthsShortStrictRegex : this._monthsShortRegex);
     }
-    function units_month__monthsRegex(isStrict) {
+    function monthsRegex(isStrict) {
         return this._monthsParseExact ? (hasOwnProp(this, "_monthsRegex") || computeMonthsParse.call(this), 
         isStrict ? this._monthsStrictRegex : this._monthsRegex) : (hasOwnProp(this, "_monthsRegex") || (this._monthsRegex = defaultMonthsRegex), 
         this._monthsStrictRegex && isStrict ? this._monthsStrictRegex : this._monthsRegex);
@@ -23638,7 +23562,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return b.length - a.length;
         }
         var i, mom, shortPieces = [], longPieces = [], mixedPieces = [];
-        for (i = 0; i < 12; i++) mom = create_utc__createUTC([ 2e3, i ]), shortPieces.push(this.monthsShort(mom, "")), 
+        for (i = 0; i < 12; i++) mom = createUTC([ 2e3, i ]), shortPieces.push(this.monthsShort(mom, "")), 
         longPieces.push(this.months(mom, "")), mixedPieces.push(this.months(mom, "")), mixedPieces.push(this.monthsShort(mom, ""));
         for (shortPieces.sort(cmpLenRev), longPieces.sort(cmpLenRev), mixedPieces.sort(cmpLenRev), 
         i = 0; i < 12; i++) shortPieces[i] = regexEscape(shortPieces[i]), longPieces[i] = regexEscape(longPieces[i]);
@@ -23650,7 +23574,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         return isLeapYear(year) ? 366 : 365;
     }
     function isLeapYear(year) {
-        return year % 4 === 0 && year % 100 !== 0 || year % 400 === 0;
+        return year % 4 == 0 && year % 100 != 0 || year % 400 == 0;
     }
     function getIsLeapYear() {
         return isLeapYear(this.year());
@@ -23666,8 +23590,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         date;
     }
     function firstWeekOffset(year, dow, doy) {
-        var fwd = 7 + dow - doy, fwdlw = (7 + createUTCDate(year, 0, fwd).getUTCDay() - dow) % 7;
-        return -fwdlw + fwd - 1;
+        var fwd = 7 + dow - doy;
+        return -(7 + createUTCDate(year, 0, fwd).getUTCDay() - dow) % 7 + fwd - 1;
     }
     function dayOfYearFromWeeks(year, week, weekday, dow, doy) {
         var resYear, resDayOfYear, localWeekday = (7 + weekday - dow) % 7, weekOffset = firstWeekOffset(year, dow, doy), dayOfYear = 1 + 7 * (week - 1) + localWeekday + weekOffset;
@@ -23715,7 +23639,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         return "string" == typeof input ? locale.weekdaysParse(input) % 7 || 7 : isNaN(input) ? null : input;
     }
     function localeWeekdays(m, format) {
-        return m ? isArray(this._weekdays) ? this._weekdays[m.day()] : this._weekdays[this._weekdays.isFormat.test(format) ? "format" : "standalone"][m.day()] : this._weekdays;
+        return m ? isArray(this._weekdays) ? this._weekdays[m.day()] : this._weekdays[this._weekdays.isFormat.test(format) ? "format" : "standalone"][m.day()] : isArray(this._weekdays) ? this._weekdays : this._weekdays.standalone;
     }
     function localeWeekdaysShort(m) {
         return m ? this._weekdaysShort[m.day()] : this._weekdaysShort;
@@ -23723,27 +23647,27 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     function localeWeekdaysMin(m) {
         return m ? this._weekdaysMin[m.day()] : this._weekdaysMin;
     }
-    function day_of_week__handleStrictParse(weekdayName, format, strict) {
+    function handleStrictParse$1(weekdayName, format, strict) {
         var i, ii, mom, llc = weekdayName.toLocaleLowerCase();
         if (!this._weekdaysParse) for (this._weekdaysParse = [], this._shortWeekdaysParse = [], 
-        this._minWeekdaysParse = [], i = 0; i < 7; ++i) mom = create_utc__createUTC([ 2e3, 1 ]).day(i), 
+        this._minWeekdaysParse = [], i = 0; i < 7; ++i) mom = createUTC([ 2e3, 1 ]).day(i), 
         this._minWeekdaysParse[i] = this.weekdaysMin(mom, "").toLocaleLowerCase(), this._shortWeekdaysParse[i] = this.weekdaysShort(mom, "").toLocaleLowerCase(), 
         this._weekdaysParse[i] = this.weekdays(mom, "").toLocaleLowerCase();
-        return strict ? "dddd" === format ? (ii = indexOf.call(this._weekdaysParse, llc), 
-        ii !== -1 ? ii : null) : "ddd" === format ? (ii = indexOf.call(this._shortWeekdaysParse, llc), 
-        ii !== -1 ? ii : null) : (ii = indexOf.call(this._minWeekdaysParse, llc), ii !== -1 ? ii : null) : "dddd" === format ? (ii = indexOf.call(this._weekdaysParse, llc), 
-        ii !== -1 ? ii : (ii = indexOf.call(this._shortWeekdaysParse, llc), ii !== -1 ? ii : (ii = indexOf.call(this._minWeekdaysParse, llc), 
-        ii !== -1 ? ii : null))) : "ddd" === format ? (ii = indexOf.call(this._shortWeekdaysParse, llc), 
-        ii !== -1 ? ii : (ii = indexOf.call(this._weekdaysParse, llc), ii !== -1 ? ii : (ii = indexOf.call(this._minWeekdaysParse, llc), 
-        ii !== -1 ? ii : null))) : (ii = indexOf.call(this._minWeekdaysParse, llc), ii !== -1 ? ii : (ii = indexOf.call(this._weekdaysParse, llc), 
-        ii !== -1 ? ii : (ii = indexOf.call(this._shortWeekdaysParse, llc), ii !== -1 ? ii : null)));
+        return strict ? "dddd" === format ? (ii = indexOf$1.call(this._weekdaysParse, llc), 
+        -1 !== ii ? ii : null) : "ddd" === format ? (ii = indexOf$1.call(this._shortWeekdaysParse, llc), 
+        -1 !== ii ? ii : null) : (ii = indexOf$1.call(this._minWeekdaysParse, llc), -1 !== ii ? ii : null) : "dddd" === format ? (ii = indexOf$1.call(this._weekdaysParse, llc), 
+        -1 !== ii ? ii : (ii = indexOf$1.call(this._shortWeekdaysParse, llc), -1 !== ii ? ii : (ii = indexOf$1.call(this._minWeekdaysParse, llc), 
+        -1 !== ii ? ii : null))) : "ddd" === format ? (ii = indexOf$1.call(this._shortWeekdaysParse, llc), 
+        -1 !== ii ? ii : (ii = indexOf$1.call(this._weekdaysParse, llc), -1 !== ii ? ii : (ii = indexOf$1.call(this._minWeekdaysParse, llc), 
+        -1 !== ii ? ii : null))) : (ii = indexOf$1.call(this._minWeekdaysParse, llc), -1 !== ii ? ii : (ii = indexOf$1.call(this._weekdaysParse, llc), 
+        -1 !== ii ? ii : (ii = indexOf$1.call(this._shortWeekdaysParse, llc), -1 !== ii ? ii : null)));
     }
     function localeWeekdaysParse(weekdayName, format, strict) {
         var i, mom, regex;
-        if (this._weekdaysParseExact) return day_of_week__handleStrictParse.call(this, weekdayName, format, strict);
+        if (this._weekdaysParseExact) return handleStrictParse$1.call(this, weekdayName, format, strict);
         for (this._weekdaysParse || (this._weekdaysParse = [], this._minWeekdaysParse = [], 
         this._shortWeekdaysParse = [], this._fullWeekdaysParse = []), i = 0; i < 7; i++) {
-            if (mom = create_utc__createUTC([ 2e3, 1 ]).day(i), strict && !this._fullWeekdaysParse[i] && (this._fullWeekdaysParse[i] = new RegExp("^" + this.weekdays(mom, "").replace(".", ".?") + "$", "i"), 
+            if (mom = createUTC([ 2e3, 1 ]).day(i), strict && !this._fullWeekdaysParse[i] && (this._fullWeekdaysParse[i] = new RegExp("^" + this.weekdays(mom, "").replace(".", ".?") + "$", "i"), 
             this._shortWeekdaysParse[i] = new RegExp("^" + this.weekdaysShort(mom, "").replace(".", ".?") + "$", "i"), 
             this._minWeekdaysParse[i] = new RegExp("^" + this.weekdaysMin(mom, "").replace(".", ".?") + "$", "i")), 
             this._weekdaysParse[i] || (regex = "^" + this.weekdays(mom, "") + "|^" + this.weekdaysShort(mom, "") + "|^" + this.weekdaysMin(mom, ""), 
@@ -23791,7 +23715,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return b.length - a.length;
         }
         var i, mom, minp, shortp, longp, minPieces = [], shortPieces = [], longPieces = [], mixedPieces = [];
-        for (i = 0; i < 7; i++) mom = create_utc__createUTC([ 2e3, 1 ]).day(i), minp = this.weekdaysMin(mom, ""), 
+        for (i = 0; i < 7; i++) mom = createUTC([ 2e3, 1 ]).day(i), minp = this.weekdaysMin(mom, ""), 
         shortp = this.weekdaysShort(mom, ""), longp = this.weekdays(mom, ""), minPieces.push(minp), 
         shortPieces.push(shortp), longPieces.push(longp), mixedPieces.push(minp), mixedPieces.push(shortp), 
         mixedPieces.push(longp);
@@ -23841,22 +23765,30 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     function loadLocale(name) {
         var oldLocale = null;
         if (!locales[name] && "undefined" != typeof module && module && module.exports) try {
-            oldLocale = globalLocale._abbr, require("./locale/" + name), locale_locales__getSetGlobalLocale(oldLocale);
+            oldLocale = globalLocale._abbr, require("./locale/" + name), getSetGlobalLocale(oldLocale);
         } catch (e) {}
         return locales[name];
     }
-    function locale_locales__getSetGlobalLocale(key, values) {
+    function getSetGlobalLocale(key, values) {
         var data;
-        return key && (data = isUndefined(values) ? locale_locales__getLocale(key) : defineLocale(key, values), 
-        data && (globalLocale = data)), globalLocale._abbr;
+        return key && (data = isUndefined(values) ? getLocale(key) : defineLocale(key, values)) && (globalLocale = data), 
+        globalLocale._abbr;
     }
     function defineLocale(name, config) {
         if (null !== config) {
             var parentConfig = baseConfig;
-            return config.abbr = name, null != locales[name] ? (deprecateSimple("defineLocaleOverride", "use moment.updateLocale(localeName, config) to change an existing locale. moment.defineLocale(localeName, config) should only be used for creating a new locale See http://momentjs.com/guides/#/warnings/define-locale/ for more info."), 
-            parentConfig = locales[name]._config) : null != config.parentLocale && (null != locales[config.parentLocale] ? parentConfig = locales[config.parentLocale]._config : deprecateSimple("parentLocaleUndefined", "specified parentLocale is not defined yet. See http://momentjs.com/guides/#/warnings/parent-locale/")), 
-            locales[name] = new Locale(mergeConfigs(parentConfig, config)), locale_locales__getSetGlobalLocale(name), 
-            locales[name];
+            if (config.abbr = name, null != locales[name]) deprecateSimple("defineLocaleOverride", "use moment.updateLocale(localeName, config) to change an existing locale. moment.defineLocale(localeName, config) should only be used for creating a new locale See http://momentjs.com/guides/#/warnings/define-locale/ for more info."), 
+            parentConfig = locales[name]._config; else if (null != config.parentLocale) {
+                if (null == locales[config.parentLocale]) return localeFamilies[config.parentLocale] || (localeFamilies[config.parentLocale] = []), 
+                localeFamilies[config.parentLocale].push({
+                    name: name,
+                    config: config
+                }), null;
+                parentConfig = locales[config.parentLocale]._config;
+            }
+            return locales[name] = new Locale(mergeConfigs(parentConfig, config)), localeFamilies[name] && localeFamilies[name].forEach(function(x) {
+                defineLocale(x.name, x.config);
+            }), getSetGlobalLocale(name), locales[name];
         }
         return delete locales[name], null;
     }
@@ -23865,11 +23797,11 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             var locale, parentConfig = baseConfig;
             null != locales[name] && (parentConfig = locales[name]._config), config = mergeConfigs(parentConfig, config), 
             locale = new Locale(config), locale.parentLocale = locales[name], locales[name] = locale, 
-            locale_locales__getSetGlobalLocale(name);
+            getSetGlobalLocale(name);
         } else null != locales[name] && (null != locales[name].parentLocale ? locales[name] = locales[name].parentLocale : null != locales[name] && delete locales[name]);
         return locales[name];
     }
-    function locale_locales__getLocale(key) {
+    function getLocale(key) {
         var locale;
         if (key && key._locale && key._locale._abbr && (key = key._locale._abbr), !key) return globalLocale;
         if (!isArray(key)) {
@@ -23878,21 +23810,21 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         }
         return chooseLocale(key);
     }
-    function locale_locales__listLocales() {
-        return keys(locales);
+    function listLocales() {
+        return keys$1(locales);
     }
     function checkOverflow(m) {
         var overflow, a = m._a;
-        return a && getParsingFlags(m).overflow === -2 && (overflow = a[MONTH] < 0 || a[MONTH] > 11 ? MONTH : a[DATE] < 1 || a[DATE] > daysInMonth(a[YEAR], a[MONTH]) ? DATE : a[HOUR] < 0 || a[HOUR] > 24 || 24 === a[HOUR] && (0 !== a[MINUTE] || 0 !== a[SECOND] || 0 !== a[MILLISECOND]) ? HOUR : a[MINUTE] < 0 || a[MINUTE] > 59 ? MINUTE : a[SECOND] < 0 || a[SECOND] > 59 ? SECOND : a[MILLISECOND] < 0 || a[MILLISECOND] > 999 ? MILLISECOND : -1, 
+        return a && -2 === getParsingFlags(m).overflow && (overflow = a[MONTH] < 0 || a[MONTH] > 11 ? MONTH : a[DATE] < 1 || a[DATE] > daysInMonth(a[YEAR], a[MONTH]) ? DATE : a[HOUR] < 0 || a[HOUR] > 24 || 24 === a[HOUR] && (0 !== a[MINUTE] || 0 !== a[SECOND] || 0 !== a[MILLISECOND]) ? HOUR : a[MINUTE] < 0 || a[MINUTE] > 59 ? MINUTE : a[SECOND] < 0 || a[SECOND] > 59 ? SECOND : a[MILLISECOND] < 0 || a[MILLISECOND] > 999 ? MILLISECOND : -1, 
         getParsingFlags(m)._overflowDayOfYear && (overflow < YEAR || overflow > DATE) && (overflow = DATE), 
-        getParsingFlags(m)._overflowWeeks && overflow === -1 && (overflow = WEEK), getParsingFlags(m)._overflowWeekday && overflow === -1 && (overflow = WEEKDAY), 
+        getParsingFlags(m)._overflowWeeks && -1 === overflow && (overflow = WEEK), getParsingFlags(m)._overflowWeekday && -1 === overflow && (overflow = WEEKDAY), 
         getParsingFlags(m).overflow = overflow), m;
     }
     function configFromISO(config) {
         var i, l, allowTime, dateFormat, timeFormat, tzFormat, string = config._i, match = extendedIsoRegex.exec(string) || basicIsoRegex.exec(string);
         if (match) {
             for (getParsingFlags(config).iso = !0, i = 0, l = isoDates.length; i < l; i++) if (isoDates[i][1].exec(match[1])) {
-                dateFormat = isoDates[i][0], allowTime = isoDates[i][2] !== !1;
+                dateFormat = isoDates[i][0], allowTime = !1 !== isoDates[i][2];
                 break;
             }
             if (null == dateFormat) return void (config._isValid = !1);
@@ -23911,24 +23843,62 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             config._f = dateFormat + (timeFormat || "") + (tzFormat || ""), configFromStringAndFormat(config);
         } else config._isValid = !1;
     }
+    function configFromRFC2822(config) {
+        var string, match, dayFormat, dateFormat, timeFormat, tzFormat, timezone, timezoneIndex, timezones = {
+            " GMT": " +0000",
+            " EDT": " -0400",
+            " EST": " -0500",
+            " CDT": " -0500",
+            " CST": " -0600",
+            " MDT": " -0600",
+            " MST": " -0700",
+            " PDT": " -0700",
+            " PST": " -0800"
+        };
+        if (string = config._i.replace(/\([^\)]*\)|[\n\t]/g, " ").replace(/(\s\s+)/g, " ").replace(/^\s|\s$/g, ""), 
+        match = basicRfcRegex.exec(string)) {
+            if (dayFormat = match[1] ? "ddd" + (5 === match[1].length ? ", " : " ") : "", dateFormat = "D MMM " + (match[2].length > 10 ? "YYYY " : "YY "), 
+            timeFormat = "HH:mm" + (match[4] ? ":ss" : ""), match[1]) {
+                var momentDate = new Date(match[2]), momentDay = [ "Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat" ][momentDate.getDay()];
+                if (match[1].substr(0, 3) !== momentDay) return getParsingFlags(config).weekdayMismatch = !0, 
+                void (config._isValid = !1);
+            }
+            switch (match[5].length) {
+              case 2:
+                0 === timezoneIndex ? timezone = " +0000" : (timezoneIndex = "YXWVUTSRQPONZABCDEFGHIKLM".indexOf(match[5][1].toUpperCase()) - 12, 
+                timezone = (timezoneIndex < 0 ? " -" : " +") + ("" + timezoneIndex).replace(/^-?/, "0").match(/..$/)[0] + "00");
+                break;
+
+              case 4:
+                timezone = timezones[match[5]];
+                break;
+
+              default:
+                timezone = timezones[" GMT"];
+            }
+            match[5] = timezone, config._i = match.splice(1).join(""), tzFormat = " ZZ", config._f = dayFormat + dateFormat + timeFormat + tzFormat, 
+            configFromStringAndFormat(config), getParsingFlags(config).rfc2822 = !0;
+        } else config._isValid = !1;
+    }
     function configFromString(config) {
         var matched = aspNetJsonRegex.exec(config._i);
-        return null !== matched ? void (config._d = new Date((+matched[1]))) : (configFromISO(config), 
-        void (config._isValid === !1 && (delete config._isValid, utils_hooks__hooks.createFromInputFallback(config))));
+        return null !== matched ? void (config._d = new Date(+matched[1])) : (configFromISO(config), 
+        void (!1 === config._isValid && (delete config._isValid, configFromRFC2822(config), 
+        !1 === config._isValid && (delete config._isValid, hooks.createFromInputFallback(config)))));
     }
     function defaults(a, b, c) {
         return null != a ? a : null != b ? b : c;
     }
     function currentDateArray(config) {
-        var nowValue = new Date(utils_hooks__hooks.now());
+        var nowValue = new Date(hooks.now());
         return config._useUTC ? [ nowValue.getUTCFullYear(), nowValue.getUTCMonth(), nowValue.getUTCDate() ] : [ nowValue.getFullYear(), nowValue.getMonth(), nowValue.getDate() ];
     }
     function configFromArray(config) {
         var i, date, currentDate, yearToUse, input = [];
         if (!config._d) {
             for (currentDate = currentDateArray(config), config._w && null == config._a[DATE] && null == config._a[MONTH] && dayOfYearFromWeekInfo(config), 
-            config._dayOfYear && (yearToUse = defaults(config._a[YEAR], currentDate[YEAR]), 
-            config._dayOfYear > daysInYear(yearToUse) && (getParsingFlags(config)._overflowDayOfYear = !0), 
+            null != config._dayOfYear && (yearToUse = defaults(config._a[YEAR], currentDate[YEAR]), 
+            (config._dayOfYear > daysInYear(yearToUse) || 0 === config._dayOfYear) && (getParsingFlags(config)._overflowDayOfYear = !0), 
             date = createUTCDate(yearToUse, 0, config._dayOfYear), config._a[MONTH] = date.getUTCMonth(), 
             config._a[DATE] = date.getUTCDate()), i = 0; i < 3 && null == config._a[i]; ++i) config._a[i] = input[i] = currentDate[i];
             for (;i < 7; i++) config._a[i] = input[i] = null == config._a[i] ? 2 === i ? 1 : 0 : config._a[i];
@@ -23940,15 +23910,21 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     }
     function dayOfYearFromWeekInfo(config) {
         var w, weekYear, week, weekday, dow, doy, temp, weekdayOverflow;
-        w = config._w, null != w.GG || null != w.W || null != w.E ? (dow = 1, doy = 4, weekYear = defaults(w.GG, config._a[YEAR], weekOfYear(local__createLocal(), 1, 4).year), 
-        week = defaults(w.W, 1), weekday = defaults(w.E, 1), (weekday < 1 || weekday > 7) && (weekdayOverflow = !0)) : (dow = config._locale._week.dow, 
-        doy = config._locale._week.doy, weekYear = defaults(w.gg, config._a[YEAR], weekOfYear(local__createLocal(), dow, doy).year), 
-        week = defaults(w.w, 1), null != w.d ? (weekday = w.d, (weekday < 0 || weekday > 6) && (weekdayOverflow = !0)) : null != w.e ? (weekday = w.e + dow, 
-        (w.e < 0 || w.e > 6) && (weekdayOverflow = !0)) : weekday = dow), week < 1 || week > weeksInYear(weekYear, dow, doy) ? getParsingFlags(config)._overflowWeeks = !0 : null != weekdayOverflow ? getParsingFlags(config)._overflowWeekday = !0 : (temp = dayOfYearFromWeeks(weekYear, week, weekday, dow, doy), 
+        if (w = config._w, null != w.GG || null != w.W || null != w.E) dow = 1, doy = 4, 
+        weekYear = defaults(w.GG, config._a[YEAR], weekOfYear(createLocal(), 1, 4).year), 
+        week = defaults(w.W, 1), ((weekday = defaults(w.E, 1)) < 1 || weekday > 7) && (weekdayOverflow = !0); else {
+            dow = config._locale._week.dow, doy = config._locale._week.doy;
+            var curWeek = weekOfYear(createLocal(), dow, doy);
+            weekYear = defaults(w.gg, config._a[YEAR], curWeek.year), week = defaults(w.w, curWeek.week), 
+            null != w.d ? ((weekday = w.d) < 0 || weekday > 6) && (weekdayOverflow = !0) : null != w.e ? (weekday = w.e + dow, 
+            (w.e < 0 || w.e > 6) && (weekdayOverflow = !0)) : weekday = dow;
+        }
+        week < 1 || week > weeksInYear(weekYear, dow, doy) ? getParsingFlags(config)._overflowWeeks = !0 : null != weekdayOverflow ? getParsingFlags(config)._overflowWeekday = !0 : (temp = dayOfYearFromWeeks(weekYear, week, weekday, dow, doy), 
         config._a[YEAR] = temp.year, config._dayOfYear = temp.dayOfYear);
     }
     function configFromStringAndFormat(config) {
-        if (config._f === utils_hooks__hooks.ISO_8601) return void configFromISO(config);
+        if (config._f === hooks.ISO_8601) return void configFromISO(config);
+        if (config._f === hooks.RFC_2822) return void configFromRFC2822(config);
         config._a = [], getParsingFlags(config).empty = !0;
         var i, parsedInput, tokens, token, skipped, string = "" + config._i, stringLength = string.length, totalParsedInputLength = 0;
         for (tokens = expandFormat(config._f, config._locale).match(formattingTokens) || [], 
@@ -23958,7 +23934,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         formatTokenFunctions[token] ? (parsedInput ? getParsingFlags(config).empty = !1 : getParsingFlags(config).unusedTokens.push(token), 
         addTimeToArrayFromToken(token, parsedInput, config)) : config._strict && !parsedInput && getParsingFlags(config).unusedTokens.push(token);
         getParsingFlags(config).charsLeftOver = stringLength - totalParsedInputLength, string.length > 0 && getParsingFlags(config).unusedInput.push(string), 
-        config._a[HOUR] <= 12 && getParsingFlags(config).bigHour === !0 && config._a[HOUR] > 0 && (getParsingFlags(config).bigHour = void 0), 
+        config._a[HOUR] <= 12 && !0 === getParsingFlags(config).bigHour && config._a[HOUR] > 0 && (getParsingFlags(config).bigHour = void 0), 
         getParsingFlags(config).parsedDateParts = config._a.slice(0), getParsingFlags(config).meridiem = config._meridiem, 
         config._a[HOUR] = meridiemFixWrap(config._locale, config._a[HOUR], config._meridiem), 
         configFromArray(config), checkOverflow(config);
@@ -23973,7 +23949,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         if (0 === config._f.length) return getParsingFlags(config).invalidFormat = !0, void (config._d = new Date(NaN));
         for (i = 0; i < config._f.length; i++) currentScore = 0, tempConfig = copyConfig({}, config), 
         null != config._useUTC && (tempConfig._useUTC = config._useUTC), tempConfig._f = config._f[i], 
-        configFromStringAndFormat(tempConfig), valid__isValid(tempConfig) && (currentScore += getParsingFlags(tempConfig).charsLeftOver, 
+        configFromStringAndFormat(tempConfig), isValid(tempConfig) && (currentScore += getParsingFlags(tempConfig).charsLeftOver, 
         currentScore += 10 * getParsingFlags(tempConfig).unusedTokens.length, getParsingFlags(tempConfig).score = currentScore, 
         (null == scoreToBeat || currentScore < scoreToBeat) && (scoreToBeat = currentScore, 
         bestMoment = tempConfig));
@@ -23993,53 +23969,64 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     }
     function prepareConfig(config) {
         var input = config._i, format = config._f;
-        return config._locale = config._locale || locale_locales__getLocale(config._l), 
-        null === input || void 0 === format && "" === input ? valid__createInvalid({
+        return config._locale = config._locale || getLocale(config._l), null === input || void 0 === format && "" === input ? createInvalid({
             nullInput: !0
         }) : ("string" == typeof input && (config._i = input = config._locale.preparse(input)), 
-        isMoment(input) ? new Moment(checkOverflow(input)) : (isArray(format) ? configFromStringAndArray(config) : isDate(input) ? config._d = input : format ? configFromStringAndFormat(config) : configFromInput(config), 
-        valid__isValid(config) || (config._d = null), config));
+        isMoment(input) ? new Moment(checkOverflow(input)) : (isDate(input) ? config._d = input : isArray(format) ? configFromStringAndArray(config) : format ? configFromStringAndFormat(config) : configFromInput(config), 
+        isValid(config) || (config._d = null), config));
     }
     function configFromInput(config) {
         var input = config._i;
-        void 0 === input ? config._d = new Date(utils_hooks__hooks.now()) : isDate(input) ? config._d = new Date(input.valueOf()) : "string" == typeof input ? configFromString(config) : isArray(input) ? (config._a = map(input.slice(0), function(obj) {
+        isUndefined(input) ? config._d = new Date(hooks.now()) : isDate(input) ? config._d = new Date(input.valueOf()) : "string" == typeof input ? configFromString(config) : isArray(input) ? (config._a = map(input.slice(0), function(obj) {
             return parseInt(obj, 10);
-        }), configFromArray(config)) : "object" == typeof input ? configFromObject(config) : "number" == typeof input ? config._d = new Date(input) : utils_hooks__hooks.createFromInputFallback(config);
+        }), configFromArray(config)) : isObject(input) ? configFromObject(config) : isNumber(input) ? config._d = new Date(input) : hooks.createFromInputFallback(config);
     }
     function createLocalOrUTC(input, format, locale, strict, isUTC) {
         var c = {};
-        return "boolean" == typeof locale && (strict = locale, locale = void 0), (isObject(input) && isObjectEmpty(input) || isArray(input) && 0 === input.length) && (input = void 0), 
+        return !0 !== locale && !1 !== locale || (strict = locale, locale = void 0), (isObject(input) && isObjectEmpty(input) || isArray(input) && 0 === input.length) && (input = void 0), 
         c._isAMomentObject = !0, c._useUTC = c._isUTC = isUTC, c._l = locale, c._i = input, 
         c._f = format, c._strict = strict, createFromConfig(c);
     }
-    function local__createLocal(input, format, locale, strict) {
+    function createLocal(input, format, locale, strict) {
         return createLocalOrUTC(input, format, locale, strict, !1);
     }
     function pickBy(fn, moments) {
         var res, i;
-        if (1 === moments.length && isArray(moments[0]) && (moments = moments[0]), !moments.length) return local__createLocal();
+        if (1 === moments.length && isArray(moments[0]) && (moments = moments[0]), !moments.length) return createLocal();
         for (res = moments[0], i = 1; i < moments.length; ++i) moments[i].isValid() && !moments[i][fn](res) || (res = moments[i]);
         return res;
     }
     function min() {
-        var args = [].slice.call(arguments, 0);
-        return pickBy("isBefore", args);
+        return pickBy("isBefore", [].slice.call(arguments, 0));
     }
     function max() {
-        var args = [].slice.call(arguments, 0);
-        return pickBy("isAfter", args);
+        return pickBy("isAfter", [].slice.call(arguments, 0));
+    }
+    function isDurationValid(m) {
+        for (var key in m) if (-1 === ordering.indexOf(key) || null != m[key] && isNaN(m[key])) return !1;
+        for (var unitHasDecimal = !1, i = 0; i < ordering.length; ++i) if (m[ordering[i]]) {
+            if (unitHasDecimal) return !1;
+            parseFloat(m[ordering[i]]) !== toInt(m[ordering[i]]) && (unitHasDecimal = !0);
+        }
+        return !0;
+    }
+    function isValid$1() {
+        return this._isValid;
+    }
+    function createInvalid$1() {
+        return createDuration(NaN);
     }
     function Duration(duration) {
         var normalizedInput = normalizeObjectUnits(duration), years = normalizedInput.year || 0, quarters = normalizedInput.quarter || 0, months = normalizedInput.month || 0, weeks = normalizedInput.week || 0, days = normalizedInput.day || 0, hours = normalizedInput.hour || 0, minutes = normalizedInput.minute || 0, seconds = normalizedInput.second || 0, milliseconds = normalizedInput.millisecond || 0;
-        this._milliseconds = +milliseconds + 1e3 * seconds + 6e4 * minutes + 1e3 * hours * 60 * 60, 
+        this._isValid = isDurationValid(normalizedInput), this._milliseconds = +milliseconds + 1e3 * seconds + 6e4 * minutes + 1e3 * hours * 60 * 60, 
         this._days = +days + 7 * weeks, this._months = +months + 3 * quarters + 12 * years, 
-        this._data = {}, this._locale = locale_locales__getLocale(), this._bubble();
+        this._data = {}, this._locale = getLocale(), this._bubble();
     }
     function isDuration(obj) {
         return obj instanceof Duration;
     }
     function absRound(number) {
-        return number < 0 ? Math.round(-1 * number) * -1 : Math.round(number);
+        return number < 0 ? -1 * Math.round(-1 * number) : Math.round(number);
     }
     function offset(token, separator) {
         addFormatToken(token, 0, 0, function() {
@@ -24048,24 +24035,31 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         });
     }
     function offsetFromString(matcher, string) {
-        var matches = (string || "").match(matcher) || [], chunk = matches[matches.length - 1] || [], parts = (chunk + "").match(chunkOffset) || [ "-", 0, 0 ], minutes = +(60 * parts[1]) + toInt(parts[2]);
-        return "+" === parts[0] ? minutes : -minutes;
+        var matches = (string || "").match(matcher);
+        if (null === matches) return null;
+        var chunk = matches[matches.length - 1] || [], parts = (chunk + "").match(chunkOffset) || [ "-", 0, 0 ], minutes = 60 * parts[1] + toInt(parts[2]);
+        return 0 === minutes ? 0 : "+" === parts[0] ? minutes : -minutes;
     }
     function cloneWithOffset(input, model) {
         var res, diff;
-        return model._isUTC ? (res = model.clone(), diff = (isMoment(input) || isDate(input) ? input.valueOf() : local__createLocal(input).valueOf()) - res.valueOf(), 
-        res._d.setTime(res._d.valueOf() + diff), utils_hooks__hooks.updateOffset(res, !1), 
-        res) : local__createLocal(input).local();
+        return model._isUTC ? (res = model.clone(), diff = (isMoment(input) || isDate(input) ? input.valueOf() : createLocal(input).valueOf()) - res.valueOf(), 
+        res._d.setTime(res._d.valueOf() + diff), hooks.updateOffset(res, !1), res) : createLocal(input).local();
     }
     function getDateOffset(m) {
         return 15 * -Math.round(m._d.getTimezoneOffset() / 15);
     }
-    function getSetOffset(input, keepLocalTime) {
+    function getSetOffset(input, keepLocalTime, keepMinutes) {
         var localAdjust, offset = this._offset || 0;
-        return this.isValid() ? null != input ? ("string" == typeof input ? input = offsetFromString(matchShortOffset, input) : Math.abs(input) < 16 && (input *= 60), 
-        !this._isUTC && keepLocalTime && (localAdjust = getDateOffset(this)), this._offset = input, 
-        this._isUTC = !0, null != localAdjust && this.add(localAdjust, "m"), offset !== input && (!keepLocalTime || this._changeInProgress ? add_subtract__addSubtract(this, create__createDuration(input - offset, "m"), 1, !1) : this._changeInProgress || (this._changeInProgress = !0, 
-        utils_hooks__hooks.updateOffset(this, !0), this._changeInProgress = null)), this) : this._isUTC ? offset : getDateOffset(this) : null != input ? this : NaN;
+        if (!this.isValid()) return null != input ? this : NaN;
+        if (null != input) {
+            if ("string" == typeof input) {
+                if (null === (input = offsetFromString(matchShortOffset, input))) return this;
+            } else Math.abs(input) < 16 && !keepMinutes && (input *= 60);
+            return !this._isUTC && keepLocalTime && (localAdjust = getDateOffset(this)), this._offset = input, 
+            this._isUTC = !0, null != localAdjust && this.add(localAdjust, "m"), offset !== input && (!keepLocalTime || this._changeInProgress ? addSubtract(this, createDuration(input - offset, "m"), 1, !1) : this._changeInProgress || (this._changeInProgress = !0, 
+            hooks.updateOffset(this, !0), this._changeInProgress = null)), this;
+        }
+        return this._isUTC ? offset : getDateOffset(this);
     }
     function getSetZone(input, keepLocalTime) {
         return null != input ? ("string" != typeof input && (input = -input), this.utcOffset(input, keepLocalTime), 
@@ -24079,15 +24073,15 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         this;
     }
     function setOffsetToParsedOffset() {
-        if (this._tzm) this.utcOffset(this._tzm); else if ("string" == typeof this._i) {
+        if (null != this._tzm) this.utcOffset(this._tzm, !1, !0); else if ("string" == typeof this._i) {
             var tZone = offsetFromString(matchOffset, this._i);
-            0 === tZone ? this.utcOffset(0, !0) : this.utcOffset(offsetFromString(matchOffset, this._i));
+            null != tZone ? this.utcOffset(tZone) : this.utcOffset(0, !0);
         }
         return this;
     }
     function hasAlignedHourOffset(input) {
-        return !!this.isValid() && (input = input ? local__createLocal(input).utcOffset() : 0, 
-        (this.utcOffset() - input) % 60 === 0);
+        return !!this.isValid() && (input = input ? createLocal(input).utcOffset() : 0, 
+        (this.utcOffset() - input) % 60 == 0);
     }
     function isDaylightSavingTime() {
         return this.utcOffset() > this.clone().month(0).utcOffset() || this.utcOffset() > this.clone().month(5).utcOffset();
@@ -24096,7 +24090,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         if (!isUndefined(this._isDSTShifted)) return this._isDSTShifted;
         var c = {};
         if (copyConfig(c, this), c = prepareConfig(c), c._a) {
-            var other = c._isUTC ? create_utc__createUTC(c._a) : local__createLocal(c._a);
+            var other = c._isUTC ? createUTC(c._a) : createLocal(c._a);
             this._isDSTShifted = this.isValid() && compareArrays(c._a, other.toArray()) > 0;
         } else this._isDSTShifted = !1;
         return this._isDSTShifted;
@@ -24110,13 +24104,13 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     function isUtc() {
         return !!this.isValid() && this._isUTC && 0 === this._offset;
     }
-    function create__createDuration(input, key) {
+    function createDuration(input, key) {
         var sign, ret, diffRes, duration = input, match = null;
         return isDuration(input) ? duration = {
             ms: input._milliseconds,
             d: input._days,
             M: input._months
-        } : "number" == typeof input ? (duration = {}, key ? duration[key] = input : duration.milliseconds = input) : (match = aspNetRegex.exec(input)) ? (sign = "-" === match[1] ? -1 : 1, 
+        } : isNumber(input) ? (duration = {}, key ? duration[key] = input : duration.milliseconds = input) : (match = aspNetRegex.exec(input)) ? (sign = "-" === match[1] ? -1 : 1, 
         duration = {
             y: 0,
             d: toInt(match[DATE]) * sign,
@@ -24132,7 +24126,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             h: parseIso(match[6], sign),
             m: parseIso(match[7], sign),
             s: parseIso(match[8], sign)
-        }) : null == duration ? duration = {} : "object" == typeof duration && ("from" in duration || "to" in duration) && (diffRes = momentsDifference(local__createLocal(duration.from), local__createLocal(duration.to)), 
+        }) : null == duration ? duration = {} : "object" == typeof duration && ("from" in duration || "to" in duration) && (diffRes = momentsDifference(createLocal(duration.from), createLocal(duration.to)), 
         duration = {}, duration.ms = diffRes.milliseconds, duration.M = diffRes.months), 
         ret = new Duration(duration), isDuration(input) && hasOwnProp(input, "_locale") && (ret._locale = input._locale), 
         ret;
@@ -24164,34 +24158,33 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             var dur, tmp;
             return null === period || isNaN(+period) || (deprecateSimple(name, "moment()." + name + "(period, number) is deprecated. Please use moment()." + name + "(number, period). See http://momentjs.com/guides/#/warnings/add-inverted-param/ for more info."), 
             tmp = val, val = period, period = tmp), val = "string" == typeof val ? +val : val, 
-            dur = create__createDuration(val, period), add_subtract__addSubtract(this, dur, direction), 
-            this;
+            dur = createDuration(val, period), addSubtract(this, dur, direction), this;
         };
     }
-    function add_subtract__addSubtract(mom, duration, isAdding, updateOffset) {
+    function addSubtract(mom, duration, isAdding, updateOffset) {
         var milliseconds = duration._milliseconds, days = absRound(duration._days), months = absRound(duration._months);
         mom.isValid() && (updateOffset = null == updateOffset || updateOffset, milliseconds && mom._d.setTime(mom._d.valueOf() + milliseconds * isAdding), 
-        days && get_set__set(mom, "Date", get_set__get(mom, "Date") + days * isAdding), 
-        months && setMonth(mom, get_set__get(mom, "Month") + months * isAdding), updateOffset && utils_hooks__hooks.updateOffset(mom, days || months));
+        days && set$1(mom, "Date", get(mom, "Date") + days * isAdding), months && setMonth(mom, get(mom, "Month") + months * isAdding), 
+        updateOffset && hooks.updateOffset(mom, days || months));
     }
     function getCalendarFormat(myMoment, now) {
         var diff = myMoment.diff(now, "days", !0);
         return diff < -6 ? "sameElse" : diff < -1 ? "lastWeek" : diff < 0 ? "lastDay" : diff < 1 ? "sameDay" : diff < 2 ? "nextDay" : diff < 7 ? "nextWeek" : "sameElse";
     }
-    function moment_calendar__calendar(time, formats) {
-        var now = time || local__createLocal(), sod = cloneWithOffset(now, this).startOf("day"), format = utils_hooks__hooks.calendarFormat(this, sod) || "sameElse", output = formats && (isFunction(formats[format]) ? formats[format].call(this, now) : formats[format]);
-        return this.format(output || this.localeData().calendar(format, this, local__createLocal(now)));
+    function calendar$1(time, formats) {
+        var now = time || createLocal(), sod = cloneWithOffset(now, this).startOf("day"), format = hooks.calendarFormat(this, sod) || "sameElse", output = formats && (isFunction(formats[format]) ? formats[format].call(this, now) : formats[format]);
+        return this.format(output || this.localeData().calendar(format, this, createLocal(now)));
     }
     function clone() {
         return new Moment(this);
     }
     function isAfter(input, units) {
-        var localInput = isMoment(input) ? input : local__createLocal(input);
+        var localInput = isMoment(input) ? input : createLocal(input);
         return !(!this.isValid() || !localInput.isValid()) && (units = normalizeUnits(isUndefined(units) ? "millisecond" : units), 
         "millisecond" === units ? this.valueOf() > localInput.valueOf() : localInput.valueOf() < this.clone().startOf(units).valueOf());
     }
     function isBefore(input, units) {
-        var localInput = isMoment(input) ? input : local__createLocal(input);
+        var localInput = isMoment(input) ? input : createLocal(input);
         return !(!this.isValid() || !localInput.isValid()) && (units = normalizeUnits(isUndefined(units) ? "millisecond" : units), 
         "millisecond" === units ? this.valueOf() < localInput.valueOf() : this.clone().endOf(units).valueOf() < localInput.valueOf());
     }
@@ -24199,7 +24192,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         return inclusivity = inclusivity || "()", ("(" === inclusivity[0] ? this.isAfter(from, units) : !this.isBefore(from, units)) && (")" === inclusivity[1] ? this.isBefore(to, units) : !this.isAfter(to, units));
     }
     function isSame(input, units) {
-        var inputMs, localInput = isMoment(input) ? input : local__createLocal(input);
+        var inputMs, localInput = isMoment(input) ? input : createLocal(input);
         return !(!this.isValid() || !localInput.isValid()) && (units = normalizeUnits(units || "millisecond"), 
         "millisecond" === units ? this.valueOf() === localInput.valueOf() : (inputMs = localInput.valueOf(), 
         this.clone().startOf(units).valueOf() <= inputMs && inputMs <= this.clone().endOf(units).valueOf()));
@@ -24227,37 +24220,46 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     function toString() {
         return this.clone().locale("en").format("ddd MMM DD YYYY HH:mm:ss [GMT]ZZ");
     }
-    function moment_format__toISOString() {
+    function toISOString() {
+        if (!this.isValid()) return null;
         var m = this.clone().utc();
-        return 0 < m.year() && m.year() <= 9999 ? isFunction(Date.prototype.toISOString) ? this.toDate().toISOString() : formatMoment(m, "YYYY-MM-DD[T]HH:mm:ss.SSS[Z]") : formatMoment(m, "YYYYYY-MM-DD[T]HH:mm:ss.SSS[Z]");
+        return m.year() < 0 || m.year() > 9999 ? formatMoment(m, "YYYYYY-MM-DD[T]HH:mm:ss.SSS[Z]") : isFunction(Date.prototype.toISOString) ? this.toDate().toISOString() : formatMoment(m, "YYYY-MM-DD[T]HH:mm:ss.SSS[Z]");
     }
-    function moment_format__format(inputString) {
-        inputString || (inputString = this.isUtc() ? utils_hooks__hooks.defaultFormatUtc : utils_hooks__hooks.defaultFormat);
+    function inspect() {
+        if (!this.isValid()) return "moment.invalid(/* " + this._i + " */)";
+        var func = "moment", zone = "";
+        this.isLocal() || (func = 0 === this.utcOffset() ? "moment.utc" : "moment.parseZone", 
+        zone = "Z");
+        var prefix = "[" + func + '("]', year = 0 <= this.year() && this.year() <= 9999 ? "YYYY" : "YYYYYY", suffix = zone + '[")]';
+        return this.format(prefix + year + "-MM-DD[T]HH:mm:ss.SSS" + suffix);
+    }
+    function format(inputString) {
+        inputString || (inputString = this.isUtc() ? hooks.defaultFormatUtc : hooks.defaultFormat);
         var output = formatMoment(this, inputString);
         return this.localeData().postformat(output);
     }
     function from(time, withoutSuffix) {
-        return this.isValid() && (isMoment(time) && time.isValid() || local__createLocal(time).isValid()) ? create__createDuration({
+        return this.isValid() && (isMoment(time) && time.isValid() || createLocal(time).isValid()) ? createDuration({
             to: this,
             from: time
         }).locale(this.locale()).humanize(!withoutSuffix) : this.localeData().invalidDate();
     }
     function fromNow(withoutSuffix) {
-        return this.from(local__createLocal(), withoutSuffix);
+        return this.from(createLocal(), withoutSuffix);
     }
     function to(time, withoutSuffix) {
-        return this.isValid() && (isMoment(time) && time.isValid() || local__createLocal(time).isValid()) ? create__createDuration({
+        return this.isValid() && (isMoment(time) && time.isValid() || createLocal(time).isValid()) ? createDuration({
             from: this,
             to: time
         }).locale(this.locale()).humanize(!withoutSuffix) : this.localeData().invalidDate();
     }
     function toNow(withoutSuffix) {
-        return this.to(local__createLocal(), withoutSuffix);
+        return this.to(createLocal(), withoutSuffix);
     }
     function locale(key) {
         var newLocaleData;
-        return void 0 === key ? this._locale._abbr : (newLocaleData = locale_locales__getLocale(key), 
-        null != newLocaleData && (this._locale = newLocaleData), this);
+        return void 0 === key ? this._locale._abbr : (newLocaleData = getLocale(key), null != newLocaleData && (this._locale = newLocaleData), 
+        this);
     }
     function localeData() {
         return this._locale;
@@ -24293,7 +24295,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         return units = normalizeUnits(units), void 0 === units || "millisecond" === units ? this : ("date" === units && (units = "day"), 
         this.startOf(units).add(1, "isoWeek" === units ? "week" : units).subtract(1, "ms"));
     }
-    function to_type__valueOf() {
+    function valueOf() {
         return this._d.valueOf() - 6e4 * (this._offset || 0);
     }
     function unix() {
@@ -24321,8 +24323,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     function toJSON() {
         return this.isValid() ? this.toISOString() : null;
     }
-    function moment_valid__isValid() {
-        return valid__isValid(this);
+    function isValid$2() {
+        return isValid(this);
     }
     function parsingFlags() {
         return extend({}, getParsingFlags(this));
@@ -24381,69 +24383,68 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     function getZoneName() {
         return this._isUTC ? "Coordinated Universal Time" : "";
     }
-    function moment_moment__createUnix(input) {
-        return local__createLocal(1e3 * input);
+    function createUnix(input) {
+        return createLocal(1e3 * input);
     }
-    function moment_moment__createInZone() {
-        return local__createLocal.apply(null, arguments).parseZone();
+    function createInZone() {
+        return createLocal.apply(null, arguments).parseZone();
     }
     function preParsePostFormat(string) {
         return string;
     }
-    function lists__get(format, index, field, setter) {
-        var locale = locale_locales__getLocale(), utc = create_utc__createUTC().set(setter, index);
+    function get$1(format, index, field, setter) {
+        var locale = getLocale(), utc = createUTC().set(setter, index);
         return locale[field](utc, format);
     }
     function listMonthsImpl(format, index, field) {
-        if ("number" == typeof format && (index = format, format = void 0), format = format || "", 
-        null != index) return lists__get(format, index, field, "month");
+        if (isNumber(format) && (index = format, format = void 0), format = format || "", 
+        null != index) return get$1(format, index, field, "month");
         var i, out = [];
-        for (i = 0; i < 12; i++) out[i] = lists__get(format, i, field, "month");
+        for (i = 0; i < 12; i++) out[i] = get$1(format, i, field, "month");
         return out;
     }
     function listWeekdaysImpl(localeSorted, format, index, field) {
-        "boolean" == typeof localeSorted ? ("number" == typeof format && (index = format, 
-        format = void 0), format = format || "") : (format = localeSorted, index = format, 
-        localeSorted = !1, "number" == typeof format && (index = format, format = void 0), 
-        format = format || "");
-        var locale = locale_locales__getLocale(), shift = localeSorted ? locale._week.dow : 0;
-        if (null != index) return lists__get(format, (index + shift) % 7, field, "day");
+        "boolean" == typeof localeSorted ? (isNumber(format) && (index = format, format = void 0), 
+        format = format || "") : (format = localeSorted, index = format, localeSorted = !1, 
+        isNumber(format) && (index = format, format = void 0), format = format || "");
+        var locale = getLocale(), shift = localeSorted ? locale._week.dow : 0;
+        if (null != index) return get$1(format, (index + shift) % 7, field, "day");
         var i, out = [];
-        for (i = 0; i < 7; i++) out[i] = lists__get(format, (i + shift) % 7, field, "day");
+        for (i = 0; i < 7; i++) out[i] = get$1(format, (i + shift) % 7, field, "day");
         return out;
     }
-    function lists__listMonths(format, index) {
+    function listMonths(format, index) {
         return listMonthsImpl(format, index, "months");
     }
-    function lists__listMonthsShort(format, index) {
+    function listMonthsShort(format, index) {
         return listMonthsImpl(format, index, "monthsShort");
     }
-    function lists__listWeekdays(localeSorted, format, index) {
+    function listWeekdays(localeSorted, format, index) {
         return listWeekdaysImpl(localeSorted, format, index, "weekdays");
     }
-    function lists__listWeekdaysShort(localeSorted, format, index) {
+    function listWeekdaysShort(localeSorted, format, index) {
         return listWeekdaysImpl(localeSorted, format, index, "weekdaysShort");
     }
-    function lists__listWeekdaysMin(localeSorted, format, index) {
+    function listWeekdaysMin(localeSorted, format, index) {
         return listWeekdaysImpl(localeSorted, format, index, "weekdaysMin");
     }
-    function duration_abs__abs() {
+    function abs() {
         var data = this._data;
         return this._milliseconds = mathAbs(this._milliseconds), this._days = mathAbs(this._days), 
         this._months = mathAbs(this._months), data.milliseconds = mathAbs(data.milliseconds), 
         data.seconds = mathAbs(data.seconds), data.minutes = mathAbs(data.minutes), data.hours = mathAbs(data.hours), 
         data.months = mathAbs(data.months), data.years = mathAbs(data.years), this;
     }
-    function duration_add_subtract__addSubtract(duration, input, value, direction) {
-        var other = create__createDuration(input, value);
+    function addSubtract$1(duration, input, value, direction) {
+        var other = createDuration(input, value);
         return duration._milliseconds += direction * other._milliseconds, duration._days += direction * other._days, 
         duration._months += direction * other._months, duration._bubble();
     }
-    function duration_add_subtract__add(input, value) {
-        return duration_add_subtract__addSubtract(this, input, value, 1);
+    function add$1(input, value) {
+        return addSubtract$1(this, input, value, 1);
     }
-    function duration_add_subtract__subtract(input, value) {
-        return duration_add_subtract__addSubtract(this, input, value, -1);
+    function subtract$1(input, value) {
+        return addSubtract$1(this, input, value, -1);
     }
     function absCeil(number) {
         return number < 0 ? Math.floor(number) : Math.ceil(number);
@@ -24465,8 +24466,9 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         return 146097 * months / 4800;
     }
     function as(units) {
+        if (!this.isValid()) return NaN;
         var days, months, milliseconds = this._milliseconds;
-        if (units = normalizeUnits(units), "month" === units || "year" === units) return days = this._days + milliseconds / 864e5, 
+        if ("month" === (units = normalizeUnits(units)) || "year" === units) return days = this._days + milliseconds / 864e5, 
         months = this._months + daysToMonths(days), "month" === units ? months : months / 12;
         switch (days = this._days + Math.round(monthsToDays(this._months)), units) {
           case "week":
@@ -24491,20 +24493,20 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             throw new Error("Unknown unit " + units);
         }
     }
-    function duration_as__valueOf() {
-        return this._milliseconds + 864e5 * this._days + this._months % 12 * 2592e6 + 31536e6 * toInt(this._months / 12);
+    function valueOf$1() {
+        return this.isValid() ? this._milliseconds + 864e5 * this._days + this._months % 12 * 2592e6 + 31536e6 * toInt(this._months / 12) : NaN;
     }
     function makeAs(alias) {
         return function() {
             return this.as(alias);
         };
     }
-    function duration_get__get(units) {
-        return units = normalizeUnits(units), this[units + "s"]();
+    function get$2(units) {
+        return units = normalizeUnits(units), this.isValid() ? this[units + "s"]() : NaN;
     }
     function makeGetter(name) {
         return function() {
-            return this._data[name];
+            return this.isValid() ? this._data[name] : NaN;
         };
     }
     function weeks() {
@@ -24513,34 +24515,36 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     function substituteTimeAgo(string, number, withoutSuffix, isFuture, locale) {
         return locale.relativeTime(number || 1, !!withoutSuffix, string, isFuture);
     }
-    function duration_humanize__relativeTime(posNegDuration, withoutSuffix, locale) {
-        var duration = create__createDuration(posNegDuration).abs(), seconds = round(duration.as("s")), minutes = round(duration.as("m")), hours = round(duration.as("h")), days = round(duration.as("d")), months = round(duration.as("M")), years = round(duration.as("y")), a = seconds < thresholds.s && [ "s", seconds ] || minutes <= 1 && [ "m" ] || minutes < thresholds.m && [ "mm", minutes ] || hours <= 1 && [ "h" ] || hours < thresholds.h && [ "hh", hours ] || days <= 1 && [ "d" ] || days < thresholds.d && [ "dd", days ] || months <= 1 && [ "M" ] || months < thresholds.M && [ "MM", months ] || years <= 1 && [ "y" ] || [ "yy", years ];
+    function relativeTime$1(posNegDuration, withoutSuffix, locale) {
+        var duration = createDuration(posNegDuration).abs(), seconds = round(duration.as("s")), minutes = round(duration.as("m")), hours = round(duration.as("h")), days = round(duration.as("d")), months = round(duration.as("M")), years = round(duration.as("y")), a = seconds <= thresholds.ss && [ "s", seconds ] || seconds < thresholds.s && [ "ss", seconds ] || minutes <= 1 && [ "m" ] || minutes < thresholds.m && [ "mm", minutes ] || hours <= 1 && [ "h" ] || hours < thresholds.h && [ "hh", hours ] || days <= 1 && [ "d" ] || days < thresholds.d && [ "dd", days ] || months <= 1 && [ "M" ] || months < thresholds.M && [ "MM", months ] || years <= 1 && [ "y" ] || [ "yy", years ];
         return a[2] = withoutSuffix, a[3] = +posNegDuration > 0, a[4] = locale, substituteTimeAgo.apply(null, a);
     }
-    function duration_humanize__getSetRelativeTimeRounding(roundingFunction) {
+    function getSetRelativeTimeRounding(roundingFunction) {
         return void 0 === roundingFunction ? round : "function" == typeof roundingFunction && (round = roundingFunction, 
         !0);
     }
-    function duration_humanize__getSetRelativeTimeThreshold(threshold, limit) {
+    function getSetRelativeTimeThreshold(threshold, limit) {
         return void 0 !== thresholds[threshold] && (void 0 === limit ? thresholds[threshold] : (thresholds[threshold] = limit, 
-        !0));
+        "s" === threshold && (thresholds.ss = limit - 1), !0));
     }
     function humanize(withSuffix) {
-        var locale = this.localeData(), output = duration_humanize__relativeTime(this, !withSuffix, locale);
+        if (!this.isValid()) return this.localeData().invalidDate();
+        var locale = this.localeData(), output = relativeTime$1(this, !withSuffix, locale);
         return withSuffix && (output = locale.pastFuture(+this, output)), locale.postformat(output);
     }
-    function iso_string__toISOString() {
-        var minutes, hours, years, seconds = iso_string__abs(this._milliseconds) / 1e3, days = iso_string__abs(this._days), months = iso_string__abs(this._months);
+    function toISOString$1() {
+        if (!this.isValid()) return this.localeData().invalidDate();
+        var minutes, hours, years, seconds = abs$1(this._milliseconds) / 1e3, days = abs$1(this._days), months = abs$1(this._months);
         minutes = absFloor(seconds / 60), hours = absFloor(minutes / 60), seconds %= 60, 
         minutes %= 60, years = absFloor(months / 12), months %= 12;
         var Y = years, M = months, D = days, h = hours, m = minutes, s = seconds, total = this.asSeconds();
         return total ? (total < 0 ? "-" : "") + "P" + (Y ? Y + "Y" : "") + (M ? M + "M" : "") + (D ? D + "D" : "") + (h || m || s ? "T" : "") + (h ? h + "H" : "") + (m ? m + "M" : "") + (s ? s + "S" : "") : "P0D";
     }
-    function be__plural(word, num) {
+    function plural(word, num) {
         var forms = word.split("_");
-        return num % 10 === 1 && num % 100 !== 11 ? forms[0] : num % 10 >= 2 && num % 10 <= 4 && (num % 100 < 10 || num % 100 >= 20) ? forms[1] : forms[2];
+        return num % 10 == 1 && num % 100 != 11 ? forms[0] : num % 10 >= 2 && num % 10 <= 4 && (num % 100 < 10 || num % 100 >= 20) ? forms[1] : forms[2];
     }
-    function be__relativeTimeWithPlural(number, withoutSuffix, key) {
+    function relativeTimeWithPlural(number, withoutSuffix, key) {
         var format = {
             mm: withoutSuffix ? "хвіліна_хвіліны_хвілін" : "хвіліну_хвіліны_хвілін",
             hh: withoutSuffix ? "гадзіна_гадзіны_гадзін" : "гадзіну_гадзіны_гадзін",
@@ -24548,15 +24552,14 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             MM: "месяц_месяцы_месяцаў",
             yy: "год_гады_гадоў"
         };
-        return "m" === key ? withoutSuffix ? "хвіліна" : "хвіліну" : "h" === key ? withoutSuffix ? "гадзіна" : "гадзіну" : number + " " + be__plural(format[key], +number);
+        return "m" === key ? withoutSuffix ? "хвіліна" : "хвіліну" : "h" === key ? withoutSuffix ? "гадзіна" : "гадзіну" : number + " " + plural(format[key], +number);
     }
     function relativeTimeWithMutation(number, withoutSuffix, key) {
-        var format = {
+        return number + " " + mutation({
             mm: "munutenn",
             MM: "miz",
             dd: "devezh"
-        };
-        return number + " " + mutation(format[key], number);
+        }[key], number);
     }
     function specialMutationForYears(number) {
         switch (lastNumber(number)) {
@@ -24585,7 +24588,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         };
         return void 0 === mutationTable[text.charAt(0)] ? text : mutationTable[text.charAt(0)] + text.substring(1);
     }
-    function bs__translate(number, withoutSuffix, key) {
+    function translate(number, withoutSuffix, key) {
         var result = number + " ";
         switch (key) {
           case "m":
@@ -24610,10 +24613,10 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return result += 1 === number ? "godina" : 2 === number || 3 === number || 4 === number ? "godine" : "godina";
         }
     }
-    function cs__plural(n) {
-        return n > 1 && n < 5 && 1 !== ~~(n / 10);
+    function plural$1(n) {
+        return n > 1 && n < 5 && 1 != ~~(n / 10);
     }
-    function cs__translate(number, withoutSuffix, key, isFuture) {
+    function translate$1(number, withoutSuffix, key, isFuture) {
         var result = number + " ";
         switch (key) {
           case "s":
@@ -24623,34 +24626,34 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return withoutSuffix ? "minuta" : isFuture ? "minutu" : "minutou";
 
           case "mm":
-            return withoutSuffix || isFuture ? result + (cs__plural(number) ? "minuty" : "minut") : result + "minutami";
+            return withoutSuffix || isFuture ? result + (plural$1(number) ? "minuty" : "minut") : result + "minutami";
 
           case "h":
             return withoutSuffix ? "hodina" : isFuture ? "hodinu" : "hodinou";
 
           case "hh":
-            return withoutSuffix || isFuture ? result + (cs__plural(number) ? "hodiny" : "hodin") : result + "hodinami";
+            return withoutSuffix || isFuture ? result + (plural$1(number) ? "hodiny" : "hodin") : result + "hodinami";
 
           case "d":
             return withoutSuffix || isFuture ? "den" : "dnem";
 
           case "dd":
-            return withoutSuffix || isFuture ? result + (cs__plural(number) ? "dny" : "dní") : result + "dny";
+            return withoutSuffix || isFuture ? result + (plural$1(number) ? "dny" : "dní") : result + "dny";
 
           case "M":
             return withoutSuffix || isFuture ? "měsíc" : "měsícem";
 
           case "MM":
-            return withoutSuffix || isFuture ? result + (cs__plural(number) ? "měsíce" : "měsíců") : result + "měsíci";
+            return withoutSuffix || isFuture ? result + (plural$1(number) ? "měsíce" : "měsíců") : result + "měsíci";
 
           case "y":
             return withoutSuffix || isFuture ? "rok" : "rokem";
 
           case "yy":
-            return withoutSuffix || isFuture ? result + (cs__plural(number) ? "roky" : "let") : result + "lety";
+            return withoutSuffix || isFuture ? result + (plural$1(number) ? "roky" : "let") : result + "lety";
         }
     }
-    function de_at__processRelativeTime(number, withoutSuffix, key, isFuture) {
+    function processRelativeTime(number, withoutSuffix, key, isFuture) {
         var format = {
             m: [ "eine Minute", "einer Minute" ],
             h: [ "eine Stunde", "einer Stunde" ],
@@ -24663,7 +24666,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         };
         return withoutSuffix ? format[key][0] : format[key][1];
     }
-    function de__processRelativeTime(number, withoutSuffix, key, isFuture) {
+    function processRelativeTime$1(number, withoutSuffix, key, isFuture) {
         var format = {
             m: [ "eine Minute", "einer Minute" ],
             h: [ "eine Stunde", "einer Stunde" ],
@@ -24676,7 +24679,20 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         };
         return withoutSuffix ? format[key][0] : format[key][1];
     }
-    function et__processRelativeTime(number, withoutSuffix, key, isFuture) {
+    function processRelativeTime$2(number, withoutSuffix, key, isFuture) {
+        var format = {
+            m: [ "eine Minute", "einer Minute" ],
+            h: [ "eine Stunde", "einer Stunde" ],
+            d: [ "ein Tag", "einem Tag" ],
+            dd: [ number + " Tage", number + " Tagen" ],
+            M: [ "ein Monat", "einem Monat" ],
+            MM: [ number + " Monate", number + " Monaten" ],
+            y: [ "ein Jahr", "einem Jahr" ],
+            yy: [ number + " Jahre", number + " Jahren" ]
+        };
+        return withoutSuffix ? format[key][0] : format[key][1];
+    }
+    function processRelativeTime$3(number, withoutSuffix, key, isFuture) {
         var format = {
             s: [ "mõne sekundi", "mõni sekund", "paar sekundit" ],
             m: [ "ühe minuti", "üks minut" ],
@@ -24691,7 +24707,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         };
         return withoutSuffix ? format[key][2] ? format[key][2] : format[key][1] : isFuture ? format[key][0] : format[key][1];
     }
-    function fi__translate(number, withoutSuffix, key, isFuture) {
+    function translate$2(number, withoutSuffix, key, isFuture) {
         var result = "";
         switch (key) {
           case "s":
@@ -24736,7 +24752,23 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     function verbalNumber(number, isFuture) {
         return number < 10 ? isFuture ? numbersFuture[number] : numbersPast[number] : number;
     }
-    function hr__translate(number, withoutSuffix, key) {
+    function processRelativeTime$4(number, withoutSuffix, key, isFuture) {
+        var format = {
+            s: [ "thodde secondanim", "thodde second" ],
+            m: [ "eka mintan", "ek minute" ],
+            mm: [ number + " mintanim", number + " mintam" ],
+            h: [ "eka horan", "ek hor" ],
+            hh: [ number + " horanim", number + " hor" ],
+            d: [ "eka disan", "ek dis" ],
+            dd: [ number + " disanim", number + " dis" ],
+            M: [ "eka mhoinean", "ek mhoino" ],
+            MM: [ number + " mhoineanim", number + " mhoine" ],
+            y: [ "eka vorsan", "ek voros" ],
+            yy: [ number + " vorsanim", number + " vorsam" ]
+        };
+        return withoutSuffix ? format[key][0] : format[key][1];
+    }
+    function translate$3(number, withoutSuffix, key) {
         var result = number + " ";
         switch (key) {
           case "m":
@@ -24761,7 +24793,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return result += 1 === number ? "godina" : 2 === number || 3 === number || 4 === number ? "godine" : "godina";
         }
     }
-    function hu__translate(number, withoutSuffix, key, isFuture) {
+    function translate$4(number, withoutSuffix, key, isFuture) {
         var num = number;
         switch (key) {
           case "s":
@@ -24802,10 +24834,10 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     function week(isFuture) {
         return (isFuture ? "" : "[múlt] ") + "[" + weekEndings[this.day()] + "] LT[-kor]";
     }
-    function is__plural(n) {
-        return n % 100 === 11 || n % 10 !== 1;
+    function plural$2(n) {
+        return n % 100 == 11 || n % 10 != 1;
     }
-    function is__translate(number, withoutSuffix, key, isFuture) {
+    function translate$5(number, withoutSuffix, key, isFuture) {
         var result = number + " ";
         switch (key) {
           case "s":
@@ -24815,31 +24847,31 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return withoutSuffix ? "mínúta" : "mínútu";
 
           case "mm":
-            return is__plural(number) ? result + (withoutSuffix || isFuture ? "mínútur" : "mínútum") : withoutSuffix ? result + "mínúta" : result + "mínútu";
+            return plural$2(number) ? result + (withoutSuffix || isFuture ? "mínútur" : "mínútum") : withoutSuffix ? result + "mínúta" : result + "mínútu";
 
           case "hh":
-            return is__plural(number) ? result + (withoutSuffix || isFuture ? "klukkustundir" : "klukkustundum") : result + "klukkustund";
+            return plural$2(number) ? result + (withoutSuffix || isFuture ? "klukkustundir" : "klukkustundum") : result + "klukkustund";
 
           case "d":
             return withoutSuffix ? "dagur" : isFuture ? "dag" : "degi";
 
           case "dd":
-            return is__plural(number) ? withoutSuffix ? result + "dagar" : result + (isFuture ? "daga" : "dögum") : withoutSuffix ? result + "dagur" : result + (isFuture ? "dag" : "degi");
+            return plural$2(number) ? withoutSuffix ? result + "dagar" : result + (isFuture ? "daga" : "dögum") : withoutSuffix ? result + "dagur" : result + (isFuture ? "dag" : "degi");
 
           case "M":
             return withoutSuffix ? "mánuður" : isFuture ? "mánuð" : "mánuði";
 
           case "MM":
-            return is__plural(number) ? withoutSuffix ? result + "mánuðir" : result + (isFuture ? "mánuði" : "mánuðum") : withoutSuffix ? result + "mánuður" : result + (isFuture ? "mánuð" : "mánuði");
+            return plural$2(number) ? withoutSuffix ? result + "mánuðir" : result + (isFuture ? "mánuði" : "mánuðum") : withoutSuffix ? result + "mánuður" : result + (isFuture ? "mánuð" : "mánuði");
 
           case "y":
             return withoutSuffix || isFuture ? "ár" : "ári";
 
           case "yy":
-            return is__plural(number) ? result + (withoutSuffix || isFuture ? "ár" : "árum") : result + (withoutSuffix || isFuture ? "ár" : "ári");
+            return plural$2(number) ? result + (withoutSuffix || isFuture ? "ár" : "árum") : result + (withoutSuffix || isFuture ? "ár" : "ári");
         }
     }
-    function lb__processRelativeTime(number, withoutSuffix, key, isFuture) {
+    function processRelativeTime$5(number, withoutSuffix, key, isFuture) {
         var format = {
             m: [ "eng Minutt", "enger Minutt" ],
             h: [ "eng Stonn", "enger Stonn" ],
@@ -24850,12 +24882,10 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         return withoutSuffix ? format[key][0] : format[key][1];
     }
     function processFutureTime(string) {
-        var number = string.substr(0, string.indexOf(" "));
-        return eifelerRegelAppliesToNumber(number) ? "a " + string : "an " + string;
+        return eifelerRegelAppliesToNumber(string.substr(0, string.indexOf(" "))) ? "a " + string : "an " + string;
     }
     function processPastTime(string) {
-        var number = string.substr(0, string.indexOf(" "));
-        return eifelerRegelAppliesToNumber(number) ? "viru " + string : "virun " + string;
+        return eifelerRegelAppliesToNumber(string.substr(0, string.indexOf(" "))) ? "viru " + string : "virun " + string;
     }
     function eifelerRegelAppliesToNumber(number) {
         if (number = parseInt(number, 10), isNaN(number)) return !1;
@@ -24878,23 +24908,23 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         return withoutSuffix ? forms(key)[0] : isFuture ? forms(key)[1] : forms(key)[2];
     }
     function special(number) {
-        return number % 10 === 0 || number > 10 && number < 20;
+        return number % 10 == 0 || number > 10 && number < 20;
     }
     function forms(key) {
-        return lt__units[key].split("_");
+        return units[key].split("_");
     }
-    function lt__translate(number, withoutSuffix, key, isFuture) {
+    function translate$6(number, withoutSuffix, key, isFuture) {
         var result = number + " ";
         return 1 === number ? result + translateSingular(number, withoutSuffix, key[0], isFuture) : withoutSuffix ? result + (special(number) ? forms(key)[1] : forms(key)[0]) : isFuture ? result + forms(key)[1] : result + (special(number) ? forms(key)[1] : forms(key)[2]);
     }
-    function lv__format(forms, number, withoutSuffix) {
-        return withoutSuffix ? number % 10 === 1 && number % 100 !== 11 ? forms[2] : forms[3] : number % 10 === 1 && number % 100 !== 11 ? forms[0] : forms[1];
+    function format$1(forms, number, withoutSuffix) {
+        return withoutSuffix ? number % 10 == 1 && number % 100 != 11 ? forms[2] : forms[3] : number % 10 == 1 && number % 100 != 11 ? forms[0] : forms[1];
     }
-    function lv__relativeTimeWithPlural(number, withoutSuffix, key) {
-        return number + " " + lv__format(lv__units[key], number, withoutSuffix);
+    function relativeTimeWithPlural$1(number, withoutSuffix, key) {
+        return number + " " + format$1(units$1[key], number, withoutSuffix);
     }
     function relativeTimeWithSingular(number, withoutSuffix, key) {
-        return lv__format(lv__units[key], number, withoutSuffix);
+        return format$1(units$1[key], number, withoutSuffix);
     }
     function relativeSeconds(number, withoutSuffix) {
         return withoutSuffix ? "dažas sekundes" : "dažām sekundēm";
@@ -24990,32 +25020,32 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         }
         return output.replace(/%d/i, number);
     }
-    function pl__plural(n) {
-        return n % 10 < 5 && n % 10 > 1 && ~~(n / 10) % 10 !== 1;
+    function plural$3(n) {
+        return n % 10 < 5 && n % 10 > 1 && ~~(n / 10) % 10 != 1;
     }
-    function pl__translate(number, withoutSuffix, key) {
+    function translate$7(number, withoutSuffix, key) {
         var result = number + " ";
         switch (key) {
           case "m":
             return withoutSuffix ? "minuta" : "minutę";
 
           case "mm":
-            return result + (pl__plural(number) ? "minuty" : "minut");
+            return result + (plural$3(number) ? "minuty" : "minut");
 
           case "h":
             return withoutSuffix ? "godzina" : "godzinę";
 
           case "hh":
-            return result + (pl__plural(number) ? "godziny" : "godzin");
+            return result + (plural$3(number) ? "godziny" : "godzin");
 
           case "MM":
-            return result + (pl__plural(number) ? "miesiące" : "miesięcy");
+            return result + (plural$3(number) ? "miesiące" : "miesięcy");
 
           case "yy":
-            return result + (pl__plural(number) ? "lata" : "lat");
+            return result + (plural$3(number) ? "lata" : "lat");
         }
     }
-    function ro__relativeTimeWithPlural(number, withoutSuffix, key) {
+    function relativeTimeWithPlural$2(number, withoutSuffix, key) {
         var format = {
             mm: "minute",
             hh: "ore",
@@ -25023,14 +25053,14 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             MM: "luni",
             yy: "ani"
         }, separator = " ";
-        return (number % 100 >= 20 || number >= 100 && number % 100 === 0) && (separator = " de "), 
+        return (number % 100 >= 20 || number >= 100 && number % 100 == 0) && (separator = " de "), 
         number + separator + format[key];
     }
-    function ru__plural(word, num) {
+    function plural$4(word, num) {
         var forms = word.split("_");
-        return num % 10 === 1 && num % 100 !== 11 ? forms[0] : num % 10 >= 2 && num % 10 <= 4 && (num % 100 < 10 || num % 100 >= 20) ? forms[1] : forms[2];
+        return num % 10 == 1 && num % 100 != 11 ? forms[0] : num % 10 >= 2 && num % 10 <= 4 && (num % 100 < 10 || num % 100 >= 20) ? forms[1] : forms[2];
     }
-    function ru__relativeTimeWithPlural(number, withoutSuffix, key) {
+    function relativeTimeWithPlural$3(number, withoutSuffix, key) {
         var format = {
             mm: withoutSuffix ? "минута_минуты_минут" : "минуту_минуты_минут",
             hh: "час_часа_часов",
@@ -25038,12 +25068,12 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             MM: "месяц_месяца_месяцев",
             yy: "год_года_лет"
         };
-        return "m" === key ? withoutSuffix ? "минута" : "минуту" : number + " " + ru__plural(format[key], +number);
+        return "m" === key ? withoutSuffix ? "минута" : "минуту" : number + " " + plural$4(format[key], +number);
     }
-    function sk__plural(n) {
+    function plural$5(n) {
         return n > 1 && n < 5;
     }
-    function sk__translate(number, withoutSuffix, key, isFuture) {
+    function translate$8(number, withoutSuffix, key, isFuture) {
         var result = number + " ";
         switch (key) {
           case "s":
@@ -25053,34 +25083,34 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return withoutSuffix ? "minúta" : isFuture ? "minútu" : "minútou";
 
           case "mm":
-            return withoutSuffix || isFuture ? result + (sk__plural(number) ? "minúty" : "minút") : result + "minútami";
+            return withoutSuffix || isFuture ? result + (plural$5(number) ? "minúty" : "minút") : result + "minútami";
 
           case "h":
             return withoutSuffix ? "hodina" : isFuture ? "hodinu" : "hodinou";
 
           case "hh":
-            return withoutSuffix || isFuture ? result + (sk__plural(number) ? "hodiny" : "hodín") : result + "hodinami";
+            return withoutSuffix || isFuture ? result + (plural$5(number) ? "hodiny" : "hodín") : result + "hodinami";
 
           case "d":
             return withoutSuffix || isFuture ? "deň" : "dňom";
 
           case "dd":
-            return withoutSuffix || isFuture ? result + (sk__plural(number) ? "dni" : "dní") : result + "dňami";
+            return withoutSuffix || isFuture ? result + (plural$5(number) ? "dni" : "dní") : result + "dňami";
 
           case "M":
             return withoutSuffix || isFuture ? "mesiac" : "mesiacom";
 
           case "MM":
-            return withoutSuffix || isFuture ? result + (sk__plural(number) ? "mesiace" : "mesiacov") : result + "mesiacmi";
+            return withoutSuffix || isFuture ? result + (plural$5(number) ? "mesiace" : "mesiacov") : result + "mesiacmi";
 
           case "y":
             return withoutSuffix || isFuture ? "rok" : "rokom";
 
           case "yy":
-            return withoutSuffix || isFuture ? result + (sk__plural(number) ? "roky" : "rokov") : result + "rokmi";
+            return withoutSuffix || isFuture ? result + (plural$5(number) ? "roky" : "rokov") : result + "rokmi";
         }
     }
-    function sl__processRelativeTime(number, withoutSuffix, key, isFuture) {
+    function processRelativeTime$6(number, withoutSuffix, key, isFuture) {
         var result = number + " ";
         switch (key) {
           case "s":
@@ -25119,13 +25149,13 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     }
     function translateFuture(output) {
         var time = output;
-        return time = output.indexOf("jaj") !== -1 ? time.slice(0, -3) + "leS" : output.indexOf("jar") !== -1 ? time.slice(0, -3) + "waQ" : output.indexOf("DIS") !== -1 ? time.slice(0, -3) + "nem" : time + " pIq";
+        return time = -1 !== output.indexOf("jaj") ? time.slice(0, -3) + "leS" : -1 !== output.indexOf("jar") ? time.slice(0, -3) + "waQ" : -1 !== output.indexOf("DIS") ? time.slice(0, -3) + "nem" : time + " pIq";
     }
     function translatePast(output) {
         var time = output;
-        return time = output.indexOf("jaj") !== -1 ? time.slice(0, -3) + "Hu’" : output.indexOf("jar") !== -1 ? time.slice(0, -3) + "wen" : output.indexOf("DIS") !== -1 ? time.slice(0, -3) + "ben" : time + " ret";
+        return time = -1 !== output.indexOf("jaj") ? time.slice(0, -3) + "Hu’" : -1 !== output.indexOf("jar") ? time.slice(0, -3) + "wen" : -1 !== output.indexOf("DIS") ? time.slice(0, -3) + "ben" : time + " ret";
     }
-    function tlh__translate(number, withoutSuffix, string, isFuture) {
+    function translate$9(number, withoutSuffix, string, isFuture) {
         var numberNoun = numberAsNoun(number);
         switch (string) {
           case "mm":
@@ -25149,27 +25179,27 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         return hundred > 0 && (word += numbersNouns[hundred] + "vatlh"), ten > 0 && (word += ("" !== word ? " " : "") + numbersNouns[ten] + "maH"), 
         one > 0 && (word += ("" !== word ? " " : "") + numbersNouns[one]), "" === word ? "pagh" : word;
     }
-    function tzl__processRelativeTime(number, withoutSuffix, key, isFuture) {
+    function processRelativeTime$7(number, withoutSuffix, key, isFuture) {
         var format = {
             s: [ "viensas secunds", "'iensas secunds" ],
             m: [ "'n míut", "'iens míut" ],
-            mm: [ number + " míuts", "" + number + " míuts" ],
+            mm: [ number + " míuts", number + " míuts" ],
             h: [ "'n þora", "'iensa þora" ],
-            hh: [ number + " þoras", "" + number + " þoras" ],
+            hh: [ number + " þoras", number + " þoras" ],
             d: [ "'n ziua", "'iensa ziua" ],
-            dd: [ number + " ziuas", "" + number + " ziuas" ],
+            dd: [ number + " ziuas", number + " ziuas" ],
             M: [ "'n mes", "'iens mes" ],
-            MM: [ number + " mesen", "" + number + " mesen" ],
+            MM: [ number + " mesen", number + " mesen" ],
             y: [ "'n ar", "'iens ar" ],
-            yy: [ number + " ars", "" + number + " ars" ]
+            yy: [ number + " ars", number + " ars" ]
         };
         return isFuture ? format[key][0] : withoutSuffix ? format[key][0] : format[key][1];
     }
-    function uk__plural(word, num) {
+    function plural$6(word, num) {
         var forms = word.split("_");
-        return num % 10 === 1 && num % 100 !== 11 ? forms[0] : num % 10 >= 2 && num % 10 <= 4 && (num % 100 < 10 || num % 100 >= 20) ? forms[1] : forms[2];
+        return num % 10 == 1 && num % 100 != 11 ? forms[0] : num % 10 >= 2 && num % 10 <= 4 && (num % 100 < 10 || num % 100 >= 20) ? forms[1] : forms[2];
     }
-    function uk__relativeTimeWithPlural(number, withoutSuffix, key) {
+    function relativeTimeWithPlural$4(number, withoutSuffix, key) {
         var format = {
             mm: withoutSuffix ? "хвилина_хвилини_хвилин" : "хвилину_хвилини_хвилин",
             hh: withoutSuffix ? "година_години_годин" : "годину_години_годин",
@@ -25177,15 +25207,15 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             MM: "місяць_місяці_місяців",
             yy: "рік_роки_років"
         };
-        return "m" === key ? withoutSuffix ? "хвилина" : "хвилину" : "h" === key ? withoutSuffix ? "година" : "годину" : number + " " + uk__plural(format[key], +number);
+        return "m" === key ? withoutSuffix ? "хвилина" : "хвилину" : "h" === key ? withoutSuffix ? "година" : "годину" : number + " " + plural$6(format[key], +number);
     }
     function weekdaysCaseReplace(m, format) {
         var weekdays = {
             nominative: "неділя_понеділок_вівторок_середа_четвер_п’ятниця_субота".split("_"),
             accusative: "неділю_понеділок_вівторок_середу_четвер_п’ятницю_суботу".split("_"),
             genitive: "неділі_понеділка_вівторка_середи_четверга_п’ятниці_суботи".split("_")
-        }, nounCase = /(\[[ВвУу]\]) ?dddd/.test(format) ? "accusative" : /\[?(?:минулої|наступної)? ?\] ?dddd/.test(format) ? "genitive" : "nominative";
-        return weekdays[nounCase][m.day()];
+        };
+        return m ? weekdays[/(\[[ВвУу]\]) ?dddd/.test(format) ? "accusative" : /\[?(?:минулої|наступної)? ?\] ?dddd/.test(format) ? "genitive" : "nominative"][m.day()] : weekdays.nominative;
     }
     function processHoursFunction(str) {
         return function() {
@@ -25197,15 +25227,15 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         for (var t = Object(this), len = t.length >>> 0, i = 0; i < len; i++) if (i in t && fun.call(this, t[i], i, t)) return !0;
         return !1;
     };
-    var momentProperties = utils_hooks__hooks.momentProperties = [], updateInProgress = !1, deprecations = {};
-    utils_hooks__hooks.suppressDeprecationWarnings = !1, utils_hooks__hooks.deprecationHandler = null;
+    var some$1 = some, momentProperties = hooks.momentProperties = [], updateInProgress = !1, deprecations = {};
+    hooks.suppressDeprecationWarnings = !1, hooks.deprecationHandler = null;
     var keys;
     keys = Object.keys ? Object.keys : function(obj) {
         var i, res = [];
         for (i in obj) hasOwnProp(obj, i) && res.push(i);
         return res;
     };
-    var indexOf, defaultCalendar = {
+    var indexOf, keys$1 = keys, defaultCalendar = {
         sameDay: "[Today at] LT",
         nextDay: "[Tomorrow at] LT",
         nextWeek: "dddd [at] LT",
@@ -25219,10 +25249,11 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         LL: "MMMM D, YYYY",
         LLL: "MMMM D, YYYY h:mm A",
         LLLL: "dddd, MMMM D, YYYY h:mm A"
-    }, defaultInvalidDate = "Invalid date", defaultOrdinal = "%d", defaultOrdinalParse = /\d{1,2}/, defaultRelativeTime = {
+    }, defaultDayOfMonthOrdinalParse = /\d{1,2}/, defaultRelativeTime = {
         future: "in %s",
         past: "%s ago",
         s: "a few seconds",
+        ss: "%d seconds",
         m: "a minute",
         mm: "%d minutes",
         h: "an hour",
@@ -25238,7 +25269,9 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         var i;
         for (i = 0; i < this.length; ++i) if (this[i] === o) return i;
         return -1;
-    }, addFormatToken("M", [ "MM", 2 ], "Mo", function() {
+    };
+    var indexOf$1 = indexOf;
+    addFormatToken("M", [ "MM", 2 ], "Mo", function() {
         return this.month() + 1;
     }), addFormatToken("MMM", 0, 0, function(format) {
         return this.localeData().monthsShort(this, format);
@@ -25255,7 +25288,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         var month = config._locale.monthsParse(input, token, config._strict);
         null != month ? array[MONTH] = month : getParsingFlags(config).invalidMonth = input;
     });
-    var MONTHS_IN_FORMAT = /D[oD]?(\[[^\[\]]*\]|\s+)+MMMM?/, defaultLocaleMonths = "January_February_March_April_May_June_July_August_September_October_November_December".split("_"), defaultLocaleMonthsShort = "Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec".split("_"), defaultMonthsShortRegex = matchWord, defaultMonthsRegex = matchWord;
+    var MONTHS_IN_FORMAT = /D[oD]?(\[[^\[\]]*\]|\s)+MMMM?/, defaultLocaleMonths = "January_February_March_April_May_June_July_August_September_October_November_December".split("_"), defaultLocaleMonthsShort = "Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec".split("_"), defaultMonthsShortRegex = matchWord, defaultMonthsRegex = matchWord;
     addFormatToken("Y", 0, 0, function() {
         var y = this.year();
         return y <= 9999 ? "" + y : "+" + y;
@@ -25266,12 +25299,12 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     addRegexToken("Y", matchSigned), addRegexToken("YY", match1to2, match2), addRegexToken("YYYY", match1to4, match4), 
     addRegexToken("YYYYY", match1to6, match6), addRegexToken("YYYYYY", match1to6, match6), 
     addParseToken([ "YYYYY", "YYYYYY" ], YEAR), addParseToken("YYYY", function(input, array) {
-        array[YEAR] = 2 === input.length ? utils_hooks__hooks.parseTwoDigitYear(input) : toInt(input);
+        array[YEAR] = 2 === input.length ? hooks.parseTwoDigitYear(input) : toInt(input);
     }), addParseToken("YY", function(input, array) {
-        array[YEAR] = utils_hooks__hooks.parseTwoDigitYear(input);
+        array[YEAR] = hooks.parseTwoDigitYear(input);
     }), addParseToken("Y", function(input, array) {
         array[YEAR] = parseInt(input, 10);
-    }), utils_hooks__hooks.parseTwoDigitYear = function(input) {
+    }), hooks.parseTwoDigitYear = function(input) {
         return toInt(input) + (toInt(input) > 68 ? 1900 : 2e3);
     };
     var getSetYear = makeGetSet("FullYear", !0);
@@ -25319,9 +25352,13 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         return "" + this.hours() + zeroFill(this.minutes(), 2) + zeroFill(this.seconds(), 2);
     }), meridiem("a", !0), meridiem("A", !1), addUnitAlias("hour", "h"), addUnitPriority("hour", 13), 
     addRegexToken("a", matchMeridiem), addRegexToken("A", matchMeridiem), addRegexToken("H", match1to2), 
-    addRegexToken("h", match1to2), addRegexToken("HH", match1to2, match2), addRegexToken("hh", match1to2, match2), 
+    addRegexToken("h", match1to2), addRegexToken("k", match1to2), addRegexToken("HH", match1to2, match2), 
+    addRegexToken("hh", match1to2, match2), addRegexToken("kk", match1to2, match2), 
     addRegexToken("hmm", match3to4), addRegexToken("hmmss", match5to6), addRegexToken("Hmm", match3to4), 
-    addRegexToken("Hmmss", match5to6), addParseToken([ "H", "HH" ], HOUR), addParseToken([ "a", "A" ], function(input, array, config) {
+    addRegexToken("Hmmss", match5to6), addParseToken([ "H", "HH" ], HOUR), addParseToken([ "k", "kk" ], function(input, array, config) {
+        var kInput = toInt(input);
+        array[HOUR] = 24 === kInput ? 0 : kInput;
+    }), addParseToken([ "a", "A" ], function(input, array, config) {
         config._isPm = config._locale.isPM(input), config._meridiem = input;
     }), addParseToken([ "h", "hh" ], function(input, array, config) {
         array[HOUR] = toInt(input), getParsingFlags(config).bigHour = !0;
@@ -25344,9 +25381,9 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     var globalLocale, defaultLocaleMeridiemParse = /[ap]\.?m?\.?/i, getSetHour = makeGetSet("Hours", !0), baseConfig = {
         calendar: defaultCalendar,
         longDateFormat: defaultLongDateFormat,
-        invalidDate: defaultInvalidDate,
-        ordinal: defaultOrdinal,
-        ordinalParse: defaultOrdinalParse,
+        invalidDate: "Invalid date",
+        ordinal: "%d",
+        dayOfMonthOrdinalParse: defaultDayOfMonthOrdinalParse,
         relativeTime: defaultRelativeTime,
         months: defaultLocaleMonths,
         monthsShort: defaultLocaleMonthsShort,
@@ -25355,29 +25392,29 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         weekdaysMin: defaultLocaleWeekdaysMin,
         weekdaysShort: defaultLocaleWeekdaysShort,
         meridiemParse: defaultLocaleMeridiemParse
-    }, locales = {}, extendedIsoRegex = /^\s*((?:[+-]\d{6}|\d{4})-(?:\d\d-\d\d|W\d\d-\d|W\d\d|\d\d\d|\d\d))(?:(T| )(\d\d(?::\d\d(?::\d\d(?:[.,]\d+)?)?)?)([\+\-]\d\d(?::?\d\d)?|\s*Z)?)?/, basicIsoRegex = /^\s*((?:[+-]\d{6}|\d{4})(?:\d\d\d\d|W\d\d\d|W\d\d|\d\d\d|\d\d))(?:(T| )(\d\d(?:\d\d(?:\d\d(?:[.,]\d+)?)?)?)([\+\-]\d\d(?::?\d\d)?|\s*Z)?)?/, tzRegex = /Z|[+-]\d\d(?::?\d\d)?/, isoDates = [ [ "YYYYYY-MM-DD", /[+-]\d{6}-\d\d-\d\d/ ], [ "YYYY-MM-DD", /\d{4}-\d\d-\d\d/ ], [ "GGGG-[W]WW-E", /\d{4}-W\d\d-\d/ ], [ "GGGG-[W]WW", /\d{4}-W\d\d/, !1 ], [ "YYYY-DDD", /\d{4}-\d{3}/ ], [ "YYYY-MM", /\d{4}-\d\d/, !1 ], [ "YYYYYYMMDD", /[+-]\d{10}/ ], [ "YYYYMMDD", /\d{8}/ ], [ "GGGG[W]WWE", /\d{4}W\d{3}/ ], [ "GGGG[W]WW", /\d{4}W\d{2}/, !1 ], [ "YYYYDDD", /\d{7}/ ] ], isoTimes = [ [ "HH:mm:ss.SSSS", /\d\d:\d\d:\d\d\.\d+/ ], [ "HH:mm:ss,SSSS", /\d\d:\d\d:\d\d,\d+/ ], [ "HH:mm:ss", /\d\d:\d\d:\d\d/ ], [ "HH:mm", /\d\d:\d\d/ ], [ "HHmmss.SSSS", /\d\d\d\d\d\d\.\d+/ ], [ "HHmmss,SSSS", /\d\d\d\d\d\d,\d+/ ], [ "HHmmss", /\d\d\d\d\d\d/ ], [ "HHmm", /\d\d\d\d/ ], [ "HH", /\d\d/ ] ], aspNetJsonRegex = /^\/?Date\((\-?\d+)/i;
-    utils_hooks__hooks.createFromInputFallback = deprecate("value provided is not in a recognized ISO format. moment construction falls back to js Date(), which is not reliable across all browsers and versions. Non ISO date formats are discouraged and will be removed in an upcoming major release. Please refer to http://momentjs.com/guides/#/warnings/js-date/ for more info.", function(config) {
+    }, locales = {}, localeFamilies = {}, extendedIsoRegex = /^\s*((?:[+-]\d{6}|\d{4})-(?:\d\d-\d\d|W\d\d-\d|W\d\d|\d\d\d|\d\d))(?:(T| )(\d\d(?::\d\d(?::\d\d(?:[.,]\d+)?)?)?)([\+\-]\d\d(?::?\d\d)?|\s*Z)?)?$/, basicIsoRegex = /^\s*((?:[+-]\d{6}|\d{4})(?:\d\d\d\d|W\d\d\d|W\d\d|\d\d\d|\d\d))(?:(T| )(\d\d(?:\d\d(?:\d\d(?:[.,]\d+)?)?)?)([\+\-]\d\d(?::?\d\d)?|\s*Z)?)?$/, tzRegex = /Z|[+-]\d\d(?::?\d\d)?/, isoDates = [ [ "YYYYYY-MM-DD", /[+-]\d{6}-\d\d-\d\d/ ], [ "YYYY-MM-DD", /\d{4}-\d\d-\d\d/ ], [ "GGGG-[W]WW-E", /\d{4}-W\d\d-\d/ ], [ "GGGG-[W]WW", /\d{4}-W\d\d/, !1 ], [ "YYYY-DDD", /\d{4}-\d{3}/ ], [ "YYYY-MM", /\d{4}-\d\d/, !1 ], [ "YYYYYYMMDD", /[+-]\d{10}/ ], [ "YYYYMMDD", /\d{8}/ ], [ "GGGG[W]WWE", /\d{4}W\d{3}/ ], [ "GGGG[W]WW", /\d{4}W\d{2}/, !1 ], [ "YYYYDDD", /\d{7}/ ] ], isoTimes = [ [ "HH:mm:ss.SSSS", /\d\d:\d\d:\d\d\.\d+/ ], [ "HH:mm:ss,SSSS", /\d\d:\d\d:\d\d,\d+/ ], [ "HH:mm:ss", /\d\d:\d\d:\d\d/ ], [ "HH:mm", /\d\d:\d\d/ ], [ "HHmmss.SSSS", /\d\d\d\d\d\d\.\d+/ ], [ "HHmmss,SSSS", /\d\d\d\d\d\d,\d+/ ], [ "HHmmss", /\d\d\d\d\d\d/ ], [ "HHmm", /\d\d\d\d/ ], [ "HH", /\d\d/ ] ], aspNetJsonRegex = /^\/?Date\((\-?\d+)/i, basicRfcRegex = /^((?:Mon|Tue|Wed|Thu|Fri|Sat|Sun),?\s)?(\d?\d\s(?:Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\s(?:\d\d)?\d\d\s)(\d\d:\d\d)(\:\d\d)?(\s(?:UT|GMT|[ECMP][SD]T|[A-IK-Za-ik-z]|[+-]\d{4}))$/;
+    hooks.createFromInputFallback = deprecate("value provided is not in a recognized RFC2822 or ISO format. moment construction falls back to js Date(), which is not reliable across all browsers and versions. Non RFC2822/ISO date formats are discouraged and will be removed in an upcoming major release. Please refer to http://momentjs.com/guides/#/warnings/js-date/ for more info.", function(config) {
         config._d = new Date(config._i + (config._useUTC ? " UTC" : ""));
-    }), utils_hooks__hooks.ISO_8601 = function() {};
+    }), hooks.ISO_8601 = function() {}, hooks.RFC_2822 = function() {};
     var prototypeMin = deprecate("moment().min is deprecated, use moment.max instead. http://momentjs.com/guides/#/warnings/min-max/", function() {
-        var other = local__createLocal.apply(null, arguments);
-        return this.isValid() && other.isValid() ? other < this ? this : other : valid__createInvalid();
+        var other = createLocal.apply(null, arguments);
+        return this.isValid() && other.isValid() ? other < this ? this : other : createInvalid();
     }), prototypeMax = deprecate("moment().max is deprecated, use moment.min instead. http://momentjs.com/guides/#/warnings/min-max/", function() {
-        var other = local__createLocal.apply(null, arguments);
-        return this.isValid() && other.isValid() ? other > this ? this : other : valid__createInvalid();
+        var other = createLocal.apply(null, arguments);
+        return this.isValid() && other.isValid() ? other > this ? this : other : createInvalid();
     }), now = function() {
         return Date.now ? Date.now() : +new Date();
-    };
+    }, ordering = [ "year", "quarter", "month", "week", "day", "hour", "minute", "second", "millisecond" ];
     offset("Z", ":"), offset("ZZ", ""), addRegexToken("Z", matchShortOffset), addRegexToken("ZZ", matchShortOffset), 
     addParseToken([ "Z", "ZZ" ], function(input, array, config) {
         config._useUTC = !0, config._tzm = offsetFromString(matchShortOffset, input);
     });
     var chunkOffset = /([\+\-]|\d\d)/gi;
-    utils_hooks__hooks.updateOffset = function() {};
+    hooks.updateOffset = function() {};
     var aspNetRegex = /^(\-)?(?:(\d*)[. ])?(\d+)\:(\d+)(?:\:(\d+)(\.\d*)?)?$/, isoRegex = /^(-)?P(?:(-?[0-9,.]*)Y)?(?:(-?[0-9,.]*)M)?(?:(-?[0-9,.]*)W)?(?:(-?[0-9,.]*)D)?(?:T(?:(-?[0-9,.]*)H)?(?:(-?[0-9,.]*)M)?(?:(-?[0-9,.]*)S)?)?$/;
-    create__createDuration.fn = Duration.prototype;
-    var add_subtract__add = createAdder(1, "add"), add_subtract__subtract = createAdder(-1, "subtract");
-    utils_hooks__hooks.defaultFormat = "YYYY-MM-DDTHH:mm:ssZ", utils_hooks__hooks.defaultFormatUtc = "YYYY-MM-DDTHH:mm:ss[Z]";
+    createDuration.fn = Duration.prototype, createDuration.invalid = createInvalid$1;
+    var add = createAdder(1, "add"), subtract = createAdder(-1, "subtract");
+    hooks.defaultFormat = "YYYY-MM-DDTHH:mm:ssZ", hooks.defaultFormatUtc = "YYYY-MM-DDTHH:mm:ss[Z]";
     var lang = deprecate("moment().lang() is deprecated. Instead, use moment().localeData() to get the language configuration. Use moment().locale() to change languages.", function(key) {
         return void 0 === key ? this.localeData() : this.locale(key);
     });
@@ -25395,13 +25432,13 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     addWeekParseToken([ "gggg", "ggggg", "GGGG", "GGGGG" ], function(input, week, config, token) {
         week[token.substr(0, 2)] = toInt(input);
     }), addWeekParseToken([ "gg", "GG" ], function(input, week, config, token) {
-        week[token] = utils_hooks__hooks.parseTwoDigitYear(input);
+        week[token] = hooks.parseTwoDigitYear(input);
     }), addFormatToken("Q", 0, "Qo", "quarter"), addUnitAlias("quarter", "Q"), addUnitPriority("quarter", 7), 
     addRegexToken("Q", match1), addParseToken("Q", function(input, array) {
         array[MONTH] = 3 * (toInt(input) - 1);
     }), addFormatToken("D", [ "DD", 2 ], "Do", "date"), addUnitAlias("date", "D"), addUnitPriority("date", 9), 
     addRegexToken("D", match1to2), addRegexToken("DD", match1to2, match2), addRegexToken("Do", function(isStrict, locale) {
-        return isStrict ? locale._ordinalParse : locale._ordinalParseLenient;
+        return isStrict ? locale._dayOfMonthOrdinalParse || locale._ordinalParse : locale._dayOfMonthOrdinalParseLenient;
     }), addParseToken([ "D", "DD" ], DATE), addParseToken("Do", function(input, array) {
         array[DATE] = toInt(input.match(match1to2)[0], 10);
     });
@@ -25440,109 +25477,85 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
     for (token = "S"; token.length <= 9; token += "S") addParseToken(token, parseMs);
     var getSetMillisecond = makeGetSet("Milliseconds", !1);
     addFormatToken("z", 0, 0, "zoneAbbr"), addFormatToken("zz", 0, 0, "zoneName");
-    var momentPrototype__proto = Moment.prototype;
-    momentPrototype__proto.add = add_subtract__add, momentPrototype__proto.calendar = moment_calendar__calendar, 
-    momentPrototype__proto.clone = clone, momentPrototype__proto.diff = diff, momentPrototype__proto.endOf = endOf, 
-    momentPrototype__proto.format = moment_format__format, momentPrototype__proto.from = from, 
-    momentPrototype__proto.fromNow = fromNow, momentPrototype__proto.to = to, momentPrototype__proto.toNow = toNow, 
-    momentPrototype__proto.get = stringGet, momentPrototype__proto.invalidAt = invalidAt, 
-    momentPrototype__proto.isAfter = isAfter, momentPrototype__proto.isBefore = isBefore, 
-    momentPrototype__proto.isBetween = isBetween, momentPrototype__proto.isSame = isSame, 
-    momentPrototype__proto.isSameOrAfter = isSameOrAfter, momentPrototype__proto.isSameOrBefore = isSameOrBefore, 
-    momentPrototype__proto.isValid = moment_valid__isValid, momentPrototype__proto.lang = lang, 
-    momentPrototype__proto.locale = locale, momentPrototype__proto.localeData = localeData, 
-    momentPrototype__proto.max = prototypeMax, momentPrototype__proto.min = prototypeMin, 
-    momentPrototype__proto.parsingFlags = parsingFlags, momentPrototype__proto.set = stringSet, 
-    momentPrototype__proto.startOf = startOf, momentPrototype__proto.subtract = add_subtract__subtract, 
-    momentPrototype__proto.toArray = toArray, momentPrototype__proto.toObject = toObject, 
-    momentPrototype__proto.toDate = toDate, momentPrototype__proto.toISOString = moment_format__toISOString, 
-    momentPrototype__proto.toJSON = toJSON, momentPrototype__proto.toString = toString, 
-    momentPrototype__proto.unix = unix, momentPrototype__proto.valueOf = to_type__valueOf, 
-    momentPrototype__proto.creationData = creationData, momentPrototype__proto.year = getSetYear, 
-    momentPrototype__proto.isLeapYear = getIsLeapYear, momentPrototype__proto.weekYear = getSetWeekYear, 
-    momentPrototype__proto.isoWeekYear = getSetISOWeekYear, momentPrototype__proto.quarter = momentPrototype__proto.quarters = getSetQuarter, 
-    momentPrototype__proto.month = getSetMonth, momentPrototype__proto.daysInMonth = getDaysInMonth, 
-    momentPrototype__proto.week = momentPrototype__proto.weeks = getSetWeek, momentPrototype__proto.isoWeek = momentPrototype__proto.isoWeeks = getSetISOWeek, 
-    momentPrototype__proto.weeksInYear = getWeeksInYear, momentPrototype__proto.isoWeeksInYear = getISOWeeksInYear, 
-    momentPrototype__proto.date = getSetDayOfMonth, momentPrototype__proto.day = momentPrototype__proto.days = getSetDayOfWeek, 
-    momentPrototype__proto.weekday = getSetLocaleDayOfWeek, momentPrototype__proto.isoWeekday = getSetISODayOfWeek, 
-    momentPrototype__proto.dayOfYear = getSetDayOfYear, momentPrototype__proto.hour = momentPrototype__proto.hours = getSetHour, 
-    momentPrototype__proto.minute = momentPrototype__proto.minutes = getSetMinute, momentPrototype__proto.second = momentPrototype__proto.seconds = getSetSecond, 
-    momentPrototype__proto.millisecond = momentPrototype__proto.milliseconds = getSetMillisecond, 
-    momentPrototype__proto.utcOffset = getSetOffset, momentPrototype__proto.utc = setOffsetToUTC, 
-    momentPrototype__proto.local = setOffsetToLocal, momentPrototype__proto.parseZone = setOffsetToParsedOffset, 
-    momentPrototype__proto.hasAlignedHourOffset = hasAlignedHourOffset, momentPrototype__proto.isDST = isDaylightSavingTime, 
-    momentPrototype__proto.isLocal = isLocal, momentPrototype__proto.isUtcOffset = isUtcOffset, 
-    momentPrototype__proto.isUtc = isUtc, momentPrototype__proto.isUTC = isUtc, momentPrototype__proto.zoneAbbr = getZoneAbbr, 
-    momentPrototype__proto.zoneName = getZoneName, momentPrototype__proto.dates = deprecate("dates accessor is deprecated. Use date instead.", getSetDayOfMonth), 
-    momentPrototype__proto.months = deprecate("months accessor is deprecated. Use month instead", getSetMonth), 
-    momentPrototype__proto.years = deprecate("years accessor is deprecated. Use year instead", getSetYear), 
-    momentPrototype__proto.zone = deprecate("moment().zone is deprecated, use moment().utcOffset instead. http://momentjs.com/guides/#/warnings/zone/", getSetZone), 
-    momentPrototype__proto.isDSTShifted = deprecate("isDSTShifted is deprecated. See http://momentjs.com/guides/#/warnings/dst-shifted/ for more information", isDaylightSavingTimeShifted);
-    var momentPrototype = momentPrototype__proto, prototype__proto = Locale.prototype;
-    prototype__proto.calendar = locale_calendar__calendar, prototype__proto.longDateFormat = longDateFormat, 
-    prototype__proto.invalidDate = invalidDate, prototype__proto.ordinal = ordinal, 
-    prototype__proto.preparse = preParsePostFormat, prototype__proto.postformat = preParsePostFormat, 
-    prototype__proto.relativeTime = relative__relativeTime, prototype__proto.pastFuture = pastFuture, 
-    prototype__proto.set = locale_set__set, prototype__proto.months = localeMonths, 
-    prototype__proto.monthsShort = localeMonthsShort, prototype__proto.monthsParse = localeMonthsParse, 
-    prototype__proto.monthsRegex = units_month__monthsRegex, prototype__proto.monthsShortRegex = monthsShortRegex, 
-    prototype__proto.week = localeWeek, prototype__proto.firstDayOfYear = localeFirstDayOfYear, 
-    prototype__proto.firstDayOfWeek = localeFirstDayOfWeek, prototype__proto.weekdays = localeWeekdays, 
-    prototype__proto.weekdaysMin = localeWeekdaysMin, prototype__proto.weekdaysShort = localeWeekdaysShort, 
-    prototype__proto.weekdaysParse = localeWeekdaysParse, prototype__proto.weekdaysRegex = weekdaysRegex, 
-    prototype__proto.weekdaysShortRegex = weekdaysShortRegex, prototype__proto.weekdaysMinRegex = weekdaysMinRegex, 
-    prototype__proto.isPM = localeIsPM, prototype__proto.meridiem = localeMeridiem, 
-    locale_locales__getSetGlobalLocale("en", {
-        ordinalParse: /\d{1,2}(th|st|nd|rd)/,
+    var proto = Moment.prototype;
+    proto.add = add, proto.calendar = calendar$1, proto.clone = clone, proto.diff = diff, 
+    proto.endOf = endOf, proto.format = format, proto.from = from, proto.fromNow = fromNow, 
+    proto.to = to, proto.toNow = toNow, proto.get = stringGet, proto.invalidAt = invalidAt, 
+    proto.isAfter = isAfter, proto.isBefore = isBefore, proto.isBetween = isBetween, 
+    proto.isSame = isSame, proto.isSameOrAfter = isSameOrAfter, proto.isSameOrBefore = isSameOrBefore, 
+    proto.isValid = isValid$2, proto.lang = lang, proto.locale = locale, proto.localeData = localeData, 
+    proto.max = prototypeMax, proto.min = prototypeMin, proto.parsingFlags = parsingFlags, 
+    proto.set = stringSet, proto.startOf = startOf, proto.subtract = subtract, proto.toArray = toArray, 
+    proto.toObject = toObject, proto.toDate = toDate, proto.toISOString = toISOString, 
+    proto.inspect = inspect, proto.toJSON = toJSON, proto.toString = toString, proto.unix = unix, 
+    proto.valueOf = valueOf, proto.creationData = creationData, proto.year = getSetYear, 
+    proto.isLeapYear = getIsLeapYear, proto.weekYear = getSetWeekYear, proto.isoWeekYear = getSetISOWeekYear, 
+    proto.quarter = proto.quarters = getSetQuarter, proto.month = getSetMonth, proto.daysInMonth = getDaysInMonth, 
+    proto.week = proto.weeks = getSetWeek, proto.isoWeek = proto.isoWeeks = getSetISOWeek, 
+    proto.weeksInYear = getWeeksInYear, proto.isoWeeksInYear = getISOWeeksInYear, proto.date = getSetDayOfMonth, 
+    proto.day = proto.days = getSetDayOfWeek, proto.weekday = getSetLocaleDayOfWeek, 
+    proto.isoWeekday = getSetISODayOfWeek, proto.dayOfYear = getSetDayOfYear, proto.hour = proto.hours = getSetHour, 
+    proto.minute = proto.minutes = getSetMinute, proto.second = proto.seconds = getSetSecond, 
+    proto.millisecond = proto.milliseconds = getSetMillisecond, proto.utcOffset = getSetOffset, 
+    proto.utc = setOffsetToUTC, proto.local = setOffsetToLocal, proto.parseZone = setOffsetToParsedOffset, 
+    proto.hasAlignedHourOffset = hasAlignedHourOffset, proto.isDST = isDaylightSavingTime, 
+    proto.isLocal = isLocal, proto.isUtcOffset = isUtcOffset, proto.isUtc = isUtc, proto.isUTC = isUtc, 
+    proto.zoneAbbr = getZoneAbbr, proto.zoneName = getZoneName, proto.dates = deprecate("dates accessor is deprecated. Use date instead.", getSetDayOfMonth), 
+    proto.months = deprecate("months accessor is deprecated. Use month instead", getSetMonth), 
+    proto.years = deprecate("years accessor is deprecated. Use year instead", getSetYear), 
+    proto.zone = deprecate("moment().zone is deprecated, use moment().utcOffset instead. http://momentjs.com/guides/#/warnings/zone/", getSetZone), 
+    proto.isDSTShifted = deprecate("isDSTShifted is deprecated. See http://momentjs.com/guides/#/warnings/dst-shifted/ for more information", isDaylightSavingTimeShifted);
+    var proto$1 = Locale.prototype;
+    proto$1.calendar = calendar, proto$1.longDateFormat = longDateFormat, proto$1.invalidDate = invalidDate, 
+    proto$1.ordinal = ordinal, proto$1.preparse = preParsePostFormat, proto$1.postformat = preParsePostFormat, 
+    proto$1.relativeTime = relativeTime, proto$1.pastFuture = pastFuture, proto$1.set = set, 
+    proto$1.months = localeMonths, proto$1.monthsShort = localeMonthsShort, proto$1.monthsParse = localeMonthsParse, 
+    proto$1.monthsRegex = monthsRegex, proto$1.monthsShortRegex = monthsShortRegex, 
+    proto$1.week = localeWeek, proto$1.firstDayOfYear = localeFirstDayOfYear, proto$1.firstDayOfWeek = localeFirstDayOfWeek, 
+    proto$1.weekdays = localeWeekdays, proto$1.weekdaysMin = localeWeekdaysMin, proto$1.weekdaysShort = localeWeekdaysShort, 
+    proto$1.weekdaysParse = localeWeekdaysParse, proto$1.weekdaysRegex = weekdaysRegex, 
+    proto$1.weekdaysShortRegex = weekdaysShortRegex, proto$1.weekdaysMinRegex = weekdaysMinRegex, 
+    proto$1.isPM = localeIsPM, proto$1.meridiem = localeMeridiem, getSetGlobalLocale("en", {
+        dayOfMonthOrdinalParse: /\d{1,2}(th|st|nd|rd)/,
         ordinal: function(number) {
-            var b = number % 10, output = 1 === toInt(number % 100 / 10) ? "th" : 1 === b ? "st" : 2 === b ? "nd" : 3 === b ? "rd" : "th";
-            return number + output;
+            var b = number % 10;
+            return number + (1 === toInt(number % 100 / 10) ? "th" : 1 === b ? "st" : 2 === b ? "nd" : 3 === b ? "rd" : "th");
         }
-    }), utils_hooks__hooks.lang = deprecate("moment.lang is deprecated. Use moment.locale instead.", locale_locales__getSetGlobalLocale), 
-    utils_hooks__hooks.langData = deprecate("moment.langData is deprecated. Use moment.localeData instead.", locale_locales__getLocale);
-    var mathAbs = Math.abs, asMilliseconds = makeAs("ms"), asSeconds = makeAs("s"), asMinutes = makeAs("m"), asHours = makeAs("h"), asDays = makeAs("d"), asWeeks = makeAs("w"), asMonths = makeAs("M"), asYears = makeAs("y"), milliseconds = makeGetter("milliseconds"), seconds = makeGetter("seconds"), minutes = makeGetter("minutes"), hours = makeGetter("hours"), days = makeGetter("days"), duration_get__months = makeGetter("months"), years = makeGetter("years"), round = Math.round, thresholds = {
+    }), hooks.lang = deprecate("moment.lang is deprecated. Use moment.locale instead.", getSetGlobalLocale), 
+    hooks.langData = deprecate("moment.langData is deprecated. Use moment.localeData instead.", getLocale);
+    var mathAbs = Math.abs, asMilliseconds = makeAs("ms"), asSeconds = makeAs("s"), asMinutes = makeAs("m"), asHours = makeAs("h"), asDays = makeAs("d"), asWeeks = makeAs("w"), asMonths = makeAs("M"), asYears = makeAs("y"), milliseconds = makeGetter("milliseconds"), seconds = makeGetter("seconds"), minutes = makeGetter("minutes"), hours = makeGetter("hours"), days = makeGetter("days"), months = makeGetter("months"), years = makeGetter("years"), round = Math.round, thresholds = {
+        ss: 44,
         s: 45,
         m: 45,
         h: 22,
         d: 26,
         M: 11
-    }, iso_string__abs = Math.abs, duration_prototype__proto = Duration.prototype;
-    duration_prototype__proto.abs = duration_abs__abs, duration_prototype__proto.add = duration_add_subtract__add, 
-    duration_prototype__proto.subtract = duration_add_subtract__subtract, duration_prototype__proto.as = as, 
-    duration_prototype__proto.asMilliseconds = asMilliseconds, duration_prototype__proto.asSeconds = asSeconds, 
-    duration_prototype__proto.asMinutes = asMinutes, duration_prototype__proto.asHours = asHours, 
-    duration_prototype__proto.asDays = asDays, duration_prototype__proto.asWeeks = asWeeks, 
-    duration_prototype__proto.asMonths = asMonths, duration_prototype__proto.asYears = asYears, 
-    duration_prototype__proto.valueOf = duration_as__valueOf, duration_prototype__proto._bubble = bubble, 
-    duration_prototype__proto.get = duration_get__get, duration_prototype__proto.milliseconds = milliseconds, 
-    duration_prototype__proto.seconds = seconds, duration_prototype__proto.minutes = minutes, 
-    duration_prototype__proto.hours = hours, duration_prototype__proto.days = days, 
-    duration_prototype__proto.weeks = weeks, duration_prototype__proto.months = duration_get__months, 
-    duration_prototype__proto.years = years, duration_prototype__proto.humanize = humanize, 
-    duration_prototype__proto.toISOString = iso_string__toISOString, duration_prototype__proto.toString = iso_string__toISOString, 
-    duration_prototype__proto.toJSON = iso_string__toISOString, duration_prototype__proto.locale = locale, 
-    duration_prototype__proto.localeData = localeData, duration_prototype__proto.toIsoString = deprecate("toIsoString() is deprecated. Please use toISOString() instead (notice the capitals)", iso_string__toISOString), 
-    duration_prototype__proto.lang = lang, addFormatToken("X", 0, 0, "unix"), addFormatToken("x", 0, 0, "valueOf"), 
+    }, abs$1 = Math.abs, proto$2 = Duration.prototype;
+    proto$2.isValid = isValid$1, proto$2.abs = abs, proto$2.add = add$1, proto$2.subtract = subtract$1, 
+    proto$2.as = as, proto$2.asMilliseconds = asMilliseconds, proto$2.asSeconds = asSeconds, 
+    proto$2.asMinutes = asMinutes, proto$2.asHours = asHours, proto$2.asDays = asDays, 
+    proto$2.asWeeks = asWeeks, proto$2.asMonths = asMonths, proto$2.asYears = asYears, 
+    proto$2.valueOf = valueOf$1, proto$2._bubble = bubble, proto$2.get = get$2, proto$2.milliseconds = milliseconds, 
+    proto$2.seconds = seconds, proto$2.minutes = minutes, proto$2.hours = hours, proto$2.days = days, 
+    proto$2.weeks = weeks, proto$2.months = months, proto$2.years = years, proto$2.humanize = humanize, 
+    proto$2.toISOString = toISOString$1, proto$2.toString = toISOString$1, proto$2.toJSON = toISOString$1, 
+    proto$2.locale = locale, proto$2.localeData = localeData, proto$2.toIsoString = deprecate("toIsoString() is deprecated. Please use toISOString() instead (notice the capitals)", toISOString$1), 
+    proto$2.lang = lang, addFormatToken("X", 0, 0, "unix"), addFormatToken("x", 0, 0, "valueOf"), 
     addRegexToken("x", matchSigned), addRegexToken("X", matchTimestamp), addParseToken("X", function(input, array, config) {
         config._d = new Date(1e3 * parseFloat(input, 10));
     }), addParseToken("x", function(input, array, config) {
         config._d = new Date(toInt(input));
-    }), utils_hooks__hooks.version = "2.15.1", setHookCallback(local__createLocal), 
-    utils_hooks__hooks.fn = momentPrototype, utils_hooks__hooks.min = min, utils_hooks__hooks.max = max, 
-    utils_hooks__hooks.now = now, utils_hooks__hooks.utc = create_utc__createUTC, utils_hooks__hooks.unix = moment_moment__createUnix, 
-    utils_hooks__hooks.months = lists__listMonths, utils_hooks__hooks.isDate = isDate, 
-    utils_hooks__hooks.locale = locale_locales__getSetGlobalLocale, utils_hooks__hooks.invalid = valid__createInvalid, 
-    utils_hooks__hooks.duration = create__createDuration, utils_hooks__hooks.isMoment = isMoment, 
-    utils_hooks__hooks.weekdays = lists__listWeekdays, utils_hooks__hooks.parseZone = moment_moment__createInZone, 
-    utils_hooks__hooks.localeData = locale_locales__getLocale, utils_hooks__hooks.isDuration = isDuration, 
-    utils_hooks__hooks.monthsShort = lists__listMonthsShort, utils_hooks__hooks.weekdaysMin = lists__listWeekdaysMin, 
-    utils_hooks__hooks.defineLocale = defineLocale, utils_hooks__hooks.updateLocale = updateLocale, 
-    utils_hooks__hooks.locales = locale_locales__listLocales, utils_hooks__hooks.weekdaysShort = lists__listWeekdaysShort, 
-    utils_hooks__hooks.normalizeUnits = normalizeUnits, utils_hooks__hooks.relativeTimeRounding = duration_humanize__getSetRelativeTimeRounding, 
-    utils_hooks__hooks.relativeTimeThreshold = duration_humanize__getSetRelativeTimeThreshold, 
-    utils_hooks__hooks.calendarFormat = getCalendarFormat, utils_hooks__hooks.prototype = momentPrototype;
-    var moment__default = utils_hooks__hooks, ar_ly__symbolMap = (moment__default.defineLocale("af", {
+    }), hooks.version = "2.18.1", function(callback) {
+        hookCallback = callback;
+    }(createLocal), hooks.fn = proto, hooks.min = min, hooks.max = max, hooks.now = now, 
+    hooks.utc = createUTC, hooks.unix = createUnix, hooks.months = listMonths, hooks.isDate = isDate, 
+    hooks.locale = getSetGlobalLocale, hooks.invalid = createInvalid, hooks.duration = createDuration, 
+    hooks.isMoment = isMoment, hooks.weekdays = listWeekdays, hooks.parseZone = createInZone, 
+    hooks.localeData = getLocale, hooks.isDuration = isDuration, hooks.monthsShort = listMonthsShort, 
+    hooks.weekdaysMin = listWeekdaysMin, hooks.defineLocale = defineLocale, hooks.updateLocale = updateLocale, 
+    hooks.locales = listLocales, hooks.weekdaysShort = listWeekdaysShort, hooks.normalizeUnits = normalizeUnits, 
+    hooks.relativeTimeRounding = getSetRelativeTimeRounding, hooks.relativeTimeThreshold = getSetRelativeTimeThreshold, 
+    hooks.calendarFormat = getCalendarFormat, hooks.prototype = proto, hooks.defineLocale("af", {
         months: "Januarie_Februarie_Maart_April_Mei_Junie_Julie_Augustus_September_Oktober_November_Desember".split("_"),
         monthsShort: "Jan_Feb_Mrt_Apr_Mei_Jun_Jul_Aug_Sep_Okt_Nov_Des".split("_"),
         weekdays: "Sondag_Maandag_Dinsdag_Woensdag_Donderdag_Vrydag_Saterdag".split("_"),
@@ -25586,7 +25599,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "'n jaar",
             yy: "%d jaar"
         },
-        ordinalParse: /\d{1,2}(ste|de)/,
+        dayOfMonthOrdinalParse: /\d{1,2}(ste|de)/,
         ordinal: function(number) {
             return number + (1 === number || 8 === number || number >= 20 ? "ste" : "de");
         },
@@ -25594,7 +25607,92 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 1,
             doy: 4
         }
-    }), {
+    }), hooks.defineLocale("ar-dz", {
+        months: "جانفي_فيفري_مارس_أفريل_ماي_جوان_جويلية_أوت_سبتمبر_أكتوبر_نوفمبر_ديسمبر".split("_"),
+        monthsShort: "جانفي_فيفري_مارس_أفريل_ماي_جوان_جويلية_أوت_سبتمبر_أكتوبر_نوفمبر_ديسمبر".split("_"),
+        weekdays: "الأحد_الإثنين_الثلاثاء_الأربعاء_الخميس_الجمعة_السبت".split("_"),
+        weekdaysShort: "احد_اثنين_ثلاثاء_اربعاء_خميس_جمعة_سبت".split("_"),
+        weekdaysMin: "أح_إث_ثلا_أر_خم_جم_سب".split("_"),
+        weekdaysParseExact: !0,
+        longDateFormat: {
+            LT: "HH:mm",
+            LTS: "HH:mm:ss",
+            L: "DD/MM/YYYY",
+            LL: "D MMMM YYYY",
+            LLL: "D MMMM YYYY HH:mm",
+            LLLL: "dddd D MMMM YYYY HH:mm"
+        },
+        calendar: {
+            sameDay: "[اليوم على الساعة] LT",
+            nextDay: "[غدا على الساعة] LT",
+            nextWeek: "dddd [على الساعة] LT",
+            lastDay: "[أمس على الساعة] LT",
+            lastWeek: "dddd [على الساعة] LT",
+            sameElse: "L"
+        },
+        relativeTime: {
+            future: "في %s",
+            past: "منذ %s",
+            s: "ثوان",
+            m: "دقيقة",
+            mm: "%d دقائق",
+            h: "ساعة",
+            hh: "%d ساعات",
+            d: "يوم",
+            dd: "%d أيام",
+            M: "شهر",
+            MM: "%d أشهر",
+            y: "سنة",
+            yy: "%d سنوات"
+        },
+        week: {
+            dow: 0,
+            doy: 4
+        }
+    }), hooks.defineLocale("ar-kw", {
+        months: "يناير_فبراير_مارس_أبريل_ماي_يونيو_يوليوز_غشت_شتنبر_أكتوبر_نونبر_دجنبر".split("_"),
+        monthsShort: "يناير_فبراير_مارس_أبريل_ماي_يونيو_يوليوز_غشت_شتنبر_أكتوبر_نونبر_دجنبر".split("_"),
+        weekdays: "الأحد_الإتنين_الثلاثاء_الأربعاء_الخميس_الجمعة_السبت".split("_"),
+        weekdaysShort: "احد_اتنين_ثلاثاء_اربعاء_خميس_جمعة_سبت".split("_"),
+        weekdaysMin: "ح_ن_ث_ر_خ_ج_س".split("_"),
+        weekdaysParseExact: !0,
+        longDateFormat: {
+            LT: "HH:mm",
+            LTS: "HH:mm:ss",
+            L: "DD/MM/YYYY",
+            LL: "D MMMM YYYY",
+            LLL: "D MMMM YYYY HH:mm",
+            LLLL: "dddd D MMMM YYYY HH:mm"
+        },
+        calendar: {
+            sameDay: "[اليوم على الساعة] LT",
+            nextDay: "[غدا على الساعة] LT",
+            nextWeek: "dddd [على الساعة] LT",
+            lastDay: "[أمس على الساعة] LT",
+            lastWeek: "dddd [على الساعة] LT",
+            sameElse: "L"
+        },
+        relativeTime: {
+            future: "في %s",
+            past: "منذ %s",
+            s: "ثوان",
+            m: "دقيقة",
+            mm: "%d دقائق",
+            h: "ساعة",
+            hh: "%d ساعات",
+            d: "يوم",
+            dd: "%d أيام",
+            M: "شهر",
+            MM: "%d أشهر",
+            y: "سنة",
+            yy: "%d سنوات"
+        },
+        week: {
+            dow: 0,
+            doy: 12
+        }
+    });
+    var symbolMap = {
         1: "1",
         2: "2",
         3: "3",
@@ -25605,23 +25703,24 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         8: "8",
         9: "9",
         0: "0"
-    }), ar_ly__pluralForm = function(n) {
+    }, pluralForm = function(n) {
         return 0 === n ? 0 : 1 === n ? 1 : 2 === n ? 2 : n % 100 >= 3 && n % 100 <= 10 ? 3 : n % 100 >= 11 ? 4 : 5;
-    }, ar_ly__plurals = {
+    }, plurals = {
         s: [ "أقل من ثانية", "ثانية واحدة", [ "ثانيتان", "ثانيتين" ], "%d ثوان", "%d ثانية", "%d ثانية" ],
         m: [ "أقل من دقيقة", "دقيقة واحدة", [ "دقيقتان", "دقيقتين" ], "%d دقائق", "%d دقيقة", "%d دقيقة" ],
         h: [ "أقل من ساعة", "ساعة واحدة", [ "ساعتان", "ساعتين" ], "%d ساعات", "%d ساعة", "%d ساعة" ],
         d: [ "أقل من يوم", "يوم واحد", [ "يومان", "يومين" ], "%d أيام", "%d يومًا", "%d يوم" ],
         M: [ "أقل من شهر", "شهر واحد", [ "شهران", "شهرين" ], "%d أشهر", "%d شهرا", "%d شهر" ],
         y: [ "أقل من عام", "عام واحد", [ "عامان", "عامين" ], "%d أعوام", "%d عامًا", "%d عام" ]
-    }, ar_ly__pluralize = function(u) {
+    }, pluralize = function(u) {
         return function(number, withoutSuffix, string, isFuture) {
-            var f = ar_ly__pluralForm(number), str = ar_ly__plurals[u][ar_ly__pluralForm(number)];
+            var f = pluralForm(number), str = plurals[u][pluralForm(number)];
             return 2 === f && (str = str[withoutSuffix ? 0 : 1]), str.replace(/%d/i, number);
         };
-    }, ar_ly__months = [ "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر" ], ar_sa__symbolMap = (moment__default.defineLocale("ar-ly", {
-        months: ar_ly__months,
-        monthsShort: ar_ly__months,
+    }, months$1 = [ "يناير", "فبراير", "مارس", "أبريل", "مايو", "يونيو", "يوليو", "أغسطس", "سبتمبر", "أكتوبر", "نوفمبر", "ديسمبر" ];
+    hooks.defineLocale("ar-ly", {
+        months: months$1,
+        monthsShort: months$1,
         weekdays: "الأحد_الإثنين_الثلاثاء_الأربعاء_الخميس_الجمعة_السبت".split("_"),
         weekdaysShort: "أحد_إثنين_ثلاثاء_أربعاء_خميس_جمعة_سبت".split("_"),
         weekdaysMin: "ح_ن_ث_ر_خ_ج_س".split("_"),
@@ -25652,31 +25751,31 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         relativeTime: {
             future: "بعد %s",
             past: "منذ %s",
-            s: ar_ly__pluralize("s"),
-            m: ar_ly__pluralize("m"),
-            mm: ar_ly__pluralize("m"),
-            h: ar_ly__pluralize("h"),
-            hh: ar_ly__pluralize("h"),
-            d: ar_ly__pluralize("d"),
-            dd: ar_ly__pluralize("d"),
-            M: ar_ly__pluralize("M"),
-            MM: ar_ly__pluralize("M"),
-            y: ar_ly__pluralize("y"),
-            yy: ar_ly__pluralize("y")
+            s: pluralize("s"),
+            m: pluralize("m"),
+            mm: pluralize("m"),
+            h: pluralize("h"),
+            hh: pluralize("h"),
+            d: pluralize("d"),
+            dd: pluralize("d"),
+            M: pluralize("M"),
+            MM: pluralize("M"),
+            y: pluralize("y"),
+            yy: pluralize("y")
         },
         preparse: function(string) {
             return string.replace(/\u200f/g, "").replace(/،/g, ",");
         },
         postformat: function(string) {
             return string.replace(/\d/g, function(match) {
-                return ar_ly__symbolMap[match];
+                return symbolMap[match];
             }).replace(/,/g, "،");
         },
         week: {
             dow: 6,
             doy: 12
         }
-    }), moment__default.defineLocale("ar-ma", {
+    }), hooks.defineLocale("ar-ma", {
         months: "يناير_فبراير_مارس_أبريل_ماي_يونيو_يوليوز_غشت_شتنبر_أكتوبر_نونبر_دجنبر".split("_"),
         monthsShort: "يناير_فبراير_مارس_أبريل_ماي_يونيو_يوليوز_غشت_شتنبر_أكتوبر_نونبر_دجنبر".split("_"),
         weekdays: "الأحد_الإتنين_الثلاثاء_الأربعاء_الخميس_الجمعة_السبت".split("_"),
@@ -25718,7 +25817,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 6,
             doy: 12
         }
-    }), {
+    });
+    var symbolMap$1 = {
         1: "١",
         2: "٢",
         3: "٣",
@@ -25729,7 +25829,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         8: "٨",
         9: "٩",
         0: "٠"
-    }), ar_sa__numberMap = {
+    }, numberMap = {
         "١": "1",
         "٢": "2",
         "٣": "3",
@@ -25740,7 +25840,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         "٨": "8",
         "٩": "9",
         "٠": "0"
-    }, ar__symbolMap = (moment__default.defineLocale("ar-sa", {
+    };
+    hooks.defineLocale("ar-sa", {
         months: "يناير_فبراير_مارس_أبريل_مايو_يونيو_يوليو_أغسطس_سبتمبر_أكتوبر_نوفمبر_ديسمبر".split("_"),
         monthsShort: "يناير_فبراير_مارس_أبريل_مايو_يونيو_يوليو_أغسطس_سبتمبر_أكتوبر_نوفمبر_ديسمبر".split("_"),
         weekdays: "الأحد_الإثنين_الثلاثاء_الأربعاء_الخميس_الجمعة_السبت".split("_"),
@@ -25787,19 +25888,19 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         },
         preparse: function(string) {
             return string.replace(/[١٢٣٤٥٦٧٨٩٠]/g, function(match) {
-                return ar_sa__numberMap[match];
+                return numberMap[match];
             }).replace(/،/g, ",");
         },
         postformat: function(string) {
             return string.replace(/\d/g, function(match) {
-                return ar_sa__symbolMap[match];
+                return symbolMap$1[match];
             }).replace(/,/g, "،");
         },
         week: {
-            dow: 6,
-            doy: 12
+            dow: 0,
+            doy: 6
         }
-    }), moment__default.defineLocale("ar-tn", {
+    }), hooks.defineLocale("ar-tn", {
         months: "جانفي_فيفري_مارس_أفريل_ماي_جوان_جويلية_أوت_سبتمبر_أكتوبر_نوفمبر_ديسمبر".split("_"),
         monthsShort: "جانفي_فيفري_مارس_أفريل_ماي_جوان_جويلية_أوت_سبتمبر_أكتوبر_نوفمبر_ديسمبر".split("_"),
         weekdays: "الأحد_الإثنين_الثلاثاء_الأربعاء_الخميس_الجمعة_السبت".split("_"),
@@ -25841,7 +25942,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 1,
             doy: 4
         }
-    }), {
+    });
+    var symbolMap$2 = {
         1: "١",
         2: "٢",
         3: "٣",
@@ -25852,7 +25954,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         8: "٨",
         9: "٩",
         0: "٠"
-    }), ar__numberMap = {
+    }, numberMap$1 = {
         "١": "1",
         "٢": "2",
         "٣": "3",
@@ -25863,23 +25965,24 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         "٨": "8",
         "٩": "9",
         "٠": "0"
-    }, ar__pluralForm = function(n) {
+    }, pluralForm$1 = function(n) {
         return 0 === n ? 0 : 1 === n ? 1 : 2 === n ? 2 : n % 100 >= 3 && n % 100 <= 10 ? 3 : n % 100 >= 11 ? 4 : 5;
-    }, ar__plurals = {
+    }, plurals$1 = {
         s: [ "أقل من ثانية", "ثانية واحدة", [ "ثانيتان", "ثانيتين" ], "%d ثوان", "%d ثانية", "%d ثانية" ],
         m: [ "أقل من دقيقة", "دقيقة واحدة", [ "دقيقتان", "دقيقتين" ], "%d دقائق", "%d دقيقة", "%d دقيقة" ],
         h: [ "أقل من ساعة", "ساعة واحدة", [ "ساعتان", "ساعتين" ], "%d ساعات", "%d ساعة", "%d ساعة" ],
         d: [ "أقل من يوم", "يوم واحد", [ "يومان", "يومين" ], "%d أيام", "%d يومًا", "%d يوم" ],
         M: [ "أقل من شهر", "شهر واحد", [ "شهران", "شهرين" ], "%d أشهر", "%d شهرا", "%d شهر" ],
         y: [ "أقل من عام", "عام واحد", [ "عامان", "عامين" ], "%d أعوام", "%d عامًا", "%d عام" ]
-    }, ar__pluralize = function(u) {
+    }, pluralize$1 = function(u) {
         return function(number, withoutSuffix, string, isFuture) {
-            var f = ar__pluralForm(number), str = ar__plurals[u][ar__pluralForm(number)];
+            var f = pluralForm$1(number), str = plurals$1[u][pluralForm$1(number)];
             return 2 === f && (str = str[withoutSuffix ? 0 : 1]), str.replace(/%d/i, number);
         };
-    }, ar__months = [ "كانون الثاني يناير", "شباط فبراير", "آذار مارس", "نيسان أبريل", "أيار مايو", "حزيران يونيو", "تموز يوليو", "آب أغسطس", "أيلول سبتمبر", "تشرين الأول أكتوبر", "تشرين الثاني نوفمبر", "كانون الأول ديسمبر" ], az__suffixes = (moment__default.defineLocale("ar", {
-        months: ar__months,
-        monthsShort: ar__months,
+    }, months$2 = [ "كانون الثاني يناير", "شباط فبراير", "آذار مارس", "نيسان أبريل", "أيار مايو", "حزيران يونيو", "تموز يوليو", "آب أغسطس", "أيلول سبتمبر", "تشرين الأول أكتوبر", "تشرين الثاني نوفمبر", "كانون الأول ديسمبر" ];
+    hooks.defineLocale("ar", {
+        months: months$2,
+        monthsShort: months$2,
         weekdays: "الأحد_الإثنين_الثلاثاء_الأربعاء_الخميس_الجمعة_السبت".split("_"),
         weekdaysShort: "أحد_إثنين_ثلاثاء_أربعاء_خميس_جمعة_سبت".split("_"),
         weekdaysMin: "ح_ن_ث_ر_خ_ج_س".split("_"),
@@ -25910,33 +26013,34 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         relativeTime: {
             future: "بعد %s",
             past: "منذ %s",
-            s: ar__pluralize("s"),
-            m: ar__pluralize("m"),
-            mm: ar__pluralize("m"),
-            h: ar__pluralize("h"),
-            hh: ar__pluralize("h"),
-            d: ar__pluralize("d"),
-            dd: ar__pluralize("d"),
-            M: ar__pluralize("M"),
-            MM: ar__pluralize("M"),
-            y: ar__pluralize("y"),
-            yy: ar__pluralize("y")
+            s: pluralize$1("s"),
+            m: pluralize$1("m"),
+            mm: pluralize$1("m"),
+            h: pluralize$1("h"),
+            hh: pluralize$1("h"),
+            d: pluralize$1("d"),
+            dd: pluralize$1("d"),
+            M: pluralize$1("M"),
+            MM: pluralize$1("M"),
+            y: pluralize$1("y"),
+            yy: pluralize$1("y")
         },
         preparse: function(string) {
             return string.replace(/\u200f/g, "").replace(/[١٢٣٤٥٦٧٨٩٠]/g, function(match) {
-                return ar__numberMap[match];
+                return numberMap$1[match];
             }).replace(/،/g, ",");
         },
         postformat: function(string) {
             return string.replace(/\d/g, function(match) {
-                return ar__symbolMap[match];
+                return symbolMap$2[match];
             }).replace(/,/g, "،");
         },
         week: {
             dow: 6,
             doy: 12
         }
-    }), {
+    });
+    var suffixes = {
         1: "-inci",
         5: "-inci",
         8: "-inci",
@@ -25955,7 +26059,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         30: "-uncu",
         60: "-ıncı",
         90: "-ıncı"
-    }), bn__symbolMap = (moment__default.defineLocale("az", {
+    };
+    hooks.defineLocale("az", {
         months: "yanvar_fevral_mart_aprel_may_iyun_iyul_avqust_sentyabr_oktyabr_noyabr_dekabr".split("_"),
         monthsShort: "yan_fev_mar_apr_may_iyn_iyl_avq_sen_okt_noy_dek".split("_"),
         weekdays: "Bazar_Bazar ertəsi_Çərşənbə axşamı_Çərşənbə_Cümə axşamı_Cümə_Şənbə".split("_"),
@@ -26000,17 +26105,17 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         meridiem: function(hour, minute, isLower) {
             return hour < 4 ? "gecə" : hour < 12 ? "səhər" : hour < 17 ? "gündüz" : "axşam";
         },
-        ordinalParse: /\d{1,2}-(ıncı|inci|nci|üncü|ncı|uncu)/,
+        dayOfMonthOrdinalParse: /\d{1,2}-(ıncı|inci|nci|üncü|ncı|uncu)/,
         ordinal: function(number) {
             if (0 === number) return number + "-ıncı";
             var a = number % 10, b = number % 100 - a, c = number >= 100 ? 100 : null;
-            return number + (az__suffixes[a] || az__suffixes[b] || az__suffixes[c]);
+            return number + (suffixes[a] || suffixes[b] || suffixes[c]);
         },
         week: {
             dow: 1,
             doy: 7
         }
-    }), moment__default.defineLocale("be", {
+    }), hooks.defineLocale("be", {
         months: {
             format: "студзеня_лютага_сакавіка_красавіка_траўня_чэрвеня_ліпеня_жніўня_верасня_кастрычніка_лістапада_снежня".split("_"),
             standalone: "студзень_люты_сакавік_красавік_травень_чэрвень_ліпень_жнівень_верасень_кастрычнік_лістапад_снежань".split("_")
@@ -26058,16 +26163,16 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             future: "праз %s",
             past: "%s таму",
             s: "некалькі секунд",
-            m: be__relativeTimeWithPlural,
-            mm: be__relativeTimeWithPlural,
-            h: be__relativeTimeWithPlural,
-            hh: be__relativeTimeWithPlural,
+            m: relativeTimeWithPlural,
+            mm: relativeTimeWithPlural,
+            h: relativeTimeWithPlural,
+            hh: relativeTimeWithPlural,
             d: "дзень",
-            dd: be__relativeTimeWithPlural,
+            dd: relativeTimeWithPlural,
             M: "месяц",
-            MM: be__relativeTimeWithPlural,
+            MM: relativeTimeWithPlural,
             y: "год",
-            yy: be__relativeTimeWithPlural
+            yy: relativeTimeWithPlural
         },
         meridiemParse: /ночы|раніцы|дня|вечара/,
         isPM: function(input) {
@@ -26076,7 +26181,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         meridiem: function(hour, minute, isLower) {
             return hour < 4 ? "ночы" : hour < 12 ? "раніцы" : hour < 17 ? "дня" : "вечара";
         },
-        ordinalParse: /\d{1,2}-(і|ы|га)/,
+        dayOfMonthOrdinalParse: /\d{1,2}-(і|ы|га)/,
         ordinal: function(number, period) {
             switch (period) {
               case "M":
@@ -26084,7 +26189,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
               case "DDD":
               case "w":
               case "W":
-                return number % 10 !== 2 && number % 10 !== 3 || number % 100 === 12 || number % 100 === 13 ? number + "-ы" : number + "-і";
+                return number % 10 != 2 && number % 10 != 3 || number % 100 == 12 || number % 100 == 13 ? number + "-ы" : number + "-і";
 
               case "D":
                 return number + "-га";
@@ -26097,7 +26202,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 1,
             doy: 7
         }
-    }), moment__default.defineLocale("bg", {
+    }), hooks.defineLocale("bg", {
         months: "януари_февруари_март_април_май_юни_юли_август_септември_октомври_ноември_декември".split("_"),
         monthsShort: "янр_фев_мар_апр_май_юни_юли_авг_сеп_окт_ное_дек".split("_"),
         weekdays: "неделя_понеделник_вторник_сряда_четвъртък_петък_събота".split("_"),
@@ -26147,7 +26252,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "година",
             yy: "%d години"
         },
-        ordinalParse: /\d{1,2}-(ев|ен|ти|ви|ри|ми)/,
+        dayOfMonthOrdinalParse: /\d{1,2}-(ев|ен|ти|ви|ри|ми)/,
         ordinal: function(number) {
             var lastDigit = number % 10, last2Digits = number % 100;
             return 0 === number ? number + "-ев" : 0 === last2Digits ? number + "-ен" : last2Digits > 10 && last2Digits < 20 ? number + "-ти" : 1 === lastDigit ? number + "-ви" : 2 === lastDigit ? number + "-ри" : 7 === lastDigit || 8 === lastDigit ? number + "-ми" : number + "-ти";
@@ -26156,7 +26261,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 1,
             doy: 7
         }
-    }), {
+    });
+    var symbolMap$3 = {
         1: "১",
         2: "২",
         3: "৩",
@@ -26167,7 +26273,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         8: "৮",
         9: "৯",
         0: "০"
-    }), bn__numberMap = {
+    }, numberMap$2 = {
         "১": "1",
         "২": "2",
         "৩": "3",
@@ -26178,7 +26284,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         "৮": "8",
         "৯": "9",
         "০": "0"
-    }, bo__symbolMap = (moment__default.defineLocale("bn", {
+    };
+    hooks.defineLocale("bn", {
         months: "জানুয়ারী_ফেব্রুয়ারি_মার্চ_এপ্রিল_মে_জুন_জুলাই_আগস্ট_সেপ্টেম্বর_অক্টোবর_নভেম্বর_ডিসেম্বর".split("_"),
         monthsShort: "জানু_ফেব_মার্চ_এপ্র_মে_জুন_জুল_আগ_সেপ্ট_অক্টো_নভে_ডিসে".split("_"),
         weekdays: "রবিবার_সোমবার_মঙ্গলবার_বুধবার_বৃহস্পতিবার_শুক্রবার_শনিবার".split("_"),
@@ -26217,12 +26324,12 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         },
         preparse: function(string) {
             return string.replace(/[১২৩৪৫৬৭৮৯০]/g, function(match) {
-                return bn__numberMap[match];
+                return numberMap$2[match];
             });
         },
         postformat: function(string) {
             return string.replace(/\d/g, function(match) {
-                return bn__symbolMap[match];
+                return symbolMap$3[match];
             });
         },
         meridiemParse: /রাত|সকাল|দুপুর|বিকাল|রাত/,
@@ -26236,7 +26343,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 0,
             doy: 6
         }
-    }), {
+    });
+    var symbolMap$4 = {
         1: "༡",
         2: "༢",
         3: "༣",
@@ -26247,7 +26355,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         8: "༨",
         9: "༩",
         0: "༠"
-    }), bo__numberMap = {
+    }, numberMap$3 = {
         "༡": "1",
         "༢": "2",
         "༣": "3",
@@ -26258,7 +26366,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         "༨": "8",
         "༩": "9",
         "༠": "0"
-    }, cs__months = (moment__default.defineLocale("bo", {
+    };
+    hooks.defineLocale("bo", {
         months: "ཟླ་བ་དང་པོ_ཟླ་བ་གཉིས་པ_ཟླ་བ་གསུམ་པ_ཟླ་བ་བཞི་པ_ཟླ་བ་ལྔ་པ_ཟླ་བ་དྲུག་པ_ཟླ་བ་བདུན་པ_ཟླ་བ་བརྒྱད་པ_ཟླ་བ་དགུ་པ_ཟླ་བ་བཅུ་པ_ཟླ་བ་བཅུ་གཅིག་པ_ཟླ་བ་བཅུ་གཉིས་པ".split("_"),
         monthsShort: "ཟླ་བ་དང་པོ_ཟླ་བ་གཉིས་པ_ཟླ་བ་གསུམ་པ_ཟླ་བ་བཞི་པ_ཟླ་བ་ལྔ་པ_ཟླ་བ་དྲུག་པ_ཟླ་བ་བདུན་པ_ཟླ་བ་བརྒྱད་པ_ཟླ་བ་དགུ་པ_ཟླ་བ་བཅུ་པ_ཟླ་བ་བཅུ་གཅིག་པ_ཟླ་བ་བཅུ་གཉིས་པ".split("_"),
         weekdays: "གཟའ་ཉི་མ་_གཟའ་ཟླ་བ་_གཟའ་མིག་དམར་_གཟའ་ལྷག་པ་_གཟའ་ཕུར་བུ_གཟའ་པ་སངས་_གཟའ་སྤེན་པ་".split("_"),
@@ -26297,12 +26406,12 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         },
         preparse: function(string) {
             return string.replace(/[༡༢༣༤༥༦༧༨༩༠]/g, function(match) {
-                return bo__numberMap[match];
+                return numberMap$3[match];
             });
         },
         postformat: function(string) {
             return string.replace(/\d/g, function(match) {
-                return bo__symbolMap[match];
+                return symbolMap$4[match];
             });
         },
         meridiemParse: /མཚན་མོ|ཞོགས་ཀས|ཉིན་གུང|དགོང་དག|མཚན་མོ/,
@@ -26316,7 +26425,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 0,
             doy: 6
         }
-    }), moment__default.defineLocale("br", {
+    }), hooks.defineLocale("br", {
         months: "Genver_C'hwevrer_Meurzh_Ebrel_Mae_Mezheven_Gouere_Eost_Gwengolo_Here_Du_Kerzu".split("_"),
         monthsShort: "Gen_C'hwe_Meu_Ebr_Mae_Eve_Gou_Eos_Gwe_Her_Du_Ker".split("_"),
         weekdays: "Sul_Lun_Meurzh_Merc'her_Yaou_Gwener_Sadorn".split("_"),
@@ -26354,16 +26463,15 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "ur bloaz",
             yy: specialMutationForYears
         },
-        ordinalParse: /\d{1,2}(añ|vet)/,
+        dayOfMonthOrdinalParse: /\d{1,2}(añ|vet)/,
         ordinal: function(number) {
-            var output = 1 === number ? "añ" : "vet";
-            return number + output;
+            return number + (1 === number ? "añ" : "vet");
         },
         week: {
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("bs", {
+    }), hooks.defineLocale("bs", {
         months: "januar_februar_mart_april_maj_juni_juli_august_septembar_oktobar_novembar_decembar".split("_"),
         monthsShort: "jan._feb._mar._apr._maj._jun._jul._aug._sep._okt._nov._dec.".split("_"),
         monthsParseExact: !0,
@@ -26423,26 +26531,30 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             future: "za %s",
             past: "prije %s",
             s: "par sekundi",
-            m: bs__translate,
-            mm: bs__translate,
-            h: bs__translate,
-            hh: bs__translate,
+            m: translate,
+            mm: translate,
+            h: translate,
+            hh: translate,
             d: "dan",
-            dd: bs__translate,
+            dd: translate,
             M: "mjesec",
-            MM: bs__translate,
+            MM: translate,
             y: "godinu",
-            yy: bs__translate
+            yy: translate
         },
-        ordinalParse: /\d{1,2}\./,
+        dayOfMonthOrdinalParse: /\d{1,2}\./,
         ordinal: "%d.",
         week: {
             dow: 1,
             doy: 7
         }
-    }), moment__default.defineLocale("ca", {
-        months: "gener_febrer_març_abril_maig_juny_juliol_agost_setembre_octubre_novembre_desembre".split("_"),
-        monthsShort: "gen._febr._mar._abr._mai._jun._jul._ag._set._oct._nov._des.".split("_"),
+    }), hooks.defineLocale("ca", {
+        months: {
+            standalone: "gener_febrer_març_abril_maig_juny_juliol_agost_setembre_octubre_novembre_desembre".split("_"),
+            format: "de gener_de febrer_de març_d'abril_de maig_de juny_de juliol_d'agost_de setembre_d'octubre_de novembre_de desembre".split("_"),
+            isFormat: /D[oD]?(\s)+MMMM/
+        },
+        monthsShort: "gen._febr._març_abr._maig_juny_jul._ag._set._oct._nov._des.".split("_"),
         monthsParseExact: !0,
         weekdays: "diumenge_dilluns_dimarts_dimecres_dijous_divendres_dissabte".split("_"),
         weekdaysShort: "dg._dl._dt._dc._dj._dv._ds.".split("_"),
@@ -26452,9 +26564,12 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             LT: "H:mm",
             LTS: "H:mm:ss",
             L: "DD/MM/YYYY",
-            LL: "D MMMM YYYY",
-            LLL: "D MMMM YYYY H:mm",
-            LLLL: "dddd D MMMM YYYY H:mm"
+            LL: "[el] D MMMM [de] YYYY",
+            ll: "D MMM YYYY",
+            LLL: "[el] D MMMM [de] YYYY [a les] H:mm",
+            lll: "D MMM YYYY, H:mm",
+            LLLL: "[el] dddd D MMMM [de] YYYY [a les] H:mm",
+            llll: "ddd D MMM YYYY, H:mm"
         },
         calendar: {
             sameDay: function() {
@@ -26475,7 +26590,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             sameElse: "L"
         },
         relativeTime: {
-            future: "en %s",
+            future: "d'aquí %s",
             past: "fa %s",
             s: "uns segons",
             m: "un minut",
@@ -26489,7 +26604,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "un any",
             yy: "%d anys"
         },
-        ordinalParse: /\d{1,2}(r|n|t|è|a)/,
+        dayOfMonthOrdinalParse: /\d{1,2}(r|n|t|è|a)/,
         ordinal: function(number, period) {
             var output = 1 === number ? "r" : 2 === number ? "n" : 3 === number ? "r" : 4 === number ? "t" : "è";
             return "w" !== period && "W" !== period || (output = "a"), number + output;
@@ -26498,24 +26613,26 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 1,
             doy: 4
         }
-    }), "leden_únor_březen_duben_květen_červen_červenec_srpen_září_říjen_listopad_prosinec".split("_")), cs__monthsShort = "led_úno_bře_dub_kvě_čvn_čvc_srp_zář_říj_lis_pro".split("_"), dv__months = (moment__default.defineLocale("cs", {
-        months: cs__months,
-        monthsShort: cs__monthsShort,
+    });
+    var months$3 = "leden_únor_březen_duben_květen_červen_červenec_srpen_září_říjen_listopad_prosinec".split("_"), monthsShort = "led_úno_bře_dub_kvě_čvn_čvc_srp_zář_říj_lis_pro".split("_");
+    hooks.defineLocale("cs", {
+        months: months$3,
+        monthsShort: monthsShort,
         monthsParse: function(months, monthsShort) {
             var i, _monthsParse = [];
             for (i = 0; i < 12; i++) _monthsParse[i] = new RegExp("^" + months[i] + "$|^" + monthsShort[i] + "$", "i");
             return _monthsParse;
-        }(cs__months, cs__monthsShort),
+        }(months$3, monthsShort),
         shortMonthsParse: function(monthsShort) {
             var i, _shortMonthsParse = [];
             for (i = 0; i < 12; i++) _shortMonthsParse[i] = new RegExp("^" + monthsShort[i] + "$", "i");
             return _shortMonthsParse;
-        }(cs__monthsShort),
+        }(monthsShort),
         longMonthsParse: function(months) {
             var i, _longMonthsParse = [];
             for (i = 0; i < 12; i++) _longMonthsParse[i] = new RegExp("^" + months[i] + "$", "i");
             return _longMonthsParse;
-        }(cs__months),
+        }(months$3),
         weekdays: "neděle_pondělí_úterý_středa_čtvrtek_pátek_sobota".split("_"),
         weekdaysShort: "ne_po_út_st_čt_pá_so".split("_"),
         weekdaysMin: "ne_po_út_st_čt_pá_so".split("_"),
@@ -26579,25 +26696,25 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         relativeTime: {
             future: "za %s",
             past: "před %s",
-            s: cs__translate,
-            m: cs__translate,
-            mm: cs__translate,
-            h: cs__translate,
-            hh: cs__translate,
-            d: cs__translate,
-            dd: cs__translate,
-            M: cs__translate,
-            MM: cs__translate,
-            y: cs__translate,
-            yy: cs__translate
+            s: translate$1,
+            m: translate$1,
+            mm: translate$1,
+            h: translate$1,
+            hh: translate$1,
+            d: translate$1,
+            dd: translate$1,
+            M: translate$1,
+            MM: translate$1,
+            y: translate$1,
+            yy: translate$1
         },
-        ordinalParse: /\d{1,2}\./,
+        dayOfMonthOrdinalParse: /\d{1,2}\./,
         ordinal: "%d.",
         week: {
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("cv", {
+    }), hooks.defineLocale("cv", {
         months: "кӑрлач_нарӑс_пуш_ака_май_ҫӗртме_утӑ_ҫурла_авӑн_юпа_чӳк_раштав".split("_"),
         monthsShort: "кӑр_нар_пуш_ака_май_ҫӗр_утӑ_ҫур_авн_юпа_чӳк_раш".split("_"),
         weekdays: "вырсарникун_тунтикун_ытларикун_юнкун_кӗҫнерникун_эрнекун_шӑматкун".split("_"),
@@ -26621,8 +26738,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         },
         relativeTime: {
             future: function(output) {
-                var affix = /сехет$/i.exec(output) ? "рен" : /ҫул$/i.exec(output) ? "тан" : "ран";
-                return output + affix;
+                return output + (/сехет$/i.exec(output) ? "рен" : /ҫул$/i.exec(output) ? "тан" : "ран");
             },
             past: "%s каялла",
             s: "пӗр-ик ҫеккунт",
@@ -26637,13 +26753,13 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "пӗр ҫул",
             yy: "%d ҫул"
         },
-        ordinalParse: /\d{1,2}-мӗш/,
+        dayOfMonthOrdinalParse: /\d{1,2}-мӗш/,
         ordinal: "%d-мӗш",
         week: {
             dow: 1,
             doy: 7
         }
-    }), moment__default.defineLocale("cy", {
+    }), hooks.defineLocale("cy", {
         months: "Ionawr_Chwefror_Mawrth_Ebrill_Mai_Mehefin_Gorffennaf_Awst_Medi_Hydref_Tachwedd_Rhagfyr".split("_"),
         monthsShort: "Ion_Chwe_Maw_Ebr_Mai_Meh_Gor_Aws_Med_Hyd_Tach_Rhag".split("_"),
         weekdays: "Dydd Sul_Dydd Llun_Dydd Mawrth_Dydd Mercher_Dydd Iau_Dydd Gwener_Dydd Sadwrn".split("_"),
@@ -26681,7 +26797,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "blwyddyn",
             yy: "%d flynedd"
         },
-        ordinalParse: /\d{1,2}(fed|ain|af|il|ydd|ed|eg)/,
+        dayOfMonthOrdinalParse: /\d{1,2}(fed|ain|af|il|ydd|ed|eg)/,
         ordinal: function(number) {
             var b = number, output = "", lookup = [ "", "af", "il", "ydd", "ydd", "ed", "ed", "ed", "fed", "fed", "fed", "eg", "fed", "eg", "eg", "fed", "eg", "eg", "fed", "eg", "fed" ];
             return b > 20 ? output = 40 === b || 50 === b || 60 === b || 80 === b || 100 === b ? "fed" : "ain" : b > 0 && (output = lookup[b]), 
@@ -26691,7 +26807,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("da", {
+    }), hooks.defineLocale("da", {
         months: "januar_februar_marts_april_maj_juni_juli_august_september_oktober_november_december".split("_"),
         monthsShort: "jan_feb_mar_apr_maj_jun_jul_aug_sep_okt_nov_dec".split("_"),
         weekdays: "søndag_mandag_tirsdag_onsdag_torsdag_fredag_lørdag".split("_"),
@@ -26703,14 +26819,14 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             L: "DD/MM/YYYY",
             LL: "D. MMMM YYYY",
             LLL: "D. MMMM YYYY HH:mm",
-            LLLL: "dddd [d.] D. MMMM YYYY HH:mm"
+            LLLL: "dddd [d.] D. MMMM YYYY [kl.] HH:mm"
         },
         calendar: {
-            sameDay: "[I dag kl.] LT",
-            nextDay: "[I morgen kl.] LT",
-            nextWeek: "dddd [kl.] LT",
-            lastDay: "[I går kl.] LT",
-            lastWeek: "[sidste] dddd [kl] LT",
+            sameDay: "[i dag kl.] LT",
+            nextDay: "[i morgen kl.] LT",
+            nextWeek: "på dddd [kl.] LT",
+            lastDay: "[i går kl.] LT",
+            lastWeek: "[i] dddd[s kl.] LT",
             sameElse: "L"
         },
         relativeTime: {
@@ -26728,13 +26844,13 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "et år",
             yy: "%d år"
         },
-        ordinalParse: /\d{1,2}\./,
+        dayOfMonthOrdinalParse: /\d{1,2}\./,
         ordinal: "%d.",
         week: {
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("de-at", {
+    }), hooks.defineLocale("de-at", {
         months: "Jänner_Februar_März_April_Mai_Juni_Juli_August_September_Oktober_November_Dezember".split("_"),
         monthsShort: "Jän._Febr._Mrz._Apr._Mai_Jun._Jul._Aug._Sept._Okt._Nov._Dez.".split("_"),
         monthsParseExact: !0,
@@ -26762,24 +26878,69 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             future: "in %s",
             past: "vor %s",
             s: "ein paar Sekunden",
-            m: de_at__processRelativeTime,
+            m: processRelativeTime,
             mm: "%d Minuten",
-            h: de_at__processRelativeTime,
+            h: processRelativeTime,
             hh: "%d Stunden",
-            d: de_at__processRelativeTime,
-            dd: de_at__processRelativeTime,
-            M: de_at__processRelativeTime,
-            MM: de_at__processRelativeTime,
-            y: de_at__processRelativeTime,
-            yy: de_at__processRelativeTime
+            d: processRelativeTime,
+            dd: processRelativeTime,
+            M: processRelativeTime,
+            MM: processRelativeTime,
+            y: processRelativeTime,
+            yy: processRelativeTime
         },
-        ordinalParse: /\d{1,2}\./,
+        dayOfMonthOrdinalParse: /\d{1,2}\./,
         ordinal: "%d.",
         week: {
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("de", {
+    }), hooks.defineLocale("de-ch", {
+        months: "Januar_Februar_März_April_Mai_Juni_Juli_August_September_Oktober_November_Dezember".split("_"),
+        monthsShort: "Jan._Febr._März_April_Mai_Juni_Juli_Aug._Sept._Okt._Nov._Dez.".split("_"),
+        monthsParseExact: !0,
+        weekdays: "Sonntag_Montag_Dienstag_Mittwoch_Donnerstag_Freitag_Samstag".split("_"),
+        weekdaysShort: "So_Mo_Di_Mi_Do_Fr_Sa".split("_"),
+        weekdaysMin: "So_Mo_Di_Mi_Do_Fr_Sa".split("_"),
+        weekdaysParseExact: !0,
+        longDateFormat: {
+            LT: "HH.mm",
+            LTS: "HH.mm.ss",
+            L: "DD.MM.YYYY",
+            LL: "D. MMMM YYYY",
+            LLL: "D. MMMM YYYY HH.mm",
+            LLLL: "dddd, D. MMMM YYYY HH.mm"
+        },
+        calendar: {
+            sameDay: "[heute um] LT [Uhr]",
+            sameElse: "L",
+            nextDay: "[morgen um] LT [Uhr]",
+            nextWeek: "dddd [um] LT [Uhr]",
+            lastDay: "[gestern um] LT [Uhr]",
+            lastWeek: "[letzten] dddd [um] LT [Uhr]"
+        },
+        relativeTime: {
+            future: "in %s",
+            past: "vor %s",
+            s: "ein paar Sekunden",
+            m: processRelativeTime$1,
+            mm: "%d Minuten",
+            h: processRelativeTime$1,
+            hh: "%d Stunden",
+            d: processRelativeTime$1,
+            dd: processRelativeTime$1,
+            M: processRelativeTime$1,
+            MM: processRelativeTime$1,
+            y: processRelativeTime$1,
+            yy: processRelativeTime$1
+        },
+        dayOfMonthOrdinalParse: /\d{1,2}\./,
+        ordinal: "%d.",
+        week: {
+            dow: 1,
+            doy: 4
+        }
+    }), hooks.defineLocale("de", {
         months: "Januar_Februar_März_April_Mai_Juni_Juli_August_September_Oktober_November_Dezember".split("_"),
         monthsShort: "Jan._Febr._Mrz._Apr._Mai_Jun._Jul._Aug._Sept._Okt._Nov._Dez.".split("_"),
         monthsParseExact: !0,
@@ -26807,28 +26968,30 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             future: "in %s",
             past: "vor %s",
             s: "ein paar Sekunden",
-            m: de__processRelativeTime,
+            m: processRelativeTime$2,
             mm: "%d Minuten",
-            h: de__processRelativeTime,
+            h: processRelativeTime$2,
             hh: "%d Stunden",
-            d: de__processRelativeTime,
-            dd: de__processRelativeTime,
-            M: de__processRelativeTime,
-            MM: de__processRelativeTime,
-            y: de__processRelativeTime,
-            yy: de__processRelativeTime
+            d: processRelativeTime$2,
+            dd: processRelativeTime$2,
+            M: processRelativeTime$2,
+            MM: processRelativeTime$2,
+            y: processRelativeTime$2,
+            yy: processRelativeTime$2
         },
-        ordinalParse: /\d{1,2}\./,
+        dayOfMonthOrdinalParse: /\d{1,2}\./,
         ordinal: "%d.",
         week: {
             dow: 1,
             doy: 4
         }
-    }), [ "ޖެނުއަރީ", "ފެބްރުއަރީ", "މާރިޗު", "އޭޕްރީލު", "މޭ", "ޖޫން", "ޖުލައި", "އޯގަސްޓު", "ސެޕްޓެމްބަރު", "އޮކްޓޯބަރު", "ނޮވެމްބަރު", "ޑިސެމްބަރު" ]), dv__weekdays = [ "އާދިއްތަ", "ހޯމަ", "އަންގާރަ", "ބުދަ", "ބުރާސްފަތި", "ހުކުރު", "ހޮނިހިރު" ], es_do__monthsShortDot = (moment__default.defineLocale("dv", {
-        months: dv__months,
-        monthsShort: dv__months,
-        weekdays: dv__weekdays,
-        weekdaysShort: dv__weekdays,
+    });
+    var months$4 = [ "ޖެނުއަރީ", "ފެބްރުއަރީ", "މާރިޗު", "އޭޕްރީލު", "މޭ", "ޖޫން", "ޖުލައި", "އޯގަސްޓު", "ސެޕްޓެމްބަރު", "އޮކްޓޯބަރު", "ނޮވެމްބަރު", "ޑިސެމްބަރު" ], weekdays = [ "އާދިއްތަ", "ހޯމަ", "އަންގާރަ", "ބުދަ", "ބުރާސްފަތި", "ހުކުރު", "ހޮނިހިރު" ];
+    hooks.defineLocale("dv", {
+        months: months$4,
+        monthsShort: months$4,
+        weekdays: weekdays,
+        weekdaysShort: weekdays,
         weekdaysMin: "އާދި_ހޯމަ_އަން_ބުދަ_ބުރާ_ހުކު_ހޮނި".split("_"),
         longDateFormat: {
             LT: "HH:mm",
@@ -26878,11 +27041,11 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 7,
             doy: 12
         }
-    }), moment__default.defineLocale("el", {
+    }), hooks.defineLocale("el", {
         monthsNominativeEl: "Ιανουάριος_Φεβρουάριος_Μάρτιος_Απρίλιος_Μάιος_Ιούνιος_Ιούλιος_Αύγουστος_Σεπτέμβριος_Οκτώβριος_Νοέμβριος_Δεκέμβριος".split("_"),
         monthsGenitiveEl: "Ιανουαρίου_Φεβρουαρίου_Μαρτίου_Απριλίου_Μαΐου_Ιουνίου_Ιουλίου_Αυγούστου_Σεπτεμβρίου_Οκτωβρίου_Νοεμβρίου_Δεκεμβρίου".split("_"),
         months: function(momentToFormat, format) {
-            return /D/.test(format.substring(0, format.indexOf("MMMM"))) ? this._monthsGenitiveEl[momentToFormat.month()] : this._monthsNominativeEl[momentToFormat.month()];
+            return momentToFormat ? /D/.test(format.substring(0, format.indexOf("MMMM"))) ? this._monthsGenitiveEl[momentToFormat.month()] : this._monthsNominativeEl[momentToFormat.month()] : this._monthsNominativeEl;
         },
         monthsShort: "Ιαν_Φεβ_Μαρ_Απρ_Μαϊ_Ιουν_Ιουλ_Αυγ_Σεπ_Οκτ_Νοε_Δεκ".split("_"),
         weekdays: "Κυριακή_Δευτέρα_Τρίτη_Τετάρτη_Πέμπτη_Παρασκευή_Σάββατο".split("_"),
@@ -26921,7 +27084,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         },
         calendar: function(key, mom) {
             var output = this._calendarEl[key], hours = mom && mom.hours();
-            return isFunction(output) && (output = output.apply(mom)), output.replace("{}", hours % 12 === 1 ? "στη" : "στις");
+            return isFunction(output) && (output = output.apply(mom)), output.replace("{}", hours % 12 == 1 ? "στη" : "στις");
         },
         relativeTime: {
             future: "σε %s",
@@ -26938,13 +27101,13 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "ένας χρόνος",
             yy: "%d χρόνια"
         },
-        ordinalParse: /\d{1,2}η/,
+        dayOfMonthOrdinalParse: /\d{1,2}η/,
         ordinal: "%dη",
         week: {
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("en-au", {
+    }), hooks.defineLocale("en-au", {
         months: "January_February_March_April_May_June_July_August_September_October_November_December".split("_"),
         monthsShort: "Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec".split("_"),
         weekdays: "Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"),
@@ -26981,16 +27144,16 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "a year",
             yy: "%d years"
         },
-        ordinalParse: /\d{1,2}(st|nd|rd|th)/,
+        dayOfMonthOrdinalParse: /\d{1,2}(st|nd|rd|th)/,
         ordinal: function(number) {
-            var b = number % 10, output = 1 === ~~(number % 100 / 10) ? "th" : 1 === b ? "st" : 2 === b ? "nd" : 3 === b ? "rd" : "th";
-            return number + output;
+            var b = number % 10;
+            return number + (1 == ~~(number % 100 / 10) ? "th" : 1 === b ? "st" : 2 === b ? "nd" : 3 === b ? "rd" : "th");
         },
         week: {
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("en-ca", {
+    }), hooks.defineLocale("en-ca", {
         months: "January_February_March_April_May_June_July_August_September_October_November_December".split("_"),
         monthsShort: "Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec".split("_"),
         weekdays: "Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"),
@@ -27027,12 +27190,12 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "a year",
             yy: "%d years"
         },
-        ordinalParse: /\d{1,2}(st|nd|rd|th)/,
+        dayOfMonthOrdinalParse: /\d{1,2}(st|nd|rd|th)/,
         ordinal: function(number) {
-            var b = number % 10, output = 1 === ~~(number % 100 / 10) ? "th" : 1 === b ? "st" : 2 === b ? "nd" : 3 === b ? "rd" : "th";
-            return number + output;
+            var b = number % 10;
+            return number + (1 == ~~(number % 100 / 10) ? "th" : 1 === b ? "st" : 2 === b ? "nd" : 3 === b ? "rd" : "th");
         }
-    }), moment__default.defineLocale("en-gb", {
+    }), hooks.defineLocale("en-gb", {
         months: "January_February_March_April_May_June_July_August_September_October_November_December".split("_"),
         monthsShort: "Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec".split("_"),
         weekdays: "Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"),
@@ -27069,16 +27232,16 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "a year",
             yy: "%d years"
         },
-        ordinalParse: /\d{1,2}(st|nd|rd|th)/,
+        dayOfMonthOrdinalParse: /\d{1,2}(st|nd|rd|th)/,
         ordinal: function(number) {
-            var b = number % 10, output = 1 === ~~(number % 100 / 10) ? "th" : 1 === b ? "st" : 2 === b ? "nd" : 3 === b ? "rd" : "th";
-            return number + output;
+            var b = number % 10;
+            return number + (1 == ~~(number % 100 / 10) ? "th" : 1 === b ? "st" : 2 === b ? "nd" : 3 === b ? "rd" : "th");
         },
         week: {
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("en-ie", {
+    }), hooks.defineLocale("en-ie", {
         months: "January_February_March_April_May_June_July_August_September_October_November_December".split("_"),
         monthsShort: "Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec".split("_"),
         weekdays: "Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"),
@@ -27115,16 +27278,16 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "a year",
             yy: "%d years"
         },
-        ordinalParse: /\d{1,2}(st|nd|rd|th)/,
+        dayOfMonthOrdinalParse: /\d{1,2}(st|nd|rd|th)/,
         ordinal: function(number) {
-            var b = number % 10, output = 1 === ~~(number % 100 / 10) ? "th" : 1 === b ? "st" : 2 === b ? "nd" : 3 === b ? "rd" : "th";
-            return number + output;
+            var b = number % 10;
+            return number + (1 == ~~(number % 100 / 10) ? "th" : 1 === b ? "st" : 2 === b ? "nd" : 3 === b ? "rd" : "th");
         },
         week: {
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("en-nz", {
+    }), hooks.defineLocale("en-nz", {
         months: "January_February_March_April_May_June_July_August_September_October_November_December".split("_"),
         monthsShort: "Jan_Feb_Mar_Apr_May_Jun_Jul_Aug_Sep_Oct_Nov_Dec".split("_"),
         weekdays: "Sunday_Monday_Tuesday_Wednesday_Thursday_Friday_Saturday".split("_"),
@@ -27161,28 +27324,28 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "a year",
             yy: "%d years"
         },
-        ordinalParse: /\d{1,2}(st|nd|rd|th)/,
+        dayOfMonthOrdinalParse: /\d{1,2}(st|nd|rd|th)/,
         ordinal: function(number) {
-            var b = number % 10, output = 1 === ~~(number % 100 / 10) ? "th" : 1 === b ? "st" : 2 === b ? "nd" : 3 === b ? "rd" : "th";
-            return number + output;
+            var b = number % 10;
+            return number + (1 == ~~(number % 100 / 10) ? "th" : 1 === b ? "st" : 2 === b ? "nd" : 3 === b ? "rd" : "th");
         },
         week: {
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("eo", {
+    }), hooks.defineLocale("eo", {
         months: "januaro_februaro_marto_aprilo_majo_junio_julio_aŭgusto_septembro_oktobro_novembro_decembro".split("_"),
         monthsShort: "jan_feb_mar_apr_maj_jun_jul_aŭg_sep_okt_nov_dec".split("_"),
-        weekdays: "Dimanĉo_Lundo_Mardo_Merkredo_Ĵaŭdo_Vendredo_Sabato".split("_"),
-        weekdaysShort: "Dim_Lun_Mard_Merk_Ĵaŭ_Ven_Sab".split("_"),
-        weekdaysMin: "Di_Lu_Ma_Me_Ĵa_Ve_Sa".split("_"),
+        weekdays: "dimanĉo_lundo_mardo_merkredo_ĵaŭdo_vendredo_sabato".split("_"),
+        weekdaysShort: "dim_lun_mard_merk_ĵaŭ_ven_sab".split("_"),
+        weekdaysMin: "di_lu_ma_me_ĵa_ve_sa".split("_"),
         longDateFormat: {
             LT: "HH:mm",
             LTS: "HH:mm:ss",
             L: "YYYY-MM-DD",
-            LL: "D[-an de] MMMM, YYYY",
-            LLL: "D[-an de] MMMM, YYYY HH:mm",
-            LLLL: "dddd, [la] D[-an de] MMMM, YYYY HH:mm"
+            LL: "D[-a de] MMMM, YYYY",
+            LLL: "D[-a de] MMMM, YYYY HH:mm",
+            LLLL: "dddd, [la] D[-a de] MMMM, YYYY HH:mm"
         },
         meridiemParse: /[ap]\.t\.m/i,
         isPM: function(input) {
@@ -27200,7 +27363,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             sameElse: "L"
         },
         relativeTime: {
-            future: "je %s",
+            future: "post %s",
             past: "antaŭ %s",
             s: "sekundoj",
             m: "minuto",
@@ -27214,16 +27377,18 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "jaro",
             yy: "%d jaroj"
         },
-        ordinalParse: /\d{1,2}a/,
+        dayOfMonthOrdinalParse: /\d{1,2}a/,
         ordinal: "%da",
         week: {
             dow: 1,
             doy: 7
         }
-    }), "ene._feb._mar._abr._may._jun._jul._ago._sep._oct._nov._dic.".split("_")), es_do__monthsShort = "ene_feb_mar_abr_may_jun_jul_ago_sep_oct_nov_dic".split("_"), es__monthsShortDot = (moment__default.defineLocale("es-do", {
+    });
+    var monthsShortDot = "ene._feb._mar._abr._may._jun._jul._ago._sep._oct._nov._dic.".split("_"), monthsShort$1 = "ene_feb_mar_abr_may_jun_jul_ago_sep_oct_nov_dic".split("_");
+    hooks.defineLocale("es-do", {
         months: "enero_febrero_marzo_abril_mayo_junio_julio_agosto_septiembre_octubre_noviembre_diciembre".split("_"),
         monthsShort: function(m, format) {
-            return /-MMM-/.test(format) ? es_do__monthsShort[m.month()] : es_do__monthsShortDot[m.month()];
+            return m ? /-MMM-/.test(format) ? monthsShort$1[m.month()] : monthsShortDot[m.month()] : monthsShortDot;
         },
         monthsParseExact: !0,
         weekdays: "domingo_lunes_martes_miércoles_jueves_viernes_sábado".split("_"),
@@ -27271,16 +27436,18 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "un año",
             yy: "%d años"
         },
-        ordinalParse: /\d{1,2}º/,
+        dayOfMonthOrdinalParse: /\d{1,2}º/,
         ordinal: "%dº",
         week: {
             dow: 1,
             doy: 4
         }
-    }), "ene._feb._mar._abr._may._jun._jul._ago._sep._oct._nov._dic.".split("_")), es__monthsShort = "ene_feb_mar_abr_may_jun_jul_ago_sep_oct_nov_dic".split("_"), fa__symbolMap = (moment__default.defineLocale("es", {
+    });
+    var monthsShortDot$1 = "ene._feb._mar._abr._may._jun._jul._ago._sep._oct._nov._dic.".split("_"), monthsShort$2 = "ene_feb_mar_abr_may_jun_jul_ago_sep_oct_nov_dic".split("_");
+    hooks.defineLocale("es", {
         months: "enero_febrero_marzo_abril_mayo_junio_julio_agosto_septiembre_octubre_noviembre_diciembre".split("_"),
         monthsShort: function(m, format) {
-            return /-MMM-/.test(format) ? es__monthsShort[m.month()] : es__monthsShortDot[m.month()];
+            return m ? /-MMM-/.test(format) ? monthsShort$2[m.month()] : monthsShortDot$1[m.month()] : monthsShortDot$1;
         },
         monthsParseExact: !0,
         weekdays: "domingo_lunes_martes_miércoles_jueves_viernes_sábado".split("_"),
@@ -27328,13 +27495,13 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "un año",
             yy: "%d años"
         },
-        ordinalParse: /\d{1,2}º/,
+        dayOfMonthOrdinalParse: /\d{1,2}º/,
         ordinal: "%dº",
         week: {
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("et", {
+    }), hooks.defineLocale("et", {
         months: "jaanuar_veebruar_märts_aprill_mai_juuni_juuli_august_september_oktoober_november_detsember".split("_"),
         monthsShort: "jaan_veebr_märts_apr_mai_juuni_juuli_aug_sept_okt_nov_dets".split("_"),
         weekdays: "pühapäev_esmaspäev_teisipäev_kolmapäev_neljapäev_reede_laupäev".split("_"),
@@ -27359,25 +27526,25 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         relativeTime: {
             future: "%s pärast",
             past: "%s tagasi",
-            s: et__processRelativeTime,
-            m: et__processRelativeTime,
-            mm: et__processRelativeTime,
-            h: et__processRelativeTime,
-            hh: et__processRelativeTime,
-            d: et__processRelativeTime,
+            s: processRelativeTime$3,
+            m: processRelativeTime$3,
+            mm: processRelativeTime$3,
+            h: processRelativeTime$3,
+            hh: processRelativeTime$3,
+            d: processRelativeTime$3,
             dd: "%d päeva",
-            M: et__processRelativeTime,
-            MM: et__processRelativeTime,
-            y: et__processRelativeTime,
-            yy: et__processRelativeTime
+            M: processRelativeTime$3,
+            MM: processRelativeTime$3,
+            y: processRelativeTime$3,
+            yy: processRelativeTime$3
         },
-        ordinalParse: /\d{1,2}\./,
+        dayOfMonthOrdinalParse: /\d{1,2}\./,
         ordinal: "%d.",
         week: {
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("eu", {
+    }), hooks.defineLocale("eu", {
         months: "urtarrila_otsaila_martxoa_apirila_maiatza_ekaina_uztaila_abuztua_iraila_urria_azaroa_abendua".split("_"),
         monthsShort: "urt._ots._mar._api._mai._eka._uzt._abu._ira._urr._aza._abe.".split("_"),
         monthsParseExact: !0,
@@ -27420,13 +27587,14 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "urte bat",
             yy: "%d urte"
         },
-        ordinalParse: /\d{1,2}\./,
+        dayOfMonthOrdinalParse: /\d{1,2}\./,
         ordinal: "%d.",
         week: {
             dow: 1,
             doy: 7
         }
-    }), {
+    });
+    var symbolMap$5 = {
         1: "۱",
         2: "۲",
         3: "۳",
@@ -27437,7 +27605,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         8: "۸",
         9: "۹",
         0: "۰"
-    }), fa__numberMap = {
+    }, numberMap$4 = {
         "۱": "1",
         "۲": "2",
         "۳": "3",
@@ -27448,7 +27616,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         "۸": "8",
         "۹": "9",
         "۰": "0"
-    }, numbersPast = (moment__default.defineLocale("fa", {
+    };
+    hooks.defineLocale("fa", {
         months: "ژانویه_فوریه_مارس_آوریل_مه_ژوئن_ژوئیه_اوت_سپتامبر_اکتبر_نوامبر_دسامبر".split("_"),
         monthsShort: "ژانویه_فوریه_مارس_آوریل_مه_ژوئن_ژوئیه_اوت_سپتامبر_اکتبر_نوامبر_دسامبر".split("_"),
         weekdays: "یک‌شنبه_دوشنبه_سه‌شنبه_چهارشنبه_پنج‌شنبه_جمعه_شنبه".split("_"),
@@ -27481,7 +27650,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         relativeTime: {
             future: "در %s",
             past: "%s پیش",
-            s: "چندین ثانیه",
+            s: "چند ثانیه",
             m: "یک دقیقه",
             mm: "%d دقیقه",
             h: "یک ساعت",
@@ -27495,21 +27664,23 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         },
         preparse: function(string) {
             return string.replace(/[۰-۹]/g, function(match) {
-                return fa__numberMap[match];
+                return numberMap$4[match];
             }).replace(/،/g, ",");
         },
         postformat: function(string) {
             return string.replace(/\d/g, function(match) {
-                return fa__symbolMap[match];
+                return symbolMap$5[match];
             }).replace(/,/g, "،");
         },
-        ordinalParse: /\d{1,2}م/,
+        dayOfMonthOrdinalParse: /\d{1,2}م/,
         ordinal: "%dم",
         week: {
             dow: 6,
             doy: 12
         }
-    }), "nolla yksi kaksi kolme neljä viisi kuusi seitsemän kahdeksan yhdeksän".split(" ")), numbersFuture = [ "nolla", "yhden", "kahden", "kolmen", "neljän", "viiden", "kuuden", numbersPast[7], numbersPast[8], numbersPast[9] ], fy__monthsShortWithDots = (moment__default.defineLocale("fi", {
+    });
+    var numbersPast = "nolla yksi kaksi kolme neljä viisi kuusi seitsemän kahdeksan yhdeksän".split(" "), numbersFuture = [ "nolla", "yhden", "kahden", "kolmen", "neljän", "viiden", "kuuden", numbersPast[7], numbersPast[8], numbersPast[9] ];
+    hooks.defineLocale("fi", {
         months: "tammikuu_helmikuu_maaliskuu_huhtikuu_toukokuu_kesäkuu_heinäkuu_elokuu_syyskuu_lokakuu_marraskuu_joulukuu".split("_"),
         monthsShort: "tammi_helmi_maalis_huhti_touko_kesä_heinä_elo_syys_loka_marras_joulu".split("_"),
         weekdays: "sunnuntai_maanantai_tiistai_keskiviikko_torstai_perjantai_lauantai".split("_"),
@@ -27538,25 +27709,25 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         relativeTime: {
             future: "%s päästä",
             past: "%s sitten",
-            s: fi__translate,
-            m: fi__translate,
-            mm: fi__translate,
-            h: fi__translate,
-            hh: fi__translate,
-            d: fi__translate,
-            dd: fi__translate,
-            M: fi__translate,
-            MM: fi__translate,
-            y: fi__translate,
-            yy: fi__translate
+            s: translate$2,
+            m: translate$2,
+            mm: translate$2,
+            h: translate$2,
+            hh: translate$2,
+            d: translate$2,
+            dd: translate$2,
+            M: translate$2,
+            MM: translate$2,
+            y: translate$2,
+            yy: translate$2
         },
-        ordinalParse: /\d{1,2}\./,
+        dayOfMonthOrdinalParse: /\d{1,2}\./,
         ordinal: "%d.",
         week: {
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("fo", {
+    }), hooks.defineLocale("fo", {
         months: "januar_februar_mars_apríl_mai_juni_juli_august_september_oktober_november_desember".split("_"),
         monthsShort: "jan_feb_mar_apr_mai_jun_jul_aug_sep_okt_nov_des".split("_"),
         weekdays: "sunnudagur_mánadagur_týsdagur_mikudagur_hósdagur_fríggjadagur_leygardagur".split("_"),
@@ -27593,13 +27764,13 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "eitt ár",
             yy: "%d ár"
         },
-        ordinalParse: /\d{1,2}\./,
+        dayOfMonthOrdinalParse: /\d{1,2}\./,
         ordinal: "%d.",
         week: {
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("fr-ca", {
+    }), hooks.defineLocale("fr-ca", {
         months: "janvier_février_mars_avril_mai_juin_juillet_août_septembre_octobre_novembre_décembre".split("_"),
         monthsShort: "janv._févr._mars_avr._mai_juin_juil._août_sept._oct._nov._déc.".split("_"),
         monthsParseExact: !0,
@@ -27616,7 +27787,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             LLLL: "dddd D MMMM YYYY HH:mm"
         },
         calendar: {
-            sameDay: "[Aujourd'hui à] LT",
+            sameDay: "[Aujourd’hui à] LT",
             nextDay: "[Demain à] LT",
             nextWeek: "dddd [à] LT",
             lastDay: "[Hier à] LT",
@@ -27638,11 +27809,23 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "un an",
             yy: "%d ans"
         },
-        ordinalParse: /\d{1,2}(er|e)/,
-        ordinal: function(number) {
-            return number + (1 === number ? "er" : "e");
+        dayOfMonthOrdinalParse: /\d{1,2}(er|e)/,
+        ordinal: function(number, period) {
+            switch (period) {
+              default:
+              case "M":
+              case "Q":
+              case "D":
+              case "DDD":
+              case "d":
+                return number + (1 === number ? "er" : "e");
+
+              case "w":
+              case "W":
+                return number + (1 === number ? "re" : "e");
+            }
         }
-    }), moment__default.defineLocale("fr-ch", {
+    }), hooks.defineLocale("fr-ch", {
         months: "janvier_février_mars_avril_mai_juin_juillet_août_septembre_octobre_novembre_décembre".split("_"),
         monthsShort: "janv._févr._mars_avr._mai_juin_juil._août_sept._oct._nov._déc.".split("_"),
         monthsParseExact: !0,
@@ -27659,7 +27842,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             LLLL: "dddd D MMMM YYYY HH:mm"
         },
         calendar: {
-            sameDay: "[Aujourd'hui à] LT",
+            sameDay: "[Aujourd’hui à] LT",
             nextDay: "[Demain à] LT",
             nextWeek: "dddd [à] LT",
             lastDay: "[Hier à] LT",
@@ -27681,15 +27864,27 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "un an",
             yy: "%d ans"
         },
-        ordinalParse: /\d{1,2}(er|e)/,
-        ordinal: function(number) {
-            return number + (1 === number ? "er" : "e");
+        dayOfMonthOrdinalParse: /\d{1,2}(er|e)/,
+        ordinal: function(number, period) {
+            switch (period) {
+              default:
+              case "M":
+              case "Q":
+              case "D":
+              case "DDD":
+              case "d":
+                return number + (1 === number ? "er" : "e");
+
+              case "w":
+              case "W":
+                return number + (1 === number ? "re" : "e");
+            }
         },
         week: {
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("fr", {
+    }), hooks.defineLocale("fr", {
         months: "janvier_février_mars_avril_mai_juin_juillet_août_septembre_octobre_novembre_décembre".split("_"),
         monthsShort: "janv._févr._mars_avr._mai_juin_juil._août_sept._oct._nov._déc.".split("_"),
         monthsParseExact: !0,
@@ -27706,7 +27901,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             LLLL: "dddd D MMMM YYYY HH:mm"
         },
         calendar: {
-            sameDay: "[Aujourd'hui à] LT",
+            sameDay: "[Aujourd’hui à] LT",
             nextDay: "[Demain à] LT",
             nextWeek: "dddd [à] LT",
             lastDay: "[Hier à] LT",
@@ -27728,18 +27923,34 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "un an",
             yy: "%d ans"
         },
-        ordinalParse: /\d{1,2}(er|)/,
-        ordinal: function(number) {
-            return number + (1 === number ? "er" : "");
+        dayOfMonthOrdinalParse: /\d{1,2}(er|)/,
+        ordinal: function(number, period) {
+            switch (period) {
+              case "D":
+                return number + (1 === number ? "er" : "");
+
+              default:
+              case "M":
+              case "Q":
+              case "DDD":
+              case "d":
+                return number + (1 === number ? "er" : "e");
+
+              case "w":
+              case "W":
+                return number + (1 === number ? "re" : "e");
+            }
         },
         week: {
             dow: 1,
             doy: 4
         }
-    }), "jan._feb._mrt._apr._mai_jun._jul._aug._sep._okt._nov._des.".split("_")), fy__monthsShortWithoutDots = "jan_feb_mrt_apr_mai_jun_jul_aug_sep_okt_nov_des".split("_"), gd__months = (moment__default.defineLocale("fy", {
+    });
+    var monthsShortWithDots = "jan._feb._mrt._apr._mai_jun._jul._aug._sep._okt._nov._des.".split("_"), monthsShortWithoutDots = "jan_feb_mrt_apr_mai_jun_jul_aug_sep_okt_nov_des".split("_");
+    hooks.defineLocale("fy", {
         months: "jannewaris_febrewaris_maart_april_maaie_juny_july_augustus_septimber_oktober_novimber_desimber".split("_"),
         monthsShort: function(m, format) {
-            return /-MMM-/.test(format) ? fy__monthsShortWithoutDots[m.month()] : fy__monthsShortWithDots[m.month()];
+            return m ? /-MMM-/.test(format) ? monthsShortWithoutDots[m.month()] : monthsShortWithDots[m.month()] : monthsShortWithDots;
         },
         monthsParseExact: !0,
         weekdays: "snein_moandei_tiisdei_woansdei_tongersdei_freed_sneon".split("_"),
@@ -27777,7 +27988,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "ien jier",
             yy: "%d jierren"
         },
-        ordinalParse: /\d{1,2}(ste|de)/,
+        dayOfMonthOrdinalParse: /\d{1,2}(ste|de)/,
         ordinal: function(number) {
             return number + (1 === number || 8 === number || number >= 20 ? "ste" : "de");
         },
@@ -27785,11 +27996,13 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 1,
             doy: 4
         }
-    }), [ "Am Faoilleach", "An Gearran", "Am Màrt", "An Giblean", "An Cèitean", "An t-Ògmhios", "An t-Iuchar", "An Lùnastal", "An t-Sultain", "An Dàmhair", "An t-Samhain", "An Dùbhlachd" ]), gd__monthsShort = [ "Faoi", "Gear", "Màrt", "Gibl", "Cèit", "Ògmh", "Iuch", "Lùn", "Sult", "Dàmh", "Samh", "Dùbh" ], gd__weekdays = [ "Didòmhnaich", "Diluain", "Dimàirt", "Diciadain", "Diardaoin", "Dihaoine", "Disathairne" ], weekdaysShort = [ "Did", "Dil", "Dim", "Dic", "Dia", "Dih", "Dis" ], weekdaysMin = [ "Dò", "Lu", "Mà", "Ci", "Ar", "Ha", "Sa" ], hi__symbolMap = (moment__default.defineLocale("gd", {
-        months: gd__months,
-        monthsShort: gd__monthsShort,
+    });
+    var months$5 = [ "Am Faoilleach", "An Gearran", "Am Màrt", "An Giblean", "An Cèitean", "An t-Ògmhios", "An t-Iuchar", "An Lùnastal", "An t-Sultain", "An Dàmhair", "An t-Samhain", "An Dùbhlachd" ], monthsShort$3 = [ "Faoi", "Gear", "Màrt", "Gibl", "Cèit", "Ògmh", "Iuch", "Lùn", "Sult", "Dàmh", "Samh", "Dùbh" ], weekdays$1 = [ "Didòmhnaich", "Diluain", "Dimàirt", "Diciadain", "Diardaoin", "Dihaoine", "Disathairne" ], weekdaysShort = [ "Did", "Dil", "Dim", "Dic", "Dia", "Dih", "Dis" ], weekdaysMin = [ "Dò", "Lu", "Mà", "Ci", "Ar", "Ha", "Sa" ];
+    hooks.defineLocale("gd", {
+        months: months$5,
+        monthsShort: monthsShort$3,
         monthsParseExact: !0,
-        weekdays: gd__weekdays,
+        weekdays: weekdays$1,
         weekdaysShort: weekdaysShort,
         weekdaysMin: weekdaysMin,
         longDateFormat: {
@@ -27823,16 +28036,15 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "bliadhna",
             yy: "%d bliadhna"
         },
-        ordinalParse: /\d{1,2}(d|na|mh)/,
+        dayOfMonthOrdinalParse: /\d{1,2}(d|na|mh)/,
         ordinal: function(number) {
-            var output = 1 === number ? "d" : number % 10 === 2 ? "na" : "mh";
-            return number + output;
+            return number + (1 === number ? "d" : number % 10 == 2 ? "na" : "mh");
         },
         week: {
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("gl", {
+    }), hooks.defineLocale("gl", {
         months: "xaneiro_febreiro_marzo_abril_maio_xuño_xullo_agosto_setembro_outubro_novembro_decembro".split("_"),
         monthsShort: "xan._feb._mar._abr._mai._xuñ._xul._ago._set._out._nov._dec.".split("_"),
         monthsParseExact: !0,
@@ -27883,13 +28095,80 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "un ano",
             yy: "%d anos"
         },
-        ordinalParse: /\d{1,2}º/,
+        dayOfMonthOrdinalParse: /\d{1,2}º/,
         ordinal: "%dº",
         week: {
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("he", {
+    }), hooks.defineLocale("gom-latn", {
+        months: "Janer_Febrer_Mars_Abril_Mai_Jun_Julai_Agost_Setembr_Otubr_Novembr_Dezembr".split("_"),
+        monthsShort: "Jan._Feb._Mars_Abr._Mai_Jun_Jul._Ago._Set._Otu._Nov._Dez.".split("_"),
+        monthsParseExact: !0,
+        weekdays: "Aitar_Somar_Mongllar_Budvar_Brestar_Sukrar_Son'var".split("_"),
+        weekdaysShort: "Ait._Som._Mon._Bud._Bre._Suk._Son.".split("_"),
+        weekdaysMin: "Ai_Sm_Mo_Bu_Br_Su_Sn".split("_"),
+        weekdaysParseExact: !0,
+        longDateFormat: {
+            LT: "A h:mm [vazta]",
+            LTS: "A h:mm:ss [vazta]",
+            L: "DD-MM-YYYY",
+            LL: "D MMMM YYYY",
+            LLL: "D MMMM YYYY A h:mm [vazta]",
+            LLLL: "dddd, MMMM[achea] Do, YYYY, A h:mm [vazta]",
+            llll: "ddd, D MMM YYYY, A h:mm [vazta]"
+        },
+        calendar: {
+            sameDay: "[Aiz] LT",
+            nextDay: "[Faleam] LT",
+            nextWeek: "[Ieta to] dddd[,] LT",
+            lastDay: "[Kal] LT",
+            lastWeek: "[Fatlo] dddd[,] LT",
+            sameElse: "L"
+        },
+        relativeTime: {
+            future: "%s",
+            past: "%s adim",
+            s: processRelativeTime$4,
+            m: processRelativeTime$4,
+            mm: processRelativeTime$4,
+            h: processRelativeTime$4,
+            hh: processRelativeTime$4,
+            d: processRelativeTime$4,
+            dd: processRelativeTime$4,
+            M: processRelativeTime$4,
+            MM: processRelativeTime$4,
+            y: processRelativeTime$4,
+            yy: processRelativeTime$4
+        },
+        dayOfMonthOrdinalParse: /\d{1,2}(er)/,
+        ordinal: function(number, period) {
+            switch (period) {
+              case "D":
+                return number + "er";
+
+              default:
+              case "M":
+              case "Q":
+              case "DDD":
+              case "d":
+              case "w":
+              case "W":
+                return number;
+            }
+        },
+        week: {
+            dow: 1,
+            doy: 4
+        },
+        meridiemParse: /rati|sokalli|donparam|sanje/,
+        meridiemHour: function(hour, meridiem) {
+            return 12 === hour && (hour = 0), "rati" === meridiem ? hour < 4 ? hour : hour + 12 : "sokalli" === meridiem ? hour : "donparam" === meridiem ? hour > 12 ? hour : hour + 12 : "sanje" === meridiem ? hour + 12 : void 0;
+        },
+        meridiem: function(hour, minute, isLower) {
+            return hour < 4 ? "rati" : hour < 12 ? "sokalli" : hour < 16 ? "donparam" : hour < 20 ? "sanje" : "rati";
+        }
+    }), hooks.defineLocale("he", {
         months: "ינואר_פברואר_מרץ_אפריל_מאי_יוני_יולי_אוגוסט_ספטמבר_אוקטובר_נובמבר_דצמבר".split("_"),
         monthsShort: "ינו׳_פבר׳_מרץ_אפר׳_מאי_יוני_יולי_אוג׳_ספט׳_אוק׳_נוב׳_דצמ׳".split("_"),
         weekdays: "ראשון_שני_שלישי_רביעי_חמישי_שישי_שבת".split("_"),
@@ -27935,7 +28214,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             },
             y: "שנה",
             yy: function(number) {
-                return 2 === number ? "שנתיים" : number % 10 === 0 && 10 !== number ? number + " שנה" : number + " שנים";
+                return 2 === number ? "שנתיים" : number % 10 == 0 && 10 !== number ? number + " שנה" : number + " שנים";
             }
         },
         meridiemParse: /אחה"צ|לפנה"צ|אחרי הצהריים|לפני הצהריים|לפנות בוקר|בבוקר|בערב/i,
@@ -27945,7 +28224,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         meridiem: function(hour, minute, isLower) {
             return hour < 5 ? "לפנות בוקר" : hour < 10 ? "בבוקר" : hour < 12 ? isLower ? 'לפנה"צ' : "לפני הצהריים" : hour < 18 ? isLower ? 'אחה"צ' : "אחרי הצהריים" : "בערב";
         }
-    }), {
+    });
+    var symbolMap$6 = {
         1: "१",
         2: "२",
         3: "३",
@@ -27956,7 +28236,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         8: "८",
         9: "९",
         0: "०"
-    }), hi__numberMap = {
+    }, numberMap$5 = {
         "१": "1",
         "२": "2",
         "३": "3",
@@ -27967,7 +28247,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         "८": "8",
         "९": "9",
         "०": "0"
-    }, weekEndings = (moment__default.defineLocale("hi", {
+    };
+    hooks.defineLocale("hi", {
         months: "जनवरी_फ़रवरी_मार्च_अप्रैल_मई_जून_जुलाई_अगस्त_सितम्बर_अक्टूबर_नवम्बर_दिसम्बर".split("_"),
         monthsShort: "जन._फ़र._मार्च_अप्रै._मई_जून_जुल._अग._सित._अक्टू._नव._दिस.".split("_"),
         monthsParseExact: !0,
@@ -28007,12 +28288,12 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         },
         preparse: function(string) {
             return string.replace(/[१२३४५६७८९०]/g, function(match) {
-                return hi__numberMap[match];
+                return numberMap$5[match];
             });
         },
         postformat: function(string) {
             return string.replace(/\d/g, function(match) {
-                return hi__symbolMap[match];
+                return symbolMap$6[match];
             });
         },
         meridiemParse: /रात|सुबह|दोपहर|शाम/,
@@ -28026,7 +28307,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 0,
             doy: 6
         }
-    }), moment__default.defineLocale("hr", {
+    }), hooks.defineLocale("hr", {
         months: {
             format: "siječnja_veljače_ožujka_travnja_svibnja_lipnja_srpnja_kolovoza_rujna_listopada_studenoga_prosinca".split("_"),
             standalone: "siječanj_veljača_ožujak_travanj_svibanj_lipanj_srpanj_kolovoz_rujan_listopad_studeni_prosinac".split("_")
@@ -28089,24 +28370,26 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             future: "za %s",
             past: "prije %s",
             s: "par sekundi",
-            m: hr__translate,
-            mm: hr__translate,
-            h: hr__translate,
-            hh: hr__translate,
+            m: translate$3,
+            mm: translate$3,
+            h: translate$3,
+            hh: translate$3,
             d: "dan",
-            dd: hr__translate,
+            dd: translate$3,
             M: "mjesec",
-            MM: hr__translate,
+            MM: translate$3,
             y: "godinu",
-            yy: hr__translate
+            yy: translate$3
         },
-        ordinalParse: /\d{1,2}\./,
+        dayOfMonthOrdinalParse: /\d{1,2}\./,
         ordinal: "%d.",
         week: {
             dow: 1,
             doy: 7
         }
-    }), "vasárnap hétfőn kedden szerdán csütörtökön pénteken szombaton".split(" ")), kk__suffixes = (moment__default.defineLocale("hu", {
+    });
+    var weekEndings = "vasárnap hétfőn kedden szerdán csütörtökön pénteken szombaton".split(" ");
+    hooks.defineLocale("hu", {
         months: "január_február_március_április_május_június_július_augusztus_szeptember_október_november_december".split("_"),
         monthsShort: "jan_feb_márc_ápr_máj_jún_júl_aug_szept_okt_nov_dec".split("_"),
         weekdays: "vasárnap_hétfő_kedd_szerda_csütörtök_péntek_szombat".split("_"),
@@ -28125,7 +28408,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return "u" === input.charAt(1).toLowerCase();
         },
         meridiem: function(hours, minutes, isLower) {
-            return hours < 12 ? isLower === !0 ? "de" : "DE" : isLower === !0 ? "du" : "DU";
+            return hours < 12 ? !0 === isLower ? "de" : "DE" : !0 === isLower ? "du" : "DU";
         },
         calendar: {
             sameDay: "[ma] LT[-kor]",
@@ -28142,25 +28425,25 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         relativeTime: {
             future: "%s múlva",
             past: "%s",
-            s: hu__translate,
-            m: hu__translate,
-            mm: hu__translate,
-            h: hu__translate,
-            hh: hu__translate,
-            d: hu__translate,
-            dd: hu__translate,
-            M: hu__translate,
-            MM: hu__translate,
-            y: hu__translate,
-            yy: hu__translate
+            s: translate$4,
+            m: translate$4,
+            mm: translate$4,
+            h: translate$4,
+            hh: translate$4,
+            d: translate$4,
+            dd: translate$4,
+            M: translate$4,
+            MM: translate$4,
+            y: translate$4,
+            yy: translate$4
         },
-        ordinalParse: /\d{1,2}\./,
+        dayOfMonthOrdinalParse: /\d{1,2}\./,
         ordinal: "%d.",
         week: {
             dow: 1,
-            doy: 7
+            doy: 4
         }
-    }), moment__default.defineLocale("hy-am", {
+    }), hooks.defineLocale("hy-am", {
         months: {
             format: "հունվարի_փետրվարի_մարտի_ապրիլի_մայիսի_հունիսի_հուլիսի_օգոստոսի_սեպտեմբերի_հոկտեմբերի_նոյեմբերի_դեկտեմբերի".split("_"),
             standalone: "հունվար_փետրվար_մարտ_ապրիլ_մայիս_հունիս_հուլիս_օգոստոս_սեպտեմբեր_հոկտեմբեր_նոյեմբեր_դեկտեմբեր".split("_")
@@ -28211,7 +28494,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         meridiem: function(hour) {
             return hour < 4 ? "գիշերվա" : hour < 12 ? "առավոտվա" : hour < 17 ? "ցերեկվա" : "երեկոյան";
         },
-        ordinalParse: /\d{1,2}|\d{1,2}-(ին|րդ)/,
+        dayOfMonthOrdinalParse: /\d{1,2}|\d{1,2}-(ին|րդ)/,
         ordinal: function(number, period) {
             switch (period) {
               case "DDD":
@@ -28228,7 +28511,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 1,
             doy: 7
         }
-    }), moment__default.defineLocale("id", {
+    }), hooks.defineLocale("id", {
         months: "Januari_Februari_Maret_April_Mei_Juni_Juli_Agustus_September_Oktober_November_Desember".split("_"),
         monthsShort: "Jan_Feb_Mar_Apr_Mei_Jun_Jul_Ags_Sep_Okt_Nov_Des".split("_"),
         weekdays: "Minggu_Senin_Selasa_Rabu_Kamis_Jumat_Sabtu".split("_"),
@@ -28276,7 +28559,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 1,
             doy: 7
         }
-    }), moment__default.defineLocale("is", {
+    }), hooks.defineLocale("is", {
         months: "janúar_febrúar_mars_apríl_maí_júní_júlí_ágúst_september_október_nóvember_desember".split("_"),
         monthsShort: "jan_feb_mar_apr_maí_jún_júl_ágú_sep_okt_nóv_des".split("_"),
         weekdays: "sunnudagur_mánudagur_þriðjudagur_miðvikudagur_fimmtudagur_föstudagur_laugardagur".split("_"),
@@ -28301,30 +28584,30 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         relativeTime: {
             future: "eftir %s",
             past: "fyrir %s síðan",
-            s: is__translate,
-            m: is__translate,
-            mm: is__translate,
+            s: translate$5,
+            m: translate$5,
+            mm: translate$5,
             h: "klukkustund",
-            hh: is__translate,
-            d: is__translate,
-            dd: is__translate,
-            M: is__translate,
-            MM: is__translate,
-            y: is__translate,
-            yy: is__translate
+            hh: translate$5,
+            d: translate$5,
+            dd: translate$5,
+            M: translate$5,
+            MM: translate$5,
+            y: translate$5,
+            yy: translate$5
         },
-        ordinalParse: /\d{1,2}\./,
+        dayOfMonthOrdinalParse: /\d{1,2}\./,
         ordinal: "%d.",
         week: {
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("it", {
+    }), hooks.defineLocale("it", {
         months: "gennaio_febbraio_marzo_aprile_maggio_giugno_luglio_agosto_settembre_ottobre_novembre_dicembre".split("_"),
         monthsShort: "gen_feb_mar_apr_mag_giu_lug_ago_set_ott_nov_dic".split("_"),
-        weekdays: "Domenica_Lunedì_Martedì_Mercoledì_Giovedì_Venerdì_Sabato".split("_"),
-        weekdaysShort: "Dom_Lun_Mar_Mer_Gio_Ven_Sab".split("_"),
-        weekdaysMin: "Do_Lu_Ma_Me_Gi_Ve_Sa".split("_"),
+        weekdays: "domenica_lunedì_martedì_mercoledì_giovedì_venerdì_sabato".split("_"),
+        weekdaysShort: "dom_lun_mar_mer_gio_ven_sab".split("_"),
+        weekdaysMin: "do_lu_ma_me_gi_ve_sa".split("_"),
         longDateFormat: {
             LT: "HH:mm",
             LTS: "HH:mm:ss",
@@ -28366,25 +28649,29 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "un anno",
             yy: "%d anni"
         },
-        ordinalParse: /\d{1,2}º/,
+        dayOfMonthOrdinalParse: /\d{1,2}º/,
         ordinal: "%dº",
         week: {
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("ja", {
+    }), hooks.defineLocale("ja", {
         months: "1月_2月_3月_4月_5月_6月_7月_8月_9月_10月_11月_12月".split("_"),
         monthsShort: "1月_2月_3月_4月_5月_6月_7月_8月_9月_10月_11月_12月".split("_"),
         weekdays: "日曜日_月曜日_火曜日_水曜日_木曜日_金曜日_土曜日".split("_"),
         weekdaysShort: "日_月_火_水_木_金_土".split("_"),
         weekdaysMin: "日_月_火_水_木_金_土".split("_"),
         longDateFormat: {
-            LT: "Ah時m分",
-            LTS: "Ah時m分s秒",
+            LT: "HH:mm",
+            LTS: "HH:mm:ss",
             L: "YYYY/MM/DD",
             LL: "YYYY年M月D日",
-            LLL: "YYYY年M月D日Ah時m分",
-            LLLL: "YYYY年M月D日Ah時m分 dddd"
+            LLL: "YYYY年M月D日 HH:mm",
+            LLLL: "YYYY年M月D日 HH:mm dddd",
+            l: "YYYY/MM/DD",
+            ll: "YYYY年M月D日",
+            lll: "YYYY年M月D日 HH:mm",
+            llll: "YYYY年M月D日 HH:mm dddd"
         },
         meridiemParse: /午前|午後/i,
         isPM: function(input) {
@@ -28401,7 +28688,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             lastWeek: "[前週]dddd LT",
             sameElse: "L"
         },
-        ordinalParse: /\d{1,2}日/,
+        dayOfMonthOrdinalParse: /\d{1,2}日/,
         ordinal: function(number, period) {
             switch (period) {
               case "d":
@@ -28428,7 +28715,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "1年",
             yy: "%d年"
         }
-    }), moment__default.defineLocale("jv", {
+    }), hooks.defineLocale("jv", {
         months: "Januari_Februari_Maret_April_Mei_Juni_Juli_Agustus_September_Oktober_Nopember_Desember".split("_"),
         monthsShort: "Jan_Feb_Mar_Apr_Mei_Jun_Jul_Ags_Sep_Okt_Nop_Des".split("_"),
         weekdays: "Minggu_Senen_Seloso_Rebu_Kemis_Jemuwah_Septu".split("_"),
@@ -28476,7 +28763,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 1,
             doy: 7
         }
-    }), moment__default.defineLocale("ka", {
+    }), hooks.defineLocale("ka", {
         months: {
             standalone: "იანვარი_თებერვალი_მარტი_აპრილი_მაისი_ივნისი_ივლისი_აგვისტო_სექტემბერი_ოქტომბერი_ნოემბერი_დეკემბერი".split("_"),
             format: "იანვარს_თებერვალს_მარტს_აპრილის_მაისს_ივნისს_ივლისს_აგვისტს_სექტემბერს_ოქტომბერს_ნოემბერს_დეკემბერს".split("_")
@@ -28510,7 +28797,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                 return /(წამი|წუთი|საათი|წელი)/.test(s) ? s.replace(/ი$/, "ში") : s + "ში";
             },
             past: function(s) {
-                return /(წამი|წუთი|საათი|დღე|თვე)/.test(s) ? s.replace(/(ი|ე)$/, "ის წინ") : /წელი/.test(s) ? s.replace(/წელი$/, "წლის წინ") : void 0;
+                return /(წამი|წუთი|საათი|დღე|თვე)/.test(s) ? s.replace(/(ი|ე)$/, "ის უკან") : /წელი/.test(s) ? s.replace(/წელი$/, "წლის უკან") : void 0;
             },
             s: "რამდენიმე წამი",
             m: "წუთი",
@@ -28524,15 +28811,16 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "წელი",
             yy: "%d წელი"
         },
-        ordinalParse: /0|1-ლი|მე-\d{1,2}|\d{1,2}-ე/,
+        dayOfMonthOrdinalParse: /0|1-ლი|მე-\d{1,2}|\d{1,2}-ე/,
         ordinal: function(number) {
-            return 0 === number ? number : 1 === number ? number + "-ლი" : number < 20 || number <= 100 && number % 20 === 0 || number % 100 === 0 ? "მე-" + number : number + "-ე";
+            return 0 === number ? number : 1 === number ? number + "-ლი" : number < 20 || number <= 100 && number % 20 == 0 || number % 100 == 0 ? "მე-" + number : number + "-ე";
         },
         week: {
             dow: 1,
             doy: 7
         }
-    }), {
+    });
+    var suffixes$1 = {
         0: "-ші",
         1: "-ші",
         2: "-ші",
@@ -28553,7 +28841,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         80: "-ші",
         90: "-шы",
         100: "-ші"
-    }), ky__suffixes = (moment__default.defineLocale("kk", {
+    };
+    hooks.defineLocale("kk", {
         months: "қаңтар_ақпан_наурыз_сәуір_мамыр_маусым_шілде_тамыз_қыркүйек_қазан_қараша_желтоқсан".split("_"),
         monthsShort: "қаң_ақп_нау_сәу_мам_мау_шіл_там_қыр_қаз_қар_жел".split("_"),
         weekdays: "жексенбі_дүйсенбі_сейсенбі_сәрсенбі_бейсенбі_жұма_сенбі".split("_"),
@@ -28590,16 +28879,16 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "бір жыл",
             yy: "%d жыл"
         },
-        ordinalParse: /\d{1,2}-(ші|шы)/,
+        dayOfMonthOrdinalParse: /\d{1,2}-(ші|шы)/,
         ordinal: function(number) {
             var a = number % 10, b = number >= 100 ? 100 : null;
-            return number + (kk__suffixes[number] || kk__suffixes[a] || kk__suffixes[b]);
+            return number + (suffixes$1[number] || suffixes$1[a] || suffixes$1[b]);
         },
         week: {
             dow: 1,
             doy: 7
         }
-    }), moment__default.defineLocale("km", {
+    }), hooks.defineLocale("km", {
         months: "មករា_កុម្ភៈ_មីនា_មេសា_ឧសភា_មិថុនា_កក្កដា_សីហា_កញ្ញា_តុលា_វិច្ឆិកា_ធ្នូ".split("_"),
         monthsShort: "មករា_កុម្ភៈ_មីនា_មេសា_ឧសភា_មិថុនា_កក្កដា_សីហា_កញ្ញា_តុលា_វិច្ឆិកា_ធ្នូ".split("_"),
         weekdays: "អាទិត្យ_ច័ន្ទ_អង្គារ_ពុធ_ព្រហស្បតិ៍_សុក្រ_សៅរ៍".split("_"),
@@ -28640,19 +28929,110 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("ko", {
+    });
+    var symbolMap$7 = {
+        1: "೧",
+        2: "೨",
+        3: "೩",
+        4: "೪",
+        5: "೫",
+        6: "೬",
+        7: "೭",
+        8: "೮",
+        9: "೯",
+        0: "೦"
+    }, numberMap$6 = {
+        "೧": "1",
+        "೨": "2",
+        "೩": "3",
+        "೪": "4",
+        "೫": "5",
+        "೬": "6",
+        "೭": "7",
+        "೮": "8",
+        "೯": "9",
+        "೦": "0"
+    };
+    hooks.defineLocale("kn", {
+        months: "ಜನವರಿ_ಫೆಬ್ರವರಿ_ಮಾರ್ಚ್_ಏಪ್ರಿಲ್_ಮೇ_ಜೂನ್_ಜುಲೈ_ಆಗಸ್ಟ್_ಸೆಪ್ಟೆಂಬರ್_ಅಕ್ಟೋಬರ್_ನವೆಂಬರ್_ಡಿಸೆಂಬರ್".split("_"),
+        monthsShort: "ಜನ_ಫೆಬ್ರ_ಮಾರ್ಚ್_ಏಪ್ರಿಲ್_ಮೇ_ಜೂನ್_ಜುಲೈ_ಆಗಸ್ಟ್_ಸೆಪ್ಟೆಂಬ_ಅಕ್ಟೋಬ_ನವೆಂಬ_ಡಿಸೆಂಬ".split("_"),
+        monthsParseExact: !0,
+        weekdays: "ಭಾನುವಾರ_ಸೋಮವಾರ_ಮಂಗಳವಾರ_ಬುಧವಾರ_ಗುರುವಾರ_ಶುಕ್ರವಾರ_ಶನಿವಾರ".split("_"),
+        weekdaysShort: "ಭಾನು_ಸೋಮ_ಮಂಗಳ_ಬುಧ_ಗುರು_ಶುಕ್ರ_ಶನಿ".split("_"),
+        weekdaysMin: "ಭಾ_ಸೋ_ಮಂ_ಬು_ಗು_ಶು_ಶ".split("_"),
+        longDateFormat: {
+            LT: "A h:mm",
+            LTS: "A h:mm:ss",
+            L: "DD/MM/YYYY",
+            LL: "D MMMM YYYY",
+            LLL: "D MMMM YYYY, A h:mm",
+            LLLL: "dddd, D MMMM YYYY, A h:mm"
+        },
+        calendar: {
+            sameDay: "[ಇಂದು] LT",
+            nextDay: "[ನಾಳೆ] LT",
+            nextWeek: "dddd, LT",
+            lastDay: "[ನಿನ್ನೆ] LT",
+            lastWeek: "[ಕೊನೆಯ] dddd, LT",
+            sameElse: "L"
+        },
+        relativeTime: {
+            future: "%s ನಂತರ",
+            past: "%s ಹಿಂದೆ",
+            s: "ಕೆಲವು ಕ್ಷಣಗಳು",
+            m: "ಒಂದು ನಿಮಿಷ",
+            mm: "%d ನಿಮಿಷ",
+            h: "ಒಂದು ಗಂಟೆ",
+            hh: "%d ಗಂಟೆ",
+            d: "ಒಂದು ದಿನ",
+            dd: "%d ದಿನ",
+            M: "ಒಂದು ತಿಂಗಳು",
+            MM: "%d ತಿಂಗಳು",
+            y: "ಒಂದು ವರ್ಷ",
+            yy: "%d ವರ್ಷ"
+        },
+        preparse: function(string) {
+            return string.replace(/[೧೨೩೪೫೬೭೮೯೦]/g, function(match) {
+                return numberMap$6[match];
+            });
+        },
+        postformat: function(string) {
+            return string.replace(/\d/g, function(match) {
+                return symbolMap$7[match];
+            });
+        },
+        meridiemParse: /ರಾತ್ರಿ|ಬೆಳಿಗ್ಗೆ|ಮಧ್ಯಾಹ್ನ|ಸಂಜೆ/,
+        meridiemHour: function(hour, meridiem) {
+            return 12 === hour && (hour = 0), "ರಾತ್ರಿ" === meridiem ? hour < 4 ? hour : hour + 12 : "ಬೆಳಿಗ್ಗೆ" === meridiem ? hour : "ಮಧ್ಯಾಹ್ನ" === meridiem ? hour >= 10 ? hour : hour + 12 : "ಸಂಜೆ" === meridiem ? hour + 12 : void 0;
+        },
+        meridiem: function(hour, minute, isLower) {
+            return hour < 4 ? "ರಾತ್ರಿ" : hour < 10 ? "ಬೆಳಿಗ್ಗೆ" : hour < 17 ? "ಮಧ್ಯಾಹ್ನ" : hour < 20 ? "ಸಂಜೆ" : "ರಾತ್ರಿ";
+        },
+        dayOfMonthOrdinalParse: /\d{1,2}(ನೇ)/,
+        ordinal: function(number) {
+            return number + "ನೇ";
+        },
+        week: {
+            dow: 0,
+            doy: 6
+        }
+    }), hooks.defineLocale("ko", {
         months: "1월_2월_3월_4월_5월_6월_7월_8월_9월_10월_11월_12월".split("_"),
         monthsShort: "1월_2월_3월_4월_5월_6월_7월_8월_9월_10월_11월_12월".split("_"),
         weekdays: "일요일_월요일_화요일_수요일_목요일_금요일_토요일".split("_"),
         weekdaysShort: "일_월_화_수_목_금_토".split("_"),
         weekdaysMin: "일_월_화_수_목_금_토".split("_"),
         longDateFormat: {
-            LT: "A h시 m분",
-            LTS: "A h시 m분 s초",
+            LT: "A h:mm",
+            LTS: "A h:mm:ss",
             L: "YYYY.MM.DD",
             LL: "YYYY년 MMMM D일",
-            LLL: "YYYY년 MMMM D일 A h시 m분",
-            LLLL: "YYYY년 MMMM D일 dddd A h시 m분"
+            LLL: "YYYY년 MMMM D일 A h:mm",
+            LLLL: "YYYY년 MMMM D일 dddd A h:mm",
+            l: "YYYY.MM.DD",
+            ll: "YYYY년 MMMM D일",
+            lll: "YYYY년 MMMM D일 A h:mm",
+            llll: "YYYY년 MMMM D일 dddd A h:mm"
         },
         calendar: {
             sameDay: "오늘 LT",
@@ -28667,7 +29047,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             past: "%s 전",
             s: "몇 초",
             ss: "%d초",
-            m: "일분",
+            m: "1분",
             mm: "%d분",
             h: "한 시간",
             hh: "%d시간",
@@ -28678,7 +29058,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "일 년",
             yy: "%d년"
         },
-        ordinalParse: /\d{1,2}일/,
+        dayOfMonthOrdinalParse: /\d{1,2}일/,
         ordinal: "%d일",
         meridiemParse: /오전|오후/,
         isPM: function(token) {
@@ -28687,7 +29067,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         meridiem: function(hour, minute, isUpper) {
             return hour < 12 ? "오전" : "오후";
         }
-    }), {
+    });
+    var suffixes$2 = {
         0: "-чү",
         1: "-чи",
         2: "-чи",
@@ -28708,7 +29089,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         80: "-чи",
         90: "-чу",
         100: "-чү"
-    }), lt__units = (moment__default.defineLocale("ky", {
+    };
+    hooks.defineLocale("ky", {
         months: "январь_февраль_март_апрель_май_июнь_июль_август_сентябрь_октябрь_ноябрь_декабрь".split("_"),
         monthsShort: "янв_фев_март_апр_май_июнь_июль_авг_сен_окт_ноя_дек".split("_"),
         weekdays: "Жекшемби_Дүйшөмбү_Шейшемби_Шаршемби_Бейшемби_Жума_Ишемби".split("_"),
@@ -28745,16 +29127,16 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "бир жыл",
             yy: "%d жыл"
         },
-        ordinalParse: /\d{1,2}-(чи|чы|чү|чу)/,
+        dayOfMonthOrdinalParse: /\d{1,2}-(чи|чы|чү|чу)/,
         ordinal: function(number) {
             var a = number % 10, b = number >= 100 ? 100 : null;
-            return number + (ky__suffixes[number] || ky__suffixes[a] || ky__suffixes[b]);
+            return number + (suffixes$2[number] || suffixes$2[a] || suffixes$2[b]);
         },
         week: {
             dow: 1,
             doy: 7
         }
-    }), moment__default.defineLocale("lb", {
+    }), hooks.defineLocale("lb", {
         months: "Januar_Februar_Mäerz_Abrëll_Mee_Juni_Juli_August_September_Oktober_November_Dezember".split("_"),
         monthsShort: "Jan._Febr._Mrz._Abr._Mee_Jun._Jul._Aug._Sept._Okt._Nov._Dez.".split("_"),
         monthsParseExact: !0,
@@ -28791,24 +29173,24 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             future: processFutureTime,
             past: processPastTime,
             s: "e puer Sekonnen",
-            m: lb__processRelativeTime,
+            m: processRelativeTime$5,
             mm: "%d Minutten",
-            h: lb__processRelativeTime,
+            h: processRelativeTime$5,
             hh: "%d Stonnen",
-            d: lb__processRelativeTime,
+            d: processRelativeTime$5,
             dd: "%d Deeg",
-            M: lb__processRelativeTime,
+            M: processRelativeTime$5,
             MM: "%d Méint",
-            y: lb__processRelativeTime,
+            y: processRelativeTime$5,
             yy: "%d Joer"
         },
-        ordinalParse: /\d{1,2}\./,
+        dayOfMonthOrdinalParse: /\d{1,2}\./,
         ordinal: "%d.",
         week: {
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("lo", {
+    }), hooks.defineLocale("lo", {
         months: "ມັງກອນ_ກຸມພາ_ມີນາ_ເມສາ_ພຶດສະພາ_ມິຖຸນາ_ກໍລະກົດ_ສິງຫາ_ກັນຍາ_ຕຸລາ_ພະຈິກ_ທັນວາ".split("_"),
         monthsShort: "ມັງກອນ_ກຸມພາ_ມີນາ_ເມສາ_ພຶດສະພາ_ມິຖຸນາ_ກໍລະກົດ_ສິງຫາ_ກັນຍາ_ຕຸລາ_ພະຈິກ_ທັນວາ".split("_"),
         weekdays: "ອາທິດ_ຈັນ_ອັງຄານ_ພຸດ_ພະຫັດ_ສຸກ_ເສົາ".split("_"),
@@ -28853,11 +29235,12 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "1 ປີ",
             yy: "%d ປີ"
         },
-        ordinalParse: /(ທີ່)\d{1,2}/,
+        dayOfMonthOrdinalParse: /(ທີ່)\d{1,2}/,
         ordinal: function(number) {
             return "ທີ່" + number;
         }
-    }), {
+    });
+    var units = {
         m: "minutė_minutės_minutę",
         mm: "minutės_minučių_minutes",
         h: "valanda_valandos_valandą",
@@ -28868,11 +29251,12 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         MM: "mėnesiai_mėnesių_mėnesius",
         y: "metai_metų_metus",
         yy: "metai_metų_metus"
-    }), lv__units = (moment__default.defineLocale("lt", {
+    };
+    hooks.defineLocale("lt", {
         months: {
             format: "sausio_vasario_kovo_balandžio_gegužės_birželio_liepos_rugpjūčio_rugsėjo_spalio_lapkričio_gruodžio".split("_"),
             standalone: "sausis_vasaris_kovas_balandis_gegužė_birželis_liepa_rugpjūtis_rugsėjis_spalis_lapkritis_gruodis".split("_"),
-            isFormat: /D[oD]?(\[[^\[\]]*\]|\s+)+MMMM?|MMMM?(\[[^\[\]]*\]|\s+)+D[oD]?/
+            isFormat: /D[oD]?(\[[^\[\]]*\]|\s)+MMMM?|MMMM?(\[[^\[\]]*\]|\s)+D[oD]?/
         },
         monthsShort: "sau_vas_kov_bal_geg_bir_lie_rgp_rgs_spa_lap_grd".split("_"),
         weekdays: {
@@ -28908,17 +29292,17 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             past: "prieš %s",
             s: translateSeconds,
             m: translateSingular,
-            mm: lt__translate,
+            mm: translate$6,
             h: translateSingular,
-            hh: lt__translate,
+            hh: translate$6,
             d: translateSingular,
-            dd: lt__translate,
+            dd: translate$6,
             M: translateSingular,
-            MM: lt__translate,
+            MM: translate$6,
             y: translateSingular,
-            yy: lt__translate
+            yy: translate$6
         },
-        ordinalParse: /\d{1,2}-oji/,
+        dayOfMonthOrdinalParse: /\d{1,2}-oji/,
         ordinal: function(number) {
             return number + "-oji";
         },
@@ -28926,7 +29310,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 1,
             doy: 4
         }
-    }), {
+    });
+    var units$1 = {
         m: "minūtes_minūtēm_minūte_minūtes".split("_"),
         mm: "minūtes_minūtēm_minūte_minūtes".split("_"),
         h: "stundas_stundām_stunda_stundas".split("_"),
@@ -28937,7 +29322,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         MM: "mēneša_mēnešiem_mēnesis_mēneši".split("_"),
         y: "gada_gadiem_gads_gadi".split("_"),
         yy: "gada_gadiem_gads_gadi".split("_")
-    }), me__translator = (moment__default.defineLocale("lv", {
+    };
+    hooks.defineLocale("lv", {
         months: "janvāris_februāris_marts_aprīlis_maijs_jūnijs_jūlijs_augusts_septembris_oktobris_novembris_decembris".split("_"),
         monthsShort: "jan_feb_mar_apr_mai_jūn_jūl_aug_sep_okt_nov_dec".split("_"),
         weekdays: "svētdiena_pirmdiena_otrdiena_trešdiena_ceturtdiena_piektdiena_sestdiena".split("_"),
@@ -28965,23 +29351,24 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             past: "pirms %s",
             s: relativeSeconds,
             m: relativeTimeWithSingular,
-            mm: lv__relativeTimeWithPlural,
+            mm: relativeTimeWithPlural$1,
             h: relativeTimeWithSingular,
-            hh: lv__relativeTimeWithPlural,
+            hh: relativeTimeWithPlural$1,
             d: relativeTimeWithSingular,
-            dd: lv__relativeTimeWithPlural,
+            dd: relativeTimeWithPlural$1,
             M: relativeTimeWithSingular,
-            MM: lv__relativeTimeWithPlural,
+            MM: relativeTimeWithPlural$1,
             y: relativeTimeWithSingular,
-            yy: lv__relativeTimeWithPlural
+            yy: relativeTimeWithPlural$1
         },
-        ordinalParse: /\d{1,2}\./,
+        dayOfMonthOrdinalParse: /\d{1,2}\./,
         ordinal: "%d.",
         week: {
             dow: 1,
             doy: 4
         }
-    }), {
+    });
+    var translator = {
         words: {
             m: [ "jedan minut", "jednog minuta" ],
             mm: [ "minut", "minuta", "minuta" ],
@@ -28995,10 +29382,11 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return 1 === number ? wordKey[0] : number >= 2 && number <= 4 ? wordKey[1] : wordKey[2];
         },
         translate: function(number, withoutSuffix, key) {
-            var wordKey = me__translator.words[key];
-            return 1 === key.length ? withoutSuffix ? wordKey[0] : wordKey[1] : number + " " + me__translator.correctGrammaticalCase(number, wordKey);
+            var wordKey = translator.words[key];
+            return 1 === key.length ? withoutSuffix ? wordKey[0] : wordKey[1] : number + " " + translator.correctGrammaticalCase(number, wordKey);
         }
-    }), mr__symbolMap = (moment__default.defineLocale("me", {
+    };
+    hooks.defineLocale("me", {
         months: "januar_februar_mart_april_maj_jun_jul_avgust_septembar_oktobar_novembar_decembar".split("_"),
         monthsShort: "jan._feb._mar._apr._maj_jun_jul_avg._sep._okt._nov._dec.".split("_"),
         monthsParseExact: !0,
@@ -29037,8 +29425,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             },
             lastDay: "[juče u] LT",
             lastWeek: function() {
-                var lastWeekDays = [ "[prošle] [nedjelje] [u] LT", "[prošlog] [ponedjeljka] [u] LT", "[prošlog] [utorka] [u] LT", "[prošle] [srijede] [u] LT", "[prošlog] [četvrtka] [u] LT", "[prošlog] [petka] [u] LT", "[prošle] [subote] [u] LT" ];
-                return lastWeekDays[this.day()];
+                return [ "[prošle] [nedjelje] [u] LT", "[prošlog] [ponedjeljka] [u] LT", "[prošlog] [utorka] [u] LT", "[prošle] [srijede] [u] LT", "[prošlog] [četvrtka] [u] LT", "[prošlog] [petka] [u] LT", "[prošle] [subote] [u] LT" ][this.day()];
             },
             sameElse: "L"
         },
@@ -29046,24 +29433,24 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             future: "za %s",
             past: "prije %s",
             s: "nekoliko sekundi",
-            m: me__translator.translate,
-            mm: me__translator.translate,
-            h: me__translator.translate,
-            hh: me__translator.translate,
+            m: translator.translate,
+            mm: translator.translate,
+            h: translator.translate,
+            hh: translator.translate,
             d: "dan",
-            dd: me__translator.translate,
+            dd: translator.translate,
             M: "mjesec",
-            MM: me__translator.translate,
+            MM: translator.translate,
             y: "godinu",
-            yy: me__translator.translate
+            yy: translator.translate
         },
-        ordinalParse: /\d{1,2}\./,
+        dayOfMonthOrdinalParse: /\d{1,2}\./,
         ordinal: "%d.",
         week: {
             dow: 1,
             doy: 7
         }
-    }), moment__default.defineLocale("mi", {
+    }), hooks.defineLocale("mi", {
         months: "Kohi-tāte_Hui-tanguru_Poutū-te-rangi_Paenga-whāwhā_Haratua_Pipiri_Hōngoingoi_Here-turi-kōkā_Mahuru_Whiringa-ā-nuku_Whiringa-ā-rangi_Hakihea".split("_"),
         monthsShort: "Kohi_Hui_Pou_Pae_Hara_Pipi_Hōngoi_Here_Mahu_Whi-nu_Whi-ra_Haki".split("_"),
         monthsRegex: /(?:['a-z\u0101\u014D\u016B]+\-?){1,3}/i,
@@ -29104,13 +29491,13 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "he tau",
             yy: "%d tau"
         },
-        ordinalParse: /\d{1,2}º/,
+        dayOfMonthOrdinalParse: /\d{1,2}º/,
         ordinal: "%dº",
         week: {
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("mk", {
+    }), hooks.defineLocale("mk", {
         months: "јануари_февруари_март_април_мај_јуни_јули_август_септември_октомври_ноември_декември".split("_"),
         monthsShort: "јан_фев_мар_апр_мај_јун_јул_авг_сеп_окт_ное_дек".split("_"),
         weekdays: "недела_понеделник_вторник_среда_четврток_петок_сабота".split("_"),
@@ -29160,7 +29547,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "година",
             yy: "%d години"
         },
-        ordinalParse: /\d{1,2}-(ев|ен|ти|ви|ри|ми)/,
+        dayOfMonthOrdinalParse: /\d{1,2}-(ев|ен|ти|ви|ри|ми)/,
         ordinal: function(number) {
             var lastDigit = number % 10, last2Digits = number % 100;
             return 0 === number ? number + "-ев" : 0 === last2Digits ? number + "-ен" : last2Digits > 10 && last2Digits < 20 ? number + "-ти" : 1 === lastDigit ? number + "-ви" : 2 === lastDigit ? number + "-ри" : 7 === lastDigit || 8 === lastDigit ? number + "-ми" : number + "-ти";
@@ -29169,7 +29556,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 1,
             doy: 7
         }
-    }), moment__default.defineLocale("ml", {
+    }), hooks.defineLocale("ml", {
         months: "ജനുവരി_ഫെബ്രുവരി_മാർച്ച്_ഏപ്രിൽ_മേയ്_ജൂൺ_ജൂലൈ_ഓഗസ്റ്റ്_സെപ്റ്റംബർ_ഒക്ടോബർ_നവംബർ_ഡിസംബർ".split("_"),
         monthsShort: "ജനു._ഫെബ്രു._മാർ._ഏപ്രി._മേയ്_ജൂൺ_ജൂലൈ._ഓഗ._സെപ്റ്റ._ഒക്ടോ._നവം._ഡിസം.".split("_"),
         monthsParseExact: !0,
@@ -29214,7 +29601,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         meridiem: function(hour, minute, isLower) {
             return hour < 4 ? "രാത്രി" : hour < 12 ? "രാവിലെ" : hour < 17 ? "ഉച്ച കഴിഞ്ഞ്" : hour < 20 ? "വൈകുന്നേരം" : "രാത്രി";
         }
-    }), {
+    });
+    var symbolMap$8 = {
         1: "१",
         2: "२",
         3: "३",
@@ -29225,7 +29613,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         8: "८",
         9: "९",
         0: "०"
-    }), mr__numberMap = {
+    }, numberMap$7 = {
         "१": "1",
         "२": "2",
         "३": "3",
@@ -29236,7 +29624,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         "८": "8",
         "९": "9",
         "०": "0"
-    }, my__symbolMap = (moment__default.defineLocale("mr", {
+    };
+    hooks.defineLocale("mr", {
         months: "जानेवारी_फेब्रुवारी_मार्च_एप्रिल_मे_जून_जुलै_ऑगस्ट_सप्टेंबर_ऑक्टोबर_नोव्हेंबर_डिसेंबर".split("_"),
         monthsShort: "जाने._फेब्रु._मार्च._एप्रि._मे._जून._जुलै._ऑग._सप्टें._ऑक्टो._नोव्हें._डिसें.".split("_"),
         monthsParseExact: !0,
@@ -29276,12 +29665,12 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         },
         preparse: function(string) {
             return string.replace(/[१२३४५६७८९०]/g, function(match) {
-                return mr__numberMap[match];
+                return numberMap$7[match];
             });
         },
         postformat: function(string) {
             return string.replace(/\d/g, function(match) {
-                return mr__symbolMap[match];
+                return symbolMap$8[match];
             });
         },
         meridiemParse: /रात्री|सकाळी|दुपारी|सायंकाळी/,
@@ -29295,7 +29684,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 0,
             doy: 6
         }
-    }), moment__default.defineLocale("ms-my", {
+    }), hooks.defineLocale("ms-my", {
         months: "Januari_Februari_Mac_April_Mei_Jun_Julai_Ogos_September_Oktober_November_Disember".split("_"),
         monthsShort: "Jan_Feb_Mac_Apr_Mei_Jun_Jul_Ogs_Sep_Okt_Nov_Dis".split("_"),
         weekdays: "Ahad_Isnin_Selasa_Rabu_Khamis_Jumaat_Sabtu".split("_"),
@@ -29343,7 +29732,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 1,
             doy: 7
         }
-    }), moment__default.defineLocale("ms", {
+    }), hooks.defineLocale("ms", {
         months: "Januari_Februari_Mac_April_Mei_Jun_Julai_Ogos_September_Oktober_November_Disember".split("_"),
         monthsShort: "Jan_Feb_Mac_Apr_Mei_Jun_Jul_Ogs_Sep_Okt_Nov_Dis".split("_"),
         weekdays: "Ahad_Isnin_Selasa_Rabu_Khamis_Jumaat_Sabtu".split("_"),
@@ -29391,7 +29780,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 1,
             doy: 7
         }
-    }), {
+    });
+    var symbolMap$9 = {
         1: "၁",
         2: "၂",
         3: "၃",
@@ -29402,7 +29792,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         8: "၈",
         9: "၉",
         0: "၀"
-    }), my__numberMap = {
+    }, numberMap$8 = {
         "၁": "1",
         "၂": "2",
         "၃": "3",
@@ -29413,7 +29803,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         "၈": "8",
         "၉": "9",
         "၀": "0"
-    }, ne__symbolMap = (moment__default.defineLocale("my", {
+    };
+    hooks.defineLocale("my", {
         months: "ဇန်နဝါရီ_ဖေဖော်ဝါရီ_မတ်_ဧပြီ_မေ_ဇွန်_ဇူလိုင်_သြဂုတ်_စက်တင်ဘာ_အောက်တိုဘာ_နိုဝင်ဘာ_ဒီဇင်ဘာ".split("_"),
         monthsShort: "ဇန်_ဖေ_မတ်_ပြီ_မေ_ဇွန်_လိုင်_သြ_စက်_အောက်_နို_ဒီ".split("_"),
         weekdays: "တနင်္ဂနွေ_တနင်္လာ_အင်္ဂါ_ဗုဒ္ဓဟူး_ကြာသပတေး_သောကြာ_စနေ".split("_"),
@@ -29452,19 +29843,19 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         },
         preparse: function(string) {
             return string.replace(/[၁၂၃၄၅၆၇၈၉၀]/g, function(match) {
-                return my__numberMap[match];
+                return numberMap$8[match];
             });
         },
         postformat: function(string) {
             return string.replace(/\d/g, function(match) {
-                return my__symbolMap[match];
+                return symbolMap$9[match];
             });
         },
         week: {
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("nb", {
+    }), hooks.defineLocale("nb", {
         months: "januar_februar_mars_april_mai_juni_juli_august_september_oktober_november_desember".split("_"),
         monthsShort: "jan._feb._mars_april_mai_juni_juli_aug._sep._okt._nov._des.".split("_"),
         monthsParseExact: !0,
@@ -29503,13 +29894,14 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "ett år",
             yy: "%d år"
         },
-        ordinalParse: /\d{1,2}\./,
+        dayOfMonthOrdinalParse: /\d{1,2}\./,
         ordinal: "%d.",
         week: {
             dow: 1,
             doy: 4
         }
-    }), {
+    });
+    var symbolMap$10 = {
         1: "१",
         2: "२",
         3: "३",
@@ -29520,7 +29912,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         8: "८",
         9: "९",
         0: "०"
-    }), ne__numberMap = {
+    }, numberMap$9 = {
         "१": "1",
         "२": "2",
         "३": "3",
@@ -29531,7 +29923,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         "८": "8",
         "९": "9",
         "०": "0"
-    }, nl__monthsShortWithDots = (moment__default.defineLocale("ne", {
+    };
+    hooks.defineLocale("ne", {
         months: "जनवरी_फेब्रुवरी_मार्च_अप्रिल_मई_जुन_जुलाई_अगष्ट_सेप्टेम्बर_अक्टोबर_नोभेम्बर_डिसेम्बर".split("_"),
         monthsShort: "जन._फेब्रु._मार्च_अप्रि._मई_जुन_जुलाई._अग._सेप्ट._अक्टो._नोभे._डिसे.".split("_"),
         monthsParseExact: !0,
@@ -29549,12 +29942,12 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         },
         preparse: function(string) {
             return string.replace(/[१२३४५६७८९०]/g, function(match) {
-                return ne__numberMap[match];
+                return numberMap$9[match];
             });
         },
         postformat: function(string) {
             return string.replace(/\d/g, function(match) {
-                return ne__symbolMap[match];
+                return symbolMap$10[match];
             });
         },
         meridiemParse: /राति|बिहान|दिउँसो|साँझ/,
@@ -29591,18 +29984,77 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 0,
             doy: 6
         }
-    }), "jan._feb._mrt._apr._mei_jun._jul._aug._sep._okt._nov._dec.".split("_")), nl__monthsShortWithoutDots = "jan_feb_mrt_apr_mei_jun_jul_aug_sep_okt_nov_dec".split("_"), nl__monthsParse = [ /^jan/i, /^feb/i, /^maart|mrt.?$/i, /^apr/i, /^mei$/i, /^jun[i.]?$/i, /^jul[i.]?$/i, /^aug/i, /^sep/i, /^okt/i, /^nov/i, /^dec/i ], nl__monthsRegex = /^(januari|februari|maart|april|mei|april|ju[nl]i|augustus|september|oktober|november|december|jan\.?|feb\.?|mrt\.?|apr\.?|ju[nl]\.?|aug\.?|sep\.?|okt\.?|nov\.?|dec\.?)/i, pa_in__symbolMap = (moment__default.defineLocale("nl", {
+    });
+    var monthsShortWithDots$1 = "jan._feb._mrt._apr._mei_jun._jul._aug._sep._okt._nov._dec.".split("_"), monthsShortWithoutDots$1 = "jan_feb_mrt_apr_mei_jun_jul_aug_sep_okt_nov_dec".split("_"), monthsParse = [ /^jan/i, /^feb/i, /^maart|mrt.?$/i, /^apr/i, /^mei$/i, /^jun[i.]?$/i, /^jul[i.]?$/i, /^aug/i, /^sep/i, /^okt/i, /^nov/i, /^dec/i ], monthsRegex$1 = /^(januari|februari|maart|april|mei|april|ju[nl]i|augustus|september|oktober|november|december|jan\.?|feb\.?|mrt\.?|apr\.?|ju[nl]\.?|aug\.?|sep\.?|okt\.?|nov\.?|dec\.?)/i;
+    hooks.defineLocale("nl-be", {
         months: "januari_februari_maart_april_mei_juni_juli_augustus_september_oktober_november_december".split("_"),
         monthsShort: function(m, format) {
-            return /-MMM-/.test(format) ? nl__monthsShortWithoutDots[m.month()] : nl__monthsShortWithDots[m.month()];
+            return m ? /-MMM-/.test(format) ? monthsShortWithoutDots$1[m.month()] : monthsShortWithDots$1[m.month()] : monthsShortWithDots$1;
         },
-        monthsRegex: nl__monthsRegex,
-        monthsShortRegex: nl__monthsRegex,
+        monthsRegex: monthsRegex$1,
+        monthsShortRegex: monthsRegex$1,
         monthsStrictRegex: /^(januari|februari|maart|mei|ju[nl]i|april|augustus|september|oktober|november|december)/i,
         monthsShortStrictRegex: /^(jan\.?|feb\.?|mrt\.?|apr\.?|mei|ju[nl]\.?|aug\.?|sep\.?|okt\.?|nov\.?|dec\.?)/i,
-        monthsParse: nl__monthsParse,
-        longMonthsParse: nl__monthsParse,
-        shortMonthsParse: nl__monthsParse,
+        monthsParse: monthsParse,
+        longMonthsParse: monthsParse,
+        shortMonthsParse: monthsParse,
+        weekdays: "zondag_maandag_dinsdag_woensdag_donderdag_vrijdag_zaterdag".split("_"),
+        weekdaysShort: "zo._ma._di._wo._do._vr._za.".split("_"),
+        weekdaysMin: "Zo_Ma_Di_Wo_Do_Vr_Za".split("_"),
+        weekdaysParseExact: !0,
+        longDateFormat: {
+            LT: "HH:mm",
+            LTS: "HH:mm:ss",
+            L: "DD/MM/YYYY",
+            LL: "D MMMM YYYY",
+            LLL: "D MMMM YYYY HH:mm",
+            LLLL: "dddd D MMMM YYYY HH:mm"
+        },
+        calendar: {
+            sameDay: "[vandaag om] LT",
+            nextDay: "[morgen om] LT",
+            nextWeek: "dddd [om] LT",
+            lastDay: "[gisteren om] LT",
+            lastWeek: "[afgelopen] dddd [om] LT",
+            sameElse: "L"
+        },
+        relativeTime: {
+            future: "over %s",
+            past: "%s geleden",
+            s: "een paar seconden",
+            m: "één minuut",
+            mm: "%d minuten",
+            h: "één uur",
+            hh: "%d uur",
+            d: "één dag",
+            dd: "%d dagen",
+            M: "één maand",
+            MM: "%d maanden",
+            y: "één jaar",
+            yy: "%d jaar"
+        },
+        dayOfMonthOrdinalParse: /\d{1,2}(ste|de)/,
+        ordinal: function(number) {
+            return number + (1 === number || 8 === number || number >= 20 ? "ste" : "de");
+        },
+        week: {
+            dow: 1,
+            doy: 4
+        }
+    });
+    var monthsShortWithDots$2 = "jan._feb._mrt._apr._mei_jun._jul._aug._sep._okt._nov._dec.".split("_"), monthsShortWithoutDots$2 = "jan_feb_mrt_apr_mei_jun_jul_aug_sep_okt_nov_dec".split("_"), monthsParse$1 = [ /^jan/i, /^feb/i, /^maart|mrt.?$/i, /^apr/i, /^mei$/i, /^jun[i.]?$/i, /^jul[i.]?$/i, /^aug/i, /^sep/i, /^okt/i, /^nov/i, /^dec/i ], monthsRegex$2 = /^(januari|februari|maart|april|mei|april|ju[nl]i|augustus|september|oktober|november|december|jan\.?|feb\.?|mrt\.?|apr\.?|ju[nl]\.?|aug\.?|sep\.?|okt\.?|nov\.?|dec\.?)/i;
+    hooks.defineLocale("nl", {
+        months: "januari_februari_maart_april_mei_juni_juli_augustus_september_oktober_november_december".split("_"),
+        monthsShort: function(m, format) {
+            return m ? /-MMM-/.test(format) ? monthsShortWithoutDots$2[m.month()] : monthsShortWithDots$2[m.month()] : monthsShortWithDots$2;
+        },
+        monthsRegex: monthsRegex$2,
+        monthsShortRegex: monthsRegex$2,
+        monthsStrictRegex: /^(januari|februari|maart|mei|ju[nl]i|april|augustus|september|oktober|november|december)/i,
+        monthsShortStrictRegex: /^(jan\.?|feb\.?|mrt\.?|apr\.?|mei|ju[nl]\.?|aug\.?|sep\.?|okt\.?|nov\.?|dec\.?)/i,
+        monthsParse: monthsParse$1,
+        longMonthsParse: monthsParse$1,
+        shortMonthsParse: monthsParse$1,
         weekdays: "zondag_maandag_dinsdag_woensdag_donderdag_vrijdag_zaterdag".split("_"),
         weekdaysShort: "zo._ma._di._wo._do._vr._za.".split("_"),
         weekdaysMin: "Zo_Ma_Di_Wo_Do_Vr_Za".split("_"),
@@ -29638,7 +30090,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "één jaar",
             yy: "%d jaar"
         },
-        ordinalParse: /\d{1,2}(ste|de)/,
+        dayOfMonthOrdinalParse: /\d{1,2}(ste|de)/,
         ordinal: function(number) {
             return number + (1 === number || 8 === number || number >= 20 ? "ste" : "de");
         },
@@ -29646,7 +30098,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("nn", {
+    }), hooks.defineLocale("nn", {
         months: "januar_februar_mars_april_mai_juni_juli_august_september_oktober_november_desember".split("_"),
         monthsShort: "jan_feb_mar_apr_mai_jun_jul_aug_sep_okt_nov_des".split("_"),
         weekdays: "sundag_måndag_tysdag_onsdag_torsdag_fredag_laurdag".split("_"),
@@ -29683,13 +30135,14 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "eit år",
             yy: "%d år"
         },
-        ordinalParse: /\d{1,2}\./,
+        dayOfMonthOrdinalParse: /\d{1,2}\./,
         ordinal: "%d.",
         week: {
             dow: 1,
             doy: 4
         }
-    }), {
+    });
+    var symbolMap$11 = {
         1: "੧",
         2: "੨",
         3: "੩",
@@ -29700,7 +30153,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         8: "੮",
         9: "੯",
         0: "੦"
-    }), pa_in__numberMap = {
+    }, numberMap$10 = {
         "੧": "1",
         "੨": "2",
         "੩": "3",
@@ -29711,7 +30164,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         "੮": "8",
         "੯": "9",
         "੦": "0"
-    }, monthsNominative = (moment__default.defineLocale("pa-in", {
+    };
+    hooks.defineLocale("pa-in", {
         months: "ਜਨਵਰੀ_ਫ਼ਰਵਰੀ_ਮਾਰਚ_ਅਪ੍ਰੈਲ_ਮਈ_ਜੂਨ_ਜੁਲਾਈ_ਅਗਸਤ_ਸਤੰਬਰ_ਅਕਤੂਬਰ_ਨਵੰਬਰ_ਦਸੰਬਰ".split("_"),
         monthsShort: "ਜਨਵਰੀ_ਫ਼ਰਵਰੀ_ਮਾਰਚ_ਅਪ੍ਰੈਲ_ਮਈ_ਜੂਨ_ਜੁਲਾਈ_ਅਗਸਤ_ਸਤੰਬਰ_ਅਕਤੂਬਰ_ਨਵੰਬਰ_ਦਸੰਬਰ".split("_"),
         weekdays: "ਐਤਵਾਰ_ਸੋਮਵਾਰ_ਮੰਗਲਵਾਰ_ਬੁਧਵਾਰ_ਵੀਰਵਾਰ_ਸ਼ੁੱਕਰਵਾਰ_ਸ਼ਨੀਚਰਵਾਰ".split("_"),
@@ -29750,12 +30204,12 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         },
         preparse: function(string) {
             return string.replace(/[੧੨੩੪੫੬੭੮੯੦]/g, function(match) {
-                return pa_in__numberMap[match];
+                return numberMap$10[match];
             });
         },
         postformat: function(string) {
             return string.replace(/\d/g, function(match) {
-                return pa_in__symbolMap[match];
+                return symbolMap$11[match];
             });
         },
         meridiemParse: /ਰਾਤ|ਸਵੇਰ|ਦੁਪਹਿਰ|ਸ਼ਾਮ/,
@@ -29769,13 +30223,15 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 0,
             doy: 6
         }
-    }), "styczeń_luty_marzec_kwiecień_maj_czerwiec_lipiec_sierpień_wrzesień_październik_listopad_grudzień".split("_")), monthsSubjective = "stycznia_lutego_marca_kwietnia_maja_czerwca_lipca_sierpnia_września_października_listopada_grudnia".split("_"), ru__monthsParse = (moment__default.defineLocale("pl", {
+    });
+    var monthsNominative = "styczeń_luty_marzec_kwiecień_maj_czerwiec_lipiec_sierpień_wrzesień_październik_listopad_grudzień".split("_"), monthsSubjective = "stycznia_lutego_marca_kwietnia_maja_czerwca_lipca_sierpnia_września_października_listopada_grudnia".split("_");
+    hooks.defineLocale("pl", {
         months: function(momentToFormat, format) {
-            return "" === format ? "(" + monthsSubjective[momentToFormat.month()] + "|" + monthsNominative[momentToFormat.month()] + ")" : /D MMMM/.test(format) ? monthsSubjective[momentToFormat.month()] : monthsNominative[momentToFormat.month()];
+            return momentToFormat ? "" === format ? "(" + monthsSubjective[momentToFormat.month()] + "|" + monthsNominative[momentToFormat.month()] + ")" : /D MMMM/.test(format) ? monthsSubjective[momentToFormat.month()] : monthsNominative[momentToFormat.month()] : monthsNominative;
         },
         monthsShort: "sty_lut_mar_kwi_maj_cze_lip_sie_wrz_paź_lis_gru".split("_"),
         weekdays: "niedziela_poniedziałek_wtorek_środa_czwartek_piątek_sobota".split("_"),
-        weekdaysShort: "nie_pon_wt_śr_czw_pt_sb".split("_"),
+        weekdaysShort: "ndz_pon_wt_śr_czw_pt_sob".split("_"),
         weekdaysMin: "Nd_Pn_Wt_Śr_Cz_Pt_So".split("_"),
         longDateFormat: {
             LT: "HH:mm",
@@ -29811,29 +30267,29 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             future: "za %s",
             past: "%s temu",
             s: "kilka sekund",
-            m: pl__translate,
-            mm: pl__translate,
-            h: pl__translate,
-            hh: pl__translate,
+            m: translate$7,
+            mm: translate$7,
+            h: translate$7,
+            hh: translate$7,
             d: "1 dzień",
             dd: "%d dni",
             M: "miesiąc",
-            MM: pl__translate,
+            MM: translate$7,
             y: "rok",
-            yy: pl__translate
+            yy: translate$7
         },
-        ordinalParse: /\d{1,2}\./,
+        dayOfMonthOrdinalParse: /\d{1,2}\./,
         ordinal: "%d.",
         week: {
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("pt-br", {
+    }), hooks.defineLocale("pt-br", {
         months: "Janeiro_Fevereiro_Março_Abril_Maio_Junho_Julho_Agosto_Setembro_Outubro_Novembro_Dezembro".split("_"),
         monthsShort: "Jan_Fev_Mar_Abr_Mai_Jun_Jul_Ago_Set_Out_Nov_Dez".split("_"),
         weekdays: "Domingo_Segunda-feira_Terça-feira_Quarta-feira_Quinta-feira_Sexta-feira_Sábado".split("_"),
         weekdaysShort: "Dom_Seg_Ter_Qua_Qui_Sex_Sáb".split("_"),
-        weekdaysMin: "Dom_2ª_3ª_4ª_5ª_6ª_Sáb".split("_"),
+        weekdaysMin: "Do_2ª_3ª_4ª_5ª_6ª_Sá".split("_"),
         weekdaysParseExact: !0,
         longDateFormat: {
             LT: "HH:mm",
@@ -29868,14 +30324,14 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "um ano",
             yy: "%d anos"
         },
-        ordinalParse: /\d{1,2}º/,
+        dayOfMonthOrdinalParse: /\d{1,2}º/,
         ordinal: "%dº"
-    }), moment__default.defineLocale("pt", {
+    }), hooks.defineLocale("pt", {
         months: "Janeiro_Fevereiro_Março_Abril_Maio_Junho_Julho_Agosto_Setembro_Outubro_Novembro_Dezembro".split("_"),
         monthsShort: "Jan_Fev_Mar_Abr_Mai_Jun_Jul_Ago_Set_Out_Nov_Dez".split("_"),
         weekdays: "Domingo_Segunda-Feira_Terça-Feira_Quarta-Feira_Quinta-Feira_Sexta-Feira_Sábado".split("_"),
         weekdaysShort: "Dom_Seg_Ter_Qua_Qui_Sex_Sáb".split("_"),
-        weekdaysMin: "Dom_2ª_3ª_4ª_5ª_6ª_Sáb".split("_"),
+        weekdaysMin: "Do_2ª_3ª_4ª_5ª_6ª_Sá".split("_"),
         weekdaysParseExact: !0,
         longDateFormat: {
             LT: "HH:mm",
@@ -29910,13 +30366,13 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "um ano",
             yy: "%d anos"
         },
-        ordinalParse: /\d{1,2}º/,
+        dayOfMonthOrdinalParse: /\d{1,2}º/,
         ordinal: "%dº",
         week: {
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("ro", {
+    }), hooks.defineLocale("ro", {
         months: "ianuarie_februarie_martie_aprilie_mai_iunie_iulie_august_septembrie_octombrie_noiembrie_decembrie".split("_"),
         monthsShort: "ian._febr._mart._apr._mai_iun._iul._aug._sept._oct._nov._dec.".split("_"),
         monthsParseExact: !0,
@@ -29944,21 +30400,23 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             past: "%s în urmă",
             s: "câteva secunde",
             m: "un minut",
-            mm: ro__relativeTimeWithPlural,
+            mm: relativeTimeWithPlural$2,
             h: "o oră",
-            hh: ro__relativeTimeWithPlural,
+            hh: relativeTimeWithPlural$2,
             d: "o zi",
-            dd: ro__relativeTimeWithPlural,
+            dd: relativeTimeWithPlural$2,
             M: "o lună",
-            MM: ro__relativeTimeWithPlural,
+            MM: relativeTimeWithPlural$2,
             y: "un an",
-            yy: ro__relativeTimeWithPlural
+            yy: relativeTimeWithPlural$2
         },
         week: {
             dow: 1,
             doy: 7
         }
-    }), [ /^янв/i, /^фев/i, /^мар/i, /^апр/i, /^ма[йя]/i, /^июн/i, /^июл/i, /^авг/i, /^сен/i, /^окт/i, /^ноя/i, /^дек/i ]), sk__months = (moment__default.defineLocale("ru", {
+    });
+    var monthsParse$2 = [ /^янв/i, /^фев/i, /^мар/i, /^апр/i, /^ма[йя]/i, /^июн/i, /^июл/i, /^авг/i, /^сен/i, /^окт/i, /^ноя/i, /^дек/i ];
+    hooks.defineLocale("ru", {
         months: {
             format: "января_февраля_марта_апреля_мая_июня_июля_августа_сентября_октября_ноября_декабря".split("_"),
             standalone: "январь_февраль_март_апрель_май_июнь_июль_август_сентябрь_октябрь_ноябрь_декабрь".split("_")
@@ -29974,9 +30432,9 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         },
         weekdaysShort: "вс_пн_вт_ср_чт_пт_сб".split("_"),
         weekdaysMin: "вс_пн_вт_ср_чт_пт_сб".split("_"),
-        monthsParse: ru__monthsParse,
-        longMonthsParse: ru__monthsParse,
-        shortMonthsParse: ru__monthsParse,
+        monthsParse: monthsParse$2,
+        longMonthsParse: monthsParse$2,
+        shortMonthsParse: monthsParse$2,
         monthsRegex: /^(январ[ья]|янв\.?|феврал[ья]|февр?\.?|марта?|мар\.?|апрел[ья]|апр\.?|ма[йя]|июн[ья]|июн\.?|июл[ья]|июл\.?|августа?|авг\.?|сентябр[ья]|сент?\.?|октябр[ья]|окт\.?|ноябр[ья]|нояб?\.?|декабр[ья]|дек\.?)/i,
         monthsShortRegex: /^(январ[ья]|янв\.?|феврал[ья]|февр?\.?|марта?|мар\.?|апрел[ья]|апр\.?|ма[йя]|июн[ья]|июн\.?|июл[ья]|июл\.?|августа?|авг\.?|сентябр[ья]|сент?\.?|октябр[ья]|окт\.?|ноябр[ья]|нояб?\.?|декабр[ья]|дек\.?)/i,
         monthsStrictRegex: /^(январ[яь]|феврал[яь]|марта?|апрел[яь]|ма[яй]|июн[яь]|июл[яь]|августа?|сентябр[яь]|октябр[яь]|ноябр[яь]|декабр[яь])/i,
@@ -30033,16 +30491,16 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             future: "через %s",
             past: "%s назад",
             s: "несколько секунд",
-            m: ru__relativeTimeWithPlural,
-            mm: ru__relativeTimeWithPlural,
+            m: relativeTimeWithPlural$3,
+            mm: relativeTimeWithPlural$3,
             h: "час",
-            hh: ru__relativeTimeWithPlural,
+            hh: relativeTimeWithPlural$3,
             d: "день",
-            dd: ru__relativeTimeWithPlural,
+            dd: relativeTimeWithPlural$3,
             M: "месяц",
-            MM: ru__relativeTimeWithPlural,
+            MM: relativeTimeWithPlural$3,
             y: "год",
-            yy: ru__relativeTimeWithPlural
+            yy: relativeTimeWithPlural$3
         },
         meridiemParse: /ночи|утра|дня|вечера/i,
         isPM: function(input) {
@@ -30051,7 +30509,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         meridiem: function(hour, minute, isLower) {
             return hour < 4 ? "ночи" : hour < 12 ? "утра" : hour < 17 ? "дня" : "вечера";
         },
-        ordinalParse: /\d{1,2}-(й|го|я)/,
+        dayOfMonthOrdinalParse: /\d{1,2}-(й|го|я)/,
         ordinal: function(number, period) {
             switch (period) {
               case "M":
@@ -30074,7 +30532,63 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 1,
             doy: 7
         }
-    }), moment__default.defineLocale("se", {
+    });
+    var months$6 = [ "جنوري", "فيبروري", "مارچ", "اپريل", "مئي", "جون", "جولاءِ", "آگسٽ", "سيپٽمبر", "آڪٽوبر", "نومبر", "ڊسمبر" ], days$1 = [ "آچر", "سومر", "اڱارو", "اربع", "خميس", "جمع", "ڇنڇر" ];
+    hooks.defineLocale("sd", {
+        months: months$6,
+        monthsShort: months$6,
+        weekdays: days$1,
+        weekdaysShort: days$1,
+        weekdaysMin: days$1,
+        longDateFormat: {
+            LT: "HH:mm",
+            LTS: "HH:mm:ss",
+            L: "DD/MM/YYYY",
+            LL: "D MMMM YYYY",
+            LLL: "D MMMM YYYY HH:mm",
+            LLLL: "dddd، D MMMM YYYY HH:mm"
+        },
+        meridiemParse: /صبح|شام/,
+        isPM: function(input) {
+            return "شام" === input;
+        },
+        meridiem: function(hour, minute, isLower) {
+            return hour < 12 ? "صبح" : "شام";
+        },
+        calendar: {
+            sameDay: "[اڄ] LT",
+            nextDay: "[سڀاڻي] LT",
+            nextWeek: "dddd [اڳين هفتي تي] LT",
+            lastDay: "[ڪالهه] LT",
+            lastWeek: "[گزريل هفتي] dddd [تي] LT",
+            sameElse: "L"
+        },
+        relativeTime: {
+            future: "%s پوء",
+            past: "%s اڳ",
+            s: "چند سيڪنڊ",
+            m: "هڪ منٽ",
+            mm: "%d منٽ",
+            h: "هڪ ڪلاڪ",
+            hh: "%d ڪلاڪ",
+            d: "هڪ ڏينهن",
+            dd: "%d ڏينهن",
+            M: "هڪ مهينو",
+            MM: "%d مهينا",
+            y: "هڪ سال",
+            yy: "%d سال"
+        },
+        preparse: function(string) {
+            return string.replace(/،/g, ",");
+        },
+        postformat: function(string) {
+            return string.replace(/,/g, "،");
+        },
+        week: {
+            dow: 1,
+            doy: 4
+        }
+    }), hooks.defineLocale("se", {
         months: "ođđajagemánnu_guovvamánnu_njukčamánnu_cuoŋománnu_miessemánnu_geassemánnu_suoidnemánnu_borgemánnu_čakčamánnu_golggotmánnu_skábmamánnu_juovlamánnu".split("_"),
         monthsShort: "ođđj_guov_njuk_cuo_mies_geas_suoi_borg_čakč_golg_skáb_juov".split("_"),
         weekdays: "sotnabeaivi_vuossárga_maŋŋebárga_gaskavahkku_duorastat_bearjadat_lávvardat".split("_"),
@@ -30111,13 +30625,13 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "okta jahki",
             yy: "%d jagit"
         },
-        ordinalParse: /\d{1,2}\./,
+        dayOfMonthOrdinalParse: /\d{1,2}\./,
         ordinal: "%d.",
         week: {
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("si", {
+    }), hooks.defineLocale("si", {
         months: "ජනවාරි_පෙබරවාරි_මාර්තු_අප්‍රේල්_මැයි_ජූනි_ජූලි_අගෝස්තු_සැප්තැම්බර්_ඔක්තෝබර්_නොවැම්බර්_දෙසැම්බර්".split("_"),
         monthsShort: "ජන_පෙබ_මාර්_අප්_මැයි_ජූනි_ජූලි_අගෝ_සැප්_ඔක්_නොවැ_දෙසැ".split("_"),
         weekdays: "ඉරිදා_සඳුදා_අඟහරුවාදා_බදාදා_බ්‍රහස්පතින්දා_සිකුරාදා_සෙනසුරාදා".split("_"),
@@ -30155,7 +30669,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "වසර",
             yy: "වසර %d"
         },
-        ordinalParse: /\d{1,2} වැනි/,
+        dayOfMonthOrdinalParse: /\d{1,2} වැනි/,
         ordinal: function(number) {
             return number + " වැනි";
         },
@@ -30166,9 +30680,11 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         meridiem: function(hours, minutes, isLower) {
             return hours > 11 ? isLower ? "ප.ව." : "පස් වරු" : isLower ? "පෙ.ව." : "පෙර වරු";
         }
-    }), "január_február_marec_apríl_máj_jún_júl_august_september_október_november_december".split("_")), sk__monthsShort = "jan_feb_mar_apr_máj_jún_júl_aug_sep_okt_nov_dec".split("_"), sr_cyrl__translator = (moment__default.defineLocale("sk", {
-        months: sk__months,
-        monthsShort: sk__monthsShort,
+    });
+    var months$7 = "január_február_marec_apríl_máj_jún_júl_august_september_október_november_december".split("_"), monthsShort$4 = "jan_feb_mar_apr_máj_jún_júl_aug_sep_okt_nov_dec".split("_");
+    hooks.defineLocale("sk", {
+        months: months$7,
+        monthsShort: monthsShort$4,
         weekdays: "nedeľa_pondelok_utorok_streda_štvrtok_piatok_sobota".split("_"),
         weekdaysShort: "ne_po_ut_st_št_pi_so".split("_"),
         weekdaysMin: "ne_po_ut_st_št_pi_so".split("_"),
@@ -30231,25 +30747,25 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         relativeTime: {
             future: "za %s",
             past: "pred %s",
-            s: sk__translate,
-            m: sk__translate,
-            mm: sk__translate,
-            h: sk__translate,
-            hh: sk__translate,
-            d: sk__translate,
-            dd: sk__translate,
-            M: sk__translate,
-            MM: sk__translate,
-            y: sk__translate,
-            yy: sk__translate
+            s: translate$8,
+            m: translate$8,
+            mm: translate$8,
+            h: translate$8,
+            hh: translate$8,
+            d: translate$8,
+            dd: translate$8,
+            M: translate$8,
+            MM: translate$8,
+            y: translate$8,
+            yy: translate$8
         },
-        ordinalParse: /\d{1,2}\./,
+        dayOfMonthOrdinalParse: /\d{1,2}\./,
         ordinal: "%d.",
         week: {
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("sl", {
+    }), hooks.defineLocale("sl", {
         months: "januar_februar_marec_april_maj_junij_julij_avgust_september_oktober_november_december".split("_"),
         monthsShort: "jan._feb._mar._apr._maj._jun._jul._avg._sep._okt._nov._dec.".split("_"),
         monthsParseExact: !0,
@@ -30310,25 +30826,25 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         relativeTime: {
             future: "čez %s",
             past: "pred %s",
-            s: sl__processRelativeTime,
-            m: sl__processRelativeTime,
-            mm: sl__processRelativeTime,
-            h: sl__processRelativeTime,
-            hh: sl__processRelativeTime,
-            d: sl__processRelativeTime,
-            dd: sl__processRelativeTime,
-            M: sl__processRelativeTime,
-            MM: sl__processRelativeTime,
-            y: sl__processRelativeTime,
-            yy: sl__processRelativeTime
+            s: processRelativeTime$6,
+            m: processRelativeTime$6,
+            mm: processRelativeTime$6,
+            h: processRelativeTime$6,
+            hh: processRelativeTime$6,
+            d: processRelativeTime$6,
+            dd: processRelativeTime$6,
+            M: processRelativeTime$6,
+            MM: processRelativeTime$6,
+            y: processRelativeTime$6,
+            yy: processRelativeTime$6
         },
-        ordinalParse: /\d{1,2}\./,
+        dayOfMonthOrdinalParse: /\d{1,2}\./,
         ordinal: "%d.",
         week: {
             dow: 1,
             doy: 7
         }
-    }), moment__default.defineLocale("sq", {
+    }), hooks.defineLocale("sq", {
         months: "Janar_Shkurt_Mars_Prill_Maj_Qershor_Korrik_Gusht_Shtator_Tetor_Nëntor_Dhjetor".split("_"),
         monthsShort: "Jan_Shk_Mar_Pri_Maj_Qer_Kor_Gus_Sht_Tet_Nën_Dhj".split("_"),
         weekdays: "E Diel_E Hënë_E Martë_E Mërkurë_E Enjte_E Premte_E Shtunë".split("_"),
@@ -30373,13 +30889,14 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "një vit",
             yy: "%d vite"
         },
-        ordinalParse: /\d{1,2}\./,
+        dayOfMonthOrdinalParse: /\d{1,2}\./,
         ordinal: "%d.",
         week: {
             dow: 1,
             doy: 4
         }
-    }), {
+    });
+    var translator$1 = {
         words: {
             m: [ "један минут", "једне минуте" ],
             mm: [ "минут", "минуте", "минута" ],
@@ -30393,10 +30910,11 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return 1 === number ? wordKey[0] : number >= 2 && number <= 4 ? wordKey[1] : wordKey[2];
         },
         translate: function(number, withoutSuffix, key) {
-            var wordKey = sr_cyrl__translator.words[key];
-            return 1 === key.length ? withoutSuffix ? wordKey[0] : wordKey[1] : number + " " + sr_cyrl__translator.correctGrammaticalCase(number, wordKey);
+            var wordKey = translator$1.words[key];
+            return 1 === key.length ? withoutSuffix ? wordKey[0] : wordKey[1] : number + " " + translator$1.correctGrammaticalCase(number, wordKey);
         }
-    }), sr__translator = (moment__default.defineLocale("sr-cyrl", {
+    };
+    hooks.defineLocale("sr-cyrl", {
         months: "јануар_фебруар_март_април_мај_јун_јул_август_септембар_октобар_новембар_децембар".split("_"),
         monthsShort: "јан._феб._мар._апр._мај_јун_јул_авг._сеп._окт._нов._дец.".split("_"),
         monthsParseExact: !0,
@@ -30435,8 +30953,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             },
             lastDay: "[јуче у] LT",
             lastWeek: function() {
-                var lastWeekDays = [ "[прошле] [недеље] [у] LT", "[прошлог] [понедељка] [у] LT", "[прошлог] [уторка] [у] LT", "[прошле] [среде] [у] LT", "[прошлог] [четвртка] [у] LT", "[прошлог] [петка] [у] LT", "[прошле] [суботе] [у] LT" ];
-                return lastWeekDays[this.day()];
+                return [ "[прошле] [недеље] [у] LT", "[прошлог] [понедељка] [у] LT", "[прошлог] [уторка] [у] LT", "[прошле] [среде] [у] LT", "[прошлог] [четвртка] [у] LT", "[прошлог] [петка] [у] LT", "[прошле] [суботе] [у] LT" ][this.day()];
             },
             sameElse: "L"
         },
@@ -30444,24 +30961,25 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             future: "за %s",
             past: "пре %s",
             s: "неколико секунди",
-            m: sr_cyrl__translator.translate,
-            mm: sr_cyrl__translator.translate,
-            h: sr_cyrl__translator.translate,
-            hh: sr_cyrl__translator.translate,
+            m: translator$1.translate,
+            mm: translator$1.translate,
+            h: translator$1.translate,
+            hh: translator$1.translate,
             d: "дан",
-            dd: sr_cyrl__translator.translate,
+            dd: translator$1.translate,
             M: "месец",
-            MM: sr_cyrl__translator.translate,
+            MM: translator$1.translate,
             y: "годину",
-            yy: sr_cyrl__translator.translate
+            yy: translator$1.translate
         },
-        ordinalParse: /\d{1,2}\./,
+        dayOfMonthOrdinalParse: /\d{1,2}\./,
         ordinal: "%d.",
         week: {
             dow: 1,
             doy: 7
         }
-    }), {
+    });
+    var translator$2 = {
         words: {
             m: [ "jedan minut", "jedne minute" ],
             mm: [ "minut", "minute", "minuta" ],
@@ -30475,10 +30993,11 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return 1 === number ? wordKey[0] : number >= 2 && number <= 4 ? wordKey[1] : wordKey[2];
         },
         translate: function(number, withoutSuffix, key) {
-            var wordKey = sr__translator.words[key];
-            return 1 === key.length ? withoutSuffix ? wordKey[0] : wordKey[1] : number + " " + sr__translator.correctGrammaticalCase(number, wordKey);
+            var wordKey = translator$2.words[key];
+            return 1 === key.length ? withoutSuffix ? wordKey[0] : wordKey[1] : number + " " + translator$2.correctGrammaticalCase(number, wordKey);
         }
-    }), ta__symbolMap = (moment__default.defineLocale("sr", {
+    };
+    hooks.defineLocale("sr", {
         months: "januar_februar_mart_april_maj_jun_jul_avgust_septembar_oktobar_novembar_decembar".split("_"),
         monthsShort: "jan._feb._mar._apr._maj_jun_jul_avg._sep._okt._nov._dec.".split("_"),
         monthsParseExact: !0,
@@ -30517,8 +31036,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             },
             lastDay: "[juče u] LT",
             lastWeek: function() {
-                var lastWeekDays = [ "[prošle] [nedelje] [u] LT", "[prošlog] [ponedeljka] [u] LT", "[prošlog] [utorka] [u] LT", "[prošle] [srede] [u] LT", "[prošlog] [četvrtka] [u] LT", "[prošlog] [petka] [u] LT", "[prošle] [subote] [u] LT" ];
-                return lastWeekDays[this.day()];
+                return [ "[prošle] [nedelje] [u] LT", "[prošlog] [ponedeljka] [u] LT", "[prošlog] [utorka] [u] LT", "[prošle] [srede] [u] LT", "[prošlog] [četvrtka] [u] LT", "[prošlog] [petka] [u] LT", "[prošle] [subote] [u] LT" ][this.day()];
             },
             sameElse: "L"
         },
@@ -30526,24 +31044,24 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             future: "za %s",
             past: "pre %s",
             s: "nekoliko sekundi",
-            m: sr__translator.translate,
-            mm: sr__translator.translate,
-            h: sr__translator.translate,
-            hh: sr__translator.translate,
+            m: translator$2.translate,
+            mm: translator$2.translate,
+            h: translator$2.translate,
+            hh: translator$2.translate,
             d: "dan",
-            dd: sr__translator.translate,
+            dd: translator$2.translate,
             M: "mesec",
-            MM: sr__translator.translate,
+            MM: translator$2.translate,
             y: "godinu",
-            yy: sr__translator.translate
+            yy: translator$2.translate
         },
-        ordinalParse: /\d{1,2}\./,
+        dayOfMonthOrdinalParse: /\d{1,2}\./,
         ordinal: "%d.",
         week: {
             dow: 1,
             doy: 7
         }
-    }), moment__default.defineLocale("ss", {
+    }), hooks.defineLocale("ss", {
         months: "Bhimbidvwane_Indlovana_Indlov'lenkhulu_Mabasa_Inkhwekhweti_Inhlaba_Kholwane_Ingci_Inyoni_Imphala_Lweti_Ingongoni".split("_"),
         monthsShort: "Bhi_Ina_Inu_Mab_Ink_Inh_Kho_Igc_Iny_Imp_Lwe_Igo".split("_"),
         weekdays: "Lisontfo_Umsombuluko_Lesibili_Lesitsatfu_Lesine_Lesihlanu_Umgcibelo".split("_"),
@@ -30588,13 +31106,13 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         meridiemHour: function(hour, meridiem) {
             return 12 === hour && (hour = 0), "ekuseni" === meridiem ? hour : "emini" === meridiem ? hour >= 11 ? hour : hour + 12 : "entsambama" === meridiem || "ebusuku" === meridiem ? 0 === hour ? 0 : hour + 12 : void 0;
         },
-        ordinalParse: /\d{1,2}/,
+        dayOfMonthOrdinalParse: /\d{1,2}/,
         ordinal: "%d",
         week: {
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("sv", {
+    }), hooks.defineLocale("sv", {
         months: "januari_februari_mars_april_maj_juni_juli_augusti_september_oktober_november_december".split("_"),
         monthsShort: "jan_feb_mar_apr_maj_jun_jul_aug_sep_okt_nov_dec".split("_"),
         weekdays: "söndag_måndag_tisdag_onsdag_torsdag_fredag_lördag".split("_"),
@@ -30633,16 +31151,16 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "ett år",
             yy: "%d år"
         },
-        ordinalParse: /\d{1,2}(e|a)/,
+        dayOfMonthOrdinalParse: /\d{1,2}(e|a)/,
         ordinal: function(number) {
-            var b = number % 10, output = 1 === ~~(number % 100 / 10) ? "e" : 1 === b ? "a" : 2 === b ? "a" : "e";
-            return number + output;
+            var b = number % 10;
+            return number + (1 == ~~(number % 100 / 10) ? "e" : 1 === b ? "a" : 2 === b ? "a" : "e");
         },
         week: {
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("sw", {
+    }), hooks.defineLocale("sw", {
         months: "Januari_Februari_Machi_Aprili_Mei_Juni_Julai_Agosti_Septemba_Oktoba_Novemba_Desemba".split("_"),
         monthsShort: "Jan_Feb_Mac_Apr_Mei_Jun_Jul_Ago_Sep_Okt_Nov_Des".split("_"),
         weekdays: "Jumapili_Jumatatu_Jumanne_Jumatano_Alhamisi_Ijumaa_Jumamosi".split("_"),
@@ -30684,7 +31202,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 1,
             doy: 7
         }
-    }), {
+    });
+    var symbolMap$12 = {
         1: "௧",
         2: "௨",
         3: "௩",
@@ -30695,7 +31214,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         8: "௮",
         9: "௯",
         0: "௦"
-    }), ta__numberMap = {
+    }, numberMap$11 = {
         "௧": "1",
         "௨": "2",
         "௩": "3",
@@ -30706,7 +31225,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         "௮": "8",
         "௯": "9",
         "௦": "0"
-    }, numbersNouns = (moment__default.defineLocale("ta", {
+    };
+    hooks.defineLocale("ta", {
         months: "ஜனவரி_பிப்ரவரி_மார்ச்_ஏப்ரல்_மே_ஜூன்_ஜூலை_ஆகஸ்ட்_செப்டெம்பர்_அக்டோபர்_நவம்பர்_டிசம்பர்".split("_"),
         monthsShort: "ஜனவரி_பிப்ரவரி_மார்ச்_ஏப்ரல்_மே_ஜூன்_ஜூலை_ஆகஸ்ட்_செப்டெம்பர்_அக்டோபர்_நவம்பர்_டிசம்பர்".split("_"),
         weekdays: "ஞாயிற்றுக்கிழமை_திங்கட்கிழமை_செவ்வாய்கிழமை_புதன்கிழமை_வியாழக்கிழமை_வெள்ளிக்கிழமை_சனிக்கிழமை".split("_"),
@@ -30743,18 +31263,18 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "ஒரு வருடம்",
             yy: "%d ஆண்டுகள்"
         },
-        ordinalParse: /\d{1,2}வது/,
+        dayOfMonthOrdinalParse: /\d{1,2}வது/,
         ordinal: function(number) {
             return number + "வது";
         },
         preparse: function(string) {
             return string.replace(/[௧௨௩௪௫௬௭௮௯௦]/g, function(match) {
-                return ta__numberMap[match];
+                return numberMap$11[match];
             });
         },
         postformat: function(string) {
             return string.replace(/\d/g, function(match) {
-                return ta__symbolMap[match];
+                return symbolMap$12[match];
             });
         },
         meridiemParse: /யாமம்|வைகறை|காலை|நண்பகல்|எற்பாடு|மாலை/,
@@ -30768,7 +31288,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 0,
             doy: 6
         }
-    }), moment__default.defineLocale("te", {
+    }), hooks.defineLocale("te", {
         months: "జనవరి_ఫిబ్రవరి_మార్చి_ఏప్రిల్_మే_జూన్_జూలై_ఆగస్టు_సెప్టెంబర్_అక్టోబర్_నవంబర్_డిసెంబర్".split("_"),
         monthsShort: "జన._ఫిబ్ర._మార్చి_ఏప్రి._మే_జూన్_జూలై_ఆగ._సెప్._అక్టో._నవ._డిసె.".split("_"),
         monthsParseExact: !0,
@@ -30806,7 +31326,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "ఒక సంవత్సరం",
             yy: "%d సంవత్సరాలు"
         },
-        ordinalParse: /\d{1,2}వ/,
+        dayOfMonthOrdinalParse: /\d{1,2}వ/,
         ordinal: "%dవ",
         meridiemParse: /రాత్రి|ఉదయం|మధ్యాహ్నం|సాయంత్రం/,
         meridiemHour: function(hour, meridiem) {
@@ -30819,7 +31339,53 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 0,
             doy: 6
         }
-    }), moment__default.defineLocale("th", {
+    }), hooks.defineLocale("tet", {
+        months: "Janeiru_Fevereiru_Marsu_Abril_Maiu_Juniu_Juliu_Augustu_Setembru_Outubru_Novembru_Dezembru".split("_"),
+        monthsShort: "Jan_Fev_Mar_Abr_Mai_Jun_Jul_Aug_Set_Out_Nov_Dez".split("_"),
+        weekdays: "Domingu_Segunda_Tersa_Kuarta_Kinta_Sexta_Sabadu".split("_"),
+        weekdaysShort: "Dom_Seg_Ters_Kua_Kint_Sext_Sab".split("_"),
+        weekdaysMin: "Do_Seg_Te_Ku_Ki_Sex_Sa".split("_"),
+        longDateFormat: {
+            LT: "HH:mm",
+            LTS: "HH:mm:ss",
+            L: "DD/MM/YYYY",
+            LL: "D MMMM YYYY",
+            LLL: "D MMMM YYYY HH:mm",
+            LLLL: "dddd, D MMMM YYYY HH:mm"
+        },
+        calendar: {
+            sameDay: "[Ohin iha] LT",
+            nextDay: "[Aban iha] LT",
+            nextWeek: "dddd [iha] LT",
+            lastDay: "[Horiseik iha] LT",
+            lastWeek: "dddd [semana kotuk] [iha] LT",
+            sameElse: "L"
+        },
+        relativeTime: {
+            future: "iha %s",
+            past: "%s liuba",
+            s: "minutu balun",
+            m: "minutu ida",
+            mm: "minutus %d",
+            h: "horas ida",
+            hh: "horas %d",
+            d: "loron ida",
+            dd: "loron %d",
+            M: "fulan ida",
+            MM: "fulan %d",
+            y: "tinan ida",
+            yy: "tinan %d"
+        },
+        dayOfMonthOrdinalParse: /\d{1,2}(st|nd|rd|th)/,
+        ordinal: function(number) {
+            var b = number % 10;
+            return number + (1 == ~~(number % 100 / 10) ? "th" : 1 === b ? "st" : 2 === b ? "nd" : 3 === b ? "rd" : "th");
+        },
+        week: {
+            dow: 1,
+            doy: 4
+        }
+    }), hooks.defineLocale("th", {
         months: "มกราคม_กุมภาพันธ์_มีนาคม_เมษายน_พฤษภาคม_มิถุนายน_กรกฎาคม_สิงหาคม_กันยายน_ตุลาคม_พฤศจิกายน_ธันวาคม".split("_"),
         monthsShort: "ม.ค._ก.พ._มี.ค._เม.ย._พ.ค._มิ.ย._ก.ค._ส.ค._ก.ย._ต.ค._พ.ย._ธ.ค.".split("_"),
         monthsParseExact: !0,
@@ -30830,7 +31396,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         longDateFormat: {
             LT: "H:mm",
             LTS: "H:mm:ss",
-            L: "YYYY/MM/DD",
+            L: "DD/MM/YYYY",
             LL: "D MMMM YYYY",
             LLL: "D MMMM YYYY เวลา H:mm",
             LLLL: "วันddddที่ D MMMM YYYY เวลา H:mm"
@@ -30865,7 +31431,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "1 ปี",
             yy: "%d ปี"
         }
-    }), moment__default.defineLocale("tl-ph", {
+    }), hooks.defineLocale("tl-ph", {
         months: "Enero_Pebrero_Marso_Abril_Mayo_Hunyo_Hulyo_Agosto_Setyembre_Oktubre_Nobyembre_Disyembre".split("_"),
         monthsShort: "Ene_Peb_Mar_Abr_May_Hun_Hul_Ago_Set_Okt_Nob_Dis".split("_"),
         weekdays: "Linggo_Lunes_Martes_Miyerkules_Huwebes_Biyernes_Sabado".split("_"),
@@ -30880,11 +31446,11 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             LLLL: "dddd, MMMM DD, YYYY HH:mm"
         },
         calendar: {
-            sameDay: "[Ngayon sa] LT",
-            nextDay: "[Bukas sa] LT",
-            nextWeek: "dddd [sa] LT",
-            lastDay: "[Kahapon sa] LT",
-            lastWeek: "dddd [huling linggo] LT",
+            sameDay: "LT [ngayong araw]",
+            nextDay: "[Bukas ng] LT",
+            nextWeek: "LT [sa susunod na] dddd",
+            lastDay: "LT [kahapon]",
+            lastWeek: "LT [noong nakaraang] dddd",
             sameElse: "L"
         },
         relativeTime: {
@@ -30902,7 +31468,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "isang taon",
             yy: "%d taon"
         },
-        ordinalParse: /\d{1,2}/,
+        dayOfMonthOrdinalParse: /\d{1,2}/,
         ordinal: function(number) {
             return number;
         },
@@ -30910,7 +31476,9 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 1,
             doy: 4
         }
-    }), "pagh_wa’_cha’_wej_loS_vagh_jav_Soch_chorgh_Hut".split("_")), tr__suffixes = (moment__default.defineLocale("tlh", {
+    });
+    var numbersNouns = "pagh_wa’_cha’_wej_loS_vagh_jav_Soch_chorgh_Hut".split("_");
+    hooks.defineLocale("tlh", {
         months: "tera’ jar wa’_tera’ jar cha’_tera’ jar wej_tera’ jar loS_tera’ jar vagh_tera’ jar jav_tera’ jar Soch_tera’ jar chorgh_tera’ jar Hut_tera’ jar wa’maH_tera’ jar wa’maH wa’_tera’ jar wa’maH cha’".split("_"),
         monthsShort: "jar wa’_jar cha’_jar wej_jar loS_jar vagh_jar jav_jar Soch_jar chorgh_jar Hut_jar wa’maH_jar wa’maH wa’_jar wa’maH cha’".split("_"),
         monthsParseExact: !0,
@@ -30938,23 +31506,24 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             past: translatePast,
             s: "puS lup",
             m: "wa’ tup",
-            mm: tlh__translate,
+            mm: translate$9,
             h: "wa’ rep",
-            hh: tlh__translate,
+            hh: translate$9,
             d: "wa’ jaj",
-            dd: tlh__translate,
+            dd: translate$9,
             M: "wa’ jar",
-            MM: tlh__translate,
+            MM: translate$9,
             y: "wa’ DIS",
-            yy: tlh__translate
+            yy: translate$9
         },
-        ordinalParse: /\d{1,2}\./,
+        dayOfMonthOrdinalParse: /\d{1,2}\./,
         ordinal: "%d.",
         week: {
             dow: 1,
             doy: 4
         }
-    }), {
+    });
+    var suffixes$3 = {
         1: "'inci",
         5: "'inci",
         8: "'inci",
@@ -30973,7 +31542,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         30: "'uncu",
         60: "'ıncı",
         90: "'ıncı"
-    }), moment_with_locales = (moment__default.defineLocale("tr", {
+    };
+    hooks.defineLocale("tr", {
         months: "Ocak_Şubat_Mart_Nisan_Mayıs_Haziran_Temmuz_Ağustos_Eylül_Ekim_Kasım_Aralık".split("_"),
         monthsShort: "Oca_Şub_Mar_Nis_May_Haz_Tem_Ağu_Eyl_Eki_Kas_Ara".split("_"),
         weekdays: "Pazar_Pazartesi_Salı_Çarşamba_Perşembe_Cuma_Cumartesi".split("_"),
@@ -31010,17 +31580,17 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "bir yıl",
             yy: "%d yıl"
         },
-        ordinalParse: /\d{1,2}'(inci|nci|üncü|ncı|uncu|ıncı)/,
+        dayOfMonthOrdinalParse: /\d{1,2}'(inci|nci|üncü|ncı|uncu|ıncı)/,
         ordinal: function(number) {
             if (0 === number) return number + "'ıncı";
             var a = number % 10, b = number % 100 - a, c = number >= 100 ? 100 : null;
-            return number + (tr__suffixes[a] || tr__suffixes[b] || tr__suffixes[c]);
+            return number + (suffixes$3[a] || suffixes$3[b] || suffixes$3[c]);
         },
         week: {
             dow: 1,
             doy: 7
         }
-    }), moment__default.defineLocale("tzl", {
+    }), hooks.defineLocale("tzl", {
         months: "Januar_Fevraglh_Març_Avrïu_Mai_Gün_Julia_Guscht_Setemvar_Listopäts_Noemvar_Zecemvar".split("_"),
         monthsShort: "Jan_Fev_Mar_Avr_Mai_Gün_Jul_Gus_Set_Lis_Noe_Zec".split("_"),
         weekdays: "Súladi_Lúneçi_Maitzi_Márcuri_Xhúadi_Viénerçi_Sáturi".split("_"),
@@ -31052,25 +31622,25 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         relativeTime: {
             future: "osprei %s",
             past: "ja%s",
-            s: tzl__processRelativeTime,
-            m: tzl__processRelativeTime,
-            mm: tzl__processRelativeTime,
-            h: tzl__processRelativeTime,
-            hh: tzl__processRelativeTime,
-            d: tzl__processRelativeTime,
-            dd: tzl__processRelativeTime,
-            M: tzl__processRelativeTime,
-            MM: tzl__processRelativeTime,
-            y: tzl__processRelativeTime,
-            yy: tzl__processRelativeTime
+            s: processRelativeTime$7,
+            m: processRelativeTime$7,
+            mm: processRelativeTime$7,
+            h: processRelativeTime$7,
+            hh: processRelativeTime$7,
+            d: processRelativeTime$7,
+            dd: processRelativeTime$7,
+            M: processRelativeTime$7,
+            MM: processRelativeTime$7,
+            y: processRelativeTime$7,
+            yy: processRelativeTime$7
         },
-        ordinalParse: /\d{1,2}\./,
+        dayOfMonthOrdinalParse: /\d{1,2}\./,
         ordinal: "%d.",
         week: {
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("tzm-latn", {
+    }), hooks.defineLocale("tzm-latn", {
         months: "innayr_brˤayrˤ_marˤsˤ_ibrir_mayyw_ywnyw_ywlywz_ɣwšt_šwtanbir_ktˤwbrˤ_nwwanbir_dwjnbir".split("_"),
         monthsShort: "innayr_brˤayrˤ_marˤsˤ_ibrir_mayyw_ywnyw_ywlywz_ɣwšt_šwtanbir_ktˤwbrˤ_nwwanbir_dwjnbir".split("_"),
         weekdays: "asamas_aynas_asinas_akras_akwas_asimwas_asiḍyas".split("_"),
@@ -31111,7 +31681,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 6,
             doy: 12
         }
-    }), moment__default.defineLocale("tzm", {
+    }), hooks.defineLocale("tzm", {
         months: "ⵉⵏⵏⴰⵢⵔ_ⴱⵕⴰⵢⵕ_ⵎⴰⵕⵚ_ⵉⴱⵔⵉⵔ_ⵎⴰⵢⵢⵓ_ⵢⵓⵏⵢⵓ_ⵢⵓⵍⵢⵓⵣ_ⵖⵓⵛⵜ_ⵛⵓⵜⴰⵏⴱⵉⵔ_ⴽⵟⵓⴱⵕ_ⵏⵓⵡⴰⵏⴱⵉⵔ_ⴷⵓⵊⵏⴱⵉⵔ".split("_"),
         monthsShort: "ⵉⵏⵏⴰⵢⵔ_ⴱⵕⴰⵢⵕ_ⵎⴰⵕⵚ_ⵉⴱⵔⵉⵔ_ⵎⴰⵢⵢⵓ_ⵢⵓⵏⵢⵓ_ⵢⵓⵍⵢⵓⵣ_ⵖⵓⵛⵜ_ⵛⵓⵜⴰⵏⴱⵉⵔ_ⴽⵟⵓⴱⵕ_ⵏⵓⵡⴰⵏⴱⵉⵔ_ⴷⵓⵊⵏⴱⵉⵔ".split("_"),
         weekdays: "ⴰⵙⴰⵎⴰⵙ_ⴰⵢⵏⴰⵙ_ⴰⵙⵉⵏⴰⵙ_ⴰⴽⵔⴰⵙ_ⴰⴽⵡⴰⵙ_ⴰⵙⵉⵎⵡⴰⵙ_ⴰⵙⵉⴹⵢⴰⵙ".split("_"),
@@ -31152,7 +31722,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 6,
             doy: 12
         }
-    }), moment__default.defineLocale("uk", {
+    }), hooks.defineLocale("uk", {
         months: {
             format: "січня_лютого_березня_квітня_травня_червня_липня_серпня_вересня_жовтня_листопада_грудня".split("_"),
             standalone: "січень_лютий_березень_квітень_травень_червень_липень_серпень_вересень_жовтень_листопад_грудень".split("_")
@@ -31194,16 +31764,16 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             future: "за %s",
             past: "%s тому",
             s: "декілька секунд",
-            m: uk__relativeTimeWithPlural,
-            mm: uk__relativeTimeWithPlural,
+            m: relativeTimeWithPlural$4,
+            mm: relativeTimeWithPlural$4,
             h: "годину",
-            hh: uk__relativeTimeWithPlural,
+            hh: relativeTimeWithPlural$4,
             d: "день",
-            dd: uk__relativeTimeWithPlural,
+            dd: relativeTimeWithPlural$4,
             M: "місяць",
-            MM: uk__relativeTimeWithPlural,
+            MM: relativeTimeWithPlural$4,
             y: "рік",
-            yy: uk__relativeTimeWithPlural
+            yy: relativeTimeWithPlural$4
         },
         meridiemParse: /ночі|ранку|дня|вечора/,
         isPM: function(input) {
@@ -31212,7 +31782,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         meridiem: function(hour, minute, isLower) {
             return hour < 4 ? "ночі" : hour < 12 ? "ранку" : hour < 17 ? "дня" : "вечора";
         },
-        ordinalParse: /\d{1,2}-(й|го)/,
+        dayOfMonthOrdinalParse: /\d{1,2}-(й|го)/,
         ordinal: function(number, period) {
             switch (period) {
               case "M":
@@ -31233,7 +31803,104 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 1,
             doy: 7
         }
-    }), moment__default.defineLocale("uz", {
+    });
+    var months$8 = [ "جنوری", "فروری", "مارچ", "اپریل", "مئی", "جون", "جولائی", "اگست", "ستمبر", "اکتوبر", "نومبر", "دسمبر" ], days$2 = [ "اتوار", "پیر", "منگل", "بدھ", "جمعرات", "جمعہ", "ہفتہ" ];
+    return hooks.defineLocale("ur", {
+        months: months$8,
+        monthsShort: months$8,
+        weekdays: days$2,
+        weekdaysShort: days$2,
+        weekdaysMin: days$2,
+        longDateFormat: {
+            LT: "HH:mm",
+            LTS: "HH:mm:ss",
+            L: "DD/MM/YYYY",
+            LL: "D MMMM YYYY",
+            LLL: "D MMMM YYYY HH:mm",
+            LLLL: "dddd، D MMMM YYYY HH:mm"
+        },
+        meridiemParse: /صبح|شام/,
+        isPM: function(input) {
+            return "شام" === input;
+        },
+        meridiem: function(hour, minute, isLower) {
+            return hour < 12 ? "صبح" : "شام";
+        },
+        calendar: {
+            sameDay: "[آج بوقت] LT",
+            nextDay: "[کل بوقت] LT",
+            nextWeek: "dddd [بوقت] LT",
+            lastDay: "[گذشتہ روز بوقت] LT",
+            lastWeek: "[گذشتہ] dddd [بوقت] LT",
+            sameElse: "L"
+        },
+        relativeTime: {
+            future: "%s بعد",
+            past: "%s قبل",
+            s: "چند سیکنڈ",
+            m: "ایک منٹ",
+            mm: "%d منٹ",
+            h: "ایک گھنٹہ",
+            hh: "%d گھنٹے",
+            d: "ایک دن",
+            dd: "%d دن",
+            M: "ایک ماہ",
+            MM: "%d ماہ",
+            y: "ایک سال",
+            yy: "%d سال"
+        },
+        preparse: function(string) {
+            return string.replace(/،/g, ",");
+        },
+        postformat: function(string) {
+            return string.replace(/,/g, "،");
+        },
+        week: {
+            dow: 1,
+            doy: 4
+        }
+    }), hooks.defineLocale("uz-latn", {
+        months: "Yanvar_Fevral_Mart_Aprel_May_Iyun_Iyul_Avgust_Sentabr_Oktabr_Noyabr_Dekabr".split("_"),
+        monthsShort: "Yan_Fev_Mar_Apr_May_Iyun_Iyul_Avg_Sen_Okt_Noy_Dek".split("_"),
+        weekdays: "Yakshanba_Dushanba_Seshanba_Chorshanba_Payshanba_Juma_Shanba".split("_"),
+        weekdaysShort: "Yak_Dush_Sesh_Chor_Pay_Jum_Shan".split("_"),
+        weekdaysMin: "Ya_Du_Se_Cho_Pa_Ju_Sha".split("_"),
+        longDateFormat: {
+            LT: "HH:mm",
+            LTS: "HH:mm:ss",
+            L: "DD/MM/YYYY",
+            LL: "D MMMM YYYY",
+            LLL: "D MMMM YYYY HH:mm",
+            LLLL: "D MMMM YYYY, dddd HH:mm"
+        },
+        calendar: {
+            sameDay: "[Bugun soat] LT [da]",
+            nextDay: "[Ertaga] LT [da]",
+            nextWeek: "dddd [kuni soat] LT [da]",
+            lastDay: "[Kecha soat] LT [da]",
+            lastWeek: "[O'tgan] dddd [kuni soat] LT [da]",
+            sameElse: "L"
+        },
+        relativeTime: {
+            future: "Yaqin %s ichida",
+            past: "Bir necha %s oldin",
+            s: "soniya",
+            m: "bir daqiqa",
+            mm: "%d daqiqa",
+            h: "bir soat",
+            hh: "%d soat",
+            d: "bir kun",
+            dd: "%d kun",
+            M: "bir oy",
+            MM: "%d oy",
+            y: "bir yil",
+            yy: "%d yil"
+        },
+        week: {
+            dow: 1,
+            doy: 7
+        }
+    }), hooks.defineLocale("uz", {
         months: "январ_феврал_март_апрел_май_июн_июл_август_сентябр_октябр_ноябр_декабр".split("_"),
         monthsShort: "янв_фев_мар_апр_май_июн_июл_авг_сен_окт_ноя_дек".split("_"),
         weekdays: "Якшанба_Душанба_Сешанба_Чоршанба_Пайшанба_Жума_Шанба".split("_"),
@@ -31274,7 +31941,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 1,
             doy: 7
         }
-    }), moment__default.defineLocale("vi", {
+    }), hooks.defineLocale("vi", {
         months: "tháng 1_tháng 2_tháng 3_tháng 4_tháng 5_tháng 6_tháng 7_tháng 8_tháng 9_tháng 10_tháng 11_tháng 12".split("_"),
         monthsShort: "Th01_Th02_Th03_Th04_Th05_Th06_Th07_Th08_Th09_Th10_Th11_Th12".split("_"),
         monthsParseExact: !0,
@@ -31324,7 +31991,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "một năm",
             yy: "%d năm"
         },
-        ordinalParse: /\d{1,2}/,
+        dayOfMonthOrdinalParse: /\d{1,2}/,
         ordinal: function(number) {
             return number;
         },
@@ -31332,7 +31999,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("x-pseudo", {
+    }), hooks.defineLocale("x-pseudo", {
         months: "J~áñúá~rý_F~ébrú~árý_~Márc~h_Áp~ríl_~Máý_~Júñé~_Júl~ý_Áú~gúst~_Sép~témb~ér_Ó~ctób~ér_Ñ~óvém~bér_~Décé~mbér".split("_"),
         monthsShort: "J~áñ_~Féb_~Már_~Ápr_~Máý_~Júñ_~Júl_~Áúg_~Sép_~Óct_~Ñóv_~Déc".split("_"),
         monthsParseExact: !0,
@@ -31370,32 +32037,75 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "á ~ýéár",
             yy: "%d ý~éárs"
         },
-        ordinalParse: /\d{1,2}(th|st|nd|rd)/,
+        dayOfMonthOrdinalParse: /\d{1,2}(th|st|nd|rd)/,
         ordinal: function(number) {
-            var b = number % 10, output = 1 === ~~(number % 100 / 10) ? "th" : 1 === b ? "st" : 2 === b ? "nd" : 3 === b ? "rd" : "th";
-            return number + output;
+            var b = number % 10;
+            return number + (1 == ~~(number % 100 / 10) ? "th" : 1 === b ? "st" : 2 === b ? "nd" : 3 === b ? "rd" : "th");
         },
         week: {
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("zh-cn", {
+    }), hooks.defineLocale("yo", {
+        months: "Sẹ́rẹ́_Èrèlè_Ẹrẹ̀nà_Ìgbé_Èbibi_Òkùdu_Agẹmo_Ògún_Owewe_Ọ̀wàrà_Bélú_Ọ̀pẹ̀̀".split("_"),
+        monthsShort: "Sẹ́r_Èrl_Ẹrn_Ìgb_Èbi_Òkù_Agẹ_Ògú_Owe_Ọ̀wà_Bél_Ọ̀pẹ̀̀".split("_"),
+        weekdays: "Àìkú_Ajé_Ìsẹ́gun_Ọjọ́rú_Ọjọ́bọ_Ẹtì_Àbámẹ́ta".split("_"),
+        weekdaysShort: "Àìk_Ajé_Ìsẹ́_Ọjr_Ọjb_Ẹtì_Àbá".split("_"),
+        weekdaysMin: "Àì_Aj_Ìs_Ọr_Ọb_Ẹt_Àb".split("_"),
+        longDateFormat: {
+            LT: "h:mm A",
+            LTS: "h:mm:ss A",
+            L: "DD/MM/YYYY",
+            LL: "D MMMM YYYY",
+            LLL: "D MMMM YYYY h:mm A",
+            LLLL: "dddd, D MMMM YYYY h:mm A"
+        },
+        calendar: {
+            sameDay: "[Ònì ni] LT",
+            nextDay: "[Ọ̀la ni] LT",
+            nextWeek: "dddd [Ọsẹ̀ tón'bọ] [ni] LT",
+            lastDay: "[Àna ni] LT",
+            lastWeek: "dddd [Ọsẹ̀ tólọ́] [ni] LT",
+            sameElse: "L"
+        },
+        relativeTime: {
+            future: "ní %s",
+            past: "%s kọjá",
+            s: "ìsẹjú aayá die",
+            m: "ìsẹjú kan",
+            mm: "ìsẹjú %d",
+            h: "wákati kan",
+            hh: "wákati %d",
+            d: "ọjọ́ kan",
+            dd: "ọjọ́ %d",
+            M: "osù kan",
+            MM: "osù %d",
+            y: "ọdún kan",
+            yy: "ọdún %d"
+        },
+        dayOfMonthOrdinalParse: /ọjọ́\s\d{1,2}/,
+        ordinal: "ọjọ́ %d",
+        week: {
+            dow: 1,
+            doy: 4
+        }
+    }), hooks.defineLocale("zh-cn", {
         months: "一月_二月_三月_四月_五月_六月_七月_八月_九月_十月_十一月_十二月".split("_"),
         monthsShort: "1月_2月_3月_4月_5月_6月_7月_8月_9月_10月_11月_12月".split("_"),
         weekdays: "星期日_星期一_星期二_星期三_星期四_星期五_星期六".split("_"),
         weekdaysShort: "周日_周一_周二_周三_周四_周五_周六".split("_"),
         weekdaysMin: "日_一_二_三_四_五_六".split("_"),
         longDateFormat: {
-            LT: "Ah点mm分",
-            LTS: "Ah点m分s秒",
-            L: "YYYY-MM-DD",
+            LT: "HH:mm",
+            LTS: "HH:mm:ss",
+            L: "YYYY年MMMD日",
             LL: "YYYY年MMMD日",
             LLL: "YYYY年MMMD日Ah点mm分",
             LLLL: "YYYY年MMMD日ddddAh点mm分",
-            l: "YYYY-MM-DD",
+            l: "YYYY年MMMD日",
             ll: "YYYY年MMMD日",
-            lll: "YYYY年MMMD日Ah点mm分",
-            llll: "YYYY年MMMD日ddddAh点mm分"
+            lll: "YYYY年MMMD日 HH:mm",
+            llll: "YYYY年MMMD日dddd HH:mm"
         },
         meridiemParse: /凌晨|早上|上午|中午|下午|晚上/,
         meridiemHour: function(hour, meridiem) {
@@ -31406,28 +32116,14 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return hm < 600 ? "凌晨" : hm < 900 ? "早上" : hm < 1130 ? "上午" : hm < 1230 ? "中午" : hm < 1800 ? "下午" : "晚上";
         },
         calendar: {
-            sameDay: function() {
-                return 0 === this.minutes() ? "[今天]Ah[点整]" : "[今天]LT";
-            },
-            nextDay: function() {
-                return 0 === this.minutes() ? "[明天]Ah[点整]" : "[明天]LT";
-            },
-            lastDay: function() {
-                return 0 === this.minutes() ? "[昨天]Ah[点整]" : "[昨天]LT";
-            },
-            nextWeek: function() {
-                var startOfWeek, prefix;
-                return startOfWeek = moment__default().startOf("week"), prefix = this.diff(startOfWeek, "days") >= 7 ? "[下]" : "[本]", 
-                0 === this.minutes() ? prefix + "dddAh点整" : prefix + "dddAh点mm";
-            },
-            lastWeek: function() {
-                var startOfWeek, prefix;
-                return startOfWeek = moment__default().startOf("week"), prefix = this.unix() < startOfWeek.unix() ? "[上]" : "[本]", 
-                0 === this.minutes() ? prefix + "dddAh点整" : prefix + "dddAh点mm";
-            },
-            sameElse: "LL"
+            sameDay: "[今天]LT",
+            nextDay: "[明天]LT",
+            nextWeek: "[下]ddddLT",
+            lastDay: "[昨天]LT",
+            lastWeek: "[上]ddddLT",
+            sameElse: "L"
         },
-        ordinalParse: /\d{1,2}(日|月|周)/,
+        dayOfMonthOrdinalParse: /\d{1,2}(日|月|周)/,
         ordinal: function(number, period) {
             switch (period) {
               case "d":
@@ -31465,23 +32161,23 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             dow: 1,
             doy: 4
         }
-    }), moment__default.defineLocale("zh-hk", {
+    }), hooks.defineLocale("zh-hk", {
         months: "一月_二月_三月_四月_五月_六月_七月_八月_九月_十月_十一月_十二月".split("_"),
         monthsShort: "1月_2月_3月_4月_5月_6月_7月_8月_9月_10月_11月_12月".split("_"),
         weekdays: "星期日_星期一_星期二_星期三_星期四_星期五_星期六".split("_"),
         weekdaysShort: "週日_週一_週二_週三_週四_週五_週六".split("_"),
         weekdaysMin: "日_一_二_三_四_五_六".split("_"),
         longDateFormat: {
-            LT: "Ah點mm分",
-            LTS: "Ah點m分s秒",
+            LT: "HH:mm",
+            LTS: "HH:mm:ss",
             L: "YYYY年MMMD日",
             LL: "YYYY年MMMD日",
-            LLL: "YYYY年MMMD日Ah點mm分",
-            LLLL: "YYYY年MMMD日ddddAh點mm分",
+            LLL: "YYYY年MMMD日 HH:mm",
+            LLLL: "YYYY年MMMD日dddd HH:mm",
             l: "YYYY年MMMD日",
             ll: "YYYY年MMMD日",
-            lll: "YYYY年MMMD日Ah點mm分",
-            llll: "YYYY年MMMD日ddddAh點mm分"
+            lll: "YYYY年MMMD日 HH:mm",
+            llll: "YYYY年MMMD日dddd HH:mm"
         },
         meridiemParse: /凌晨|早上|上午|中午|下午|晚上/,
         meridiemHour: function(hour, meridiem) {
@@ -31499,7 +32195,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             lastWeek: "[上]ddddLT",
             sameElse: "L"
         },
-        ordinalParse: /\d{1,2}(日|月|週)/,
+        dayOfMonthOrdinalParse: /\d{1,2}(日|月|週)/,
         ordinal: function(number, period) {
             switch (period) {
               case "d":
@@ -31533,23 +32229,23 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "1 年",
             yy: "%d 年"
         }
-    }), moment__default.defineLocale("zh-tw", {
+    }), hooks.defineLocale("zh-tw", {
         months: "一月_二月_三月_四月_五月_六月_七月_八月_九月_十月_十一月_十二月".split("_"),
         monthsShort: "1月_2月_3月_4月_5月_6月_7月_8月_9月_10月_11月_12月".split("_"),
         weekdays: "星期日_星期一_星期二_星期三_星期四_星期五_星期六".split("_"),
         weekdaysShort: "週日_週一_週二_週三_週四_週五_週六".split("_"),
         weekdaysMin: "日_一_二_三_四_五_六".split("_"),
         longDateFormat: {
-            LT: "Ah點mm分",
-            LTS: "Ah點m分s秒",
+            LT: "HH:mm",
+            LTS: "HH:mm:ss",
             L: "YYYY年MMMD日",
             LL: "YYYY年MMMD日",
-            LLL: "YYYY年MMMD日Ah點mm分",
-            LLLL: "YYYY年MMMD日ddddAh點mm分",
+            LLL: "YYYY年MMMD日 HH:mm",
+            LLLL: "YYYY年MMMD日dddd HH:mm",
             l: "YYYY年MMMD日",
             ll: "YYYY年MMMD日",
-            lll: "YYYY年MMMD日Ah點mm分",
-            llll: "YYYY年MMMD日ddddAh點mm分"
+            lll: "YYYY年MMMD日 HH:mm",
+            llll: "YYYY年MMMD日dddd HH:mm"
         },
         meridiemParse: /凌晨|早上|上午|中午|下午|晚上/,
         meridiemHour: function(hour, meridiem) {
@@ -31567,7 +32263,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             lastWeek: "[上]ddddLT",
             sameElse: "L"
         },
-        ordinalParse: /\d{1,2}(日|月|週)/,
+        dayOfMonthOrdinalParse: /\d{1,2}(日|月|週)/,
         ordinal: function(number, period) {
             switch (period) {
               case "d":
@@ -31601,8 +32297,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             y: "1 年",
             yy: "%d 年"
         }
-    }), moment__default);
-    return moment_with_locales.locale("en"), moment_with_locales;
+    }), hooks.locale("en"), hooks;
 }), function() {
     "use strict";
     function isUndefinedOrNull(val) {
@@ -31616,7 +32311,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         }
     }
     function angularMoment(a, moment) {
-        if ("undefined" == typeof moment) {
+        if (void 0 === moment) {
             if ("function" != typeof require) throw new Error("Moment cannot be found by angular-moment! Please reference to: https://github.com/urish/angular-moment");
             moment = requireMoment();
         }
@@ -31811,9 +32506,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                     handler.chars(node.textContent);
                 }
                 var nextNode;
-                if (!(nextNode = node.firstChild) && (1 === node.nodeType && handler.end(node.nodeName.toLowerCase()), 
-                nextNode = getNonDescendant("nextSibling", node), !nextNode)) for (;null == nextNode && (node = getNonDescendant("parentNode", node), 
-                node !== inertBodyElement); ) nextNode = getNonDescendant("nextSibling", node), 
+                if (!((nextNode = node.firstChild) || (1 === node.nodeType && handler.end(node.nodeName.toLowerCase()), 
+                nextNode = getNonDescendant("nextSibling", node)))) for (;null == nextNode && (node = getNonDescendant("parentNode", node)) !== inertBodyElement; ) nextNode = getNonDescendant("nextSibling", node), 
                 1 === node.nodeType && handler.end(node.nodeName.toLowerCase());
                 node = nextNode;
             }
@@ -31828,8 +32522,7 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         }
         function encodeEntities(value) {
             return value.replace(/&/g, "&amp;").replace(SURROGATE_PAIR_REGEXP, function(value) {
-                var hi = value.charCodeAt(0), low = value.charCodeAt(1);
-                return "&#" + (1024 * (hi - 55296) + (low - 56320) + 65536) + ";";
+                return "&#" + (1024 * (value.charCodeAt(0) - 55296) + (value.charCodeAt(1) - 56320) + 65536) + ";";
             }).replace(NON_ALPHANUMERIC_REGEXP, function(value) {
                 return "&#" + value.charCodeAt(0) + ";";
             }).replace(/</g, "&lt;").replace(/>/g, "&gt;");
@@ -31839,14 +32532,14 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             return {
                 start: function(tag, attrs) {
                     tag = lowercase(tag), !ignoreCurrentElement && blockedElements[tag] && (ignoreCurrentElement = tag), 
-                    ignoreCurrentElement || validElements[tag] !== !0 || (out("<"), out(tag), forEach(attrs, function(value, key) {
+                    ignoreCurrentElement || !0 !== validElements[tag] || (out("<"), out(tag), forEach(attrs, function(value, key) {
                         var lkey = lowercase(key), isImage = "img" === tag && "src" === lkey || "background" === lkey;
-                        validAttrs[lkey] !== !0 || uriAttrs[lkey] === !0 && !uriValidator(value, isImage) || (out(" "), 
+                        !0 !== validAttrs[lkey] || !0 === uriAttrs[lkey] && !uriValidator(value, isImage) || (out(" "), 
                         out(key), out('="'), out(encodeEntities(value)), out('"'));
                     }), out(">"));
                 },
                 end: function(tag) {
-                    tag = lowercase(tag), ignoreCurrentElement || validElements[tag] !== !0 || voidElements[tag] === !0 || (out("</"), 
+                    tag = lowercase(tag), ignoreCurrentElement || !0 !== validElements[tag] || !0 === voidElements[tag] || (out("</"), 
                     out(tag), out(">")), tag == ignoreCurrentElement && (ignoreCurrentElement = !1);
                 },
                 chars: function(chars) {
@@ -31922,8 +32615,8 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
         }(window, window.document);
     }
     function sanitizeText(chars) {
-        var buf = [], writer = htmlSanitizeWriter(buf, noop);
-        return writer.chars(chars), buf.join("");
+        var buf = [];
+        return htmlSanitizeWriter(buf, noop).chars(chars), buf.join("");
     }
     var bind, extend, forEach, isDefined, lowercase, noop, nodeContains, htmlParser, htmlSanitizeWriter, $sanitizeMinErr = angular.$$minErr("$sanitize");
     angular.module("ngSanitize", []).provider("$sanitize", $SanitizeProvider).info({
@@ -31934,13 +32627,6 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
             function addText(text) {
                 text && html.push(sanitizeText(text));
             }
-            function addLink(url, text) {
-                var key, linkAttributes = attributesFn(url);
-                html.push("<a ");
-                for (key in linkAttributes) html.push(key + '="' + linkAttributes[key] + '" ');
-                !isDefined(target) || "target" in linkAttributes || html.push('target="', target, '" '), 
-                html.push('href="', url.replace(/"/g, "&quot;"), '">'), addText(text), html.push("</a>");
-            }
             if (null == text || "" === text) return text;
             if (!isString(text)) throw linkyMinErr("notstring", "Expected string but received: {0}", text);
             for (var match, url, i, attributesFn = isFunction(attributes) ? attributes : isObject(attributes) ? function() {
@@ -31949,7 +32635,13 @@ angular.module("ui.bootstrap.collapse", []).directive("uibCollapse", [ "$animate
                 return {};
             }, raw = text, html = []; match = raw.match(LINKY_URL_REGEXP); ) url = match[0], 
             match[2] || match[4] || (url = (match[3] ? "http://" : "mailto:") + url), i = match.index, 
-            addText(raw.substr(0, i)), addLink(url, match[0].replace(MAILTO_REGEXP, "")), raw = raw.substring(i + match[0].length);
+            addText(raw.substr(0, i)), function(url, text) {
+                var key, linkAttributes = attributesFn(url);
+                html.push("<a ");
+                for (key in linkAttributes) html.push(key + '="' + linkAttributes[key] + '" ');
+                !isDefined(target) || "target" in linkAttributes || html.push('target="', target, '" '), 
+                html.push('href="', url.replace(/"/g, "&quot;"), '">'), addText(text), html.push("</a>");
+            }(url, match[0].replace(MAILTO_REGEXP, "")), raw = raw.substring(i + match[0].length);
             return addText(raw), $sanitize(html.join(""));
         };
     } ]);
@@ -31964,9 +32656,7 @@ function(root, factory) {
         return locale ? locale[key] : locales.en[key];
     }
     function processCallback(e, dialog, callback) {
-        e.stopPropagation(), e.preventDefault();
-        var preserveDialog = $.isFunction(callback) && callback.call(dialog, e) === !1;
-        preserveDialog || dialog.modal("hide");
+        e.stopPropagation(), e.preventDefault(), $.isFunction(callback) && !1 === callback.call(dialog, e) || dialog.modal("hide");
     }
     function getKeyLength(obj) {
         var k, t = 0;
@@ -31988,7 +32678,7 @@ function(root, factory) {
             if ($.isFunction(button) && (button = buttons[key] = {
                 callback: button
             }), "object" !== $.type(button)) throw new Error("button with key " + key + " must be an object");
-            button.label || (button.label = key), button.className || (total <= 2 && index === total - 1 ? button.className = "btn-primary" : button.className = "btn-default");
+            button.label || (button.label = key), button.className || (button.className = total <= 2 && index === total - 1 ? "btn-primary" : "btn-default");
         }), options;
     }
     function mapArguments(args, properties) {
@@ -32001,11 +32691,10 @@ function(root, factory) {
         return $.extend(!0, {}, defaults, mapArguments(args, properties));
     }
     function mergeDialogOptions(className, labels, properties, args) {
-        var baseOptions = {
+        return validateButtons(mergeArguments({
             className: "bootbox-" + className,
             buttons: createLabels.apply(null, labels)
-        };
-        return validateButtons(mergeArguments(baseOptions, args, properties), labels);
+        }, args, properties), labels);
     }
     function createLabels() {
         for (var buttons = {}, i = 0, j = arguments.length; i < j; i++) {
@@ -32144,7 +32833,7 @@ function(root, factory) {
             e.preventDefault(), e.stopPropagation(), dialog.find(".btn-primary").click();
         }), dialog = exports.dialog(options), dialog.off("shown.bs.modal"), dialog.on("shown.bs.modal", function() {
             input.focus();
-        }), shouldShow === !0 && dialog.modal("show"), dialog;
+        }), !0 === shouldShow && dialog.modal("show"), dialog;
     }, exports.dialog = function(options) {
         options = sanitize(options);
         var dialog = $(templates.dialog), innerDialog = dialog.find(".modal-dialog"), body = dialog.find(".modal-body"), buttons = options.buttons, buttonStr = "", callbacks = {
@@ -32154,7 +32843,7 @@ function(root, factory) {
         if (each(buttons, function(key, button) {
             buttonStr += "<button data-bb-handler='" + key + "' type='button' class='btn " + button.className + "'>" + button.label + "</button>", 
             callbacks[key] = button.callback;
-        }), body.find(".bootbox-body").html(options.message), options.animate === !0 && dialog.addClass("fade"), 
+        }), body.find(".bootbox-body").html(options.message), !0 === options.animate && dialog.addClass("fade"), 
         options.className && dialog.addClass(options.className), "large" === options.size ? innerDialog.addClass("modal-lg") : "small" === options.size && innerDialog.addClass("modal-sm"), 
         options.title && body.before(templates.header), options.closeButton) {
             var closeButton = $(templates.closeButton);
@@ -32457,7 +33146,7 @@ function(root, factory) {
 } ]).factory("$ngBootbox", [ "$q", "$templateCache", "$compile", "$rootScope", "$http", "$window", function($q, $templateCache, $compile, $rootScope, $http, $window) {
     function getTemplate(templateId) {
         var def = $q.defer(), template = $templateCache.get(templateId);
-        return "undefined" == typeof template ? $http.get(templateId).then(function(response) {
+        return void 0 === template ? $http.get(templateId).then(function(response) {
             var data = response.data;
             $templateCache.put(templateId, data), def.resolve(data);
         }) : def.resolve(template), def.promise;
@@ -32606,7 +33295,7 @@ ngFileUpload.version = "12.2.13", ngFileUpload.service("UploadBase", [ "$http", 
                     origXhrFn && origXhrFn.apply(promise, arguments), fn.apply(promise, arguments);
                 };
             }(config.xhrFn), promise;
-        }, upload.promisesCount++, promise["finally"] && promise["finally"] instanceof Function && promise["finally"](function() {
+        }, upload.promisesCount++, promise.finally && promise.finally instanceof Function && promise.finally(function() {
             upload.promisesCount--;
         }), promise;
     }
@@ -32665,7 +33354,8 @@ ngFileUpload.version = "12.2.13", ngFileUpload.service("UploadBase", [ "$http", 
                 }
             } else formData.append(key, val);
         }
-        function digestConfig() {
+        return internal || (config = copy(config)), config._isDigested || (config._isDigested = !0, 
+        function() {
             config._chunkSize = upload.translateScalars(config.resumeChunkSize), config._chunkSize = config._chunkSize ? parseInt(config._chunkSize.toString()) : null, 
             config.headers = config.headers || {}, config.headers["Content-Type"] = void 0, 
             config.transformRequest = config.transformRequest ? angular.isArray(config.transformRequest) ? config.transformRequest : [ config.transformRequest ] : [], 
@@ -32678,9 +33368,7 @@ ngFileUpload.version = "12.2.13", ngFileUpload.service("UploadBase", [ "$http", 
                 }
                 return formData;
             });
-        }
-        return internal || (config = copy(config)), config._isDigested || (config._isDigested = !0, 
-        digestConfig()), sendHttp(config);
+        }()), sendHttp(config);
     }, this.http = function(config) {
         return config = copy(config), config.transformRequest = config.transformRequest || function(data) {
             return window.ArrayBuffer && data instanceof window.ArrayBuffer || data instanceof window.Blob ? data : $http.defaults.transformRequest[0].apply(this, arguments);
@@ -32743,7 +33431,7 @@ ngFileUpload.version = "12.2.13", ngFileUpload.service("UploadBase", [ "$http", 
         return resizeWithParams(resizeVal, files, attr, scope, ngModel);
     }
     function resizeWithParams(params, files, attr, scope, ngModel) {
-        function handleFile(f, i) {
+        for (var promises = [ upload.emptyPromise() ], i = 0; i < files.length; i++) !function(f, i) {
             if (0 === f.type.indexOf("image")) {
                 if (params.pattern && !upload.validatePattern(f, params.pattern)) return;
                 params.resizeIf = function(width, height) {
@@ -32764,8 +33452,7 @@ ngFileUpload.version = "12.2.13", ngFileUpload.service("UploadBase", [ "$http", 
                     }), upload.applyModelValidation(ngModel, files);
                 });
             }
-        }
-        for (var promises = [ upload.emptyPromise() ], i = 0; i < files.length; i++) handleFile(files[i], i);
+        }(files[i], i);
         return $q.all(promises);
     }
     var upload = UploadExif;
@@ -32823,24 +33510,6 @@ ngFileUpload.version = "12.2.13", ngFileUpload.service("UploadBase", [ "$http", 
                 $parse(invalidModel).assign(scope, isSingleModel ? invalidFile : invalidFiles);
             }), $timeout(function() {});
         }
-        function removeDuplicates() {
-            function equals(f1, f2) {
-                return f1.name === f2.name && (f1.$ngfOrigSize || f1.size) === (f2.$ngfOrigSize || f2.size) && f1.type === f2.type;
-            }
-            function isInPrevFiles(f) {
-                var j;
-                for (j = 0; j < prevValidFiles.length; j++) if (equals(f, prevValidFiles[j])) return !0;
-                for (j = 0; j < prevInvalidFiles.length; j++) if (equals(f, prevInvalidFiles[j])) return !0;
-                return !1;
-            }
-            if (files) {
-                allNewFiles = [], dupFiles = [];
-                for (var i = 0; i < files.length; i++) isInPrevFiles(files[i]) ? dupFiles.push(files[i]) : allNewFiles.push(files[i]);
-            }
-        }
-        function toArray(v) {
-            return angular.isArray(v) ? v : [ v ];
-        }
         function resizeAndUpdate() {
             function updateModel() {
                 $timeout(function() {
@@ -32865,9 +33534,24 @@ ngFileUpload.version = "12.2.13", ngFileUpload.service("UploadBase", [ "$http", 
         }
         var allNewFiles, prevValidFiles, prevInvalidFiles, dupFiles = [], invalids = [], valids = [];
         prevValidFiles = attr.$$ngfPrevValidFiles || [], prevInvalidFiles = attr.$$ngfPrevInvalidFiles || [], 
-        ngModel && ngModel.$modelValue && (prevValidFiles = toArray(ngModel.$modelValue));
+        ngModel && ngModel.$modelValue && (prevValidFiles = function(v) {
+            return angular.isArray(v) ? v : [ v ];
+        }(ngModel.$modelValue));
         var keep = upload.attrGetter("ngfKeep", attr, scope);
-        allNewFiles = (files || []).slice(0), "distinct" !== keep && upload.attrGetter("ngfKeepDistinct", attr, scope) !== !0 || removeDuplicates(attr, scope);
+        allNewFiles = (files || []).slice(0), "distinct" !== keep && !0 !== upload.attrGetter("ngfKeepDistinct", attr, scope) || function() {
+            function equals(f1, f2) {
+                return f1.name === f2.name && (f1.$ngfOrigSize || f1.size) === (f2.$ngfOrigSize || f2.size) && f1.type === f2.type;
+            }
+            if (files) {
+                allNewFiles = [], dupFiles = [];
+                for (var i = 0; i < files.length; i++) !function(f) {
+                    var j;
+                    for (j = 0; j < prevValidFiles.length; j++) if (equals(f, prevValidFiles[j])) return !0;
+                    for (j = 0; j < prevInvalidFiles.length; j++) if (equals(f, prevInvalidFiles[j])) return !0;
+                    return !1;
+                }(files[i]) ? allNewFiles.push(files[i]) : dupFiles.push(files[i]);
+            }
+        }();
         var isSingleModel = !keep && !upload.attrGetter("ngfMultiple", attr, scope) && !upload.attrGetter("multiple", attr);
         if (!keep || allNewFiles.length) {
             upload.attrGetter("ngfBeforeModelChange", attr, scope, {
@@ -32893,7 +33577,7 @@ ngFileUpload.version = "12.2.13", ngFileUpload.service("UploadBase", [ "$http", 
             var v = Upload.defaults.androidFixMinorVersion || 4;
             return parseInt(m[1]) < 4 || parseInt(m[1]) === v && parseInt(m[2]) < v;
         }
-        return ua.indexOf("Chrome") === -1 && /.*Windows.*Safari.*/.test(ua);
+        return -1 === ua.indexOf("Chrome") && /.*Windows.*Safari.*/.test(ua);
     }
     function linkFileSelect(scope, elem, attr, ngModel, $parse, $timeout, $compile, upload) {
         function isInputTypeFile() {
@@ -32919,15 +33603,6 @@ ngFileUpload.version = "12.2.13", ngFileUpload.service("UploadBase", [ "$http", 
                 "type" !== attribute.name && "class" !== attribute.name && "style" !== attribute.name && ("id" === attribute.name ? (updateId(attribute.value), 
                 unwatches.push(attr.$observe("id", updateId))) : fileElem.attr(attribute.name, attribute.value || "required" !== attribute.name && "multiple" !== attribute.name ? attribute.value : attribute.name));
             }
-        }
-        function createFileInput() {
-            if (isInputTypeFile()) return elem;
-            var fileElem = angular.element('<input type="file">'), label = angular.element("<label>upload</label>");
-            return label.css("visibility", "hidden").css("position", "absolute").css("overflow", "hidden").css("width", "0px").css("height", "0px").css("border", "none").css("margin", "0px").css("padding", "0px").attr("tabindex", "-1"), 
-            bindAttrToFileInput(fileElem, label), generatedElems.push({
-                el: elem,
-                ref: label
-            }), document.body.appendChild(label.append(fileElem)[0]), fileElem;
         }
         function clickHandler(evt) {
             if (elem.attr("disabled")) return !1;
@@ -32989,9 +33664,16 @@ ngFileUpload.version = "12.2.13", ngFileUpload.service("UploadBase", [ "$http", 
             fileElem.attr("accept", attrGetter("accept"));
         }));
         var initialTouchStartY = 0, initialTouchStartX = 0, fileElem = elem;
-        isInputTypeFile() || (fileElem = createFileInput()), fileElem.bind("change", changeFn), 
-        isInputTypeFile() ? elem.bind("click", resetModel) : elem.bind("click touchstart touchend", clickHandler), 
-        navigator.appVersion.indexOf("MSIE 10") !== -1 && fileElem.bind("click", ie10SameFileSelectFix), 
+        isInputTypeFile() || (fileElem = function() {
+            if (isInputTypeFile()) return elem;
+            var fileElem = angular.element('<input type="file">'), label = angular.element("<label>upload</label>");
+            return label.css("visibility", "hidden").css("position", "absolute").css("overflow", "hidden").css("width", "0px").css("height", "0px").css("border", "none").css("margin", "0px").css("padding", "0px").attr("tabindex", "-1"), 
+            bindAttrToFileInput(fileElem, label), generatedElems.push({
+                el: elem,
+                ref: label
+            }), document.body.appendChild(label.append(fileElem)[0]), fileElem;
+        }()), fileElem.bind("change", changeFn), isInputTypeFile() ? elem.bind("click", resetModel) : elem.bind("click touchstart touchend", clickHandler), 
+        -1 !== navigator.appVersion.indexOf("MSIE 10") && fileElem.bind("click", ie10SameFileSelectFix), 
         ngModel && ngModel.$formatters.push(function(val) {
             return null != val && 0 !== val.length || fileElem.val() && fileElem.val(null), 
             val;
@@ -33021,7 +33703,7 @@ ngFileUpload.version = "12.2.13", ngFileUpload.service("UploadBase", [ "$http", 
     function linkFileDirective(Upload, $timeout, scope, elem, attr, directiveName, resizeParams, isBackground) {
         function constructDataUrl(file) {
             var disallowObjectUrl = Upload.attrGetter("ngfNoObjectUrl", attr, scope);
-            Upload.dataUrl(file, disallowObjectUrl)["finally"](function() {
+            Upload.dataUrl(file, disallowObjectUrl).finally(function() {
                 $timeout(function() {
                     var src = (disallowObjectUrl ? file.$ngfDataUrl : file.$ngfBlobUrl) || file.$ngfDataUrl;
                     isBackground ? elem.css("background-image", "url('" + (src || "") + "')") : elem.attr("src", src), 
@@ -33065,8 +33747,8 @@ ngFileUpload.version = "12.2.13", ngFileUpload.service("UploadBase", [ "$http", 
             if (angular.isArray(file)) {
                 var d = $q.defer(), count = 0;
                 return angular.forEach(file, function(f) {
-                    upload.dataUrl(f, !0)["finally"](function() {
-                        if (count++, count === file.length) {
+                    upload.dataUrl(f, !0).finally(function() {
+                        if (++count === file.length) {
                             var urls = [];
                             angular.forEach(file, function(ff) {
                                 urls.push(ff.$ngfDataUrl);
@@ -33083,7 +33765,7 @@ ngFileUpload.version = "12.2.13", ngFileUpload.service("UploadBase", [ "$http", 
             if (p) return p;
             var deferred = $q.defer();
             return $timeout(function() {
-                if (window.FileReader && file && (!window.FileAPI || navigator.userAgent.indexOf("MSIE 8") === -1 || file.size < 2e4) && (!window.FileAPI || navigator.userAgent.indexOf("MSIE 9") === -1 || file.size < 4e6)) {
+                if (window.FileReader && file && (!window.FileAPI || -1 === navigator.userAgent.indexOf("MSIE 8") || file.size < 2e4) && (!window.FileAPI || -1 === navigator.userAgent.indexOf("MSIE 9") || file.size < 4e6)) {
                     var URL = window.URL || window.webkitURL;
                     if (URL && URL.createObjectURL && !disallowObjectUrl) {
                         var url;
@@ -33125,7 +33807,7 @@ ngFileUpload.version = "12.2.13", ngFileUpload.service("UploadBase", [ "$http", 
                     file[disallowObjectUrl ? "$ngfDataUrl" : "$ngfBlobUrl"] = "", deferred.reject();
                 });
             }), p = disallowObjectUrl ? file.$$ngfDataUrlPromise = deferred.promise : file.$$ngfBlobUrlPromise = deferred.promise, 
-            p["finally"](function() {
+            p.finally(function() {
                 delete file[disallowObjectUrl ? "$$ngfDataUrlPromise" : "$$ngfBlobUrlPromise"];
             }), p;
         }, upload;
@@ -33231,9 +33913,9 @@ ngFileUpload.version = "12.2.13", ngFileUpload.service("UploadBase", [ "$http", 
                     var file = files[i];
                     if (file) {
                         var val = upload.getValidationAttr(attr, scope, name, validationName, file);
-                        null != val && (fn(file, val, i) || (ignoredErrors.indexOf(name) === -1 ? (file.$error = name, 
+                        null != val && (fn(file, val, i) || (-1 === ignoredErrors.indexOf(name) ? (file.$error = name, 
                         (file.$errorMessages = file.$errorMessages || {})[name] = !0, file.$errorParam = val, 
-                        invalidFiles.indexOf(file) === -1 && invalidFiles.push(file), runAllValidation || files.splice(i, 1), 
+                        -1 === invalidFiles.indexOf(file) && invalidFiles.push(file), runAllValidation || files.splice(i, 1), 
                         valid = !1) : files.splice(i, 1)));
                     }
                 }
@@ -33246,9 +33928,9 @@ ngFileUpload.version = "12.2.13", ngFileUpload.service("UploadBase", [ "$http", 
         function validateAsync(name, validationName, type, asyncFn, fn) {
             function resolveResult(defer, file, val) {
                 function resolveInternal(fn) {
-                    if (fn()) if (ignoredErrors.indexOf(name) === -1) {
+                    if (fn()) if (-1 === ignoredErrors.indexOf(name)) {
                         if (file.$error = name, (file.$errorMessages = file.$errorMessages || {})[name] = !0, 
-                        file.$errorParam = val, invalidFiles.indexOf(file) === -1 && invalidFiles.push(file), 
+                        file.$errorParam = val, -1 === invalidFiles.indexOf(file) && invalidFiles.push(file), 
                         !runAllValidation) {
                             var i = files.indexOf(file);
                             i > -1 && files.splice(i, 1);
@@ -33323,10 +34005,10 @@ ngFileUpload.version = "12.2.13", ngFileUpload.service("UploadBase", [ "$http", 
         });
         var totalSize = 0;
         if (validateSync("maxTotalSize", null, function(file, val) {
-            return totalSize += file.size, !(totalSize > upload.translateScalars(val) && (files.splice(0, files.length), 
+            return !((totalSize += file.size) > upload.translateScalars(val) && (files.splice(0, files.length), 
             1));
         }), validateSync("validateFn", null, function(file, r) {
-            return r === !0 || null === r || "" === r;
+            return !0 === r || null === r || "" === r;
         }), !files.length) return upload.emptyPromise({
             validFiles: [],
             invalidFiles: invalidFiles
@@ -33362,7 +34044,7 @@ ngFileUpload.version = "12.2.13", ngFileUpload.service("UploadBase", [ "$http", 
         })), promises.push(validateAsync("validateAsyncFn", null, null, function(file, val) {
             return val;
         }, function(r) {
-            return r === !0 || null === r || "" === r;
+            return !0 === r || null === r || "" === r;
         })), $q.all(promises).then(function() {
             if (runAllValidation) for (var i = 0; i < files.length; i++) {
                 var file = files[i];
@@ -33411,7 +34093,7 @@ ngFileUpload.version = "12.2.13", ngFileUpload.service("UploadBase", [ "$http", 
             }, function() {
                 deferred.reject("load error");
             });
-        }), file.$ngfDimensionPromise = deferred.promise, file.$ngfDimensionPromise["finally"](function() {
+        }), file.$ngfDimensionPromise = deferred.promise, file.$ngfDimensionPromise.finally(function() {
             delete file.$ngfDimensionPromise;
         }), file.$ngfDimensionPromise;
     }, upload.mediaDuration = function(file) {
@@ -33444,7 +34126,7 @@ ngFileUpload.version = "12.2.13", ngFileUpload.service("UploadBase", [ "$http", 
             }, function() {
                 deferred.reject("load error");
             });
-        }), file.$ngfDurationPromise = deferred.promise, file.$ngfDurationPromise["finally"](function() {
+        }), file.$ngfDurationPromise = deferred.promise, file.$ngfDurationPromise.finally(function() {
             delete file.$ngfDurationPromise;
         }), file.$ngfDurationPromise;
     }, upload;
@@ -33462,18 +34144,17 @@ ngFileUpload.version = "12.2.13", ngFileUpload.service("UploadBase", [ "$http", 
         return imageElement.setAttribute("style", "visibility:hidden;position:fixed;z-index:-100000"), 
         document.body.appendChild(imageElement), imageElement.onload = function() {
             var imgWidth = imageElement.width, imgHeight = imageElement.height;
-            if (imageElement.parentNode.removeChild(imageElement), null != resizeIf && resizeIf(imgWidth, imgHeight) === !1) return void deferred.reject("resizeIf");
+            if (imageElement.parentNode.removeChild(imageElement), null != resizeIf && !1 === resizeIf(imgWidth, imgHeight)) return void deferred.reject("resizeIf");
             try {
                 if (ratio) {
-                    var ratioFloat = upload.ratioToFloat(ratio), imgRatio = imgWidth / imgHeight;
-                    imgRatio < ratioFloat ? (width = imgWidth, height = width / ratioFloat) : (height = imgHeight, 
+                    var ratioFloat = upload.ratioToFloat(ratio);
+                    imgWidth / imgHeight < ratioFloat ? (width = imgWidth, height = width / ratioFloat) : (height = imgHeight, 
                     width = height * ratioFloat);
                 }
                 width || (width = imgWidth), height || (height = imgHeight);
                 var dimensions = calculateAspectRatioFit(imgWidth, imgHeight, width, height, centerCrop);
                 canvasElement.width = Math.min(dimensions.width, width), canvasElement.height = Math.min(dimensions.height, height);
-                var context = canvasElement.getContext("2d");
-                context.drawImage(imageElement, Math.min(0, -dimensions.marginX / 2), Math.min(0, -dimensions.marginY / 2), dimensions.width, dimensions.height), 
+                canvasElement.getContext("2d").drawImage(imageElement, Math.min(0, -dimensions.marginX / 2), Math.min(0, -dimensions.marginY / 2), dimensions.width, dimensions.height), 
                 deferred.resolve(canvasElement.toDataURL(type || "image/WebP", quality || .934));
             } catch (e) {
                 deferred.reject(e);
@@ -33504,7 +34185,7 @@ ngFileUpload.version = "12.2.13", ngFileUpload.service("UploadBase", [ "$http", 
         var deferred = $q.defer();
         return upload.dataUrl(file, !0).then(function(url) {
             resize(url, options.width, options.height, options.quality, options.type || file.type, options.ratio, options.centerCrop, options.resizeIf).then(function(dataUrl) {
-                if ("image/jpeg" === file.type && options.restoreExif !== !1) try {
+                if ("image/jpeg" === file.type && !1 !== options.restoreExif) try {
                     dataUrl = upload.restoreExif(url, dataUrl);
                 } catch (e) {
                     setTimeout(function() {
@@ -33535,7 +34216,7 @@ ngFileUpload.version = "12.2.13", ngFileUpload.service("UploadBase", [ "$http", 
                 try {
                     html = source && source.getData && source.getData("text/html");
                 } catch (e) {}
-                extractFiles(source.items, source.files, attrGetter("ngfAllowDir", scope) !== !1, attrGetter("multiple") || attrGetter("ngfMultiple", scope)).then(function(files) {
+                extractFiles(source.items, source.files, !1 !== attrGetter("ngfAllowDir", scope), attrGetter("multiple") || attrGetter("ngfMultiple", scope)).then(function(files) {
                     files.length ? updateModel(files, evt) : extractFilesFromHtml(updateOnType, html).then(function(files) {
                         updateModel(files, evt);
                     });
@@ -33602,7 +34283,7 @@ ngFileUpload.version = "12.2.13", ngFileUpload.service("UploadBase", [ "$http", 
                             try {
                                 results.length ? (entries = entries.concat(Array.prototype.slice.call(results || [], 0)), 
                                 readEntries()) : (angular.forEach(entries.slice(0), function(e) {
-                                    files.length <= maxFiles && totalSize <= maxTotalSize && promises.push(traverseFileTree(e, (path ? path : "") + entry.name + "/"));
+                                    files.length <= maxFiles && totalSize <= maxTotalSize && promises.push(traverseFileTree(e, (path || "") + entry.name + "/"));
                                 }), $q.all(promises).then(function() {
                                     defer.resolve();
                                 }, function(e) {
@@ -33618,7 +34299,7 @@ ngFileUpload.version = "12.2.13", ngFileUpload.service("UploadBase", [ "$http", 
                     readEntries();
                 } else entry.file(function(file) {
                     try {
-                        file.path = (path ? path : "") + file.name, includeDir && (file = upload.rename(file, file.path)), 
+                        file.path = (path || "") + file.name, includeDir && (file = upload.rename(file, file.path)), 
                         files.push(file), totalSize += file.size, defer.resolve();
                     } catch (e) {
                         defer.reject(e);
@@ -33663,7 +34344,7 @@ ngFileUpload.version = "12.2.13", ngFileUpload.service("UploadBase", [ "$http", 
         };
         if (attrGetter("dropAvailable") && $timeout(function() {
             scope[attrGetter("dropAvailable")] ? scope[attrGetter("dropAvailable")].value = available : scope[attrGetter("dropAvailable")] = available;
-        }), !available) return void (attrGetter("ngfHideOnDropNotAvailable", scope) === !0 && elem.css("display", "none"));
+        }), !available) return void (!0 === attrGetter("ngfHideOnDropNotAvailable", scope) && elem.css("display", "none"));
         null == attrGetter("ngfSelect") && upload.registerModelChangeValidator(ngModel, attr, scope);
         var actualDragOverClass, leaveTimeout = null, stopPropagation = $parse(attrGetter("ngfStopPropagation")), dragOverDelay = 1;
         elem[0].addEventListener("dragover", function(evt) {
@@ -33786,7 +34467,7 @@ ngFileUpload.version = "12.2.13", ngFileUpload.service("UploadBase", [ "$http", 
                         result.fixedArrayBuffer = e.target.result), result.orientation = orientation, defer.resolve(result);
                     }
                 } else {
-                    if (65280 !== (65280 & marker)) break;
+                    if (65280 != (65280 & marker)) break;
                     offset += view.getUint16(offset, !1);
                 }
             }
@@ -33824,10 +34505,12 @@ ngFileUpload.version = "12.2.13", ngFileUpload.service("UploadBase", [ "$http", 
         return ExifRestorer.KEY_STR = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=", 
         ExifRestorer.encode64 = function(input) {
             var chr1, chr2, enc1, enc2, enc3, output = "", chr3 = "", enc4 = "", i = 0;
-            do chr1 = input[i++], chr2 = input[i++], chr3 = input[i++], enc1 = chr1 >> 2, enc2 = (3 & chr1) << 4 | chr2 >> 4, 
-            enc3 = (15 & chr2) << 2 | chr3 >> 6, enc4 = 63 & chr3, isNaN(chr2) ? enc3 = enc4 = 64 : isNaN(chr3) && (enc4 = 64), 
-            output = output + this.KEY_STR.charAt(enc1) + this.KEY_STR.charAt(enc2) + this.KEY_STR.charAt(enc3) + this.KEY_STR.charAt(enc4), 
-            chr1 = chr2 = chr3 = "", enc1 = enc2 = enc3 = enc4 = ""; while (i < input.length);
+            do {
+                chr1 = input[i++], chr2 = input[i++], chr3 = input[i++], enc1 = chr1 >> 2, enc2 = (3 & chr1) << 4 | chr2 >> 4, 
+                enc3 = (15 & chr2) << 2 | chr3 >> 6, enc4 = 63 & chr3, isNaN(chr2) ? enc3 = enc4 = 64 : isNaN(chr3) && (enc4 = 64), 
+                output = output + this.KEY_STR.charAt(enc1) + this.KEY_STR.charAt(enc2) + this.KEY_STR.charAt(enc3) + this.KEY_STR.charAt(enc4), 
+                chr1 = chr2 = chr3 = "", enc1 = enc2 = enc3 = enc4 = "";
+            } while (i < input.length);
             return output;
         }, ExifRestorer.restore = function(origFileBase64, resizedFileBase64) {
             origFileBase64.match("data:image/jpeg;base64,") && (origFileBase64 = origFileBase64.replace("data:image/jpeg;base64,", ""));
@@ -33852,14 +34535,16 @@ ngFileUpload.version = "12.2.13", ngFileUpload.service("UploadBase", [ "$http", 
             }
             return segments;
         }, ExifRestorer.decode64 = function(input) {
-            var chr1, chr2, enc1, enc2, enc3, chr3 = "", enc4 = "", i = 0, buf = [], base64test = /[^A-Za-z0-9\+\/\=]/g;
-            base64test.exec(input) && console.log("There were invalid base64 characters in the input text.\nValid base64 characters are A-Z, a-z, 0-9, NaNExpect errors in decoding."), 
+            var chr1, chr2, enc1, enc2, enc3, chr3 = "", enc4 = "", i = 0, buf = [];
+            /[^A-Za-z0-9\+\/\=]/g.exec(input) && console.log("There were invalid base64 characters in the input text.\nValid base64 characters are A-Z, a-z, 0-9, NaNExpect errors in decoding."), 
             input = input.replace(/[^A-Za-z0-9\+\/\=]/g, "");
-            do enc1 = this.KEY_STR.indexOf(input.charAt(i++)), enc2 = this.KEY_STR.indexOf(input.charAt(i++)), 
-            enc3 = this.KEY_STR.indexOf(input.charAt(i++)), enc4 = this.KEY_STR.indexOf(input.charAt(i++)), 
-            chr1 = enc1 << 2 | enc2 >> 4, chr2 = (15 & enc2) << 4 | enc3 >> 2, chr3 = (3 & enc3) << 6 | enc4, 
-            buf.push(chr1), 64 !== enc3 && buf.push(chr2), 64 !== enc4 && buf.push(chr3), chr1 = chr2 = chr3 = "", 
-            enc1 = enc2 = enc3 = enc4 = ""; while (i < input.length);
+            do {
+                enc1 = this.KEY_STR.indexOf(input.charAt(i++)), enc2 = this.KEY_STR.indexOf(input.charAt(i++)), 
+                enc3 = this.KEY_STR.indexOf(input.charAt(i++)), enc4 = this.KEY_STR.indexOf(input.charAt(i++)), 
+                chr1 = enc1 << 2 | enc2 >> 4, chr2 = (15 & enc2) << 4 | enc3 >> 2, chr3 = (3 & enc3) << 6 | enc4, 
+                buf.push(chr1), 64 !== enc3 && buf.push(chr2), 64 !== enc4 && buf.push(chr3), chr1 = chr2 = chr3 = "", 
+                enc1 = enc2 = enc3 = enc4 = "";
+            } while (i < input.length);
             return buf;
         }, ExifRestorer.restore(orig, resized);
     }, upload;
@@ -33879,7 +34564,7 @@ function(angular) {
             return text ? md5.createHash(text.toString().toLowerCase()) : text;
         };
     } ]), angular.module("gdi2290.md5-service", []).factory("md5", [ function() {
-        var md5 = {
+        return {
             createHash: function(str) {
                 if (null === str) return null;
                 var xl, k, AA, BB, CC, DD, a, b, c, d, rotateLeft = function(lValue, iShiftBits) {
@@ -33904,59 +34589,57 @@ function(angular) {
                     return a = addUnsigned(a, addUnsigned(addUnsigned(_H(b, c, d), x), ac)), addUnsigned(rotateLeft(a, s), b);
                 }, _II = function(a, b, c, d, x, s, ac) {
                     return a = addUnsigned(a, addUnsigned(addUnsigned(_I(b, c, d), x), ac)), addUnsigned(rotateLeft(a, s), b);
-                }, convertToWordArray = function(str) {
+                }, wordToHex = function(lValue) {
+                    var lByte, lCount, wordToHexValue = "", wordToHexValue_temp = "";
+                    for (lCount = 0; lCount <= 3; lCount++) lByte = lValue >>> 8 * lCount & 255, wordToHexValue_temp = "0" + lByte.toString(16), 
+                    wordToHexValue += wordToHexValue_temp.substr(wordToHexValue_temp.length - 2, 2);
+                    return wordToHexValue;
+                }, x = [];
+                for (x = function(str) {
                     for (var lWordCount, lMessageLength = str.length, lNumberOfWords_temp1 = lMessageLength + 8, lNumberOfWords_temp2 = (lNumberOfWords_temp1 - lNumberOfWords_temp1 % 64) / 64, lNumberOfWords = 16 * (lNumberOfWords_temp2 + 1), lWordArray = new Array(lNumberOfWords - 1), lBytePosition = 0, lByteCount = 0; lByteCount < lMessageLength; ) lWordCount = (lByteCount - lByteCount % 4) / 4, 
                     lBytePosition = lByteCount % 4 * 8, lWordArray[lWordCount] = lWordArray[lWordCount] | str.charCodeAt(lByteCount) << lBytePosition, 
                     lByteCount++;
                     return lWordCount = (lByteCount - lByteCount % 4) / 4, lBytePosition = lByteCount % 4 * 8, 
                     lWordArray[lWordCount] = lWordArray[lWordCount] | 128 << lBytePosition, lWordArray[lNumberOfWords - 2] = lMessageLength << 3, 
                     lWordArray[lNumberOfWords - 1] = lMessageLength >>> 29, lWordArray;
-                }, wordToHex = function(lValue) {
-                    var lByte, lCount, wordToHexValue = "", wordToHexValue_temp = "";
-                    for (lCount = 0; lCount <= 3; lCount++) lByte = lValue >>> 8 * lCount & 255, wordToHexValue_temp = "0" + lByte.toString(16), 
-                    wordToHexValue += wordToHexValue_temp.substr(wordToHexValue_temp.length - 2, 2);
-                    return wordToHexValue;
-                }, x = [], S11 = 7, S12 = 12, S13 = 17, S14 = 22, S21 = 5, S22 = 9, S23 = 14, S24 = 20, S31 = 4, S32 = 11, S33 = 16, S34 = 23, S41 = 6, S42 = 10, S43 = 15, S44 = 21;
-                for (x = convertToWordArray(str), a = 1732584193, b = 4023233417, c = 2562383102, 
-                d = 271733878, xl = x.length, k = 0; k < xl; k += 16) AA = a, BB = b, CC = c, DD = d, 
-                a = _FF(a, b, c, d, x[k + 0], S11, 3614090360), d = _FF(d, a, b, c, x[k + 1], S12, 3905402710), 
-                c = _FF(c, d, a, b, x[k + 2], S13, 606105819), b = _FF(b, c, d, a, x[k + 3], S14, 3250441966), 
-                a = _FF(a, b, c, d, x[k + 4], S11, 4118548399), d = _FF(d, a, b, c, x[k + 5], S12, 1200080426), 
-                c = _FF(c, d, a, b, x[k + 6], S13, 2821735955), b = _FF(b, c, d, a, x[k + 7], S14, 4249261313), 
-                a = _FF(a, b, c, d, x[k + 8], S11, 1770035416), d = _FF(d, a, b, c, x[k + 9], S12, 2336552879), 
-                c = _FF(c, d, a, b, x[k + 10], S13, 4294925233), b = _FF(b, c, d, a, x[k + 11], S14, 2304563134), 
-                a = _FF(a, b, c, d, x[k + 12], S11, 1804603682), d = _FF(d, a, b, c, x[k + 13], S12, 4254626195), 
-                c = _FF(c, d, a, b, x[k + 14], S13, 2792965006), b = _FF(b, c, d, a, x[k + 15], S14, 1236535329), 
-                a = _GG(a, b, c, d, x[k + 1], S21, 4129170786), d = _GG(d, a, b, c, x[k + 6], S22, 3225465664), 
-                c = _GG(c, d, a, b, x[k + 11], S23, 643717713), b = _GG(b, c, d, a, x[k + 0], S24, 3921069994), 
-                a = _GG(a, b, c, d, x[k + 5], S21, 3593408605), d = _GG(d, a, b, c, x[k + 10], S22, 38016083), 
-                c = _GG(c, d, a, b, x[k + 15], S23, 3634488961), b = _GG(b, c, d, a, x[k + 4], S24, 3889429448), 
-                a = _GG(a, b, c, d, x[k + 9], S21, 568446438), d = _GG(d, a, b, c, x[k + 14], S22, 3275163606), 
-                c = _GG(c, d, a, b, x[k + 3], S23, 4107603335), b = _GG(b, c, d, a, x[k + 8], S24, 1163531501), 
-                a = _GG(a, b, c, d, x[k + 13], S21, 2850285829), d = _GG(d, a, b, c, x[k + 2], S22, 4243563512), 
-                c = _GG(c, d, a, b, x[k + 7], S23, 1735328473), b = _GG(b, c, d, a, x[k + 12], S24, 2368359562), 
-                a = _HH(a, b, c, d, x[k + 5], S31, 4294588738), d = _HH(d, a, b, c, x[k + 8], S32, 2272392833), 
-                c = _HH(c, d, a, b, x[k + 11], S33, 1839030562), b = _HH(b, c, d, a, x[k + 14], S34, 4259657740), 
-                a = _HH(a, b, c, d, x[k + 1], S31, 2763975236), d = _HH(d, a, b, c, x[k + 4], S32, 1272893353), 
-                c = _HH(c, d, a, b, x[k + 7], S33, 4139469664), b = _HH(b, c, d, a, x[k + 10], S34, 3200236656), 
-                a = _HH(a, b, c, d, x[k + 13], S31, 681279174), d = _HH(d, a, b, c, x[k + 0], S32, 3936430074), 
-                c = _HH(c, d, a, b, x[k + 3], S33, 3572445317), b = _HH(b, c, d, a, x[k + 6], S34, 76029189), 
-                a = _HH(a, b, c, d, x[k + 9], S31, 3654602809), d = _HH(d, a, b, c, x[k + 12], S32, 3873151461), 
-                c = _HH(c, d, a, b, x[k + 15], S33, 530742520), b = _HH(b, c, d, a, x[k + 2], S34, 3299628645), 
-                a = _II(a, b, c, d, x[k + 0], S41, 4096336452), d = _II(d, a, b, c, x[k + 7], S42, 1126891415), 
-                c = _II(c, d, a, b, x[k + 14], S43, 2878612391), b = _II(b, c, d, a, x[k + 5], S44, 4237533241), 
-                a = _II(a, b, c, d, x[k + 12], S41, 1700485571), d = _II(d, a, b, c, x[k + 3], S42, 2399980690), 
-                c = _II(c, d, a, b, x[k + 10], S43, 4293915773), b = _II(b, c, d, a, x[k + 1], S44, 2240044497), 
-                a = _II(a, b, c, d, x[k + 8], S41, 1873313359), d = _II(d, a, b, c, x[k + 15], S42, 4264355552), 
-                c = _II(c, d, a, b, x[k + 6], S43, 2734768916), b = _II(b, c, d, a, x[k + 13], S44, 1309151649), 
-                a = _II(a, b, c, d, x[k + 4], S41, 4149444226), d = _II(d, a, b, c, x[k + 11], S42, 3174756917), 
-                c = _II(c, d, a, b, x[k + 2], S43, 718787259), b = _II(b, c, d, a, x[k + 9], S44, 3951481745), 
-                a = addUnsigned(a, AA), b = addUnsigned(b, BB), c = addUnsigned(c, CC), d = addUnsigned(d, DD);
-                var temp = wordToHex(a) + wordToHex(b) + wordToHex(c) + wordToHex(d);
-                return temp.toLowerCase();
+                }(str), a = 1732584193, b = 4023233417, c = 2562383102, d = 271733878, xl = x.length, 
+                k = 0; k < xl; k += 16) AA = a, BB = b, CC = c, DD = d, a = _FF(a, b, c, d, x[k + 0], 7, 3614090360), 
+                d = _FF(d, a, b, c, x[k + 1], 12, 3905402710), c = _FF(c, d, a, b, x[k + 2], 17, 606105819), 
+                b = _FF(b, c, d, a, x[k + 3], 22, 3250441966), a = _FF(a, b, c, d, x[k + 4], 7, 4118548399), 
+                d = _FF(d, a, b, c, x[k + 5], 12, 1200080426), c = _FF(c, d, a, b, x[k + 6], 17, 2821735955), 
+                b = _FF(b, c, d, a, x[k + 7], 22, 4249261313), a = _FF(a, b, c, d, x[k + 8], 7, 1770035416), 
+                d = _FF(d, a, b, c, x[k + 9], 12, 2336552879), c = _FF(c, d, a, b, x[k + 10], 17, 4294925233), 
+                b = _FF(b, c, d, a, x[k + 11], 22, 2304563134), a = _FF(a, b, c, d, x[k + 12], 7, 1804603682), 
+                d = _FF(d, a, b, c, x[k + 13], 12, 4254626195), c = _FF(c, d, a, b, x[k + 14], 17, 2792965006), 
+                b = _FF(b, c, d, a, x[k + 15], 22, 1236535329), a = _GG(a, b, c, d, x[k + 1], 5, 4129170786), 
+                d = _GG(d, a, b, c, x[k + 6], 9, 3225465664), c = _GG(c, d, a, b, x[k + 11], 14, 643717713), 
+                b = _GG(b, c, d, a, x[k + 0], 20, 3921069994), a = _GG(a, b, c, d, x[k + 5], 5, 3593408605), 
+                d = _GG(d, a, b, c, x[k + 10], 9, 38016083), c = _GG(c, d, a, b, x[k + 15], 14, 3634488961), 
+                b = _GG(b, c, d, a, x[k + 4], 20, 3889429448), a = _GG(a, b, c, d, x[k + 9], 5, 568446438), 
+                d = _GG(d, a, b, c, x[k + 14], 9, 3275163606), c = _GG(c, d, a, b, x[k + 3], 14, 4107603335), 
+                b = _GG(b, c, d, a, x[k + 8], 20, 1163531501), a = _GG(a, b, c, d, x[k + 13], 5, 2850285829), 
+                d = _GG(d, a, b, c, x[k + 2], 9, 4243563512), c = _GG(c, d, a, b, x[k + 7], 14, 1735328473), 
+                b = _GG(b, c, d, a, x[k + 12], 20, 2368359562), a = _HH(a, b, c, d, x[k + 5], 4, 4294588738), 
+                d = _HH(d, a, b, c, x[k + 8], 11, 2272392833), c = _HH(c, d, a, b, x[k + 11], 16, 1839030562), 
+                b = _HH(b, c, d, a, x[k + 14], 23, 4259657740), a = _HH(a, b, c, d, x[k + 1], 4, 2763975236), 
+                d = _HH(d, a, b, c, x[k + 4], 11, 1272893353), c = _HH(c, d, a, b, x[k + 7], 16, 4139469664), 
+                b = _HH(b, c, d, a, x[k + 10], 23, 3200236656), a = _HH(a, b, c, d, x[k + 13], 4, 681279174), 
+                d = _HH(d, a, b, c, x[k + 0], 11, 3936430074), c = _HH(c, d, a, b, x[k + 3], 16, 3572445317), 
+                b = _HH(b, c, d, a, x[k + 6], 23, 76029189), a = _HH(a, b, c, d, x[k + 9], 4, 3654602809), 
+                d = _HH(d, a, b, c, x[k + 12], 11, 3873151461), c = _HH(c, d, a, b, x[k + 15], 16, 530742520), 
+                b = _HH(b, c, d, a, x[k + 2], 23, 3299628645), a = _II(a, b, c, d, x[k + 0], 6, 4096336452), 
+                d = _II(d, a, b, c, x[k + 7], 10, 1126891415), c = _II(c, d, a, b, x[k + 14], 15, 2878612391), 
+                b = _II(b, c, d, a, x[k + 5], 21, 4237533241), a = _II(a, b, c, d, x[k + 12], 6, 1700485571), 
+                d = _II(d, a, b, c, x[k + 3], 10, 2399980690), c = _II(c, d, a, b, x[k + 10], 15, 4293915773), 
+                b = _II(b, c, d, a, x[k + 1], 21, 2240044497), a = _II(a, b, c, d, x[k + 8], 6, 1873313359), 
+                d = _II(d, a, b, c, x[k + 15], 10, 4264355552), c = _II(c, d, a, b, x[k + 6], 15, 2734768916), 
+                b = _II(b, c, d, a, x[k + 13], 21, 1309151649), a = _II(a, b, c, d, x[k + 4], 6, 4149444226), 
+                d = _II(d, a, b, c, x[k + 11], 10, 3174756917), c = _II(c, d, a, b, x[k + 2], 15, 718787259), 
+                b = _II(b, c, d, a, x[k + 9], 21, 3951481745), a = addUnsigned(a, AA), b = addUnsigned(b, BB), 
+                c = addUnsigned(c, CC), d = addUnsigned(d, DD);
+                return (wordToHex(a) + wordToHex(b) + wordToHex(c) + wordToHex(d)).toLowerCase();
             }
         };
-        return md5;
     } ]);
 }(angular), define("angular-md5", [ "angular" ], function() {}), define("siglasApp", [ "routes", "services/dependencyResolverFor", "services/protectedRoute", "i18n/i18nLoader!", "angular", "angular-route", "bootstrap", "angular-translate", "angular-local-storage", "angular-animate", "angular-toastr", "angular-jwt", "angular-bootstrap", "lodash", "async", "angular-moment", "angular-sanitize", "ngBootbox", "ng-file-upload", "angular-md5" ], function(config, dependencyResolverFor, protectedRoute, i18n) {
     var siglasApp = angular.module("siglasApp", [ "ngRoute", "ngSanitize", "pascalprecht.translate", "LocalStorageModule", "ngAnimate", "toastr", "angular-jwt", "ui.bootstrap", "angularMoment", "ngBootbox", "ngFileUpload", "angular-md5" ]);
@@ -33971,7 +34654,7 @@ function(angular) {
                 templateUrl: route.templateUrl,
                 resolve: {
                     controllers: dependencyResolverFor(controllers).resolver,
-                    "protected": protectedRoute(route).resolver
+                    protected: protectedRoute(route).resolver
                 },
                 controller: route.controller,
                 controllerAs: route.controllerAs,
@@ -34031,7 +34714,8 @@ function(angular) {
                 method: "GET",
                 url: api("/api/id/" + username)
             }).then(function(response) {
-                return response.status >= 400 ? (console.log(response.status), response.status >= 500 ? defer.reject(response.data) : defer.reject(response.data)) : void defer.resolve(response.data);
+                return response.status >= 400 ? (console.log(response.status), response.status, 
+                defer.reject(response.data)) : void defer.resolve(response.data);
             }, function(error) {
                 console.log(error), defer.reject(error.data);
             }), defer.promise;
@@ -34042,7 +34726,8 @@ function(angular) {
                 method: "GET",
                 url: api("/api/id/" + username + "/profile")
             }).then(function(response) {
-                return response.status >= 400 ? (console.log(response.status), response.status >= 500 ? defer.reject(response.data) : defer.reject(response.data)) : void defer.resolve(response.data);
+                return response.status >= 400 ? (console.log(response.status), response.status, 
+                defer.reject(response.data)) : void defer.resolve(response.data);
             }, function(error) {
                 console.log(error), defer.reject(error.data);
             }), defer.promise;
@@ -34054,7 +34739,8 @@ function(angular) {
                 url: api("/api/id/" + username + "/published"),
                 params: query
             }).then(function(response) {
-                return response.status >= 400 ? (console.log(response.status), response.status >= 500 ? defer.reject(response.data) : defer.reject(response.data)) : void defer.resolve(response.data);
+                return response.status >= 400 ? (console.log(response.status), response.status, 
+                defer.reject(response.data)) : void defer.resolve(response.data);
             }, function(error) {
                 console.log(error), defer.reject(error.data);
             }), defer.promise;
@@ -34084,10 +34770,10 @@ function(angular) {
                     password: password
                 }
             }).then(function(response) {
-                return response.status >= 400 ? (console.log(response.status), response.status >= 500 ? defer.reject(response.data) : defer.reject(response.data)) : (console.log(response.data), 
-                setDefaultAuthorizationHeader(response.data.idToken), console.log($http.defaults.headers.common.Authorization), 
-                console.log("setting local storage"), localStorageService.set("tokens", response.data), 
-                void defer.resolve(response.data));
+                return response.status >= 400 ? (console.log(response.status), response.status, 
+                defer.reject(response.data)) : (console.log(response.data), setDefaultAuthorizationHeader(response.data.idToken), 
+                console.log($http.defaults.headers.common.Authorization), console.log("setting local storage"), 
+                localStorageService.set("tokens", response.data), void defer.resolve(response.data));
             }, function(error) {
                 console.log(error), defer.reject(error.data);
             }), defer.promise;
@@ -34099,10 +34785,10 @@ function(angular) {
                 url: api("/api/auth/register"),
                 data: JSON.stringify(user)
             }).then(function(response) {
-                return response.status >= 400 ? (console.log(response.status), response.status >= 500 ? defer.reject(response.data) : defer.reject(response.data)) : (console.log(response.data), 
-                setDefaultAuthorizationHeader(response.data.idToken), console.log($http.defaults.headers.common.Authorization), 
-                console.log("setting local storage"), localStorageService.set("tokens", response.data), 
-                void defer.resolve(response.data));
+                return response.status >= 400 ? (console.log(response.status), response.status, 
+                defer.reject(response.data)) : (console.log(response.data), setDefaultAuthorizationHeader(response.data.idToken), 
+                console.log($http.defaults.headers.common.Authorization), console.log("setting local storage"), 
+                localStorageService.set("tokens", response.data), void defer.resolve(response.data));
             }, function(error) {
                 console.log(error), defer.reject(error.data);
             }), defer.promise;
@@ -34141,7 +34827,8 @@ function(angular) {
                     email: email
                 }
             }).then(function(response) {
-                return response.status >= 400 ? (console.log(response.status), response.status >= 500 ? defer.reject(response.data) : defer.reject(response.data)) : void defer.resolve(response.data);
+                return response.status >= 400 ? (console.log(response.status), response.status, 
+                defer.reject(response.data)) : void defer.resolve(response.data);
             }, function(error) {
                 console.log(error), defer.reject(error.data);
             }), defer.promise;
@@ -34153,8 +34840,8 @@ function(angular) {
                 method: "GET",
                 url: api("/api/me/profile")
             }).then(function(response) {
-                return response.status >= 400 ? (console.log(response.status), response.status >= 500 ? defer.reject(response.data) : defer.reject(response.data)) : (console.log("got profile", response.data), 
-                void defer.resolve(response.data));
+                return response.status >= 400 ? (console.log(response.status), response.status, 
+                defer.reject(response.data)) : (console.log("got profile", response.data), void defer.resolve(response.data));
             }, function(error) {
                 console.log(error), defer.reject(error.data);
             }), defer.promise;
@@ -34184,10 +34871,7 @@ function(angular) {
                 var timestamp = Date.now(), hexTimestamp = timestamp.toString(16), usernameHash = md5.createHash(username), generatedToken = hexTimestamp + usernameHash;
                 if (generatedToken.length !== token.length) return defer.reject("INVALID");
                 var tokenTimestamp = parseInt(token.substr(0, hexTimestamp.length), 16);
-                if (tokenTimestamp - timestamp > 0) return defer.reject("INVALID");
-                if (timestamp - tokenTimestamp > MAX_EXPIRY) return defer.reject("EXPIRED");
-                var tokenUsername = generatedToken.substr(hexTimestamp.length);
-                return tokenUsername === token.substr(hexTimestamp.length) ? defer.resolve() : defer.reject("INVALID");
+                return tokenTimestamp - timestamp > 0 ? defer.reject("INVALID") : timestamp - tokenTimestamp > MAX_EXPIRY ? defer.reject("EXPIRED") : generatedToken.substr(hexTimestamp.length) === token.substr(hexTimestamp.length) ? defer.resolve() : defer.reject("INVALID");
             }, function(err) {
                 defer.reject(err);
             }), defer.promise;
@@ -34199,7 +34883,8 @@ function(angular) {
                 url: api("/api/id/" + username + "/reset-password"),
                 data: JSON.stringify(passwords)
             }).then(function(response) {
-                return response.status >= 400 ? (console.log(response.status), response.status >= 500 ? defer.reject(response.data) : defer.reject(response.data)) : void defer.resolve(response);
+                return response.status >= 400 ? (console.log(response.status), response.status, 
+                defer.reject(response.data)) : void defer.resolve(response);
             }, function(error) {
                 console.log(error), defer.reject(error);
             }), defer.promise;
@@ -34223,7 +34908,8 @@ function(angular) {
                 url: api("/api/me/favourites"),
                 params: query
             }).then(function(response) {
-                return response.status >= 400 ? (console.log(response.status), response.status >= 500 ? defer.reject(response.data) : defer.reject(response.data)) : void defer.resolve(response.data);
+                return response.status >= 400 ? (console.log(response.status), response.status, 
+                defer.reject(response.data)) : void defer.resolve(response.data);
             }, function(error) {
                 console.log(error), defer.reject(error);
             }), defer.promise;
@@ -34234,7 +34920,8 @@ function(angular) {
                 method: "GET",
                 url: api("/api/me/favourites/all")
             }).then(function(response) {
-                return response.status >= 400 ? (console.log(response.status), response.status >= 500 ? defer.reject(response.data) : defer.reject(response.data)) : void defer.resolve(response.data);
+                return response.status >= 400 ? (console.log(response.status), response.status, 
+                defer.reject(response.data)) : void defer.resolve(response.data);
             }, function(error) {
                 console.log(error), defer.reject(error);
             }), defer.promise;
@@ -34248,7 +34935,8 @@ function(angular) {
                     item: id
                 }
             }).then(function(response) {
-                return response.status >= 400 ? (console.log(response.status), response.status >= 500 ? defer.reject(response.data) : defer.reject(response.data)) : void defer.resolve(response.data);
+                return response.status >= 400 ? (console.log(response.status), response.status, 
+                defer.reject(response.data)) : void defer.resolve(response.data);
             }, function(error) {
                 console.log(error), defer.reject(error);
             }), defer.promise;
@@ -34259,7 +34947,8 @@ function(angular) {
                 method: "DELETE",
                 url: api("/api/me/favourites/" + id)
             }).then(function(response) {
-                return response.status >= 400 ? (console.log(response.status), response.status >= 500 ? defer.reject(response.data) : defer.reject(response.data)) : void defer.resolve(response.data);
+                return response.status >= 400 ? (console.log(response.status), response.status, 
+                defer.reject(response.data)) : void defer.resolve(response.data);
             }, function(error) {
                 console.log(error), defer.reject(error);
             }), defer.promise;
@@ -34310,7 +34999,8 @@ function(angular) {
                     limit: limit
                 }
             }).then(function(response) {
-                return response.status >= 400 ? (console.log(response.status), response.status >= 500 ? defer.reject(response.data) : defer.reject(response.data)) : void defer.resolve(response.data.items);
+                return response.status >= 400 ? (console.log(response.status), response.status, 
+                defer.reject(response.data)) : void defer.resolve(response.data.items);
             }, function(error) {
                 console.log(error), defer.reject(error);
             }), defer.promise;
@@ -34322,7 +35012,8 @@ function(angular) {
                 url: api("/api/me/published/"),
                 params: query
             }).then(function(response) {
-                return response.status >= 400 ? (console.log(response.status), response.status >= 500 ? defer.reject(response.data) : defer.reject(response.data)) : void defer.resolve(response.data);
+                return response.status >= 400 ? (console.log(response.status), response.status, 
+                defer.reject(response.data)) : void defer.resolve(response.data);
             }, function(error) {
                 console.log(error), defer.reject(error);
             }), defer.promise;
@@ -34333,7 +35024,8 @@ function(angular) {
                 method: "GET",
                 url: api("/api/me/published/all")
             }).then(function(response) {
-                return response.status >= 400 ? (console.log(response.status), response.status >= 500 ? defer.reject(response.data) : defer.reject(response.data)) : void defer.resolve(response.data);
+                return response.status >= 400 ? (console.log(response.status), response.status, 
+                defer.reject(response.data)) : void defer.resolve(response.data);
             }, function(error) {
                 console.log(error), defer.reject(error);
             }), defer.promise;
@@ -34344,7 +35036,8 @@ function(angular) {
                 method: "GET",
                 url: api("/api/me/purchased/pending")
             }).then(function(response) {
-                return response.status >= 400 ? (console.log(response.status), response.status >= 500 ? defer.reject(response.data) : defer.reject(response.data)) : void defer.resolve(response.data);
+                return response.status >= 400 ? (console.log(response.status), response.status, 
+                defer.reject(response.data)) : void defer.resolve(response.data);
             }, function(error) {
                 console.log(error), defer.reject(error);
             }), defer.promise;
@@ -34355,7 +35048,8 @@ function(angular) {
                 method: "GET",
                 url: api("/api/store/item/" + id)
             }).then(function(response) {
-                return response.status >= 400 ? (console.log(response.status), response.status >= 500 ? defer.reject(response.data) : defer.reject(response.data)) : void defer.resolve(response.data);
+                return response.status >= 400 ? (console.log(response.status), response.status, 
+                defer.reject(response.data)) : void defer.resolve(response.data);
             }, function(error) {
                 console.log(error), defer.reject(error);
             }), defer.promise;
@@ -34367,7 +35061,8 @@ function(angular) {
                 url: api("/api/store/item/" + id + "/related"),
                 params: query
             }).then(function(response) {
-                return response.status >= 400 ? (console.log(response.status), response.status >= 500 ? defer.reject(response.data) : defer.reject(response.data)) : void defer.resolve(response.data);
+                return response.status >= 400 ? (console.log(response.status), response.status, 
+                defer.reject(response.data)) : void defer.resolve(response.data);
             }, function(error) {
                 console.log(error), defer.reject(error);
             }), defer.promise;
@@ -34379,8 +35074,8 @@ function(angular) {
                 url: api("/api/store/item/" + item.id),
                 data: item
             }).then(function(response) {
-                return response.status >= 400 ? (console.log(response.status), response.status >= 500 ? defer.reject(response.data) : defer.reject(response.data)) : (console.log(response), 
-                void defer.resolve(response.data));
+                return response.status >= 400 ? (console.log(response.status), response.status, 
+                defer.reject(response.data)) : (console.log(response), void defer.resolve(response.data));
             }, function(error) {
                 console.log(error), defer.reject(error);
             }), defer.promise;
@@ -34392,8 +35087,8 @@ function(angular) {
                 url: api("/api/store/item"),
                 data: item
             }).then(function(response) {
-                return response.status >= 400 ? (console.log(response.status), response.status >= 500 ? defer.reject(response.data) : defer.reject(response.data)) : (console.log(response), 
-                void defer.resolve(response.data));
+                return response.status >= 400 ? (console.log(response.status), response.status, 
+                defer.reject(response.data)) : (console.log(response), void defer.resolve(response.data));
             }, function(error) {
                 console.log(error), defer.reject(error);
             }), defer.promise;
@@ -34422,7 +35117,8 @@ function(angular) {
                 method: "GET",
                 url: api("/api/store/item/" + id + "/comments")
             }).then(function(response) {
-                return response.status >= 400 ? (console.log(response.status), response.status >= 500 ? defer.reject(response.data) : defer.reject(response.data)) : void defer.resolve(response.data);
+                return response.status >= 400 ? (console.log(response.status), response.status, 
+                defer.reject(response.data)) : void defer.resolve(response.data);
             }, function(error) {
                 console.log(error), defer.reject(error);
             }), defer.promise;
@@ -34434,7 +35130,8 @@ function(angular) {
                 url: api("/api/store/item/" + id + "/comments"),
                 data: comment
             }).then(function(response) {
-                return response.status >= 400 ? (console.log(response.status), response.status >= 500 ? defer.reject(response.data) : defer.reject(response.data)) : void defer.resolve(response.data);
+                return response.status >= 400 ? (console.log(response.status), response.status, 
+                defer.reject(response.data)) : void defer.resolve(response.data);
             }, function(error) {
                 console.log(error), defer.reject(error);
             }), defer.promise;

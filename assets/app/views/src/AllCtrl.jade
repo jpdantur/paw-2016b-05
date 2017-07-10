@@ -4,6 +4,8 @@ block content
 	include mixins/product
 	+navbar(true)
 	div.container
+		div.backdrop(ng-class="{show: all.itemsLoading}")
+			div.spinner-loader Loading...
 		div.row#search-container
 			div.col-sm-12#search-title
 				h1 #{messageSource.getMessage('search.searchResults', [], locale)}&nbsp;
@@ -15,7 +17,6 @@ block content
 			div.col-sm-10
 				div.row#product-grid
 					h3.text-warning(ng-if="!all.itemResult.results.length") #{messageSource.getMessage('search.none',[],locale)}
-					div.backdrop(ng-class="{show: all.itemsLoading}")
 					div.col-sm-3.store-item(ng-repeat="item in all.itemResult.results")
 						div.product-container
 							a(href="#!/store/items/{{item.id}}")

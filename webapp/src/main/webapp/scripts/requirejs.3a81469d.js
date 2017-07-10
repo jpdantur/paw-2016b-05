@@ -64,22 +64,21 @@ var requirejs, require, define;
     function newContext(contextName) {
         function trimDots(ary) {
             var i, part;
-            for (i = 0; i < ary.length; i++) if (part = ary[i], "." === part) ary.splice(i, 1), 
+            for (i = 0; i < ary.length; i++) if ("." === (part = ary[i])) ary.splice(i, 1), 
             i -= 1; else if (".." === part) {
                 if (0 === i || 1 === i && ".." === ary[2] || ".." === ary[i - 1]) continue;
                 i > 0 && (ary.splice(i - 1, 2), i -= 2);
             }
         }
         function normalize(name, baseName, applyMap) {
-            var pkgMain, mapValue, nameParts, i, j, nameSegment, lastIndex, foundMap, foundI, foundStarMap, starI, normalizedBaseParts, baseParts = baseName && baseName.split("/"), map = config.map, starMap = map && map["*"];
+            var mapValue, nameParts, i, j, nameSegment, lastIndex, foundMap, foundI, foundStarMap, starI, normalizedBaseParts, baseParts = baseName && baseName.split("/"), map = config.map, starMap = map && map["*"];
             if (name && (name = name.split("/"), lastIndex = name.length - 1, config.nodeIdCompat && jsSuffixRegExp.test(name[lastIndex]) && (name[lastIndex] = name[lastIndex].replace(jsSuffixRegExp, "")), 
             "." === name[0].charAt(0) && baseParts && (normalizedBaseParts = baseParts.slice(0, baseParts.length - 1), 
             name = normalizedBaseParts.concat(name)), trimDots(name), name = name.join("/")), 
             applyMap && map && (baseParts || starMap)) {
                 nameParts = name.split("/");
                 outerLoop: for (i = nameParts.length; i > 0; i -= 1) {
-                    if (nameSegment = nameParts.slice(0, i).join("/"), baseParts) for (j = baseParts.length; j > 0; j -= 1) if (mapValue = getOwn(map, baseParts.slice(0, j).join("/")), 
-                    mapValue && (mapValue = getOwn(mapValue, nameSegment))) {
+                    if (nameSegment = nameParts.slice(0, i).join("/"), baseParts) for (j = baseParts.length; j > 0; j -= 1) if ((mapValue = getOwn(map, baseParts.slice(0, j).join("/"))) && (mapValue = getOwn(mapValue, nameSegment))) {
                         foundMap = mapValue, foundI = i;
                         break outerLoop;
                     }
@@ -89,7 +88,7 @@ var requirejs, require, define;
                 !foundMap && foundStarMap && (foundMap = foundStarMap, foundI = starI), foundMap && (nameParts.splice(0, foundI, foundMap), 
                 name = nameParts.join("/"));
             }
-            return pkgMain = getOwn(config.pkgs, name), pkgMain ? pkgMain : name;
+            return getOwn(config.pkgs, name) || name;
         }
         function removeScript(name) {
             isBrowser && each(scripts(), function(scriptNode) {
@@ -115,7 +114,7 @@ var requirejs, require, define;
             prefix = nameParts[0], name = nameParts[1], prefix && (prefix = normalize(prefix, parentName, applyMap), 
             pluginModule = getOwn(defined, prefix)), name && (prefix ? normalizedName = isNormalized ? name : pluginModule && pluginModule.normalize ? pluginModule.normalize(name, function(name) {
                 return normalize(name, parentName, applyMap);
-            }) : name.indexOf("!") === -1 ? normalize(name, parentName, applyMap) : name : (normalizedName = normalize(name, parentName, applyMap), 
+            }) : -1 === name.indexOf("!") ? normalize(name, parentName, applyMap) : name : (normalizedName = normalize(name, parentName, applyMap), 
             nameParts = splitPrefix(normalizedName), prefix = nameParts[0], normalizedName = nameParts[1], 
             isNormalized = !0, url = context.nameToUrl(normalizedName))), suffix = !prefix || pluginModule || isNormalized ? "" : "_unnormalized" + (unnormalizedCounter += 1), 
             {
@@ -303,7 +302,7 @@ var requirejs, require, define;
                             enabled: !0,
                             ignore: !0
                         });
-                    })), normalizedMod = getOwn(registry, normalizedMap.id), void (normalizedMod && (this.depMaps.push(normalizedMap), 
+                    })), void ((normalizedMod = getOwn(registry, normalizedMap.id)) && (this.depMaps.push(normalizedMap), 
                     this.events.error && normalizedMod.on("error", bind(this, function(err) {
                         this.emit("error", err);
                     })), normalizedMod.enable()))) : bundleId ? (this.map.url = context.nameToUrl(bundleId), 
@@ -375,7 +374,7 @@ var requirejs, require, define;
                 "string" == typeof cfg.urlArgs) {
                     var urlArgs = cfg.urlArgs;
                     cfg.urlArgs = function(id, url) {
-                        return (url.indexOf("?") === -1 ? "?" : "&") + urlArgs;
+                        return (-1 === url.indexOf("?") ? "?" : "&") + urlArgs;
                     };
                 }
                 var shim = config.shim, objs = {
@@ -429,7 +428,7 @@ var requirejs, require, define;
                     isBrowser: isBrowser,
                     toUrl: function(moduleNamePlusExt) {
                         var ext, index = moduleNamePlusExt.lastIndexOf("."), segment = moduleNamePlusExt.split("/")[0], isRelative = "." === segment || ".." === segment;
-                        return index !== -1 && (!isRelative || index > 1) && (ext = moduleNamePlusExt.substring(index, moduleNamePlusExt.length), 
+                        return -1 !== index && (!isRelative || index > 1) && (ext = moduleNamePlusExt.substring(index, moduleNamePlusExt.length), 
                         moduleNamePlusExt = moduleNamePlusExt.substring(0, index)), context.nameToUrl(normalize(moduleNamePlusExt, relMap && relMap.id, !0), ext, !0);
                     },
                     defined: function(id) {
@@ -449,8 +448,7 @@ var requirejs, require, define;
                 }), localRequire;
             },
             enable: function(depMap) {
-                var mod = getOwn(registry, depMap.id);
-                mod && getModule(depMap).enable();
+                getOwn(registry, depMap.id) && getModule(depMap).enable();
             },
             completeLoad: function(moduleName) {
                 var found, args, mod, shim = getOwn(config.shim, moduleName) || {}, shExports = shim.exports;
@@ -513,12 +511,12 @@ var requirejs, require, define;
         }), interactiveScript);
     }
     var req, s, head, baseElement, dataMain, src, interactiveScript, currentlyAddingScript, mainScript, subPath, version = "2.3.3", commentRegExp = /\/\*[\s\S]*?\*\/|([^:"'=]|^)\/\/.*$/gm, cjsRequireRegExp = /[^.]\s*require\s*\(\s*["']([^'"\s]+)["']\s*\)/g, jsSuffixRegExp = /\.js$/, currDirRegExp = /^\.\//, op = Object.prototype, ostring = op.toString, hasOwn = op.hasOwnProperty, isBrowser = !("undefined" == typeof window || "undefined" == typeof navigator || !window.document), isWebWorker = !isBrowser && "undefined" != typeof importScripts, readyRegExp = isBrowser && "PLAYSTATION 3" === navigator.platform ? /^complete$/ : /^(complete|loaded)$/, defContextName = "_", isOpera = "undefined" != typeof opera && "[object Opera]" === opera.toString(), contexts = {}, cfg = {}, globalDefQueue = [], useInteractive = !1;
-    if ("undefined" == typeof define) {
-        if ("undefined" != typeof requirejs) {
+    if (void 0 === define) {
+        if (void 0 !== requirejs) {
             if (isFunction(requirejs)) return;
             cfg = requirejs, requirejs = void 0;
         }
-        "undefined" == typeof require || isFunction(require) || (cfg = require, require = void 0), 
+        void 0 === require || isFunction(require) || (cfg = require, require = void 0), 
         req = requirejs = function(deps, callback, errback, optional) {
             var context, config, contextName = defContextName;
             return isArray(deps) || "string" == typeof deps || (config = deps, isArray(callback) ? (deps = callback, 
@@ -527,7 +525,7 @@ var requirejs, require, define;
             config && context.configure(config), context.require(deps, callback, errback);
         }, req.config = function(config) {
             return req(config);
-        }, req.nextTick = "undefined" != typeof setTimeout ? function(fn) {
+        }, req.nextTick = void 0 !== setTimeout ? function(fn) {
             setTimeout(fn, 4);
         } : function(fn) {
             fn();
@@ -540,9 +538,8 @@ var requirejs, require, define;
                 var ctx = contexts[defContextName];
                 return ctx.require[prop].apply(ctx, arguments);
             };
-        }), isBrowser && (head = s.head = document.getElementsByTagName("head")[0], baseElement = document.getElementsByTagName("base")[0], 
-        baseElement && (head = s.head = baseElement.parentNode)), req.onError = defaultOnError, 
-        req.createNode = function(config, moduleName, url) {
+        }), isBrowser && (head = s.head = document.getElementsByTagName("head")[0], (baseElement = document.getElementsByTagName("base")[0]) && (head = s.head = baseElement.parentNode)), 
+        req.onError = defaultOnError, req.createNode = function(config, moduleName, url) {
             var node = config.xhtml ? document.createElementNS("http://www.w3.org/1999/xhtml", "html:script") : document.createElement("script");
             return node.type = config.scriptType || "text/javascript", node.charset = "utf-8", 
             node.async = !0, node;
@@ -561,7 +558,7 @@ var requirejs, require, define;
             }
         }, isBrowser && !cfg.skipDataMain && eachReverse(scripts(), function(script) {
             if (head || (head = script.parentNode), dataMain = script.getAttribute("data-main")) return mainScript = dataMain, 
-            cfg.baseUrl || mainScript.indexOf("!") !== -1 || (src = mainScript.split("/"), mainScript = src.pop(), 
+            cfg.baseUrl || -1 !== mainScript.indexOf("!") || (src = mainScript.split("/"), mainScript = src.pop(), 
             subPath = src.length ? src.join("/") + "/" : "./", cfg.baseUrl = subPath), mainScript = mainScript.replace(jsSuffixRegExp, ""), 
             req.jsExtRegExp.test(mainScript) && (mainScript = dataMain), cfg.deps = cfg.deps ? cfg.deps.concat(mainScript) : [ mainScript ], 
             !0;
@@ -571,8 +568,8 @@ var requirejs, require, define;
             deps = null), !deps && isFunction(callback) && (deps = [], callback.length && (callback.toString().replace(commentRegExp, commentReplace).replace(cjsRequireRegExp, function(match, dep) {
                 deps.push(dep);
             }), deps = (1 === callback.length ? [ "require" ] : [ "require", "exports", "module" ]).concat(deps))), 
-            useInteractive && (node = currentlyAddingScript || getInteractiveScript(), node && (name || (name = node.getAttribute("data-requiremodule")), 
-            context = contexts[node.getAttribute("data-requirecontext")])), context ? (context.defQueue.push([ name, deps, callback ]), 
+            useInteractive && (node = currentlyAddingScript || getInteractiveScript()) && (name || (name = node.getAttribute("data-requiremodule")), 
+            context = contexts[node.getAttribute("data-requirecontext")]), context ? (context.defQueue.push([ name, deps, callback ]), 
             context.defQueueMap[name] = !0) : globalDefQueue.push([ name, deps, callback ]);
         }, define.amd = {
             jQuery: !0

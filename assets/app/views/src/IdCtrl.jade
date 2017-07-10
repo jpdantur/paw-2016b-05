@@ -73,6 +73,8 @@ block content
 								span.h1#approved-sales {{id.user.approvedPurchases}}
 					//- if view.equals("seller")
 					div.col-sm-12(ng-if="id.params.role === 'seller'")
+						div.backdrop(ng-class="{show: id.itemsLoading}")
+							div.spinner-loader Loading...
 						h2.h1 #{messageSource.getMessage('profile.public.seller.items', [], locale)}
 						div.row.text-right
 							div.col-sm-12

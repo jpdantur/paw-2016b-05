@@ -7,8 +7,8 @@ define([ "siglasApp" ], function(siglasApp) {
                 url: api("/api/me/purchases"),
                 params: query
             }).then(function(response) {
-                return response.status >= 400 ? (console.log(response.status), response.status >= 500 ? defer.reject(response.data) : defer.reject(response.data)) : (console.log(response), 
-                void defer.resolve(response.data));
+                return response.status >= 400 ? (console.log(response.status), response.status, 
+                defer.reject(response.data)) : (console.log(response), void defer.resolve(response.data));
             }, function(error) {
                 console.log(error), defer.reject(error.data);
             }), defer.promise;

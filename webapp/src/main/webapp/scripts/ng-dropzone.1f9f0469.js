@@ -1,6 +1,6 @@
 !function(root) {
     "use strict";
-    function factory(angular, Dropzone) {
+    function factory(a, Dropzone) {
         angular.module("thatisuday.dropzone", []).provider("dropzoneOps", function() {
             var defOps = {};
             return {

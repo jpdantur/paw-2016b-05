@@ -50,7 +50,7 @@ import edu.tp.paw.webapp.dto.FavouriteWriteDTO;
 import edu.tp.paw.webapp.dto.StoreItemDTO;
 import edu.tp.paw.webapp.dto.StoreItemWriteDTO;
 
-@Path("/api/me/favourites")
+@Path("/me/favourites")
 @Component
 public class FavouriteController {
 

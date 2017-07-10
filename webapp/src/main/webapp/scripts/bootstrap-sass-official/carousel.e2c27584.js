@@ -39,8 +39,8 @@
     }, Carousel.prototype.getItemIndex = function(item) {
         return this.$items = item.parent().children(".item"), this.$items.index(item || this.$active);
     }, Carousel.prototype.getItemForDirection = function(direction, active) {
-        var activeIndex = this.getItemIndex(active), willWrap = "prev" == direction && 0 === activeIndex || "next" == direction && activeIndex == this.$items.length - 1;
-        if (willWrap && !this.options.wrap) return active;
+        var activeIndex = this.getItemIndex(active);
+        if (("prev" == direction && 0 === activeIndex || "next" == direction && activeIndex == this.$items.length - 1) && !this.options.wrap) return active;
         var delta = "prev" == direction ? -1 : 1, itemIndex = (activeIndex + delta) % this.$items.length;
         return this.$items.eq(itemIndex);
     }, Carousel.prototype.to = function(pos) {

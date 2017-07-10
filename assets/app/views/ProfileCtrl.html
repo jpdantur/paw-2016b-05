@@ -42,6 +42,9 @@
   </div>
 </header>
 <div id="profile-container" class="container">
+  <div ng-class="{show: profile.itemsLoading || profile.salesLoading || profile.purchasesLoading || profile.favouritesLoading }" class="backdrop">
+    <div class="spinner-loader">Loading...</div>
+  </div>
   <div class="row">
     <div class="col-sm-3">
       <ul id="myTab" class="nav nav-tabs tabs-left">

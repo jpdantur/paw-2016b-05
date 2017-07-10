@@ -62,13 +62,13 @@ block content
 								| #{messageSource.getMessage('sell.field.status.new',[],locale)}
 
 					div.form-group
-						label.col-sm-2.control-label(for="itemStatus") #{messageSource.getMessage('sell.field.publish',[],locale)}
+						label.col-sm-2.control-label(for="status") #{messageSource.getMessage('sell.field.publish',[],locale)}
 						div.col-sm-10
 							label.radio-inline
-								input#itemStatus(type="radio", name="itemStatus", value="ACTIVE", ng-model="sell.item.itemStatus")
+								input#status(type="radio", name="status", value="ACTIVE", ng-model="sell.item.status")
 								| #{messageSource.getMessage('sell.field.radio.yes',[],locale)}
 							label.radio-inline
-								input#itemStatus1(type="radio", name="itemStatus", value="UNPUBLISHED", ng-model="sell.item.itemStatus")
+								input#status1(type="radio", name="status", value="UNPUBLISHED", ng-model="sell.item.status")
 								| #{messageSource.getMessage('sell.field.radio.no',[],locale)}
 					
 					div.form-group

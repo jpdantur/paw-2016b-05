@@ -19,7 +19,7 @@ public interface IStoreService {
 	public PagedResult<StoreItem> search(final Filter filter);
 	public PagedResult<StoreItem> search(final FilterBuilder filter);
 	
-	public Set<Category> getCategoriesForResultsInHigherDepthCategories(final Set<Category> categories, final List<StoreItem> items);
+	public List<Category> getCategoriesForResultsInHigherDepthCategories(final Set<Category> categories, final List<StoreItem> items);
 	
 	public Purchase purchase(final PurchaseBuilder builder);
 }

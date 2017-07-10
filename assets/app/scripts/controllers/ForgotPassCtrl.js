@@ -6,8 +6,6 @@ define([
 
 	siglasApp.controller('ForgotPassCtrl', function($scope, $rootScope, $location, $filter, toastr, AuthService) {
 
-		console.log('ForgotPassCtrl');
-
 		var self = this;
 
 		self.submit = submit;

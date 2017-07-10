@@ -63,7 +63,7 @@
         </div>
         <div class="form-group">
           <div class="col-sm-4 col-sm-offset-6">
-            <button id="uploadImages" type="submit" class="btn btn-success btn-block">{{ 'sell.okImages' | translate }}</button>
+            <button id="uploadImages" type="submit" ng-disabled="!images.item.images.length" class="btn btn-success btn-block">{{ 'sell.okImages' | translate }}</button>
           </div>
           <div class="col-sm-2"><a ng-href="#!/store/items/{{images.item.id}}" class="btn btn-default btn-block">{{ 'sell.skip' | translate }}&nbsp;<i class="fa fa-chevron-right"></i></a></div>
         </div>

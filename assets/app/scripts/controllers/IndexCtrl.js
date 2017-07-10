@@ -7,10 +7,6 @@ define([
 
 	siglasApp.controller('IndexCtrl', function($scope, $rootScope, $location, $route, AuthService, toastr, $filter, FavouritesService) {
 
-		console.log('IndexCtrl');
-
-		console.log($filter('translate')('ng.messages.logoutSuccessful'));
-
 		var self = this;
 
 		self.$route = $route;

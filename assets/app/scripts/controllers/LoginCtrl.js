@@ -7,7 +7,6 @@ define([
 
 	siglasApp.controller('LoginCtrl', function($scope, $rootScope, $location, toastr, AuthService, FavouritesService, $filter) {
 
-		console.log('LoginCtrl');
 
 		var self = this;
 
@@ -27,8 +26,6 @@ define([
 		function signIn() {
 
 			AuthService.logIn(self.username, self.password).then(function (data) {
-				console.log(data);
-
 				return AuthService.fetchProfile();
 			}).then(function (profile) {
 				$rootScope.loggedUser = profile;

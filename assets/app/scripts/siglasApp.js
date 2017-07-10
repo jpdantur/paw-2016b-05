@@ -86,34 +86,6 @@ define([
 				$httpProvider.defaults.headers.common['Content-Type'] = 'application/json';
 
 				localStorageServiceProvider.setPrefix('siglas');
-
-				// taken from https://github.com/showpad/angular-q-spread/blob/master/src/q-spread.js
-				$provide.decorator('$q', ['$delegate', function ($delegate) {
-
-					var originalDefer = $delegate.defer;
-
-					$delegate.defer = function () {
-						// Get the prototype of the promise
-						var promiseProto = originalDefer().promise.constructor.prototype;
-
-						// Add the spread method
-						Object.defineProperty(promiseProto, 'spread', {
-							value: function (resolve, reject) {
-								function spread (data) {
-									return resolve.apply(null, data);
-								}
-
-								return this.then(spread, reject);
-							},
-							writable: true,
-							enumerable: false
-						});
-
-						return originalDefer();
-					};
-
-					return $delegate;
-				}]);
 			}
 		])
 		.run(function ($rootScope, $location, $route, $q, $http, $window, AuthService, FavouritesService, amMoment) {
@@ -128,7 +100,6 @@ define([
 			});
 
 			function onSync(profile) {
-				console.log('profile', profile);
 				if (profile) {
 					$rootScope.loggedUser = profile;
 					$rootScope.loggedUser.favourites = [];
@@ -167,7 +138,6 @@ define([
 			AuthService
 			.syncWithLocalStorage()
 			.then(onSync, function (error) {
-				console.log(error);
 				$rootScope.loading = false;
 				$location.path('/');
 				$rootScope.loggedUser = null;

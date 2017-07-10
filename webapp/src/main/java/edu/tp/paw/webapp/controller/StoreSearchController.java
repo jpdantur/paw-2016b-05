@@ -74,7 +74,7 @@ public class StoreSearchController extends BaseController {
 			return "redirect:/store/items/"+pagedResults.getResults().get(0).getId();
 		}
 		
-		final Set<Category> similarCategories = storeService
+		final List<Category> similarCategories = storeService
 				.getCategoriesForResultsInHigherDepthCategories(
 						filter.getCategoryFilter().getCategories(),
 						pagedResults.getResults()
