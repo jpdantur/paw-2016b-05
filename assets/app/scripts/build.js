@@ -35,22 +35,11 @@ require.config({
 		async: '../../bower_components/async/dist/async',
 		'angular-moment': '../../bower_components/angular-moment/angular-moment',
 		bootbox: '../../bower_components/bootbox.js/bootbox',
-		jqBootstrapValidation: '../../bower_components/jqBootstrapValidation/dist/jqBootstrapValidation-1.3.7.min',
 		'jquery.easing': '../../bower_components/jquery.easing/jquery.easing',
 		ngBootbox: '../../bower_components/ngBootbox/dist/ngBootbox',
 		'ng-file-upload': '../../bower_components/ng-file-upload/ng-file-upload',
 		'angular-socket-io': '../../bower_components/angular-socket-io/socket',
-		dropzone: '../../bower_components/dropzone/dist/min/dropzone.min',
-		'ng-dropzone': '../../bower_components/ng-dropzone/dist/ng-dropzone',
-		underscore: '../../bower_components/underscore/underscore',
-		'angular-md5': '../../bower_components/angular-md5/angular-md5',
-		'angular-ui-tree': '../../bower_components/angular-ui-tree/dist/angular-ui-tree',
-		'angular-wizard': '../../bower_components/angular-wizard/dist/angular-wizard.min',
-		'jquery-treegrid': '../../bower_components/jquery-treegrid/index',
-		'jquery.cookie': '../../bower_components/jquery.cookie/jquery.cookie',
-		q: '../../bower_components/q/q',
-		rater: '../../bower_components/rater/rater',
-		'remarkable-bootstrap-notify': '../../bower_components/remarkable-bootstrap-notify/bootstrap-notify'
+		'angular-md5': '../../bower_components/angular-md5/angular-md5'
 	},
 	shim: {
 		angular: {

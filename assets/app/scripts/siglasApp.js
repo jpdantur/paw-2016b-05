@@ -36,7 +36,7 @@ define([
 			'angular-md5'
 		]);
 		siglasApp
-		.constant('HOST', 'localhost:8081/webapp')
+		.constant('HOST', '/paw-2016b-05')
 		.config([
 			'$routeProvider',
 			'$controllerProvider',

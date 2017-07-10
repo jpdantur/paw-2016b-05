@@ -12,7 +12,7 @@ define(['siglasApp'], function(siglasApp) {
 			// var HOST = 'localhost:8081/webapp';
 
 			var api = function api(path) {
-				return 'http://' + HOST + path;
+				return HOST + path;
 			};
 
 			// //////
