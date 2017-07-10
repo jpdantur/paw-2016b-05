@@ -53,7 +53,7 @@ define([
 
 					console.error(err);
 					toastr.error($filter('translate')('mg.messages.registerError'));
-				})
+				});
 			}
 		}
 

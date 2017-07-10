@@ -49,12 +49,12 @@ div.tab-pane-content
 							span.text-muted {{transaction.buyer.username}} ({{transaction.buyer.email}})
 						//-if transaction.status.toString().equals('PENDING')
 						td.center-vertical(ng-show="transaction.status === 'PENDING'")
-							button.btn.btn-success.decide-transaction.btn-xs(ng-bootbox-confirm="Are you sure you want to approve this sale?", ng-bootbox-confirm-action="profile.approveSale(transaction)", ng-show="transaction.status !== 'DECLINED'")
+							button.btn.btn-success.decide-transaction.btn-xs(ng-bootbox-confirm="#{messageSource.getMessage('profile.sales.sell.yesSell')}", ng-bootbox-confirm-action="profile.approveSale(transaction)", ng-show="transaction.status !== 'DECLINED'")
 								i.fa-2x.glyphicon.glyphicon-ok
 								span(ng-show="transaction.status === 'APPROVED'") &nbsp;#{messageSource.getMessage('profile.sales.sell.approved')}
 							// #{messageSource.getMessage('profile.sales.success',[],locale)}
 							| &nbsp;
-							button.btn.btn-danger.decide-transaction.btn-xs(ng-bootbox-confirm="Are you sure you want to decline this sale?", ng-bootbox-confirm-action="profile.declineSale(transaction)", ng-show="transaction.status !== 'APPROVED'")
+							button.btn.btn-danger.decide-transaction.btn-xs(ng-bootbox-confirm="#{messageSource.getMessage('profile.sales.sell.noSell')}", ng-bootbox-confirm-action="profile.declineSale(transaction)", ng-show="transaction.status !== 'APPROVED'")
 								i.fa-2x.glyphicon.glyphicon-remove
 								span(ng-show="transaction.status === 'DECLINED'") &nbsp;#{messageSource.getMessage('profile.sales.sell.rejected')}
 							// #{messageSource.getMessage('profile.sales.danger',[],locale)}

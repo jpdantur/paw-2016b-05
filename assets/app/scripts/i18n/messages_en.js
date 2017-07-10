@@ -235,6 +235,10 @@ define([], function () {
     'profile.sales.sell.approving': 'approving your sell',
     'profile.sales.sell.confirmation': 'Are you sure you want to',
     'profile.sales.sell.confirmation2': 'this purchase?',
+
+    'profile.sales.sell.yesSell': 'Are you sure you want to approve this sale?',
+    'profile.sales.sell.noSell': 'Are you sure you want to deny this sale?',
+
     'profile.sales.sell.error': 'There was a problem',
     'profile.sales.sell.pause': 'pause',
     'profile.sales.sell.pauseBtn': 'Pause Publication',

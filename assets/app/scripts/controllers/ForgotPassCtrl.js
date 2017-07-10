@@ -32,7 +32,7 @@ define([
 					self.loading = false;
 				}, function (err) {
 					self.loading = false;
-					toastr.error($filter('translate')('login.error.wrongData'), $filter('translate')('login.error.error'));
+					toastr.error($filter('translate')('EmailNotExists.PasswordRecoveryForm.email'));
 				});
 			}
 		}

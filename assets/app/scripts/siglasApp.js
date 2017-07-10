@@ -36,7 +36,7 @@ define([
 			'angular-md5'
 		]);
 		siglasApp
-		.constant('HOST', '/paw-2016b-05')
+		.constant('HOST', 'http://localhost:8081/paw-2016b-05')
 		.config([
 			'$routeProvider',
 			'$controllerProvider',
@@ -88,9 +88,25 @@ define([
 				localStorageServiceProvider.setPrefix('siglas');
 			}
 		])
-		.run(function ($rootScope, $location, $route, $q, $http, $window, AuthService, FavouritesService, amMoment) {
+		.run(function ($rootScope, $location, $route, $q, $http, $window, AuthService, FavouritesService, amMoment, $ngBootbox) {
 
-			amMoment.changeLocale('es');
+			// Add languages here
+			var userLang;
+
+			// to avoid being called in non browser environments
+			if (typeof navigator === 'object') {
+				userLang = navigator.language || navigator.userLanguage;
+				userLang = userLang.split('-')[0];
+			}
+
+			// Set English as default language
+			if (userLang === undefined) {
+				userLang = 'en';
+			}
+
+			$ngBootbox.setLocale(userLang);
+
+			amMoment.changeLocale(userLang);
 
 			$rootScope.$on('$routeChangeStart', function (event, next, current) {
 				console.log('$routeChangeStart ' + (current || {loadedTemplateUrl: 'none'}).loadedTemplateUrl + ' -> ' + next.loadedTemplateUrl);
