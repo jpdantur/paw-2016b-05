@@ -379,6 +379,9 @@ define([], function () {
     'ng.messages.purchaseError2': 'There was an error declining your purchase',
 
     'mg.messages.registerSuccess': 'Register successful',
-    'mg.messages.registerError': 'There was an error during registration'
+    'mg.messages.registerError': 'There was an error during registration',
+    'delete':'Delete',
+    'mg.javascript1': 'Javascript disabled',
+    'mg.javascript2': 'This site was designed to use Javascript, please enable it.'
   };
 });

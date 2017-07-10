@@ -9,9 +9,9 @@ div.tab-content
 					label.col-sm-2.control-label(for="name") #{messageSource.getMessage('sell.field.name',[],locale)}
 					div.col-sm-10
 						input.form-control#name(type="text", name="name", placeholder="#{messageSource.getMessage('sell.field.name',[],locale)}", ng-model="edit.item.name", required, ng-minlength="4", ng-maxlength="100")
-						p.help-block(ng-show="editForm.name.$error.required") Name is required
-						p.help-block(ng-show="editForm.name.$error.minlength") Name is too short
-						p.help-block(ng-show="editForm.name.$error.maxlength") Name is too long
+						p.help-block(ng-show="editForm.name.$error.required") #{messageSource.getMessage('register.form.nameRequired',[],locale)}
+						p.help-block(ng-show="editForm.name.$error.minlength") #{messageSource.getMessage('register.form.nameShort',[],locale)}
+						p.help-block(ng-show="editForm.name.$error.maxlength") #{messageSource.getMessage('register.form.nameLong',[],locale)}
 				
 				div.form-group(ng-class="{ 'has-error': edit.description.$invalid && !edit.description.$pristine }")
 					label.col-sm-2.control-label(for="description") #{messageSource.getMessage('sell.field.description',[],locale)}
@@ -24,9 +24,9 @@ div.tab-content
 						div.input-group
 							span.input-group-addon $
 							input.form-control(type="number", id="price", name="price", placeholder="#{messageSource.getMessage('sell.field.price',[],locale)}", ng-min="0", ng-step="0.01", ng-model="edit.item.price", required)
-						p.help-block(ng-show="editForm.price.$error.required") Price is required
-						p.help-block(ng-show="editForm.price.$error.min") Price can't be negative
-						p.help-block(ng-show="editForm.price.$error.step") Price should have up to 2 decimal places
+						p.help-block(ng-show="editForm.price.$error.required") #{messageSource.getMessage('sell.field.priceRequired',[],locale)}
+						p.help-block(ng-show="editForm.price.$error.min") #{messageSource.getMessage('sell.field.priceNegative',[],locale)}
+						p.help-block(ng-show="editForm.price.$error.step") #{messageSource.getMessage('sell.field.priceStep',[],locale)}
 				
 				div.form-group
 					label.col-sm-2.control-label(for="category") #{messageSource.getMessage('sell.field.category',[],locale)}

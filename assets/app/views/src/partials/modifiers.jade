@@ -3,7 +3,7 @@ div.row.text-right#modifiers
 		div.modifier(ng-show="all.itemsLoading")
 			div.modifier-title
 				i.fa.fa-spin.fa-spinner.fa-fw.fa-2x
-				span &nbsp;Loading...
+				span &nbsp;#{messageSource.getMessage('profile.loading', [], locale)}
 		div.modifier
 			span.modifier-title #{messageSource.getMessage('search.filters.pagination.modifiers.amount', [], locale)}:&nbsp;
 			span.modifier-content {{all.itemResult.numberOfAvailableResults != 0 ? all.itemResult.currentPage * all.itemResult.pageSize + 1 : 0}} - {{all.itemResult.currentPage * all.itemResult.pageSize + all.itemResult.numberOfAvailableResults}}

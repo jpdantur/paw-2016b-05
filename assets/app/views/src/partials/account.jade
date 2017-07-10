@@ -18,8 +18,8 @@ div.tab-pane-content
 				label.col-sm-2.control-label(for="email") #{messageSource.getMessage('profile.account.form.email',[],locale)}
 				div.col-sm-6
 					input.form-control#email(type="email", placeholder="#{messageSource.getMessage('profile.account.form.email',[],locale)}", name="email", ng-model="profile.user.email", required)
-					p.help-block(ng-show="changeEmailForm.email.$error.required") Email is required
-					p.help-block(ng-show="changeEmailForm.email.$invalid && !changeEmailForm.email.$pristine") Enter a valid email
+					p.help-block(ng-show="changeEmailForm.email.$error.required") #{messageSource.getMessage('login.recover.emailRequired',[],locale)}
+					p.help-block(ng-show="changeEmailForm.email.$invalid && !changeEmailForm.email.$pristine") #{messageSource.getMessage('login.recover.emailInvalid',[],locale)}
 			div.form-group(style="margin-top:40px")
 				div.col-sm-4.col-sm-offset-2
 					button.btn.btn-success.btn-block(ng-disabled="!changeEmailForm.$valid" type="submit") #{messageSource.getMessage('profile.account.form.update',[],locale)}

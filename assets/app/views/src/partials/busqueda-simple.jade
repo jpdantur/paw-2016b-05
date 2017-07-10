@@ -29,7 +29,7 @@ div.row.well#promociones
 						span ${{item.price.toFixed(2)}}
 			a.left.carousel-control(href="#promotion-carousel", data-slide="prev", style='left:-30px')
 				span.glyphicon.glyphicon-chevron-left
-				span.sr-only Anterior
+				span.sr-only #{messageSource.getMessage("item.carousel.previous", [], locale)}
 			a.right.carousel-control(href="#promotion-carousel", data-slide="next", style='right:-30px')
 				span.glyphicon.glyphicon-chevron-right
-				span.sr-only Anterior
+				span.sr-only #{messageSource.getMessage("item.carousel.next", [], locale)}
