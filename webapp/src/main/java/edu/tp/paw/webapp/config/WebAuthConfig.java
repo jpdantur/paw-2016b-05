@@ -87,19 +87,19 @@ public class WebAuthConfig extends WebSecurityConfigurerAdapter {
 	protected void configure(final HttpSecurity http) throws Exception {
 		
 		jwtFilter.setWhitelist(
-				"/api/auth/login",
-				"/api//auth/register",
-				"/api/auth/renew",
-				"/api/auth/forgot-pass",
-				"/api/store/most-sold",
-				"/api/store/category-tree",
-				"/api/store/search",
-				"/api/store/item/*",
-				"/api/store/item/*/comments",
-				"/api/store/item/*/related",
-				"/api/id/*/profile",
-				"/api/id/*/published",
-				"/api/id/*/reset-password");
+				new RouteMethod("/api/auth/login", HttpMethod.POST),
+				new RouteMethod("/api/auth/register", HttpMethod.POST),
+				new RouteMethod("/api/auth/renew", HttpMethod.POST),
+				new RouteMethod("/api/auth/forgot-pass", HttpMethod.POST),
+				new RouteMethod("/api/store/most-sold", HttpMethod.GET),
+				new RouteMethod("/api/store/category-tree", HttpMethod.GET),
+				new RouteMethod("/api/store/search", HttpMethod.GET),
+				new RouteMethod("/api/store/item/*", HttpMethod.GET),
+				new RouteMethod("/api/store/item/*/comments", HttpMethod.GET),
+				new RouteMethod("/api/store/item/*/related", HttpMethod.GET),
+				new RouteMethod("/api/id/*/profile", HttpMethod.GET),
+				new RouteMethod("/api/id/*/published", HttpMethod.GET),
+				new RouteMethod("/api/id/*/reset-password", HttpMethod.PUT));
 		
 		http
 			.addFilterBefore(corsFilter, ChannelProcessingFilter.class)

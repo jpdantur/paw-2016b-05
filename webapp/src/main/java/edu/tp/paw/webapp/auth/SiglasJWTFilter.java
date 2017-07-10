@@ -13,6 +13,7 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.POST;
 import javax.xml.bind.DatatypeConverter;
 
 import org.slf4j.Logger;
@@ -32,6 +33,7 @@ import org.springframework.web.filter.GenericFilterBean;
 
 import com.sun.research.ws.wadl.Request;
 
+import edu.tp.paw.webapp.config.RouteMethod;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureException;
@@ -46,13 +48,13 @@ public class SiglasJWTFilter extends GenericFilterBean {
 	@Value("${siglas.token.secret}") private String secret;
 	@Value("${siglas.token.audience}") private String audience;
 	
-	private String[] whitelist;
+	private RouteMethod[] whitelist;
 	private RequestMatcher requestMatcher;
 	
 	@Autowired UserDetailsService userDetailsService;
 	
 	public SiglasJWTFilter() {
-		whitelist = new String[0];
+		whitelist = new RouteMethod[0];
 		requestMatcher = new RequestMatcher() {
 			
 			@Override
@@ -62,14 +64,14 @@ public class SiglasJWTFilter extends GenericFilterBean {
 		};
 	}
 	
-	public void setWhitelist(String... whitelist) {
+	public void setWhitelist(RouteMethod... whitelist) {
 		this.whitelist = whitelist;
 		
 		final SiglasJWTFilter self = this;
 		
 		this.requestMatcher = new RequestMatcher() {
 			
-			private Collection<AntPathRequestMatcher> requestMatchers = Arrays.asList(self.whitelist).stream().map(v -> new AntPathRequestMatcher(v)).collect(Collectors.toList());
+			private Collection<AntPathRequestMatcher> requestMatchers = Arrays.asList(self.whitelist).stream().map(v -> v.getMatcher()).collect(Collectors.toList());
 			
 			@Override
 			public boolean matches(HttpServletRequest request) {
