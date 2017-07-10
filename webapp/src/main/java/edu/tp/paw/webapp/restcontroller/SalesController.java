@@ -22,7 +22,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
-import org.springframework.web.bind.annotation.RequestParam;
 
 import edu.tp.paw.interfaces.service.ICategoryService;
 import edu.tp.paw.interfaces.service.IPurchaseService;
@@ -35,7 +34,6 @@ import edu.tp.paw.model.PurchaseReviewBuilder;
 import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.StoreItemBuilder;
 import edu.tp.paw.model.User;
-import edu.tp.paw.service.PurchaseService;
 import edu.tp.paw.webapp.dto.PurchaseDTO;
 import edu.tp.paw.webapp.dto.PurchaseReviewWriteDTO;
 import edu.tp.paw.webapp.dto.StoreItemDTO;

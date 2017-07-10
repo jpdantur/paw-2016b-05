@@ -34,6 +34,8 @@ define([
 
 		self.purchase = purchase;
 
+		self.loading = true;
+
 		// ///////
 
 		$q.all({
@@ -97,8 +99,12 @@ define([
 
 			IdService.profile(self.storeItem.owner.username).then(function (result) {
 				self.owner = result;
+
+				self.loading = false;
+
 			}, function (err) {
 				console.error(err);
+				self.loading = false;
 			});
 		}, function (err) {
 			console.error(err);

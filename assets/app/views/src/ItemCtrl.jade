@@ -4,6 +4,8 @@ block content
 	include mixins/product
 	+navbar(true)
 	div.container
+		div.backdrop(ng-class="{show: item.loading }")
+			div.spinner-loader #{messageSource.getMessage('profile.loading',[],locale)}
 		div.row
 			div.col-sm-10.col-sm-offset-1#item-container
 				div.row#product-title

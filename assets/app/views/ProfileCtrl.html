@@ -43,7 +43,7 @@
 </header>
 <div id="profile-container" class="container">
   <div ng-class="{show: profile.itemsLoading || profile.salesLoading || profile.purchasesLoading || profile.favouritesLoading }" class="backdrop">
-    <div class="spinner-loader">Loading...</div>
+    <div class="spinner-loader">{{ 'profile.loading' | translate }}</div>
   </div>
   <div class="row">
     <div class="col-sm-3">
@@ -422,7 +422,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" data-dismiss="modal" class="close"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <button type="button" data-dismiss="modal" class="close"><span aria-hidden="true">&times;</span><span class="sr-only">{{ 'profile.modal.scores.close' | translate }}</span></button>
         <h4 class="modal-title">{{ 'profile.modal.scores.scoringTo' | translate }}&nbsp;<span class="what">{{ 'profile.modal.scores.lowerBuyer' | translate }}</span></h4>
       </div>
       <div class="modal-body">
@@ -455,7 +455,7 @@
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <button type="button" data-dismiss="modal" class="close"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <button type="button" data-dismiss="modal" class="close"><span aria-hidden="true">&times;</span><span class="sr-only">{{ 'profile.modal.scores.close' | translate }}</span></button>
         <h4 class="modal-title">{{ 'profile.modal.scores.title' | translate }}</h4>
       </div>
       <div class="modal-body">

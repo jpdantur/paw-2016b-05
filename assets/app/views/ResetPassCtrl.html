@@ -52,16 +52,16 @@
             <label for="password" class="col-sm-3 control-label">{{ 'profile.password.form.new' | translate }}</label>
             <div class="col-sm-9">
               <input id="password" type="password" placeholder="{{ 'profile.password.form.new' | translate }}" name="password" required="required" ng-minlength="4" ng-maxlength="100" ng-model="reset.pass.password" class="form-control"/>
-              <p ng-show="resetPasswordForm.password.$error.required" class="help-block">Password is required</p>
-              <p ng-show="resetPasswordForm.password.$error.minlength" class="help-block">Password is too short</p>
-              <p ng-show="resetPasswordForm.password.$error.maxlength" class="help-block">Password is too long</p>
+              <p ng-show="resetPasswordForm.password.$error.required" class="help-block">{{ 'register.form.passwordRequired' | translate }}</p>
+              <p ng-show="resetPasswordForm.password.$error.minlength" class="help-block">{{ 'register.form.passwordShort' | translate }}</p>
+              <p ng-show="resetPasswordForm.password.$error.maxlength" class="help-block">{{ 'register.form.passwordLong' | translate }}</p>
             </div>
           </div>
           <div ng-class="{ 'has-error': resetPasswordForm.repeatPassword.$invalid &amp;&amp; !resetPasswordForm.repeatPassword.$pristine }" class="form-group">
             <label class="col-sm-3 control-label">{{ 'profile.password.form.repeat' | translate }}</label>
             <div class="col-sm-9">
               <input type="password" placeholder="{{ 'profile.password.form.repeat' | translate }}" name="repeatPassword" pw-check="password" ng-model="reset.pass.repeatPassword" class="form-control"/>
-              <p ng-show="resetPasswordForm.repeatPassword.$error.pwmatch" class="help-block">Password does not match</p>
+              <p ng-show="resetPasswordForm.repeatPassword.$error.pwmatch" class="help-block">{{ 'register.form.passwordMatch' | translate }}</p>
             </div>
           </div>
           <div class="form-group">

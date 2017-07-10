@@ -50,9 +50,9 @@
           <label for="name" class="col-sm-2 control-label">{{ 'sell.field.name' | translate }}</label>
           <div class="col-sm-10">
             <input id="name" type="text" name="name" placeholder="{{ 'sell.field.name' | translate }}" ng-model="sell.item.name" required="required" ng-minlength="4" ng-maxlength="100" class="form-control"/>
-            <p ng-show="sellForm.name.$error.required" class="help-block">Name is required</p>
-            <p ng-show="sellForm.name.$error.minlength" class="help-block">Name is too short</p>
-            <p ng-show="sellForm.name.$error.maxlength" class="help-block">Name is too long</p>
+            <p ng-show="sellForm.name.$error.required" class="help-block">{{ 'sell.field.nameRequired' | translate }}</p>
+            <p ng-show="sellForm.name.$error.minlength" class="help-block">{{ 'sell.field.nameShort' | translate }}</p>
+            <p ng-show="sellForm.name.$error.maxlength" class="help-block">{{ 'sell.field.nameLong' | translate }}</p>
           </div>
         </div>
         <div class="form-group">
@@ -67,9 +67,9 @@
             <div class="input-group"><span class="input-group-addon">$</span>
               <input id="price" type="number" name="price" placeholder="{{ 'sell.field.price' | translate }}" ng-min="0" ng-step="0.01" ng-model="sell.item.price" required="required" class="form-control"/>
             </div>
-            <p ng-show="sellForm.price.$error.required" class="help-block">Price is required</p>
-            <p ng-show="sellForm.price.$error.min" class="help-block">Price can't be negative</p>
-            <p ng-show="sellForm.price.$error.step" class="help-block">Price should have up to 2 decimal places</p>
+            <p ng-show="sellForm.price.$error.required" class="help-block">{{ 'sell.field.priceRequired' | translate }}</p>
+            <p ng-show="sellForm.price.$error.min" class="help-block">{{ 'sell.field.priceNegative' | translate }}</p>
+            <p ng-show="sellForm.price.$error.step" class="help-block">{{ 'sell.field.priceStep' | translate }}</p>
           </div>
         </div>
         <div class="form-group">

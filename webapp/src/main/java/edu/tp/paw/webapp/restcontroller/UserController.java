@@ -1,8 +1,5 @@
 package edu.tp.paw.webapp.restcontroller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.ws.rs.Consumes;
@@ -17,13 +14,12 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.Response.Status;
+import javax.ws.rs.core.SecurityContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Component;
 
 import edu.tp.paw.interfaces.service.IUserService;
@@ -31,11 +27,10 @@ import edu.tp.paw.model.StoreItem;
 import edu.tp.paw.model.User;
 import edu.tp.paw.model.filter.Filter;
 import edu.tp.paw.model.filter.FilterBuilder;
-import edu.tp.paw.model.filter.PagedResult;
 import edu.tp.paw.model.filter.OrderFilter.SortField;
 import edu.tp.paw.model.filter.OrderFilter.SortOrder;
+import edu.tp.paw.model.filter.PagedResult;
 import edu.tp.paw.model.filter.StoreItemStatusFilter.ItemStatusFilter;
-import edu.tp.paw.webapp.dto.CommentDTO;
 import edu.tp.paw.webapp.dto.StoreItemDTO;
 import edu.tp.paw.webapp.dto.UserBriefDTO;
 import edu.tp.paw.webapp.dto.UserDTO;

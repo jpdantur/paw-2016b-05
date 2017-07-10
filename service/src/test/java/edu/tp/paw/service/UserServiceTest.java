@@ -85,11 +85,4 @@ public class UserServiceTest {
 		assertTrue(userService.emailExists(user.getEmail()));
 	}
 	
-	@Test
-	@Transactional
-	public void testChangePassword() {
-		user = userService.createUser(userBuilder, role);
-		userService.changePassword(user, "newpass");
-		assertTrue(encoder.matches("newpass", user.getPassword()));
-	}
 }

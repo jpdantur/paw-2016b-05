@@ -87,6 +87,8 @@ public class UserHibernateDao implements IUserDao {
 		query.setParameter("password", password);
 		final boolean ok = query.executeUpdate() == 1;
 		
+		
+//		entityManager.flush();
 //		entityManager.merge(user);
 //		entityManager.refresh(user);
 		

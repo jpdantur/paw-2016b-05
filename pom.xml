@@ -77,7 +77,7 @@
 
 				<executions>
 					
-					<!-- <execution>
+					<execution>
 						<id>install node and npm</id>
 						<goals>
 							<goal>install-node-and-npm</goal>
@@ -98,22 +98,25 @@
 						</configuration>
 					</execution>
 
-					<execution>
+					<!-- <execution>
 						<id>bower install</id>
 						<goals>
 							<goal>bower</goal>
 						</goals>
-					</execution>
+						<configuration>
+							<arguments>install</arguments>
+						</configuration>
+					</execution> -->
 
 					<execution>
-						<id>grunt</id>
+						<id>grunt build</id>
 						<goals>
 							<goal>grunt</goal>
 						</goals>
 						<configuration>
-							<arguments>none</arguments>
+							<arguments>build</arguments>
 						</configuration>
-					</execution> -->
+					</execution>
 
 				</executions>
 

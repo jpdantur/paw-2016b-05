@@ -127,14 +127,6 @@ public class UserHibernateDaoTest {
 	
 	@Test
 	@Transactional
-	public void changePasswordTest() {
-		user = userDao.create(userBuilder);
-		assertTrue(userDao.changePassword(user, "54321"));
-		assertEquals("passwords should match", "54321", user.getPassword());
-	}
-	
-	@Test
-	@Transactional
 	public void getNumberOfUsersTest() {
 		user = userDao.create(userBuilder);
 		assertEquals(1, userDao.getNumberOfUsers());
