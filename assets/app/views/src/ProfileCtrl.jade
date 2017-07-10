@@ -39,7 +39,7 @@ block content
 	+navbar(true)
 	div.container#profile-container
 		div.backdrop(ng-class="{show: profile.itemsLoading || profile.salesLoading || profile.purchasesLoading || profile.favouritesLoading }")
-			div.spinner-loader Loading...
+			div.spinner-loader #{messageSource.getMessage('profile.loading',[],locale)}
 		div.row
 			div.col-sm-3
 				ul.nav.nav-tabs.tabs-left#myTab
@@ -76,7 +76,7 @@ block content
 				.modal-header
 					button.close(type="button", data-dismiss="modal")
 						span(aria-hidden="true") &times;
-						span.sr-only Close
+						span.sr-only #{messageSource.getMessage('profile.modal.scores.close',[],locale)}
 					h4.modal-title #{messageSource.getMessage('profile.modal.scores.scoringTo', [], locale)}&nbsp;
 						span.what #{messageSource.getMessage('profile.modal.scores.lowerBuyer', [], locale)}
 				.modal-body
@@ -100,7 +100,7 @@ block content
 				.modal-header
 					button.close(type="button", data-dismiss="modal")
 						span(aria-hidden="true") &times;
-						span.sr-only Close
+						span.sr-only #{messageSource.getMessage('profile.modal.scores.close',[],locale)}
 					h4.modal-title #{messageSource.getMessage('profile.modal.scores.title', [], locale)}
 				.modal-body
 					form.form-horizontal.i(role="form")

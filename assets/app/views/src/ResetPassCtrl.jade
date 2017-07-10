@@ -17,16 +17,16 @@ block content
 							label.col-sm-3.control-label(for="password") #{messageSource.getMessage('profile.password.form.new',[],locale)}
 							div.col-sm-9
 								input.form-control#password(type="password", placeholder="#{messageSource.getMessage('profile.password.form.new',[],locale)}", name="password", required, ng-minlength="4", ng-maxlength="100", ng-model="reset.pass.password")
-								p.help-block(ng-show="resetPasswordForm.password.$error.required") Password is required
-								p.help-block(ng-show="resetPasswordForm.password.$error.minlength") Password is too short
-								p.help-block(ng-show="resetPasswordForm.password.$error.maxlength") Password is too long
+								p.help-block(ng-show="resetPasswordForm.password.$error.required") #{messageSource.getMessage('register.form.passwordRequired', [], locale)}
+								p.help-block(ng-show="resetPasswordForm.password.$error.minlength") #{messageSource.getMessage('register.form.passwordShort', [], locale)}
+								p.help-block(ng-show="resetPasswordForm.password.$error.maxlength") #{messageSource.getMessage('register.form.passwordLong', [], locale)}
 								
 						
 						div.form-group(ng-class="{ 'has-error': resetPasswordForm.repeatPassword.$invalid && !resetPasswordForm.repeatPassword.$pristine }")
 							label.col-sm-3.control-label #{messageSource.getMessage('profile.password.form.repeat',[],locale)}
 							div.col-sm-9
 								input.form-control(type="password", placeholder="#{messageSource.getMessage('profile.password.form.repeat',[],locale)}", name="repeatPassword", pw-check='password', ng-model="reset.pass.repeatPassword")
-								p.help-block(ng-show="resetPasswordForm.repeatPassword.$error.pwmatch") Password does not match
+								p.help-block(ng-show="resetPasswordForm.repeatPassword.$error.pwmatch") #{messageSource.getMessage('register.form.passwordMatch', [], locale)}
 						
 
 						div.form-group

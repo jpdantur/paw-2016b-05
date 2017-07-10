@@ -33,8 +33,8 @@ div(ng-controller="ScoreCtrl as score")
 			div.col-sm-10
 				p.form-control-static.r2.l(ng-if="score.role === 'seller' ? score.tx.sellerReview.id : score.tx.buyerReview.id") {{score.role === 'seller' ? score.tx.sellerReview.comment : score.tx.buyerReview.comment}}
 				textarea.form-control(ng-if="score.role === 'seller' ? !score.tx.sellerReview.id : !score.tx.buyerReview.id", required, name="comment", ng-model="score.comment", ng-minlength="4")
-				p.help-block(ng-show="reviewForm.comment.$error.required") Comment is required
-				p.help-block(ng-show="reviewForm.comment.$error.minlength") Comment is too short
+				p.help-block(ng-show="reviewForm.comment.$error.required") #{messageSource.getMessage('item.commentRequired', [], locale)}
+				p.help-block(ng-show="reviewForm.comment.$error.minlength") #{messageSource.getMessage('item.commentShort', [], locale)}
 		div.form-group(ng-if="score.role === 'seller' ? !score.tx.sellerReview.id : !score.tx.buyerReview.id")
 			div.col-sm-10.col-sm-offset-2
 				button.btn-default.btn.rate-button(type="submit", ng-disabled="!reviewForm.$valid") #{messageSource.getMessage('profile.modal.scores.toScore', [], locale)}

@@ -35,10 +35,10 @@ block content
 									img(ng-src="data:image/png;base64,{{image.content}}", alt="Imagen {{$index}}")
 							a.left.carousel-control(href="#carousel", data-slide="prev", ng-if="item.storeItem.images.length > 1")
 								span.glyphicon.glyphicon-chevron-left
-								span.sr-only Previous
+								span.sr-only #{messageSource.getMessage('item.carousel.previous', [], locale)}
 							a.right.carousel-control(href="#carousel", data-slide="next", ng-if="item.storeItem.images.length > 1")
 								span.glyphicon.glyphicon-chevron-right
-								span.sr-only Next
+								span.sr-only #{messageSource.getMessage('item.carousel.next', [], locale)}
 					//- item info
 					div.col-sm-7
 						h1 {{item.storeItem.name}}&nbsp;
@@ -76,7 +76,7 @@ block content
 								if !publishedItems.contains(storeItem)
 							form.form-horizontal#comment-form(ng-if="loggedUser && !item.isPublished", name="commentForm", ng-submit="item.postComment(commentForm.$valid)")
 								div.form-group
-									label.col-sm-2.control-label(for="score") Puntaje
+									label.col-sm-2.control-label(for="score") #{messageSource.getMessage('item.score', [], locale)}
 									div.col-sm-10
 										div(star-rating, ng-model="item.comment.rating", ng-class='{worst: item.comment.rating <= 1, bad: 1 < item.comment.rating && item.comment.rating <= 2, ok: 2 < item.comment.rating && item.comment.rating <= 3, good: 3 < item.comment.rating && item.comment.rating <= 4, great: 4 < item.comment.rating && item.comment.rating <= 5}')
 										p.help-block
@@ -85,8 +85,8 @@ block content
 									div.col-sm-10
 										textarea.form-control#content(name="content", placeholder="#{messageSource.getMessage('item.comment', [], locale)}", required, ng-maxlength="300", ng-model="item.comment.content")
 										if commentError
-										span.help-block(ng-show="commentForm.content.$error.required") Review is required
-										span.help-block(ng-show="commentForm.content.$error.maxlength") Review is too long
+										span.help-block(ng-show="commentForm.content.$error.required") #{messageSource.getMessage('item.commentRequired', [], locale)}
+										span.help-block(ng-show="commentForm.content.$error.maxlength") #{messageSource.getMessage('item.commentLong', [], locale)}
 								div.form-group
 									div.col-sm-offset-8.col-sm-4
 										button.btn.btn-block.btn-success#submit-comment(type="submit", ng-disabled="!commentForm.$valid")
