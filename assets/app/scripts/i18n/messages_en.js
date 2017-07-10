@@ -382,6 +382,9 @@ define([], function () {
     'mg.messages.registerError': 'There was an error during registration',
     'delete':'Delete',
     'mg.javascript1': 'Javascript disabled',
-    'mg.javascript2': 'This site was designed to use Javascript, please enable it.'
+    'mg.javascript2': 'This site was designed to use Javascript, please enable it.',
+    'sureResume': 'Are you sure you wish to resume this publication?',
+    'sureActivate': 'Are you sure you wish to activate this publication?',
+    'surePause': 'Are you sure you wish to pause this publication?'
   };
 });

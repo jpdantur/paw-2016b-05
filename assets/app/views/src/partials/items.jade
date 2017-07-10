@@ -46,11 +46,11 @@ div.tab-pane-content
 								i.fa.fa-pencil
 								span &nbsp;#{messageSource.getMessage('profile.items.table.edit',[],locale)}
 						td.center-vertical
-							button.btn.btn-success.btn-xs.toggle-item-state(ng-if="item.status === 'PAUSED'", ng-bootbox-confirm="Are you sure you want to resume this publication", ng-bootbox-confirm-action="profile.setPublicationStatus(item, 'ACTIVE')")
+							button.btn.btn-success.btn-xs.toggle-item-state(ng-if="item.status === 'PAUSED'", ng-bootbox-confirm="#{messageSource.getMessage('sureResume',[],locale)}", ng-bootbox-confirm-action="profile.setPublicationStatus(item, 'ACTIVE')")
 								i.fa.fa-play
 								span &nbsp;#{messageSource.getMessage('profile.items.table.resume',[],locale)}
-							button.btn.btn-success.btn-xs.publish(ng-if="item.status === 'UNPUBLISHED'", ng-bootbox-confirm="Are you sure you want to activate this publication", ng-bootbox-confirm-action="profile.setPublicationStatus(item, 'ACTIVE')") #{messageSource.getMessage('profile.items.table.publish',[],locale)}
-							button.btn.btn-default.btn-xs.toggle-item-state(ng-if="item.status === 'ACTIVE'", ng-bootbox-confirm="Are you sure you want to pause this publication", ng-bootbox-confirm-action="profile.setPublicationStatus(item, 'PAUSED')")
+							button.btn.btn-success.btn-xs.publish(ng-if="item.status === 'UNPUBLISHED'", ng-bootbox-confirm="#{messageSource.getMessage('sureActivate',[],locale)}", ng-bootbox-confirm-action="profile.setPublicationStatus(item, 'ACTIVE')") #{messageSource.getMessage('profile.items.table.publish',[],locale)}
+							button.btn.btn-default.btn-xs.toggle-item-state(ng-if="item.status === 'ACTIVE'", ng-bootbox-confirm="#{messageSource.getMessage('surePause',[],locale)}", ng-bootbox-confirm-action="profile.setPublicationStatus(item, 'PAUSED')")
 								i.fa.fa-pause
 								span &nbsp;#{messageSource.getMessage('profile.items.table.pause',[],locale)}
 			ul.pager#filter-page

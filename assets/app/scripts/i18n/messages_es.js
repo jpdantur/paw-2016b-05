@@ -382,5 +382,8 @@ define([], function () {
     'delete': 'Eliminar'
     'mg.javascript1': 'Javascript deshabilitado',
     'mg.javascript2': 'Este sitio fue diseñado para utilizar Javascript. Habilítelo para utilizar todas sus ventajas.'
+    'sureResume': 'Está seguro que desea reanudar esta publicación?'
+    'sureActivate': 'Está seguro que desea activar esta publicación?',
+    'surePause': 'Está seguro que desea pausar esta publicación?'
   };
 });
