@@ -141,6 +141,8 @@ define([], function () {
     'login.recover.question': 'Did you forget your password?',
     'login.recover.recover': 'Recover',
     'login.recover.recoverIt': 'Recover it',
+    'login.recover.emailRequired': 'Email is required',
+    'login.recover.emailInvalid': 'Enter a valid email',
     'login.submit.login': 'Sign in',
     'profile.account.form.email': 'Email',
     'profile.account.form.lastName': 'Last Name',

@@ -141,6 +141,8 @@ define([], function () {
     'login.recover.question': '¿Olvido su contraseña?',
     'login.recover.recover': 'Recuperar',
     'login.recover.recoverIt': 'Recuperela',
+    'login.recover.emailRequired': 'Debe ingresar un email',
+    'login.recover.emailInvalid': 'Ingrese un email válido',
     'login.submit.login': 'Iniciar Sesion',
     'profile.account.form.email': 'Email',
     'profile.account.form.lastName': 'Apellido',

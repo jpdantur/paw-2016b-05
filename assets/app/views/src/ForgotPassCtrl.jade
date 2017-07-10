@@ -20,8 +20,8 @@ block content
 							label.control-label.col-sm-3(for="username") #{messageSource.getMessage('register.form.mail', [], locale)}
 							div.col-sm-9
 								input.form-control#username(type="email", placeholder="#{messageSource.getMessage('register.form.mail', [], locale)}", name="email", ng-model="pass.email", required)
-								p.help-block(ng-show="forgotPassForm.email.$error.required") Email is required
-								p.help-block(ng-show="forgotPassForm.email.$invalid && !forgotPassForm.email.$pristine") Enter a valid email
+								p.help-block(ng-show="forgotPassForm.email.$error.required") #{messageSource.getMessage('login.recover.emailRequired', [], locale)}
+								p.help-block(ng-show="forgotPassForm.email.$invalid && !forgotPassForm.email.$pristine") #{messageSource.getMessage('login.recover.emailInvalid', [], locale)}
 						div.form-group
 								div.col-sm-12
 									button.btn.btn-success.btn-block(type="submit", ng-disabled="!forgotPassForm.$valid || pass.loading") #{messageSource.getMessage('login.recover.recover', [], locale)}
